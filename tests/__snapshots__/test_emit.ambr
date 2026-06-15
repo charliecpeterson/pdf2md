@@ -1,0 +1,52 @@
+# serializer version: 1
+# name: test_emit_snapshot
+  '''
+  ---
+  format_version: '0.1'
+  title: Doc
+  authors:
+  - A. Author
+  year: '2021'
+  doi: null
+  source: Doc.pdf
+  doc_id: abc123def456789a
+  pages: 2
+  section_source: heading_outline
+  engine:
+    docling: 2.93.0
+    pdf2md: 0.1.0
+  section_title: Doc
+  ---
+  
+  # Doc
+  
+  <!-- page 1 -->
+  
+  # 1 Introduction
+  
+  Hello world.
+  
+  ## 1.1 Background
+  
+  More text.
+  
+  <!-- page 2 -->
+  
+  $$
+  E = mc^2
+  $$
+  
+  | a | b |
+  |---|---|
+  | 1 | 2 |
+  
+  ![Figure 1](assets/pictures_0_p2.png)
+  
+  > **[pdf2md: empty paragraph block]** page 2, block `#/texts/6`
+  
+  ---
+  
+  [^fn1]: a footnote
+  
+  '''
+# ---

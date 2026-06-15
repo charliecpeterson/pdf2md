@@ -1,0 +1,170 @@
+"""Orchestration: PDF → engine → structure → render ∥ emit → coverage → disk.
+
+`convert_file` is idempotent (content-hash identity, versioned output, no-op
+unless `force`). `convert_dir` isolates failures per document so one bad PDF
+never aborts a batch.
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+
+from pdf2md import __version__
+from pdf2md.bookmarks import read_bookmarks
+from pdf2md.cache import content_hash, doc_dir, latest_version, next_version
+from pdf2md.config import Config
+from pdf2md.coverage import build_report
+from pdf2md.emit import emit_document
+from pdf2md.engines.base import Engine
+from pdf2md.logging import get_logger
+from pdf2md.metadata import extract_metadata
+from pdf2md.render import CropRenderer
+from pdf2md.schema import FORMAT_VERSION, CoverageReport, Document, Provenance
+from pdf2md.structure import build_structure
+
+log = get_logger("pipeline")
+
+
+@dataclass
+class ConvertResult:
+    doc_id: str
+    version: int
+    out_dir: Path
+    md_files: list[Path]
+    coverage: CoverageReport | None = None
+    cached: bool = False
+    failed: bool = False
+    error: str | None = None
+
+
+def _get_engine(engine: Engine | None, config: Config) -> Engine:
+    if engine is not None:
+        return engine
+    from pdf2md.engines.docling import DoclingEngine
+
+    return DoclingEngine(
+        formula_enrichment=config.do_formula_enrichment,
+        artifacts_path=config.local_model_dir,
+    )
+
+
+def convert_file(
+    pdf_path: Path,
+    *,
+    engine: Engine | None = None,
+    config: Config | None = None,
+    force: bool = False,
+) -> ConvertResult:
+    pdf_path = Path(pdf_path)
+    config = config or Config()
+    doc_id = content_hash(pdf_path)
+    dd = doc_dir(doc_id)
+
+    cached = latest_version(dd)
+    if cached is not None and not force:
+        vdir = dd / f"v{cached}"
+        log.info("cached: %s (v%d); use force=True to re-convert", pdf_path.name, cached)
+        return ConvertResult(doc_id, cached, vdir, sorted(vdir.glob("*.md")), cached=True)
+
+    started = datetime.now(timezone.utc)
+    engine = _get_engine(engine, config)
+    try:
+        result = engine.convert(pdf_path)
+    except Exception as exc:  # noqa: BLE001 - document-level isolate-and-flag
+        log.error("engine failed on %s: %s", pdf_path.name, exc)
+        return ConvertResult(doc_id, 0, dd, [], failed=True, error=str(exc))
+
+    bookmarks = read_bookmarks(pdf_path)
+    meta = extract_metadata(pdf_path, result.blocks)
+    structure = build_structure(
+        result.blocks,
+        bookmarks,
+        title=meta.get("title") or pdf_path.stem,
+        page_count=len(result.page_sizes),
+    )
+
+    version = next_version(dd)
+    vdir = dd / f"v{version}"
+    assets = vdir / "assets"
+
+    _render_crops(pdf_path, result.figures, assets, config)
+
+    doc = Document(
+        doc_id=doc_id,
+        source_path=str(pdf_path),
+        source_sha256=doc_id,
+        version=version,
+        page_count=len(result.page_sizes),
+        sections=structure.root,
+        blocks=result.blocks,
+        tables=result.tables,
+        figures=result.figures,
+    )
+    md_files, flags = emit_document(doc, structure, vdir, meta, result.engine_versions)
+    doc.coverage = build_report(doc_id, result.blocks, flags)
+
+    finished = datetime.now(timezone.utc)
+    doc.provenance = Provenance(
+        tool_version=__version__,
+        engine_versions=result.engine_versions,
+        format_version=FORMAT_VERSION,
+        source_path=str(pdf_path),
+        source_sha256=doc_id,
+        page_count=doc.page_count,
+        started_at=started.isoformat(),
+        finished_at=finished.isoformat(),
+        duration_s=round((finished - started).total_seconds(), 2),
+        section_source=structure.section_source,
+    )
+    (vdir / "provenance.json").write_text(json.dumps(doc.to_dict(), indent=2, default=str))
+
+    log.info(
+        "converted %s -> v%d (%d md files, %s)",
+        pdf_path.name, version, len(md_files),
+        "lossless" if doc.coverage.lossless else "INCOMPLETE",
+    )
+    return ConvertResult(doc_id, version, vdir, md_files, coverage=doc.coverage)
+
+
+def convert_dir(
+    root: Path,
+    *,
+    engine: Engine | None = None,
+    config: Config | None = None,
+    force: bool = False,
+) -> list[ConvertResult]:
+    root = Path(root)
+    pdfs = sorted(root.rglob("*.pdf"))
+    if not pdfs:
+        log.warning("no PDFs under %s", root)
+        return []
+    config = config or Config()
+    engine = _get_engine(engine, config)  # build once, reuse across the batch
+    results: list[ConvertResult] = []
+    for pdf in pdfs:
+        try:
+            results.append(convert_file(pdf, engine=engine, config=config, force=force))
+        except Exception as exc:  # noqa: BLE001 - poison-pill isolation
+            log.error("unhandled failure on %s: %s", pdf.name, exc)
+            results.append(
+                ConvertResult(content_hash(pdf), 0, root, [], failed=True, error=str(exc))
+            )
+    return results
+
+
+def _render_crops(pdf_path: Path, figures, assets: Path, config: Config) -> None:
+    if not figures:
+        return
+    with CropRenderer(pdf_path, dpi=config.crop_dpi, padding_pts=config.crop_padding_pts) as cr:
+        for fig in figures:
+            if fig.bbox is None:
+                continue
+            name = f"{fig.block_id.strip('#/').replace('/', '_')}_p{fig.page}.png"
+            try:
+                cr.crop(fig.page, fig.bbox, assets / name)
+                fig.asset_path = f"assets/{name}"
+            except Exception as exc:  # noqa: BLE001 - page-level isolate-and-flag
+                log.warning("crop failed for %s: %s", fig.block_id, exc)

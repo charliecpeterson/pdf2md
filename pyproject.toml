@@ -1,25 +1,35 @@
 [project]
-name = "docsmcp"
+name = "pdf2md"
 version = "0.1.0"
-description = "MCP server for high-accuracy PDF/scan transcription to markdown with provenance"
+description = "Lossless PDF to markdown converter: logical-section files, cropped figures, per-block provenance"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
-    "fastmcp>=2.0",
-    "docling>=2.0",
-    "pymupdf>=1.24",
-    "ocrmac>=1.0.1",
-    "marker-pdf>=1.10.2",
-    "sentence-transformers>=5.4.1",
-    "sqlite-vec>=0.1.9",
-    "mlx-vlm>=0.3.9",
+    "docling>=2.90",
+    "pypdfium2>=4.30",
+    "typer>=0.15",
+    "pyyaml>=6.0",
 ]
 
 [project.scripts]
-docsmcp = "docsmcp.server:main"
+pdf2md = "pdf2md.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "syrupy>=4.8",
+]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/docsmcp"]
+packages = ["src/pdf2md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not integration'"
+markers = ["integration: runs real Docling end-to-end (slow, opt-in)"]

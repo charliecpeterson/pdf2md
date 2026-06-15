@@ -1,123 +1,84 @@
-# docsmcp
+# pdf2md
 
-MCP server that transcribes PDFs/scans to markdown with per-block provenance,
-indexes them for hybrid search, and exposes ~40 tools to a Claude Code client
-for retrieval, citation, image crops, and visual verification.
+Lossless PDF→markdown converter (library + CLI), built by wrapping Docling and
+adding the layer Docling lacks: logical-section splitting into files,
+bibliographic front-matter, figure crops, and a per-document coverage audit that
+enforces "nothing silently dropped." The README is the user-facing tour; this
+file is for working *on* the code.
 
-The README has the user-facing tour. This file is for working *on* the code.
+This is a rebuild of an abandoned MCP server (the old `docsmcp`). The MCP server,
+hybrid search, and verification apparatus were dropped; see `PROJECT_PLAN.md` for
+the full rationale, decision log, and roadmap. `PROJECT_PLAN.md` is the source of
+truth for scope and what's deferred.
 
 ## Run and develop
 
 ```bash
-uv sync                  # installs deps; first run also downloads ~1.2 GB of models
-uv run docsmcp           # start the MCP server on stdio (what Claude Code spawns)
-uv run python -c "from docsmcp.pipeline import transcribe; print(transcribe('/path/to.pdf'))"
+uv sync
+uv run pdf2md convert /path/to.pdf            # convert (see README for flags)
+uv run python -c "from pdf2md.pipeline import convert_file; print(convert_file('x.pdf').coverage)"
+uv run pytest                                 # fast unit/snapshot tests (no Docling)
+uv run pytest -m integration                  # opt-in: runs real Docling (slow)
 ```
 
-There is no test suite yet. Verify changes by running the server against a real
-PDF and checking `out/<doc_hash>/v<n>/{document.md,provenance.json}` plus the
-`library.sqlite` rows. Running on `darwin` is assumed — Apple Vision OCR comes
-from `ocrmac` and the visual-verify VLM uses MLX.
+The fast test suite never invokes Docling or downloads models; it drives the
+pipeline stages with synthetic `EngineResult`/`Document` fixtures. The
+`integration` tests run real Docling and are skipped unless selected (and need
+`PDF2MD_TEST_PDF` set to a real PDF).
 
 ## Module map
 
 ```
-src/docsmcp/
-  server.py          MCP tool surface (~40 tools). Thin wrappers — logic lives below.
-  pipeline.py        transcribe() / ingest_dir() — orchestrates engine → index → enrich.
-  triage.py          Per-page born_digital/mixed/scanned/empty classification (no OCR).
-  metadata.py        Heuristic title/authors/year extraction from block text.
-  citation.py        APA / BibTeX formatters.
-  image.py           Page + block PNG rendering via PyMuPDF, cached on disk.
+src/pdf2md/
+  pipeline.py   convert_file / convert_dir — orchestrates engine → structure → render ∥ emit → coverage → disk.
+  schema.py     all dataclasses + enums (Document, Section, Block, BBox, TableData, FigureRef, Provenance, CoverageReport). FORMAT_VERSION lives here.
+  cache.py      doc_id (sha256), out_root(), doc_dir(), version helpers.
+  config.py     frozen Config dataclass loaded from TOML (no Pydantic).
+  logging.py    NullHandler in the library; CLI installs the only handler.
+  cli.py        Typer surface (convert / coverage / version / models pull).
+  models.py     model warm-up (pinning + local-dir override still TODO).
 
   engines/
-    docling.py       Primary OCR/structure engine. Returns markdown + blocks + bboxes.
-    marker.py        Secondary engine, used only when verify=True. No bboxes.
+    base.py     Engine Protocol + EngineResult (the swap seam).
+    docling.py  the ONLY module that imports docling. Translates DoclingDocument → schema.
 
-  embed/
-    embedder.py      mxbai-embed-large-v1 by default (DOCSMCP_EMBED_MODEL to swap).
-    reranker.py      bge-reranker-v2-m3 cross-encoder, CPU only.
-
-  postprocess/       Runs after transcription, before/during indexing.
-    equations.py     LaTeX normalization + equation-label parsing.
-    tables.py        Table parsing + label extraction.
-    table_cells.py   Per-cell extraction for verify_table_cells.
-    figures.py       Figure caption + label parsing.
-    outline.py       Section tree from headings.
-    crossref.py      DOI lookup → authoritative metadata.
-    xref.py          In-doc cross-reference resolution ("see Fig. 3" → block_id).
-    normalize.py     OCR confusable folding for search queries.
-    dedup.py         Block-level dedup for repeated headers/footers.
-    inference.py     Block-type inference fallbacks.
-    roman.py         Roman numeral handling for page numbering.
-
-  store/
-    schema.py        Dataclasses: Block, BBox, Document, BuildInfo, PageTriage, enums.
-    cache.py         out_root(), doc_dir(), versioning helpers.
-
-  index/
-    fts.py           SQLite schema + FTS5 + sqlite-vec writes + metadata mutators.
-                     Also: list_docs, verify_*, table/figure/equation accessors.
-    search.py        Hybrid retrieval: FTS + vec → RRF → optional rerank.
-
-  verify/
-    disagree.py      Per-page Docling-vs-Marker similarity → flags.
-    vlm.py           Qwen3-VL via MLX for visual equation / metadata / cell verification.
+  structure.py  Section tree → file layout. bookmarks → heading outline → single document.md.
+  bookmarks.py  read embedded PDF TOC via pypdfium2.
+  outline.py    heading depth (from section numbering) + section kind.
+  render.py     pypdfium2 bbox crops → assets/ (Y-flip, per-page geometry, full-page fallback).
+  emit.py       Section tree → .md files + YAML front-matter; sets coverage_status, collects flags.
+  tables.py     GFM table render, HTML fallback for spanning cells.
+  metadata.py   bibliographic fields: embedded PDF metadata + first-page heuristic.
+  coverage.py   tally block dispositions into a CoverageReport.
 ```
 
 ## Conventions
 
-- `doc_id` is the SHA-256 of the source file bytes (full hex). The first 16
-  chars name the on-disk directory (`out/<doc_id[:16]>/v<n>/`). Don't truncate
-  the id when querying SQLite.
-- Re-transcribing the same file is a no-op unless `force=True` or `verify=True`
-  was requested but no `disagreements.json` exists. See `_load_cached` in
-  `pipeline.py`.
-- Each transcription is its own `v<n>` directory. New runs never overwrite old
-  ones; `latest_version()` is what other code reads.
-- `provenance.json` is the source of truth on disk. `library.sqlite` is a
-  derived index — `reindex()` rebuilds it from provenance files.
-- Blocks carry `verify` status (`unverified` | `verified` | `disagreement` |
-  `flagged`). Tools that filter by `only_verified=True` rely on this.
-- Output paths use absolute filesystem paths. The MCP client renders images
-  by reading the path from disk; the server doesn't stream bytes.
-- `out/` is `./out` relative to CWD unless `DOCSMCP_OUT` is set. The cwd here
-  is wherever the MCP client launches the server — not the project root.
-
-## Environment variables
-
-| Var | Default | Effect |
-|---|---|---|
-| `DOCSMCP_OUT` | `./out` | Where transcriptions, images, and `library.sqlite` live. |
-| `DOCSMCP_EMBED_MODEL` | `mxbai-large` | Embedding model alias (`bge-small`, `bge-large` also work). |
-| `DOCSMCP_RERANKER` | `BAAI/bge-reranker-v2-m3` | HF repo for the cross-encoder. |
-| `DOCSMCP_VLM_MODEL` | `mlx-community/Qwen3-VL-4B-Instruct-4bit` | MLX VLM for `verify_*` tools. |
+- `doc_id` = SHA-256 of source bytes; first 16 chars name the dir
+  (`out/<doc_id[:16]>/v<n>/`). Don't truncate elsewhere.
+- Re-running a file is a no-op unless `force=True`. New runs create a new
+  `v<n>`; `latest_version()` is what readers use.
+- `provenance.json` is the on-disk source of truth; `.md`/`assets` are derived.
+- The **lossless invariant** is the project's whole point: every block lands in
+  the output as text/table/LaTeX/crop, or as a VISIBLE marker. `emit.py` sets
+  each block's `coverage_status`; `CoverageReport.lossless` is the check.
+- The engine seam is load-bearing: only `engines/docling.py` may import docling.
+  Everything downstream sees pdf2md types. Keep it that way so a second backend
+  is a contained change.
+- Dataclasses + `asdict` everywhere; no Pydantic. New schema → `schema.py`.
+- stdlib `logging` under `pdf2md.*`, never `print`. NullHandler in the library.
+- Soft ~700-line file ceiling. Don't recreate the old project's God-files.
 
 ## Gotchas
 
-- `server.py` (~1000 lines) and `index/fts.py` (~1700 lines) are the two
-  oversized files. Prefer adding new logic in a focused submodule and exposing
-  it through a thin `@mcp.tool` wrapper rather than growing either further.
-- `transcribe` (the MCP tool) and the internal function in `pipeline.py` share
-  a name; `server.py` imports the internal one as `_transcribe`. The public
-  `transcribe` tool is a deprecated alias for `ingest_file`. Use `ingest_file`
-  in new tool docs.
-- Marker (`verify=True`) doesn't emit bboxes, so `get_block_image` only works
-  on Docling-sourced blocks. Don't promise crops for `engine == "marker"`.
-- The metadata pipeline runs in this order: heuristic → CrossRef (if DOI
-  found) → explicit args. CrossRef wins over heuristics; explicit args win
-  over everything. See `pipeline.transcribe` ~lines 200–230.
-- `_safe_json` in `index/fts.py` exists because corrupted columns used to
-  crash list endpoints. Keep using it for any new JSON column reads.
-- `verify_visual` reloads the VLM per call. It's slow. Don't add it to any
-  default code path.
-
-## Style notes specific to this repo
-
-- Dataclasses + `asdict` everywhere; no Pydantic. New schema goes in
-  `store/schema.py`.
-- Logging uses the stdlib `logging` module under the `docsmcp.*` namespace —
-  not `print`. `pipeline.py` still has one `print(...)` for a non-fatal warn;
-  leaving it for now, but don't add more.
-- Tool docstrings are user-facing (Claude Code shows them). Keep the first
-  line short and imperative; put parameter detail in `Args:`.
+- **Formula enrichment** (`Config.do_formula_enrichment`, default on) turns
+  equations into LaTeX but is slow (minutes for equation-heavy papers). Off →
+  equations become flagged markers. `--no-formula` is the CLI lever.
+- Docling bboxes are bottom-left origin (`y0 > y1`); `render.py` flips Y. Don't
+  re-flip elsewhere.
+- Docling formulas are `TextItem`s with label `formula` (self_ref `#/texts/N`),
+  not a separate collection. The adapter maps label → `BlockType.EQUATION`.
+- Book splits currently land at top-level bookmarks (Parts, not chapters) — a
+  known coarse-granularity limitation. Sub/superscripts flatten in Docling text.
+- `output format` is a versioned contract: bump `FORMAT_VERSION` in `schema.py`
+  when front-matter keys or the file layout change in a parser-breaking way.
