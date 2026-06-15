@@ -6,6 +6,22 @@ separately by `FORMAT_VERSION` in `schema.py`; a breaking change there is noted
 here.
 
 ## [Unreleased]
+### Changed
+- Output format → **0.2**: front-matter key `engine` renamed to
+  `engine_versions` (`engine` is reserved by Quarto's YAML front-matter).
+
+### Fixed
+- Multi-line equations with alignment markers (`&`, `\\`) are wrapped in
+  `\begin{aligned}` so KaTeX/MathJax render them instead of throwing.
+- Unmapped Greek-letter font glyph names (`/Delta1`→Δ, `/Pi1`→Π, `/Sigma1`→Σ,
+  and the rest of the Greek alphabet) are normalized to Unicode in text, tables,
+  and captions.
+
+### Known limitations
+- Inline sub/superscripts (citation markers, chemistry multiplicities and
+  counts) are still flattened by Docling's text extraction — Docling's `script`
+  formatting is per-text-item, not per-inline-run, so they can't be recovered
+  reliably without guessing. Deferred.
 
 ## [0.1.0] - 2026-06-14
 Initial release, rebuilt from the abandoned `docsmcp` MCP server.

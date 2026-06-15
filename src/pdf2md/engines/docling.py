@@ -11,6 +11,7 @@ from pathlib import Path
 
 from pdf2md.engines.base import EngineResult
 from pdf2md.logging import get_logger
+from pdf2md.normalize import unglyph
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, TableData
 
 log = get_logger("engines.docling")
@@ -85,7 +86,7 @@ class DoclingEngine:
                 Block(
                     id=item.self_ref,
                     type=btype,
-                    text=(getattr(item, "text", "") or ""),
+                    text=unglyph(getattr(item, "text", "") or ""),
                     page=page,
                     bbox=bbox,
                     engine=self.name,
@@ -116,8 +117,8 @@ class DoclingEngine:
             block_id=t.self_ref,
             page=page or 0,
             bbox=bbox,
-            gfm=t.export_to_markdown(doc),
-            html=t.export_to_html(doc) if spanning else None,
+            gfm=unglyph(t.export_to_markdown(doc)),
+            html=unglyph(t.export_to_html(doc)) if spanning else None,
             has_spanning_cells=spanning,
         )
 
@@ -128,5 +129,5 @@ class DoclingEngine:
             block_id=p.self_ref,
             page=page or 0,
             bbox=bbox,
-            caption=caption or None,
+            caption=unglyph(caption) if caption else None,
         )

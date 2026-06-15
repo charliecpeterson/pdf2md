@@ -458,6 +458,16 @@ authn/authz/multi-tenancy.
   Candidate filter (min size / first-page banner heuristic) later.
 - **Heading hierarchy was flat** (`#` for everything) — FIXED via numbering
   inference; now nests correctly.
+- **Greek-letter font glyph names** (`/Delta1`, `/Pi1`, `/Sigma1`) leaked as raw
+  text in chemistry/physics PDFs — FIXED via `normalize.unglyph` (→ Δ Π Σ).
+- **Equations with alignment** (`&`, `\\`) broke KaTeX in bare `$$` — FIXED by
+  wrapping in `\begin{aligned}`. (Some equations Docling extracts are genuinely
+  truncated/malformed; those still won't render — a Docling limitation.)
+- **`engine` front-matter key** collided with Quarto — renamed `engine_versions`
+  (output format → 0.2).
+- **Sub/superscripts STILL flatten** (citation markers, `²Π`, `Si₂H₂`). Docling's
+  `script` formatting is per-text-item, not per-inline-run, so inline scripts
+  can't be recovered without unreliable guessing. Open; deferred.
 
 ### Book validation (2026-06-14, Atkins Physical Chemistry 8e, 1085pp)
 - Born-digital book with `--no-formula`: **8.3 min for 1085pp**, lossless,

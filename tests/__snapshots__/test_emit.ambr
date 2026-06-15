@@ -2,7 +2,7 @@
 # name: test_emit_snapshot
   '''
   ---
-  format_version: '0.1'
+  format_version: '0.2'
   title: Doc
   authors:
   - A. Author
@@ -12,7 +12,7 @@
   doc_id: abc123def456789a
   pages: 2
   section_source: heading_outline
-  engine:
+  engine_versions:
     docling: 2.93.0
     pdf2md: 0.1.0
   section_title: Doc

@@ -77,6 +77,22 @@ def test_coverage_report_counts_and_lossless():
     assert report.lossless is True
 
 
+def test_unglyph_maps_greek_names():
+    from pdf2md.normalize import unglyph
+
+    assert unglyph("/Delta1f H") == "Δf H"
+    assert unglyph("( 2 /Pi1 )") == "( 2 Π )"
+    assert unglyph("E _ { /Sigma1 }") == "E _ { Σ }"
+
+
+def test_unglyph_leaves_non_glyphs_alone():
+    from pdf2md.normalize import unglyph
+
+    assert unglyph("assets/pictures_0.png") == "assets/pictures_0.png"  # pi-prefix, no match
+    assert unglyph("</td><th>/Si</th>") == "</td><th>/Si</th>"  # html + silicon untouched
+    assert unglyph("plain text") == "plain text"
+
+
 def test_metadata_heuristic(monkeypatch):
     import pdf2md.metadata as m
 

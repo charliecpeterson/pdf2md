@@ -14,7 +14,7 @@ from typing import Any
 
 # Bumped when the on-disk output contract changes in a way that would break a
 # naive downstream parser (front-matter keys removed/renamed, file layout shift).
-FORMAT_VERSION = "0.1"
+FORMAT_VERSION = "0.2"
 
 
 class BlockType(str, Enum):

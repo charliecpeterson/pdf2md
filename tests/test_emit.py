@@ -17,7 +17,8 @@ def test_emit_structural_facts(tmp_path, sample_document):
     assert [p.name for p in md_files] == ["document.md"]
     text = md_files[0].read_text()
 
-    assert "format_version: '0.1'" in text
+    assert "format_version: '0.2'" in text
+    assert "engine_versions:" in text and "\nengine:" not in text
     assert "# 1 Introduction" in text          # heading depth 1
     assert "## 1.1 Background" in text          # nested heading depth 2
     assert "<!-- page 1 -->" in text and "<!-- page 2 -->" in text

@@ -148,7 +148,12 @@ def _render_block(
     if b.type == BlockType.CODE:
         return f"```\n{b.text}\n```", CoverageStatus.EMITTED, None
     if b.type == BlockType.EQUATION:
-        return f"$$\n{txt.strip('$').strip()}\n$$", CoverageStatus.EMITTED, None
+        body = txt.strip("$").strip()
+        # Alignment markers (&, \\) are only valid inside an environment; bare $$
+        # makes KaTeX/MathJax throw. Wrap multi-line equations in `aligned`.
+        if "&" in body or r"\\" in body:
+            body = f"\\begin{{aligned}}\n{body}\n\\end{{aligned}}"
+        return f"$$\n{body}\n$$", CoverageStatus.EMITTED, None
     return txt, CoverageStatus.EMITTED, None
 
 
@@ -171,7 +176,8 @@ def _front_matter(doc: Document, meta: dict, section_source: str, engine_version
         "doc_id": doc.doc_id[:16],
         "pages": doc.page_count,
         "section_source": section_source,
-        "engine": engine_versions,
+        # not "engine": that key is reserved by Quarto's YAML front-matter.
+        "engine_versions": engine_versions,
     }
 
 
