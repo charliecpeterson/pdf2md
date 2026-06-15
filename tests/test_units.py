@@ -36,6 +36,35 @@ def test_versioning(tmp_path):
     assert next_version(dd) == 3
 
 
+def test_prune_keeps_newest(tmp_path, monkeypatch):
+    from pdf2md.cache import prune
+
+    monkeypatch.setenv("PDF2MD_OUT", str(tmp_path))
+    dd = tmp_path / "docabc123def456"
+    for v in (1, 2, 3):
+        (dd / f"v{v}").mkdir(parents=True)
+
+    removed = prune(keep=1)
+
+    assert {p.name for p in removed} == {"v1", "v2"}
+    assert (dd / "v3").exists()
+    assert not (dd / "v1").exists() and not (dd / "v2").exists()
+
+
+def test_prune_dry_run_removes_nothing(tmp_path, monkeypatch):
+    from pdf2md.cache import prune
+
+    monkeypatch.setenv("PDF2MD_OUT", str(tmp_path))
+    dd = tmp_path / "docabc123def456"
+    for v in (1, 2):
+        (dd / f"v{v}").mkdir(parents=True)
+
+    removed = prune(keep=1, dry_run=True)
+
+    assert len(removed) == 1
+    assert (dd / "v1").exists()  # untouched
+
+
 def test_coverage_report_counts_and_lossless():
     blocks = [
         Block("a", BlockType.PARAGRAPH, "x", 1, coverage_status=CoverageStatus.EMITTED),

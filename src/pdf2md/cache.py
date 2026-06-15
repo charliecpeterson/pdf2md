@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import shutil
 from pathlib import Path
 
 
@@ -49,3 +50,23 @@ def next_version(doc_dir_path: Path) -> int:
 def latest_version(doc_dir_path: Path) -> int | None:
     versions = _versions(doc_dir_path)
     return max(versions) if versions else None
+
+
+def prune(*, keep: int = 1, dry_run: bool = False) -> list[Path]:
+    """Remove old `v<n>` dirs across the output root, keeping the newest `keep`
+    per document. Returns the version dirs removed (or that would be, if dry-run)."""
+    root = out_root()
+    removed: list[Path] = []
+    if not root.exists():
+        return removed
+    for dd in sorted(root.iterdir()):
+        if not dd.is_dir():
+            continue
+        versions = sorted(_versions(dd))
+        doomed = versions if keep == 0 else versions[:-keep]
+        for v in doomed:
+            vdir = dd / f"v{v}"
+            removed.append(vdir)
+            if not dry_run:
+                shutil.rmtree(vdir)
+    return removed

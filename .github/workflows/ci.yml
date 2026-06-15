@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      # Docling (and its heavy torch stack) is skipped: the fast suite never
+      # imports it — engine imports are lazy — so this keeps CI lean and also
+      # enforces that the engine seam stays lazily loaded.
+      - run: uv sync --no-install-package docling
+      - run: uv run --no-sync pytest -q

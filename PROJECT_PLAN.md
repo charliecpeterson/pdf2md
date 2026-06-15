@@ -2,8 +2,9 @@
 
 > Living document. Updated incrementally by the deep-planner skill.
 > Last updated: 2026-06-14
-> Current phase: **Phase 1 complete.** Converter works, validated on real corpus,
-> tested, cleaned up, offline model path verified. Next: Phase 2 hardening.
+> Current phase: **Phase 2 (hardening) in progress.** CI, Dependabot, prune,
+> CHANGELOG/CONTRIBUTING/LICENSE done. Pending: PyPI-publish decision, benchmark
+> harness, smart reconvert.
 >
 > Timeline: open-ended side project; sustainability over speed.
 
@@ -406,12 +407,20 @@ authn/authz/multi-tenancy.
 **Out of scope for this phase**: HTML complex-table rendering (crop fallback instead), book chapter-splitting refinement, everything in Phase 2/3.
 **Effort**: a few focused weekends. This is the real deliverable.
 
-### Phase 2: Hardening (readiness-audit gaps)
-- [ ] CI matrix (Python versions × macOS-MLX / Linux-CUDA / CPU) + snapshot determinism across accelerators
-- [ ] Automated release: tag-triggered build + PyPI trusted publishing + dependency scanning
-- [ ] Performance/resource benchmark harness; `prune` command for old versioned outputs
-- [ ] Bulk re-convert command (backfill the corpus when the engine improves)
-- [ ] Deprecation policy, CONTRIBUTING, docs beyond README
+### Phase 2: Hardening (readiness-audit gaps) — in progress
+- [x] CI (GitHub Actions): fast suite on Python 3.11/3.12/3.13, docling skipped
+  to stay lean (and to enforce lazy engine imports). Accelerator matrix
+  (MLX/CUDA) deferred — no GPU runners, low value for a personal tool.
+- [x] Dependency scanning — Dependabot (uv + github-actions, weekly).
+- [x] `prune` command for old versioned outputs (`--keep N`, `--dry-run`).
+- [x] CONTRIBUTING + deprecation/versioning policy; CHANGELOG started; LICENSE.
+- [ ] Automated release + PyPI trusted publishing — **pending decision**: publish
+  to PyPI at all, or stay install-from-repo?
+- [ ] Performance/resource benchmark harness (perf varies wildly with formula
+  enrichment; worth measuring on the real corpus).
+- [ ] Bulk re-convert / reconvert-stale — basic `convert <dir> --force` already
+  re-runs a corpus; the smart "only re-run docs whose engine/model changed"
+  version is the open arch question.
 
 **Out of scope for this phase**: accuracy/breadth work (Phase 3).
 **Depends on**: Phase 1 shipped and used enough to know real perf/disk behavior.

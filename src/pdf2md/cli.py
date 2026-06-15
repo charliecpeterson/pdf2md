@@ -65,6 +65,25 @@ def coverage(
 
 
 @app.command()
+def prune(
+    keep: int = typer.Option(1, "--keep", "-k", min=0, help="Keep the newest N versions per document."),
+    out: Path = typer.Option(None, "--out", "-o", help="Output root (default ./out)."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Show what would be removed."),
+) -> None:
+    """Delete old output versions, keeping the newest N per document."""
+    configure_cli_logging(verbose=False)
+    if out:
+        os.environ["PDF2MD_OUT"] = str(out)
+    from pdf2md.cache import prune as prune_versions
+
+    removed = prune_versions(keep=keep, dry_run=dry_run)
+    verb = "would remove" if dry_run else "removed"
+    for p in removed:
+        typer.echo(f"{verb}  {p}")
+    typer.echo(f"{verb} {len(removed)} version dir(s)")
+
+
+@app.command()
 def version() -> None:
     """Print pdf2md and engine versions."""
     from importlib.metadata import version as v
