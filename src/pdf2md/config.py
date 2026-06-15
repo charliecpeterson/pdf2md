@@ -13,6 +13,8 @@ class Config:
     # Formula→LaTeX enrichment is accurate but slow (minutes for equation-heavy
     # papers); turn off for speed or for large/scanned books.
     do_formula_enrichment: bool = True
+    # Recover inline sub/superscripts from glyph geometry (born-digital pages).
+    detect_scripts: bool = True
     crop_dpi: int = 220
     crop_padding_pts: float = 6.0
     # Blocks below this confidence become a visible marker rather than silent text.

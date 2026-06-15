@@ -29,6 +29,9 @@ def convert(
     no_formula: bool = typer.Option(
         False, "--no-formula", help="Skip formula→LaTeX enrichment (much faster; for books/scans)."
     ),
+    no_scripts: bool = typer.Option(
+        False, "--no-scripts", help="Skip inline sub/superscript recovery (faster on large docs)."
+    ),
     verbose: bool = typer.Option(False, "--verbose", "-v"),
 ) -> None:
     """Convert a PDF (or every PDF in a directory) to markdown."""
@@ -38,6 +41,8 @@ def convert(
     cfg = Config.load(config) if config else Config()
     if no_formula:
         cfg = replace(cfg, do_formula_enrichment=False)
+    if no_scripts:
+        cfg = replace(cfg, detect_scripts=False)
 
     if path.is_dir():
         results = convert_dir(path, config=cfg, force=force)

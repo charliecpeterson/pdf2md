@@ -49,6 +49,7 @@ def _get_engine(engine: Engine | None, config: Config) -> Engine:
     return DoclingEngine(
         formula_enrichment=config.do_formula_enrichment,
         artifacts_path=config.local_model_dir,
+        detect_scripts=config.detect_scripts,
     )
 
 

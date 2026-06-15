@@ -6,6 +6,16 @@ separately by `FORMAT_VERSION` in `schema.py`; a breaking change there is noted
 here.
 
 ## [Unreleased]
+### Added
+- Inline sub/superscript recovery on born-digital pages (`scripts.py`): detected
+  from pypdfium2 glyph geometry (smaller + off-baseline), rendered as
+  `<sub>`/`<sup>` in prose and table cells — molecular subscripts, term-symbol
+  multiplicities, variable indices, affiliation/citation markers. Tables with
+  detected scripts are rebuilt from Docling's cell grid. Disable with
+  `--no-scripts`. The overlay only *inserts* tags, never alters characters, so a
+  mis-detection (occasionally a narrow glyph like `i`) is cosmetic, never data
+  loss.
+
 ### Changed
 - Output format → **0.2**: front-matter key `engine` renamed to
   `engine_versions` (`engine` is reserved by Quarto's YAML front-matter).

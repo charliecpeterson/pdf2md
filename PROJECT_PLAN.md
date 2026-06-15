@@ -465,9 +465,17 @@ authn/authz/multi-tenancy.
   truncated/malformed; those still won't render — a Docling limitation.)
 - **`engine` front-matter key** collided with Quarto — renamed `engine_versions`
   (output format → 0.2).
-- **Sub/superscripts STILL flatten** (citation markers, `²Π`, `Si₂H₂`). Docling's
-  `script` formatting is per-text-item, not per-inline-run, so inline scripts
-  can't be recovered without unreliable guessing. Open; deferred.
+- **Sub/superscripts** — IMPLEMENTED (2026-06-15, `scripts.py`). Geometry-only
+  detector (pypdfium2 glyph boxes: small + off-baseline; font size is useless for
+  these symbol fonts) overlaid onto Docling text via character alignment that
+  only inserts `<sub>`/`<sup>` tags (never alters text → no data-loss risk).
+  Applied to prose blocks and to table cells (tables with scripts are rebuilt
+  from Docling's cell grid). Born-digital only; `--no-scripts` to disable.
+  Verified on a real chemistry paper: molecular subscripts, term-symbol
+  multiplicities, variable indices, affiliation markers all recovered.
+  Residual: a rare narrow glyph (`i`) can be mis-tagged (cosmetic). Subscript
+  detection keys on the glyph *bottom* dropping below baseline (not the top),
+  which is what separates a real subscript from an x-height letter.
 
 ### Book validation (2026-06-14, Atkins Physical Chemistry 8e, 1085pp)
 - Born-digital book with `--no-formula`: **8.3 min for 1085pp**, lossless,
