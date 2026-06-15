@@ -7,6 +7,8 @@ welcome, but there's no response-time guarantee and some may sit.
 
 - `uv sync`, then `uv run pytest` (the fast suite needs no models).
 - `uv run pytest -m integration` runs real Docling; set `PDF2MD_TEST_PDF`.
+- `uv run python scripts/benchmark.py <pdfs|dir>` reports per-document time,
+  pages/sec, and coverage; add `--no-formula` to compare, `--json` to record.
 - Match the conventions in `CLAUDE.md` (dataclasses, no Pydantic, stdlib logging,
   the engine seam stays the only place that imports docling).
 - `PROJECT_PLAN.md` records the design decisions and what's intentionally

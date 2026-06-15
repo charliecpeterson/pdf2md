@@ -2,9 +2,9 @@
 
 > Living document. Updated incrementally by the deep-planner skill.
 > Last updated: 2026-06-14
-> Current phase: **Phase 2 (hardening) in progress.** CI, Dependabot, prune,
-> CHANGELOG/CONTRIBUTING/LICENSE done. Pending: PyPI-publish decision, benchmark
-> harness, smart reconvert.
+> Current phase: **Phase 2 (hardening) essentially done.** CI (green),
+> Dependabot, prune, benchmark harness, repo docs/LICENSE. PyPI declined for now;
+> smart reconvert-stale deferred to a real Docling upgrade.
 >
 > Timeline: open-ended side project; sustainability over speed.
 
@@ -414,13 +414,14 @@ authn/authz/multi-tenancy.
 - [x] Dependency scanning — Dependabot (uv + github-actions, weekly).
 - [x] `prune` command for old versioned outputs (`--keep N`, `--dry-run`).
 - [x] CONTRIBUTING + deprecation/versioning policy; CHANGELOG started; LICENSE.
-- [ ] Automated release + PyPI trusted publishing — **pending decision**: publish
-  to PyPI at all, or stay install-from-repo?
-- [ ] Performance/resource benchmark harness (perf varies wildly with formula
-  enrichment; worth measuring on the real corpus).
+- [x] Performance benchmark harness (`scripts/benchmark.py`): per-doc time,
+  pages/sec, coverage; `--no-formula` to compare, `--json` to track over time.
+- [~] PyPI publishing — **declined for now**. Install-from-repo
+  (`uv tool install git+…`) is enough for personal use; revisit if others need
+  `pip install pdf2md`.
 - [ ] Bulk re-convert / reconvert-stale — basic `convert <dir> --force` already
   re-runs a corpus; the smart "only re-run docs whose engine/model changed"
-  version is the open arch question.
+  version is the open arch question, deferred until a Docling upgrade needs it.
 
 **Out of scope for this phase**: accuracy/breadth work (Phase 3).
 **Depends on**: Phase 1 shipped and used enough to know real perf/disk behavior.

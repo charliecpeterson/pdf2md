@@ -35,6 +35,7 @@ class ConvertResult:
     out_dir: Path
     md_files: list[Path]
     coverage: CoverageReport | None = None
+    page_count: int = 0
     cached: bool = False
     failed: bool = False
     error: str | None = None
@@ -67,7 +68,11 @@ def convert_file(
     if cached is not None and not force:
         vdir = dd / f"v{cached}"
         log.info("cached: %s (v%d); use force=True to re-convert", pdf_path.name, cached)
-        return ConvertResult(doc_id, cached, vdir, sorted(vdir.glob("*.md")), cached=True)
+        prov = vdir / "provenance.json"
+        pages = json.loads(prov.read_text()).get("page_count", 0) if prov.exists() else 0
+        return ConvertResult(
+            doc_id, cached, vdir, sorted(vdir.glob("*.md")), page_count=pages, cached=True
+        )
 
     started = datetime.now(timezone.utc)
     engine = _get_engine(engine, config)
@@ -126,7 +131,9 @@ def convert_file(
         pdf_path.name, version, len(md_files),
         "lossless" if doc.coverage.lossless else "INCOMPLETE",
     )
-    return ConvertResult(doc_id, version, vdir, md_files, coverage=doc.coverage)
+    return ConvertResult(
+        doc_id, version, vdir, md_files, coverage=doc.coverage, page_count=doc.page_count
+    )
 
 
 def convert_dir(
