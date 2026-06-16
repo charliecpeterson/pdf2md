@@ -473,9 +473,13 @@ authn/authz/multi-tenancy.
   from Docling's cell grid). Born-digital only; `--no-scripts` to disable.
   Verified on a real chemistry paper: molecular subscripts, term-symbol
   multiplicities, variable indices, affiliation markers all recovered.
-  Residual: a rare narrow glyph (`i`) can be mis-tagged (cosmetic). Subscript
-  detection keys on the glyph *bottom* dropping below baseline (not the top),
-  which is what separates a real subscript from an x-height letter.
+  Detection refined (lines grouped by vertical overlap so scripts stay attached;
+  superscripts need only be raised; descenders excluded from subscripts; adjacent
+  signs absorbed). Residual ceiling: scripts are overlaid onto Docling's text, so
+  an exponent Docling renders differently from the raw glyphs (spaced hyphen vs
+  raised minus, e.g. some `mol⁻¹`) is only partially recovered. Fixing fully means
+  full glyph-reconstruction (abandoning the overlay) — deferred as not worth the
+  text-quality risk. The overlay never alters characters, so misses are cosmetic.
 
 ### Book validation (2026-06-14, Atkins Physical Chemistry 8e, 1085pp)
 - Born-digital book with `--no-formula`: **8.3 min for 1085pp**, lossless,
