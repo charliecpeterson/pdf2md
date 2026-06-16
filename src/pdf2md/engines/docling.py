@@ -18,6 +18,7 @@ from pdf2md.logging import get_logger
 from pdf2md.normalize import unglyph
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, TableData
 from pdf2md.scripts import PageChars, apply_scripts
+from pdf2md.tables import GridCell, build_gfm, build_html
 
 log = get_logger("engines.docling")
 
@@ -150,77 +151,50 @@ class DoclingEngine:
 
     def _table(self, doc, t, page_chars) -> TableData:
         page, bbox = _prov(t)
-        spanning = any(
-            getattr(c, "row_span", 1) > 1 or getattr(c, "col_span", 1) > 1
-            for c in getattr(t.data, "table_cells", [])
-        )
-        pc = page_chars(page)
         data = getattr(t, "data", None)
+        cells = getattr(data, "table_cells", None) if data else None
+        spanning = any(c.row_span > 1 or c.col_span > 1 for c in cells) if cells else False
+        pc = page_chars(page)
+
         gfm = html = None
-        if pc is not None and data is not None and getattr(data, "table_cells", None):
-            rebuilt = self._table_html(data, pc)
-            if "<sub>" in rebuilt or "<sup>" in rebuilt:  # only diverge from Docling when it helps
-                gfm = self._table_gfm(data, pc)
+        if pc is not None and cells:
+            rebuilt = build_html(self._grid(data, pc, escape=True), data.num_rows, data.num_cols)
+            if "<sub>" in rebuilt or "<sup>" in rebuilt:  # only diverge from Docling when scripts help
                 html = rebuilt if spanning else None
-        if gfm is None:
+                # GFM can't express spans; leave it empty for spanning tables
+                # rather than persist a flattened, misleading one.
+                gfm = "" if spanning else build_gfm(self._grid(data, pc, escape=False), data.num_rows, data.num_cols)
+        if gfm is None and html is None:
             gfm = unglyph(t.export_to_markdown(doc))
             html = unglyph(t.export_to_html(doc)) if spanning else None
         return TableData(
             block_id=t.self_ref, page=page or 0, bbox=bbox,
-            gfm=gfm, html=html, has_spanning_cells=spanning,
+            gfm=gfm or "", html=html, has_spanning_cells=spanning,
         )
+
+    def _grid(self, data, pc: PageChars, *, escape: bool) -> list[GridCell]:
+        out = []
+        for c in data.table_cells:
+            text = self._cell_text(c, pc, escape=escape)
+            if not escape:
+                text = text.replace("|", r"\|").replace("\n", " ")
+            out.append(
+                GridCell(
+                    text=text,
+                    row=c.start_row_offset_idx,
+                    col=c.start_col_offset_idx,
+                    row_span=c.end_row_offset_idx - c.start_row_offset_idx,
+                    col_span=c.end_col_offset_idx - c.start_col_offset_idx,
+                    header=getattr(c, "column_header", False) or getattr(c, "row_header", False),
+                )
+            )
+        return out
 
     def _cell_text(self, cell, pc: PageChars, *, escape: bool) -> str:
         raw = unglyph(getattr(cell, "text", "") or "")
         cb = _cell_bbox(cell)
         scored = pc.scored_region(cb) if cb is not None else []
         return apply_scripts(raw, scored, escape=escape)
-
-    def _table_html(self, data, pc: PageChars) -> str:
-        cells = list(data.table_cells)
-        nrows, ncols = data.num_rows, data.num_cols
-        grid = {(c.start_row_offset_idx, c.start_col_offset_idx): c for c in cells}
-        covered = set()
-        for c in cells:
-            for r in range(c.start_row_offset_idx, c.end_row_offset_idx):
-                for col in range(c.start_col_offset_idx, c.end_col_offset_idx):
-                    if (r, col) != (c.start_row_offset_idx, c.start_col_offset_idx):
-                        covered.add((r, col))
-        rows = []
-        for r in range(nrows):
-            cells_html = []
-            for col in range(ncols):
-                if (r, col) in covered:
-                    continue
-                c = grid.get((r, col))
-                if c is None:
-                    cells_html.append("<td></td>")
-                    continue
-                rs = c.end_row_offset_idx - c.start_row_offset_idx
-                cs = c.end_col_offset_idx - c.start_col_offset_idx
-                attr = (f' rowspan="{rs}"' if rs > 1 else "") + (f' colspan="{cs}"' if cs > 1 else "")
-                tag = "th" if (getattr(c, "column_header", False) or getattr(c, "row_header", False)) else "td"
-                cells_html.append(f"<{tag}{attr}>{self._cell_text(c, pc, escape=True)}</{tag}>")
-            rows.append("<tr>" + "".join(cells_html) + "</tr>")
-        return "<table><tbody>" + "".join(rows) + "</tbody></table>"
-
-    def _table_gfm(self, data, pc: PageChars) -> str:
-        nrows, ncols = data.num_rows, data.num_cols
-        grid = {(c.start_row_offset_idx, c.start_col_offset_idx): c for c in data.table_cells}
-        matrix = []
-        for r in range(nrows):
-            row = []
-            for col in range(ncols):
-                c = grid.get((r, col))
-                txt = self._cell_text(c, pc, escape=False).replace("|", r"\|").replace("\n", " ") if c else ""
-                row.append(txt)
-            matrix.append(row)
-        if not matrix:
-            return ""
-        head, body = matrix[0], matrix[1:]
-        lines = ["| " + " | ".join(head) + " |", "|" + "|".join(["---"] * ncols) + "|"]
-        lines += ["| " + " | ".join(row) + " |" for row in body]
-        return "\n".join(lines)
 
     def _figure(self, doc, p) -> FigureRef:
         page, bbox = _prov(p)

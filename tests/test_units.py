@@ -20,6 +20,31 @@ def test_table_html_fallback_for_spanning_cells():
     assert render_table(t) == "<table></table>"
 
 
+def test_build_html_spans_and_headers():
+    from pdf2md.tables import GridCell, build_html
+
+    cells = [
+        GridCell("H", 0, 0, col_span=2, header=True),
+        GridCell("a", 1, 0),
+        GridCell("b", 1, 1),
+    ]
+    html = build_html(cells, 2, 2)
+    assert '<th colspan="2">H</th>' in html
+    assert "<tr><td>a</td><td>b</td></tr>" in html
+
+
+def test_build_gfm_derives_header_from_flags():
+    from pdf2md.tables import GridCell, build_gfm
+
+    cells = [
+        GridCell("A", 0, 0, header=True),
+        GridCell("B", 0, 1, header=True),
+        GridCell("1", 1, 0),
+        GridCell("2", 1, 1),
+    ]
+    assert build_gfm(cells, 2, 2).splitlines() == ["| A | B |", "|---|---|", "| 1 | 2 |"]
+
+
 def test_content_hash(tmp_path):
     p = tmp_path / "f.bin"
     p.write_bytes(b"hello")

@@ -17,28 +17,38 @@ data.
 from __future__ import annotations
 
 import statistics as st
+from typing import TYPE_CHECKING
 
-import pypdfium2 as pdfium
+if TYPE_CHECKING:
+    import pypdfium2 as pdfium
 
 # A char as (text, left, bottom, right, top) in PDF points (bottom-left origin).
 Char = tuple[str, float, float, float, float]
 
-_SMALL = 0.78   # a script glyph is shorter than this fraction of the cap height
+_SMALL = 0.78   # a subscript glyph is shorter than this fraction of the cap height
 _RAISE = 0.28   # superscript bottom sits this fraction of cap height above the baseline
 _DROP = 0.15    # subscript bottom drops this fraction of cap height below the baseline
+_DESCENDERS = frozenset("gjpqy")  # sit below the baseline naturally; never subscripts
 
 
 def _lines(chars: list[Char]) -> list[list[Char]]:
-    cur: list[Char] = []
+    """Group chars into text lines by vertical overlap, so a raised superscript or
+    dropped subscript stays attached to its line. A per-baseline split (the obvious
+    approach) severs scripts onto their own line, where they no longer look small
+    relative to a real baseline and go undetected."""
     out: list[list[Char]] = []
-    last_b: float | None = None
+    cur: list[Char] = []
+    lo = hi = None  # vertical band spanned by the current line's glyphs
     for ch in chars:
-        if last_b is not None and abs(ch[2] - last_b) > 4:
-            if cur:
-                out.append(cur)
-                cur = []
+        _, _l, b, _r, t = ch
+        if lo is not None and (t <= lo or b >= hi):
+            out.append(cur)
+            cur = []
+            lo = hi = None
         cur.append(ch)
-        last_b = ch[2]
+        if ch[0].strip():
+            lo = b if lo is None else min(lo, b)
+            hi = t if hi is None else max(hi, t)
     if cur:
         out.append(cur)
     return out
@@ -51,20 +61,30 @@ def _score_line(line: list[Char]) -> list[tuple[str, str | None]]:
     base = st.median([c[2] for c in real])
     tops = [c[4] for c in real if abs(c[2] - base) < 1.5]
     cap = (st.median(tops) - base) if tops else st.median([c[4] - c[2] for c in real])
-    scored: list[tuple[str, str | None]] = []
+    flags: list[str | None] = []
     for text, _l, b, _r, t in line:
         flag = None
-        # A script glyph is small AND its baseline is shifted off the line: raised
-        # (superscript) or dropped below (subscript). Keying on the bottom edge,
-        # not the top, is what separates a subscript from an ordinary x-height
-        # letter (whose bottom still sits on the baseline).
-        if text.isalnum() and cap > 0 and (t - b) < _SMALL * cap:
+        if cap > 0 and text.isalnum():
+            # Raised off the baseline → superscript (nothing full-size sits above
+            # the line, so size doesn't matter). Dropped below AND small AND not a
+            # descender → subscript (the size + descender checks keep ordinary
+            # x-height letters and glyph descenders out).
             if b > base + _RAISE * cap:
                 flag = "sup"
-            elif b < base - _DROP * cap:
+            elif b < base - _DROP * cap and (t - b) < _SMALL * cap and text not in _DESCENDERS:
                 flag = "sub"
-        scored.append((text, flag))
-    return scored
+        flags.append(flag)
+    # Absorb a sign or symbol sitting in a neighbour's script band, so an exponent
+    # like mol⁻¹ keeps its leading minus rather than dropping it.
+    for i, (text, _l, b, _r, _t) in enumerate(line):
+        if flags[i] or text.isalnum() or not text.strip() or cap <= 0:
+            continue
+        sides = (flags[i - 1] if i else None, flags[i + 1] if i + 1 < len(line) else None)
+        if "sup" in sides and b > base + _RAISE * cap:
+            flags[i] = "sup"
+        elif "sub" in sides and b < base - _DROP * cap:
+            flags[i] = "sub"
+    return [(line[i][0], flags[i]) for i in range(len(line))]
 
 
 def _esc(ch: str) -> str:
@@ -120,10 +140,16 @@ class PageChars:
 
     def __init__(self, page: "pdfium.PdfPage") -> None:
         tp = page.get_textpage()
-        self._chars: list[Char] = []
-        for i in range(tp.count_chars()):
-            box = tp.get_charbox(i)
-            self._chars.append((tp.get_text_range(i, 1), *box))
+        n = tp.count_chars()
+        # One text call for the whole page instead of one per char; fall back to
+        # per-char only if the string and char count desync (rare encoded glyphs).
+        full = tp.get_text_range()
+        if len(full) != n:
+            full = None
+        self._chars: list[Char] = [
+            (full[i] if full is not None else tp.get_text_range(i, 1), *tp.get_charbox(i))
+            for i in range(n)
+        ]
 
     @property
     def empty(self) -> bool:

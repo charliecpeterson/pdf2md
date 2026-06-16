@@ -13,8 +13,19 @@ here.
   multiplicities, variable indices, affiliation/citation markers. Tables with
   detected scripts are rebuilt from Docling's cell grid. Disable with
   `--no-scripts`. The overlay only *inserts* tags, never alters characters, so a
-  mis-detection (occasionally a narrow glyph like `i`) is cosmetic, never data
-  loss.
+  mis-detection is cosmetic, never data loss. Line grouping keeps raised/dropped
+  scripts attached to their line; superscripts need only be raised (no size
+  test); descenders (g,j,p,q,y) are excluded from subscripts; an adjacent sign is
+  absorbed into a script run (so `mol⁻¹` keeps its minus when alignment allows).
+  Known ceiling: scripts are overlaid onto Docling's text, so an exponent Docling
+  renders differently from the raw glyphs (a spaced hyphen vs a raised minus) is
+  recovered only partially.
+
+### Internal
+- Table grid→markup assembly moved to `tables.py` (`build_html`/`build_gfm`);
+  GFM header row derived from cell header flags instead of assuming row 0;
+  spanning tables no longer persist a flattened GFM. `PageChars` reads page text
+  in one call instead of one per character (faster on large books).
 
 ### Changed
 - Output format → **0.2**: front-matter key `engine` renamed to
