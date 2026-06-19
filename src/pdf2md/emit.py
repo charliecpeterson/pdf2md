@@ -41,7 +41,21 @@ _MATH_EMPTY_CELLS = re.compile(rf"(?:&\s*{_MATH_SPACE}\s*){{2,}}")
 def _tidy_math(body: str) -> str:
     body = _MATH_EMPTY_CELLS.sub(" & ", body)
     body = _MATH_TAIL.sub("", body)
-    return _MATH_RUN.sub(r" \\quad ", body).strip()
+    body = _MATH_RUN.sub(r" \\quad ", body).strip()
+    return _balance_braces(body)
+
+
+def _balance_braces(body: str) -> str:
+    """KaTeX dumps the raw source for an unbalanced `{`/`}`, which happens when
+    Docling garbles an equation (a misread `}` as `)`, say). Pad the missing
+    side so the expression still renders instead of showing as literal TeX."""
+    opens = len(re.findall(r"(?<!\\)\{", body))
+    closes = len(re.findall(r"(?<!\\)\}", body))
+    if opens > closes:
+        return body + "}" * (opens - closes)
+    if closes > opens:
+        return "{" * (closes - opens) + body
+    return body
 
 
 @dataclass

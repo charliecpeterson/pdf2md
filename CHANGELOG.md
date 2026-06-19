@@ -27,6 +27,15 @@ here.
   lost alignment column with repeated empty `& \quad` cells. `emit._tidy_math`
   strips and collapses this spacing noise before wrapping; real `\\` line breaks
   and genuine multi-column equations are left intact.
+- A garbled equation with unbalanced `{`/`}` (Docling misreading a `}` as `)`,
+  say) is brace-padded so KaTeX renders it instead of dumping the raw TeX source
+  as literal `\[...\]` text. The underlying OCR garble is unchanged; only the
+  renderability is fixed.
+- Orphaned combining marks (a lone U+0338 long solidus overlay Docling emits for
+  a struck-through or dropped glyph) no longer surface as stray `/` lines:
+  `normalize.strip_orphan_combining` removes them, and a block left empty by the
+  strip is dropped rather than printed as a slash. Legitimate base+mark pairs
+  (≠, accented letters) are kept.
 
 ### Internal
 - Table grid→markup assembly moved to `tables.py` (`build_html`/`build_gfm`);

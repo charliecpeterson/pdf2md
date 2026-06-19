@@ -15,7 +15,7 @@ import pypdfium2 as pdfium
 
 from pdf2md.engines.base import EngineResult
 from pdf2md.logging import get_logger
-from pdf2md.normalize import unglyph
+from pdf2md.normalize import normalize_text
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, TableData
 from pdf2md.scripts import PageChars, apply_scripts
 from pdf2md.tables import GridCell, build_gfm, build_html
@@ -134,7 +134,14 @@ class DoclingEngine:
             page, bbox = _prov(item)
             if page is None:
                 continue
-            text = unglyph(getattr(item, "text", "") or "")
+            raw = getattr(item, "text", "") or ""
+            text = normalize_text(raw)
+            # A block whose only content was extraction noise (an orphaned
+            # combining mark) is now empty; skip it rather than emit a stray
+            # glyph. Genuinely empty blocks (raw already blank) still flow
+            # through to the emitter's empty-block marker.
+            if raw.strip() and not text.strip():
+                continue
             if btype in _SCRIPT_TYPES and bbox is not None:
                 pc = page_chars(page)
                 if pc is not None:
@@ -165,8 +172,8 @@ class DoclingEngine:
                 # rather than persist a flattened, misleading one.
                 gfm = "" if spanning else build_gfm(self._grid(data, pc, escape=False), data.num_rows, data.num_cols)
         if gfm is None and html is None:
-            gfm = unglyph(t.export_to_markdown(doc))
-            html = unglyph(t.export_to_html(doc)) if spanning else None
+            gfm = normalize_text(t.export_to_markdown(doc))
+            html = normalize_text(t.export_to_html(doc)) if spanning else None
         return TableData(
             block_id=t.self_ref, page=page or 0, bbox=bbox,
             gfm=gfm or "", html=html, has_spanning_cells=spanning,
@@ -191,7 +198,7 @@ class DoclingEngine:
         return out
 
     def _cell_text(self, cell, pc: PageChars, *, escape: bool) -> str:
-        raw = unglyph(getattr(cell, "text", "") or "")
+        raw = normalize_text(getattr(cell, "text", "") or "")
         cb = _cell_bbox(cell)
         scored = pc.scored_region(cb) if cb is not None else []
         return apply_scripts(raw, scored, escape=escape)
@@ -201,5 +208,5 @@ class DoclingEngine:
         caption = p.caption_text(doc) if hasattr(p, "caption_text") else None
         return FigureRef(
             block_id=p.self_ref, page=page or 0, bbox=bbox,
-            caption=unglyph(caption) if caption else None,
+            caption=normalize_text(caption) if caption else None,
         )

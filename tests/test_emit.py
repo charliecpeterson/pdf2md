@@ -25,6 +25,12 @@ def test_tidy_math_strips_spacing_blowups():
     aligned = r"\Delta E & = E ( A ) & \quad \\ & - E ( B ) & \quad ( 5 )"
     assert _tidy_math(aligned) == aligned
 
+    # A garbled equation with an unclosed brace (Docling misread `}` as `)`) gets
+    # padded so KaTeX renders it instead of dumping the raw source.
+    garbled = r"E ( \text {MR-AQC/CC) - E ( \text {x} )"
+    fixed = _tidy_math(garbled)
+    assert fixed.count("{") == fixed.count("}") == 2
+
 
 def test_emit_structural_facts(tmp_path, sample_document):
     md_files, flags = _emit(tmp_path, sample_document)

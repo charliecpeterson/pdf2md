@@ -118,6 +118,15 @@ def test_unglyph_leaves_non_glyphs_alone():
     assert unglyph("plain text") == "plain text"
 
 
+def test_strip_orphan_combining():
+    from pdf2md.normalize import strip_orphan_combining
+
+    assert strip_orphan_combining("̸") == ""          # lone solidus overlay -> nothing
+    assert strip_orphan_combining("a ̸b") == "a b"     # orphan after space dropped
+    assert strip_orphan_combining("≠") == "≠"   # real base+mark (≠) kept
+    assert strip_orphan_combining("plain") == "plain"
+
+
 def test_metadata_heuristic(monkeypatch):
     import pdf2md.metadata as m
 
