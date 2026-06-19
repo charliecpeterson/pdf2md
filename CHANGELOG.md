@@ -7,6 +7,21 @@ here.
 
 ## [Unreleased]
 ### Added
+- Equation confidence via text-layer cross-check (`confidence.py`). Docling's
+  formula model transcribes the equation *image* to LaTeX and makes character
+  errors (`AQCC`->`AQC/CC`, `pVTZ`->`pVTEZ`, dropped equation numbers); for
+  born-digital PDFs the embedded text layer holds the correct characters. Each
+  equation's LaTeX is scored against the text-layer reading of its bbox. When
+  they disagree, the LaTeX is suspect: if the text layer is faithful (clean, no
+  dropped Greek glyphs) its reading is recovered as the emitted content;
+  otherwise the LaTeX is kept with a low-confidence marker. A per-equation marker
+  appears inline and a `equation_confidence` summary (checked / low_confidence /
+  min) in YAML front-matter. **`FORMAT_VERSION` 0.2 -> 0.3** (new front-matter
+  key; recovered equations change body content). Heuristic, not a proof:
+  symbol-heavy multi-line equations can score low even when correct, so the flag
+  is conservative (review, not certainty). Recovered text is flat (no script
+  detection — it misfires on equation layout); character-accurate but exponents
+  are not raised.
 - Inline sub/superscript recovery on born-digital pages (`scripts.py`): detected
   from pypdfium2 glyph geometry (smaller + off-baseline), rendered as
   `<sub>`/`<sup>` in prose and table cells — molecular subscripts, term-symbol

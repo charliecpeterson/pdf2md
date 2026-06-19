@@ -15,6 +15,7 @@ import pypdfium2 as pdfium
 
 from pdf2md.engines.base import EngineResult
 from pdf2md.logging import get_logger
+from pdf2md.confidence import assess_equation
 from pdf2md.normalize import normalize_text
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, TableData
 from pdf2md.scripts import PageChars, apply_scripts
@@ -142,17 +143,31 @@ class DoclingEngine:
             # through to the emitter's empty-block marker.
             if raw.strip() and not text.strip():
                 continue
+            extra: dict = {}
+            confidence: float | None = None
             if btype in _SCRIPT_TYPES and bbox is not None:
                 pc = page_chars(page)
                 if pc is not None:
                     text = apply_scripts(text, pc.scored_region(bbox))
-            extra = {}
+            elif btype is BlockType.EQUATION and bbox is not None:
+                pc = page_chars(page)
+                if pc is not None and not pc.empty:
+                    assessed = assess_equation(text, pc.text_region(bbox))
+                    if assessed is not None:
+                        confidence, recovered = assessed
+                        if recovered:
+                            # Flat text-layer reading: accurate characters, clearly
+                            # marked. Not run through script detection — that is tuned
+                            # for prose and misfires on equation layout (the equation
+                            # number reads as a superscript), trading a flattened
+                            # exponent for a worse, wrong one.
+                            extra["text_layer"] = normalize_text(recovered)
             level = getattr(item, "level", None)
             if level is not None:
                 extra["level"] = level
             blocks.append(
                 Block(id=item.self_ref, type=btype, text=text, page=page, bbox=bbox,
-                      engine=self.name, extra=extra)
+                      confidence=confidence, engine=self.name, extra=extra)
             )
         return blocks
 

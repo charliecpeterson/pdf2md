@@ -2,7 +2,7 @@
 # name: test_emit_snapshot
   '''
   ---
-  format_version: '0.2'
+  format_version: '0.3'
   title: Doc
   authors:
   - A. Author

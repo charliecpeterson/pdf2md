@@ -13,6 +13,7 @@ from pathlib import Path
 
 import yaml
 
+from pdf2md.confidence import RECOVER_BELOW
 from pdf2md.outline import heading_depth
 from pdf2md.schema import (
     FORMAT_VERSION,
@@ -176,12 +177,22 @@ def _render_block(
     if b.type == BlockType.CODE:
         return f"```\n{b.text}\n```", CoverageStatus.EMITTED, None
     if b.type == BlockType.EQUATION:
+        recovered = b.extra.get("text_layer")
+        if recovered:  # vision LaTeX disagreed with the accurate text layer
+            note = (f"> **[pdf2md: equation recovered from text layer; "
+                    f"vision-LaTeX confidence {b.confidence:.2f}]**")
+            return f"{note}\n\n{recovered}", CoverageStatus.FLAGGED, _flag(b, "equation recovered from text layer")
         body = _tidy_math(txt.strip("$").strip())
         # Alignment markers (&, \\) are only valid inside an environment; bare $$
         # makes KaTeX/MathJax throw. Wrap multi-line equations in `aligned`.
         if "&" in body or r"\\" in body:
             body = f"\\begin{{aligned}}\n{body}\n\\end{{aligned}}"
-        return f"$$\n{body}\n$$", CoverageStatus.EMITTED, None
+        out = f"$$\n{body}\n$$"
+        if b.confidence is not None and b.confidence < RECOVER_BELOW:
+            note = (f"> **[pdf2md: low-confidence equation ({b.confidence:.2f}); "
+                    f"LaTeX may contain transcription errors]**")
+            return f"{note}\n\n{out}", CoverageStatus.FLAGGED, _flag(b, "low-confidence equation")
+        return out, CoverageStatus.EMITTED, None
     return txt, CoverageStatus.EMITTED, None
 
 
@@ -194,7 +205,7 @@ def _flag(b: Block, reason: str) -> CoverageFlag:
 
 
 def _front_matter(doc: Document, meta: dict, section_source: str, engine_versions: dict) -> dict:
-    return {
+    front = {
         "format_version": FORMAT_VERSION,
         "title": meta.get("title"),
         "authors": meta.get("authors"),
@@ -207,6 +218,15 @@ def _front_matter(doc: Document, meta: dict, section_source: str, engine_version
         # not "engine": that key is reserved by Quarto's YAML front-matter.
         "engine_versions": engine_versions,
     }
+    checked = [b.confidence for b in doc.blocks
+               if b.type == BlockType.EQUATION and b.confidence is not None]
+    if checked:
+        front["equation_confidence"] = {
+            "checked": len(checked),
+            "low_confidence": sum(1 for c in checked if c < RECOVER_BELOW),
+            "min": round(min(checked), 2),
+        }
+    return front
 
 
 def _depth_map(root: Section) -> dict[str, int]:

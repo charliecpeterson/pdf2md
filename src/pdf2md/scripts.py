@@ -155,16 +155,23 @@ class PageChars:
     def empty(self) -> bool:
         return not self._chars
 
-    def scored_region(self, bbox) -> list[tuple[str, str | None]]:
-        """Detected (char, flag) for the glyphs whose centers fall inside `bbox`."""
+    def _region(self, bbox) -> list[Char]:
         left, right = min(bbox.x0, bbox.x1), max(bbox.x0, bbox.x1)
         top, bottom = max(bbox.y0, bbox.y1), min(bbox.y0, bbox.y1)
-        inside = [
+        return [
             c for c in self._chars
             if left - 1 <= (c[1] + c[3]) / 2 <= right + 1
             and bottom - 1 <= (c[2] + c[4]) / 2 <= top + 1
         ]
+
+    def scored_region(self, bbox) -> list[tuple[str, str | None]]:
+        """Detected (char, flag) for the glyphs whose centers fall inside `bbox`."""
         scored: list[tuple[str, str | None]] = []
-        for line in _lines(inside):
+        for line in _lines(self._region(bbox)):
             scored.extend(_score_line(line))
         return scored
+
+    def text_region(self, bbox) -> str:
+        """Raw text-layer string of the glyphs inside `bbox`, in reading order: the
+        born-digital character truth used to cross-check an equation's LaTeX."""
+        return "".join(c[0] for c in self._region(bbox))

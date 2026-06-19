@@ -127,6 +127,32 @@ def test_strip_orphan_combining():
     assert strip_orphan_combining("plain") == "plain"
 
 
+def test_assess_equation():
+    from pdf2md.confidence import assess_equation
+
+    # Garbled LaTeX (AQCC->AQC/CC, pVTZ->pVTEZ) vs a clean text layer: low score,
+    # and the clean text layer is handed back as the recovered reading.
+    conf, recovered = assess_equation(
+        r"E ( \text {MR-AQC/CC/cc-pVTEZ) - E ( \text {CASPT} 2 / \text {cc-pVTEZ} ) \quad ( 4 )",
+        "E(MR-AQCC/cc-pVTZ) − E(CASPT2/cc-pVTZ) (4)")
+    assert conf < 0.85 and recovered == "E(MR-AQCC/cc-pVTZ) − E(CASPT2/cc-pVTZ) (4)"
+
+    # Docling spaces out every glyph; once rejoined a faithful LaTeX scores 1.0.
+    assert assess_equation(
+        r"E ( M R - c c C A ) & = E _ { 0 } ( M R - c c C A )",
+        "E(MR-ccCA) = E0(MR-ccCA)") == (1.0, None)
+
+    # Low score, but the LaTeX has Δ terms the text layer dropped (pdfium omits the
+    # unmapped symbol-font glyph): flag it, don't recover — recovery loses the Δ.
+    conf, recovered = assess_equation(
+        r"T A E = & \Delta E ( S O C ) + E _ { M R - c c A } ( S i )",
+        "TAE = E(SOC) + EMR-ccCA(Si) (7)")
+    assert conf < 0.85 and recovered is None
+
+    # Too few alphanumeric tokens to judge (symbol-heavy orbital config).
+    assert assess_equation(r"[ \text {Core} ] 4 \sigma", "[Core]4σ") is None
+
+
 def test_metadata_heuristic(monkeypatch):
     import pdf2md.metadata as m
 
