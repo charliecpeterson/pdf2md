@@ -15,6 +15,7 @@ from pathlib import Path
 from pdf2md import __version__
 from pdf2md.bookmarks import read_bookmarks
 from pdf2md.cache import content_hash, doc_dir, latest_version, next_version
+from pdf2md.confidence import RECOVER_BELOW
 from pdf2md.config import Config
 from pdf2md.coverage import build_report
 from pdf2md.emit import emit_document
@@ -22,7 +23,7 @@ from pdf2md.engines.base import Engine
 from pdf2md.logging import get_logger
 from pdf2md.metadata import extract_metadata
 from pdf2md.render import CropRenderer
-from pdf2md.schema import FORMAT_VERSION, CoverageReport, Document, Provenance
+from pdf2md.schema import FORMAT_VERSION, BlockType, CoverageReport, Document, Provenance
 from pdf2md.structure import build_structure
 
 log = get_logger("pipeline")
@@ -96,7 +97,7 @@ def convert_file(
     vdir = dd / f"v{version}"
     assets = vdir / "assets"
 
-    _render_crops(pdf_path, result.figures, assets, config)
+    _render_crops(pdf_path, result.figures, _eq_crops(result.blocks), assets, config)
 
     doc = Document(
         doc_id=doc_id,
@@ -163,8 +164,18 @@ def convert_dir(
     return results
 
 
-def _render_crops(pdf_path: Path, figures, assets: Path, config: Config) -> None:
-    if not figures:
+def _eq_crops(blocks) -> list:
+    """Low-confidence equations whose extraction is suspect; their image crop is the
+    faithful source (the LaTeX/text reading may be garbled or scrambled)."""
+    return [
+        b for b in blocks
+        if b.type is BlockType.EQUATION and b.bbox is not None
+        and b.confidence is not None and b.confidence < RECOVER_BELOW
+    ]
+
+
+def _render_crops(pdf_path: Path, figures, eq_blocks, assets: Path, config: Config) -> None:
+    if not figures and not eq_blocks:
         return
     with CropRenderer(pdf_path, dpi=config.crop_dpi, padding_pts=config.crop_padding_pts) as cr:
         for fig in figures:
@@ -176,3 +187,10 @@ def _render_crops(pdf_path: Path, figures, assets: Path, config: Config) -> None
                 fig.asset_path = f"assets/{name}"
             except Exception as exc:  # noqa: BLE001 - page-level isolate-and-flag
                 log.warning("crop failed for %s: %s", fig.block_id, exc)
+        for b in eq_blocks:
+            name = f"{b.id.strip('#/').replace('/', '_')}_p{b.page}.png"
+            try:
+                cr.crop(b.page, b.bbox, assets / name)
+                b.extra["crop_path"] = f"assets/{name}"
+            except Exception as exc:  # noqa: BLE001 - page-level isolate-and-flag
+                log.warning("equation crop failed for %s: %s", b.id, exc)

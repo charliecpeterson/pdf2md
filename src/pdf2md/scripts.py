@@ -198,3 +198,20 @@ class PageChars:
         """Raw text-layer string of the glyphs inside `bbox`, in reading order: the
         born-digital character truth used to cross-check an equation's LaTeX."""
         return "".join(c[0] for c in self._region(bbox))
+
+    def reading_disorder(self, bbox) -> float:
+        """How far the text layer's draw order departs from geometric reading order
+        (0 = ordered). Some journals draw equation glyphs out of position, so the
+        linear reading is scrambled token soup; this flags that the text is unfit to
+        show as a transcription. Mean normalized displacement is robust to the local
+        reordering that sub/superscripts cause; it catches the long-range scramble."""
+        chars = [c for c in self._region(bbox) if c[0].strip()]
+        n = len(chars)
+        if n < 4:
+            return 0.0
+        cy = [(c[2] + c[4]) / 2 for c in chars]
+        bands = sorted({round(y) for y in cy})
+        band = lambda y: max(i for i, b in enumerate(bands) if y >= b - 3)
+        order = sorted(range(n), key=lambda k: (-band(cy[k]), chars[k][1]))
+        rank = {k: p for p, k in enumerate(order)}
+        return sum(abs(k - rank[k]) for k in range(n)) / (n * n)

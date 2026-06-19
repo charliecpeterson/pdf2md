@@ -32,12 +32,37 @@ def test_tidy_math_strips_spacing_blowups():
     assert fixed.count("{") == fixed.count("}") == 2
 
 
+def test_low_confidence_equation_uses_image_and_hint():
+    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.schema import Block, BlockType, CoverageStatus
+
+    ctx = _Ctx(depth_of={}, tables={}, figures={})
+
+    # Suspect extraction with an ordered, clean text layer: image is authoritative,
+    # the text-layer reading rides along as the hint.
+    eq = Block(id="#/texts/9", type=BlockType.EQUATION, text="E ( garbled )", page=3,
+               confidence=0.6, extra={"crop_path": "assets/eq_p3.png",
+                                      "text_layer": "E(MR-AQCC/cc-pVTZ) (4)", "ordered": True})
+    text, status, flag = _render_block(eq, ctx, [])
+    assert "![equation](assets/eq_p3.png)" in text
+    assert "E(MR-AQCC/cc-pVTZ) (4)" in text          # the reading hint, not $$ LaTeX
+    assert status == CoverageStatus.CROPPED and flag is not None
+
+    # Scrambled text layer (ordered=False): fall back to the vision LaTeX as the hint.
+    eq2 = Block(id="#/texts/10", type=BlockType.EQUATION, text="E _ { n } = E _ { CBS }", page=3,
+                confidence=0.0, extra={"crop_path": "assets/eq2_p3.png",
+                                       "text_layer": "E E n CBS scrambled", "ordered": False})
+    text2, _, _ = _render_block(eq2, ctx, [])
+    assert "![equation](assets/eq2_p3.png)" in text2 and "$$" in text2  # LaTeX hint, not soup
+    assert "scrambled" not in text2
+
+
 def test_emit_structural_facts(tmp_path, sample_document):
     md_files, flags = _emit(tmp_path, sample_document)
     assert [p.name for p in md_files] == ["document.md"]
     text = md_files[0].read_text()
 
-    assert "format_version: '0.3'" in text
+    assert "format_version: '0.4'" in text
     assert "engine_versions:" in text and "\nengine:" not in text
     assert "# 1 Introduction" in text          # heading depth 1
     assert "## 1.1 Background" in text          # nested heading depth 2

@@ -15,7 +15,7 @@ import pypdfium2 as pdfium
 
 from pdf2md.engines.base import EngineResult
 from pdf2md.logging import get_logger
-from pdf2md.confidence import assess_equation
+from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
 from pdf2md.normalize import normalize_text
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, TableData
 from pdf2md.scripts import PageChars, apply_scripts
@@ -152,18 +152,20 @@ class DoclingEngine:
             elif btype is BlockType.EQUATION and bbox is not None:
                 pc = page_chars(page)
                 if pc is not None and not pc.empty:
-                    assessed = assess_equation(text, pc.text_region(bbox))
+                    tl = pc.text_region(bbox)
+                    assessed = assess_equation(text, tl)
                     if assessed is not None:
-                        confidence, reading, recoverable = assessed
+                        confidence, reading = assessed
                         if reading is not None:
-                            # The text-layer reading is flat (accurate characters,
-                            # clearly marked). Not run through script detection: that
-                            # is tuned for prose and misfires on equation layout (the
-                            # equation number reads as a superscript). When recoverable
-                            # it replaces the LaTeX; otherwise the emitter shows it as
-                            # a cross-reference beside the kept LaTeX.
+                            # Suspect extraction: the pipeline crops the equation
+                            # image as the faithful source. The flat text-layer
+                            # reading rides along as a labelled hint only when it is
+                            # clean and geometrically in reading order (some journals
+                            # draw glyphs out of order -> scrambled token soup).
                             extra["text_layer"] = normalize_text(reading)
-                            extra["recovered"] = recoverable
+                            extra["ordered"] = (
+                                is_clean(tl) and pc.reading_disorder(bbox) < SCRAMBLED_ABOVE
+                            )
             level = getattr(item, "level", None)
             if level is not None:
                 extra["level"] = level

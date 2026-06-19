@@ -7,6 +7,20 @@ here.
 
 ## [Unreleased]
 ### Added
+- Image-crop fallback for low-confidence equations. Some journals (ACS) draw math
+  glyph-by-glyph out of reading order, so the embedded text layer is scrambled
+  token soup *before* pdf2md touches it, and the previous text-layer recovery
+  would replace good vision-LaTeX with that soup. Now any equation whose
+  extraction is suspect (confidence below `RECOVER_BELOW`) is cropped to an image
+  — the one fully faithful representation — and the image is emitted as the
+  authoritative source. A best-effort text hint rides below it: the clean
+  text-layer reading when it is in geometric reading order and shares enough with
+  the LaTeX (`PageChars.reading_disorder`, `SCRAMBLED_ABOVE`, `HINT_MIN_CONF`),
+  otherwise the vision LaTeX. Because the crop is authoritative, the hint's
+  selection is cosmetic and the disorder heuristic carries no correctness risk.
+  **`FORMAT_VERSION` 0.3 -> 0.4.** This replaces the earlier text-layer "recover"
+  / "text layer reads" behaviour: the same accurate characters are still present
+  (as the hint), now backed by the faithful image.
 - Equation confidence via text-layer cross-check (`confidence.py`). Docling's
   formula model transcribes the equation *image* to LaTeX and makes character
   errors (`AQCC`->`AQC/CC`, `pVTZ`->`pVTEZ`, dropped equation numbers); for

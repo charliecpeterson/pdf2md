@@ -13,7 +13,7 @@ from pathlib import Path
 
 import yaml
 
-from pdf2md.confidence import RECOVER_BELOW
+from pdf2md.confidence import HINT_MIN_CONF, RECOVER_BELOW
 from pdf2md.outline import heading_depth
 from pdf2md.schema import (
     FORMAT_VERSION,
@@ -44,6 +44,15 @@ def _tidy_math(body: str) -> str:
     body = _MATH_TAIL.sub("", body)
     body = _MATH_RUN.sub(r" \\quad ", body).strip()
     return _balance_braces(body)
+
+
+def _equation_latex(text: str) -> str:
+    body = _tidy_math(text.strip("$").strip())
+    # Alignment markers (&, \\) are only valid inside an environment; bare $$ makes
+    # KaTeX/MathJax throw. Wrap multi-line equations in `aligned`.
+    if "&" in body or r"\\" in body:
+        body = f"\\begin{{aligned}}\n{body}\n\\end{{aligned}}"
+    return f"$$\n{body}\n$$"
 
 
 def _balance_braces(body: str) -> str:
@@ -177,23 +186,23 @@ def _render_block(
     if b.type == BlockType.CODE:
         return f"```\n{b.text}\n```", CoverageStatus.EMITTED, None
     if b.type == BlockType.EQUATION:
-        reading = b.extra.get("text_layer")
-        if reading and b.extra.get("recovered"):  # text layer is the trustworthy content
-            note = (f"> **[pdf2md: equation recovered from text layer; "
-                    f"vision-LaTeX confidence {b.confidence:.2f}]**")
-            return f"{note}\n\n{reading}", CoverageStatus.FLAGGED, _flag(b, "equation recovered from text layer")
-        body = _tidy_math(txt.strip("$").strip())
-        # Alignment markers (&, \\) are only valid inside an environment; bare $$
-        # makes KaTeX/MathJax throw. Wrap multi-line equations in `aligned`.
-        if "&" in body or r"\\" in body:
-            body = f"\\begin{{aligned}}\n{body}\n\\end{{aligned}}"
-        out = f"$$\n{body}\n$$"
-        if reading:  # kept the LaTeX but it's suspect; show the accurate reading too
+        if b.confidence is not None and b.confidence < RECOVER_BELOW:
+            # Suspect extraction: the cropped image is the faithful source. The text
+            # below is a labelled hint — the clean text-layer reading when it is in
+            # order, else the vision LaTeX (better than scrambled token soup).
+            reading = b.extra.get("text_layer")
+            usable = reading and b.extra.get("ordered") and b.confidence >= HINT_MIN_CONF
+            hint = reading if usable else _equation_latex(txt)
+            crop = b.extra.get("crop_path")
+            if crop:
+                note = (f"> **[pdf2md: low-confidence equation ({b.confidence:.2f}); "
+                        f"image below is the faithful source, text is unverified]**")
+                body = f"{note}\n\n![equation]({crop})\n\n{hint}"
+                return body, CoverageStatus.CROPPED, _flag(b, "low-confidence equation (image fallback)")
             note = (f"> **[pdf2md: low-confidence equation ({b.confidence:.2f}); "
-                    f"LaTeX may have transcription errors]**\n"
-                    f"> text layer reads: `{reading}`")
-            return f"{note}\n\n{out}", CoverageStatus.FLAGGED, _flag(b, "low-confidence equation")
-        return out, CoverageStatus.EMITTED, None
+                    f"may contain transcription errors]**")
+            return f"{note}\n\n{hint}", CoverageStatus.FLAGGED, _flag(b, "low-confidence equation")
+        return _equation_latex(txt), CoverageStatus.EMITTED, None
     return txt, CoverageStatus.EMITTED, None
 
 
