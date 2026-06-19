@@ -7,7 +7,6 @@
   authors:
   - A. Author
   year: '2021'
-  doi: null
   source: Doc.pdf
   doc_id: abc123def456789a
   pages: 2
@@ -15,6 +14,9 @@
   engine_versions:
     docling: 2.93.0
     pdf2md: 0.1.0
+  equations:
+    total: 1
+    image_backed: 0
   section_title: Doc
   ---
   

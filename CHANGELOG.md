@@ -51,6 +51,18 @@ here.
   recovered only partially.
 
 ### Fixed
+- Front-matter omits null-valued keys (`doi`, `authors` when unknown). Quarto's
+  YAML schema rejects `doi: null` for a string field and fails the whole render.
+- Unverified-equation markers no longer read as a verdict that the equation is
+  *wrong*. The cross-check measures whether the extraction could be confirmed, not
+  its correctness, and on scrambled-text papers it reads ~0.00 for equations whose
+  LaTeX is perfect. The per-equation score is dropped from the marker (now
+  "equation extraction unverified — the image below is the authoritative source"),
+  and the front-matter summary reports `equations: {total, image_backed}` instead
+  of a misleading `low_confidence` count.
+- Unbalanced `\left`/`\right` (Docling emitting two `\right` for one `\left` in a
+  bra-ket) made KaTeX throw; `emit._balance_delims` drops the auto-sizing commands
+  when the pair is unbalanced so the bare delimiters still render.
 - Script detection no longer corrupts numeric values: a digit raised or dropped
   *inside* a number (table cells turning 191.4 into ¹91.4, 251.5 into 25¹.5) was
   the worst failure mode for a source-of-truth corpus. `scripts._unsplit_numbers`

@@ -32,6 +32,17 @@ def test_tidy_math_strips_spacing_blowups():
     assert fixed.count("{") == fixed.count("}") == 2
 
 
+def test_balance_delims():
+    from pdf2md.emit import _balance_delims
+
+    # one \left, two \right won't compile in KaTeX -> drop the sizing commands.
+    bad = r"\left\langle a \right| b \right\rangle"
+    assert _balance_delims(bad) == r"\langle a | b \rangle"
+    # a balanced pair is left untouched.
+    ok = r"\left( a + b \right)"
+    assert _balance_delims(ok) == ok
+
+
 def test_low_confidence_equation_uses_image_and_hint():
     from pdf2md.emit import _Ctx, _render_block
     from pdf2md.schema import Block, BlockType, CoverageStatus

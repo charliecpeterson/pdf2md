@@ -47,12 +47,22 @@ def _tidy_math(body: str) -> str:
 
 
 def _equation_latex(text: str) -> str:
-    body = _tidy_math(text.strip("$").strip())
+    body = _balance_delims(_tidy_math(text.strip("$").strip()))
     # Alignment markers (&, \\) are only valid inside an environment; bare $$ makes
     # KaTeX/MathJax throw. Wrap multi-line equations in `aligned`.
     if "&" in body or r"\\" in body:
         body = f"\\begin{{aligned}}\n{body}\n\\end{{aligned}}"
     return f"$$\n{body}\n$$"
+
+
+def _balance_delims(body: str) -> str:
+    """KaTeX throws on a `\\left` without a matching `\\right` (Docling sometimes
+    emits `\\left⟨ … \\right| … \\right⟩`, two `\\right` for one `\\left`). When the
+    pair is unbalanced, drop the auto-sizing commands; the bare delimiters still
+    render, just without stretching."""
+    if len(re.findall(r"\\left(?![a-zA-Z])", body)) != len(re.findall(r"\\right(?![a-zA-Z])", body)):
+        body = re.sub(r"\\left(?![a-zA-Z])|\\right(?![a-zA-Z])", "", body)
+    return body
 
 
 def _balance_braces(body: str) -> str:
@@ -119,7 +129,9 @@ def emit_document(
 
 
 def _write(path: Path, base_front: dict, title: str, blocks: list[Block], ctx: _Ctx) -> Path:
-    front = {**base_front, "section_title": title}
+    # Drop null-valued keys: Quarto's schema rejects `doi: null` / `authors: null`
+    # (a field declared as a string can't be null), failing the whole render.
+    front = {k: v for k, v in {**base_front, "section_title": title}.items() if v is not None}
     body = _render_blocks(blocks, ctx)
     fm = yaml.safe_dump(front, sort_keys=False, allow_unicode=True).strip()
     path.write_text(f"---\n{fm}\n---\n\n# {title}\n\n{body}\n")
@@ -187,21 +199,21 @@ def _render_block(
         return f"```\n{b.text}\n```", CoverageStatus.EMITTED, None
     if b.type == BlockType.EQUATION:
         if b.confidence is not None and b.confidence < RECOVER_BELOW:
-            # Suspect extraction: the cropped image is the faithful source. The text
-            # below is a labelled hint — the clean text-layer reading when it is in
-            # order, else the vision LaTeX (better than scrambled token soup).
+            # The cross-check could not verify this equation's text extraction, so
+            # the cropped image is emitted as the authoritative source. The text
+            # below is a convenience rendering — the clean text-layer reading when
+            # it is in order, else the vision LaTeX (never scrambled token soup). A
+            # low score means "unverified", not "wrong": the LaTeX is often correct,
+            # which is why the score is no longer shown as a per-equation verdict.
             reading = b.extra.get("text_layer")
             usable = reading and b.extra.get("ordered") and b.confidence >= HINT_MIN_CONF
             hint = reading if usable else _equation_latex(txt)
             crop = b.extra.get("crop_path")
             if crop:
-                note = (f"> **[pdf2md: low-confidence equation ({b.confidence:.2f}); "
-                        f"image below is the faithful source, text is unverified]**")
-                body = f"{note}\n\n![equation]({crop})\n\n{hint}"
-                return body, CoverageStatus.CROPPED, _flag(b, "low-confidence equation (image fallback)")
-            note = (f"> **[pdf2md: low-confidence equation ({b.confidence:.2f}); "
-                    f"may contain transcription errors]**")
-            return f"{note}\n\n{hint}", CoverageStatus.FLAGGED, _flag(b, "low-confidence equation")
+                note = "> **[pdf2md: equation extraction unverified — the image below is the authoritative source]**"
+                return f"{note}\n\n![equation]({crop})\n\n{hint}", CoverageStatus.CROPPED, _flag(b, "equation: image is authoritative")
+            note = "> **[pdf2md: equation extraction unverified — the rendering below may differ from the source]**"
+            return f"{note}\n\n{hint}", CoverageStatus.FLAGGED, _flag(b, "equation extraction unverified")
         return _equation_latex(txt), CoverageStatus.EMITTED, None
     return txt, CoverageStatus.EMITTED, None
 
@@ -228,14 +240,12 @@ def _front_matter(doc: Document, meta: dict, section_source: str, engine_version
         # not "engine": that key is reserved by Quarto's YAML front-matter.
         "engine_versions": engine_versions,
     }
-    checked = [b.confidence for b in doc.blocks
-               if b.type == BlockType.EQUATION and b.confidence is not None]
-    if checked:
-        front["equation_confidence"] = {
-            "checked": len(checked),
-            "low_confidence": sum(1 for c in checked if c < RECOVER_BELOW),
-            "min": round(min(checked), 2),
-        }
+    eqs = [b for b in doc.blocks if b.type == BlockType.EQUATION]
+    if eqs:
+        image_backed = sum(1 for b in eqs if b.extra.get("crop_path"))
+        # "image_backed" = extraction couldn't be verified, so an authoritative
+        # crop is attached; the rest render as LaTeX the cross-check agreed with.
+        front["equations"] = {"total": len(eqs), "image_backed": image_backed}
     return front
 
 
