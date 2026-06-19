@@ -52,6 +52,12 @@ def _label_value(item) -> str:
     return getattr(label, "value", str(label))
 
 
+def _religatured(text: str, doc_vocab) -> str:
+    """Rejoin split ligatures in any text path (captions, table cells), building the
+    page vocabulary lazily only when a split is actually present."""
+    return religature(text, doc_vocab()) if has_split_ligature(text) else text
+
+
 def _prov(item) -> tuple[int | None, BBox | None]:
     prov = getattr(item, "prov", None)
     if not prov:
@@ -126,8 +132,8 @@ class DoclingEngine:
 
         try:
             blocks = self._blocks(doc, page_chars, doc_vocab)
-            tables = [self._table(doc, t, page_chars) for t in doc.tables]
-            figures = [self._figure(doc, p) for p in doc.pictures]
+            tables = [self._table(doc, t, page_chars, doc_vocab) for t in doc.tables]
+            figures = [self._figure(doc, p, doc_vocab) for p in doc.pictures]
             page_sizes = {no: (pg.size.width, pg.size.height) for no, pg in doc.pages.items()}
         finally:
             if pdf is not None:
@@ -166,8 +172,7 @@ class DoclingEngine:
                     # against pdfium's reading of the same region (which keeps the
                     # word whole). Do this before the script overlay; both align to
                     # the same glyphs.
-                    if has_split_ligature(text):
-                        text = religature(text, doc_vocab())
+                    text = _religatured(text, doc_vocab)
                     text = apply_scripts(text, pc.scored_region(bbox))
             elif btype is BlockType.EQUATION and bbox is not None:
                 pc = page_chars(page)
@@ -195,7 +200,7 @@ class DoclingEngine:
             )
         return blocks
 
-    def _table(self, doc, t, page_chars) -> TableData:
+    def _table(self, doc, t, page_chars, doc_vocab) -> TableData:
         page, bbox = _prov(t)
         data = getattr(t, "data", None)
         cells = getattr(data, "table_cells", None) if data else None
@@ -204,24 +209,24 @@ class DoclingEngine:
 
         gfm = html = None
         if pc is not None and cells:
-            rebuilt = build_html(self._grid(data, pc, escape=True), data.num_rows, data.num_cols)
+            rebuilt = build_html(self._grid(data, pc, doc_vocab, escape=True), data.num_rows, data.num_cols)
             if "<sub>" in rebuilt or "<sup>" in rebuilt:  # only diverge from Docling when scripts help
                 html = rebuilt if spanning else None
                 # GFM can't express spans; leave it empty for spanning tables
                 # rather than persist a flattened, misleading one.
-                gfm = "" if spanning else build_gfm(self._grid(data, pc, escape=False), data.num_rows, data.num_cols)
+                gfm = "" if spanning else build_gfm(self._grid(data, pc, doc_vocab, escape=False), data.num_rows, data.num_cols)
         if gfm is None and html is None:
-            gfm = normalize_text(t.export_to_markdown(doc))
-            html = normalize_text(t.export_to_html(doc)) if spanning else None
+            gfm = _religatured(normalize_text(t.export_to_markdown(doc)), doc_vocab)
+            html = _religatured(normalize_text(t.export_to_html(doc)), doc_vocab) if spanning else None
         return TableData(
             block_id=t.self_ref, page=page or 0, bbox=bbox,
             gfm=gfm or "", html=html, has_spanning_cells=spanning,
         )
 
-    def _grid(self, data, pc: PageChars, *, escape: bool) -> list[GridCell]:
+    def _grid(self, data, pc: PageChars, doc_vocab, *, escape: bool) -> list[GridCell]:
         out = []
         for c in data.table_cells:
-            text = self._cell_text(c, pc, escape=escape)
+            text = self._cell_text(c, pc, doc_vocab, escape=escape)
             if not escape:
                 text = text.replace("|", r"\|").replace("\n", " ")
             out.append(
@@ -236,16 +241,16 @@ class DoclingEngine:
             )
         return out
 
-    def _cell_text(self, cell, pc: PageChars, *, escape: bool) -> str:
-        raw = normalize_text(getattr(cell, "text", "") or "")
+    def _cell_text(self, cell, pc: PageChars, doc_vocab, *, escape: bool) -> str:
+        raw = _religatured(normalize_text(getattr(cell, "text", "") or ""), doc_vocab)
         cb = _cell_bbox(cell)
         scored = pc.scored_region(cb) if cb is not None else []
         return apply_scripts(raw, scored, escape=escape)
 
-    def _figure(self, doc, p) -> FigureRef:
+    def _figure(self, doc, p, doc_vocab) -> FigureRef:
         page, bbox = _prov(p)
         caption = p.caption_text(doc) if hasattr(p, "caption_text") else None
         return FigureRef(
             block_id=p.self_ref, page=page or 0, bbox=bbox,
-            caption=normalize_text(caption) if caption else None,
+            caption=_religatured(normalize_text(caption), doc_vocab) if caption else None,
         )
