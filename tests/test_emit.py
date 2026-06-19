@@ -32,6 +32,20 @@ def test_tidy_math_strips_spacing_blowups():
     assert fixed.count("{") == fixed.count("}") == 2
 
 
+def test_failed_table_falls_back_to_image():
+    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.schema import Block, BlockType, CoverageStatus
+
+    ctx = _Ctx(depth_of={}, tables={}, figures={})
+    # A table Docling couldn't parse (type 'other', empty text) but with a crop:
+    # emit the image instead of dropping the region.
+    blk = Block(id="#/tables/2", type=BlockType.OTHER, text="", page=21,
+                extra={"crop_path": "assets/tables_2_p21.png"})
+    text, status, flag = _render_block(blk, ctx, [])
+    assert "![table](assets/tables_2_p21.png)" in text
+    assert status == CoverageStatus.CROPPED and flag is not None
+
+
 def test_balance_delims():
     from pdf2md.emit import _balance_delims
 

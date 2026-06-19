@@ -51,6 +51,14 @@ here.
   recovered only partially.
 
 ### Fixed
+- A table Docling fails to parse into cells no longer vanishes. It keeps a bbox
+  but was emitted as an empty/dropped block; now the pipeline crops the region and
+  emits `![table](crop.png)` with a marker, the same image fallback equations use.
+  This closes the last path by which content could silently disappear.
+- Publication year is corrected upward from an arXiv id (in the filename or page
+  text) when the first page-1 year is an older dataset/citation year — the
+  Transformer paper read "2014" (its WMT dataset) instead of 2017. A year already
+  on the page that is newer than the arXiv submission (a journal year) is kept.
 - Ligatures Docling splits with a stray space (`di ff erent`, `con fi guration`,
   some publishers decompose ﬀ/ﬁ/ﬂ and pad it) are rejoined. `normalize.religature`
   only merges when the result reconstructs a word pdfium's reading of the page

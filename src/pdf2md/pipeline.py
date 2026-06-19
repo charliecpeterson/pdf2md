@@ -97,7 +97,8 @@ def convert_file(
     vdir = dd / f"v{version}"
     assets = vdir / "assets"
 
-    _render_crops(pdf_path, result.figures, _eq_crops(result.blocks), assets, config)
+    crop_blocks = _eq_crops(result.blocks) + _table_crops(result.blocks, result.tables)
+    _render_crops(pdf_path, result.figures, crop_blocks, assets, config)
 
     doc = Document(
         doc_id=doc_id,
@@ -171,6 +172,17 @@ def _eq_crops(blocks) -> list:
         b for b in blocks
         if b.type is BlockType.EQUATION and b.bbox is not None
         and b.confidence is not None and b.confidence < RECOVER_BELOW
+    ]
+
+
+def _table_crops(blocks, tables) -> list:
+    """Tables Docling failed to parse into cells (it labels them anything from TABLE
+    to OTHER) would otherwise be dropped or marked. They keep a bbox, so crop the
+    region as a faithful image instead of losing it."""
+    rendered = {t.block_id for t in tables if (t.gfm or "").strip() or t.html}
+    return [
+        b for b in blocks
+        if b.bbox is not None and b.id.startswith("#/tables/") and b.id not in rendered
     ]
 
 

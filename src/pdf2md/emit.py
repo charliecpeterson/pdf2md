@@ -166,6 +166,14 @@ def _render_block(
     if b.type in _BOILERPLATE:  # intentionally stripped, not lost
         return None, CoverageStatus.EMITTED, None
 
+    # A table Docling couldn't parse to cells still has a bbox; the pipeline cropped
+    # it, so emit the image rather than dropping the region (equations carry their
+    # own crop handling in the EQUATION branch below).
+    crop = b.extra.get("crop_path")
+    if crop and b.type is not BlockType.EQUATION:
+        note = "> **[pdf2md: table not extracted as text — the image below is the source]**"
+        return f"{note}\n\n![table]({crop})", CoverageStatus.CROPPED, _flag(b, "table image fallback")
+
     if b.type == BlockType.FIGURE:
         fig = ctx.figures.get(b.id)
         if fig and fig.asset_path:
