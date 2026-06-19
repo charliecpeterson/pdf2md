@@ -51,6 +51,13 @@ here.
   recovered only partially.
 
 ### Fixed
+- Ligatures Docling splits with a stray space (`di ff erent`, `con fi guration`,
+  some publishers decompose ﬀ/ﬁ/ﬂ and pad it) are rejoined. `normalize.religature`
+  only merges when the result reconstructs a word pdfium's reading of the page
+  actually contains, so a true boundary (`off the`, `cutoff value`, `electric
+  field`) is never fused — the validation against the page text, not a heuristic,
+  is what makes it safe. ~70% of one paper's 135 splits resolved with zero
+  corruption; the rest are left split rather than guessed.
 - Front-matter omits null-valued keys (`doi`, `authors` when unknown). Quarto's
   YAML schema rejects `doi: null` for a string field and fails the whole render.
 - Unverified-equation markers no longer read as a verdict that the equation is

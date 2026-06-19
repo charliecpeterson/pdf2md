@@ -16,7 +16,7 @@ import pypdfium2 as pdfium
 from pdf2md.engines.base import EngineResult
 from pdf2md.logging import get_logger
 from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
-from pdf2md.normalize import normalize_text
+from pdf2md.normalize import has_split_ligature, normalize_text, religature
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, TableData
 from pdf2md.scripts import PageChars, apply_scripts
 from pdf2md.tables import GridCell, build_gfm, build_html
@@ -147,7 +147,13 @@ class DoclingEngine:
             confidence: float | None = None
             if btype in _SCRIPT_TYPES and bbox is not None:
                 pc = page_chars(page)
-                if pc is not None:
+                if pc is not None and not pc.empty:
+                    # Rejoin ligatures Docling split with a stray space, validated
+                    # against pdfium's reading of the same region (which keeps the
+                    # word whole). Do this before the script overlay; both align to
+                    # the same glyphs.
+                    if has_split_ligature(text):
+                        text = religature(text, pc.page_text)
                     text = apply_scripts(text, pc.scored_region(bbox))
             elif btype is BlockType.EQUATION and bbox is not None:
                 pc = page_chars(page)

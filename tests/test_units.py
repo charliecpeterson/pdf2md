@@ -127,6 +127,21 @@ def test_strip_orphan_combining():
     assert strip_orphan_combining("plain") == "plain"
 
 
+def test_religature():
+    from pdf2md.normalize import religature
+
+    ref = "the diffuse difference effects of the first cutoff value and off the field"
+    # mid-word splits rejoin to the whole word pdfium reports.
+    assert religature("di ff use", ref) == "diffuse"
+    assert religature("di ff erence e ff ects", ref) == "difference effects"
+    # a real word boundary is never fused: the join must match a reference word.
+    assert religature("cuto ff value", ref) == "cutoff value"   # join left only
+    assert religature("the fi rst", ref) == "the first"          # join right only
+    assert religature("off the", ref) == "off the"               # already whole, untouched
+    # no confirming reference word -> left split rather than guess.
+    assert religature("x ff y", "unrelated text") == "x ff y"
+
+
 def test_assess_equation():
     from pdf2md.confidence import assess_equation
 
