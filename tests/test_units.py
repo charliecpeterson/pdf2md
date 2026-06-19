@@ -131,26 +131,46 @@ def test_assess_equation():
     from pdf2md.confidence import assess_equation
 
     # Garbled LaTeX (AQCC->AQC/CC, pVTZ->pVTEZ) vs a clean text layer: low score,
-    # and the clean text layer is handed back as the recovered reading.
-    conf, recovered = assess_equation(
+    # recoverable, and the clean text layer is handed back as the reading.
+    conf, reading, recoverable = assess_equation(
         r"E ( \text {MR-AQC/CC/cc-pVTEZ) - E ( \text {CASPT} 2 / \text {cc-pVTEZ} ) \quad ( 4 )",
         "E(MR-AQCC/cc-pVTZ) − E(CASPT2/cc-pVTZ) (4)")
-    assert conf < 0.85 and recovered == "E(MR-AQCC/cc-pVTZ) − E(CASPT2/cc-pVTZ) (4)"
+    assert conf < 0.85 and recoverable and reading == "E(MR-AQCC/cc-pVTZ) − E(CASPT2/cc-pVTZ) (4)"
 
     # Docling spaces out every glyph; once rejoined a faithful LaTeX scores 1.0.
     assert assess_equation(
         r"E ( M R - c c C A ) & = E _ { 0 } ( M R - c c C A )",
-        "E(MR-ccCA) = E0(MR-ccCA)") == (1.0, None)
+        "E(MR-ccCA) = E0(MR-ccCA)") == (1.0, None, False)
+
+    # \exp / \max produce visible text; stripping them must not fake a mismatch on a
+    # correct equation (this is what wrongly recovered Eq 2 and flattened its frac).
+    conf, reading, _ = assess_equation(
+        r"E ( l _ { \max } ) = E _ { C B S } + \frac { D } { ( l _ { \max } + 1 / 2 ) ^ { 4 } }",
+        "E(lmax) = ECBS + D (lmax + 1/2)4")
+    assert conf == 1.0 and reading is None
 
     # Low score, but the LaTeX has Δ terms the text layer dropped (pdfium omits the
-    # unmapped symbol-font glyph): flag it, don't recover — recovery loses the Δ.
-    conf, recovered = assess_equation(
+    # unmapped symbol-font glyph): keep the LaTeX, surface the reading, don't recover.
+    conf, reading, recoverable = assess_equation(
         r"T A E = & \Delta E ( S O C ) + E _ { M R - c c A } ( S i )",
         "TAE = E(SOC) + EMR-ccCA(Si) (7)")
-    assert conf < 0.85 and recovered is None
+    assert conf < 0.85 and reading is not None and not recoverable
 
     # Too few alphanumeric tokens to judge (symbol-heavy orbital config).
     assert assess_equation(r"[ \text {Core} ] 4 \sigma", "[Core]4σ") is None
+
+
+def test_unsplit_numbers_protects_values():
+    from pdf2md.scripts import apply_scripts
+
+    # A digit raised inside a number is a misdetection: 191.4 must stay 191.4.
+    scored = [("1", "sup"), ("9", None), ("1", None), (".", None), ("4", None)]
+    assert apply_scripts("191.4", scored) == "191.4"
+    # ...but a real trailing citation/exponent survives (191.4⁶⁹).
+    scored = [(c, None) for c in "191.4"] + [("6", "sup"), ("9", "sup")]
+    assert apply_scripts("191.469", scored) == "191.4<sup>69</sup>"
+    # A left-superscript multiplicity (²A) is kept — the digit precedes a letter.
+    assert apply_scripts("2A1", [("2", "sup"), ("A", None), ("1", "sub")]) == "<sup>2</sup>A<sub>1</sub>"
 
 
 def test_metadata_heuristic(monkeypatch):

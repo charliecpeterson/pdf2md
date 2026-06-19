@@ -37,6 +37,22 @@ here.
   recovered only partially.
 
 ### Fixed
+- Script detection no longer corrupts numeric values: a digit raised or dropped
+  *inside* a number (table cells turning 191.4 into ¹91.4, 251.5 into 25¹.5) was
+  the worst failure mode for a source-of-truth corpus. `scripts._unsplit_numbers`
+  keeps a script only when it is a clean trailing group of a numeric run (a real
+  exponent or citation like 191.4⁶⁹); a left-superscript multiplicity (²A₁) is
+  kept because the digit precedes a letter, not a digit.
+- Equation confidence no longer false-flags (and needlessly recovers) a correct
+  equation because of `\exp`/`\max`/`\text{}`: the LaTeX tokenizer kept command
+  *structure* but dropped the visible text those commands carry, so a faithful
+  `\frac` equation scored ~0.3 and got recovered to flat text, losing the
+  fraction bar. The tokenizer now keeps `\text{}`/`\mathrm{}` content and
+  text-operator names.
+- A low-confidence equation that can't be safely recovered (it has Greek the text
+  layer drops) now surfaces the text-layer reading as a `text layer reads: …`
+  cross-reference beside the kept LaTeX, so the accurate characters (a dropped
+  second term, a `ccCA` the vision model read as `ccA`) are still available.
 - Equations no longer render as a wall of empty gaps when Docling encodes
   trailing PDF whitespace as a runaway tail of `\quad`/control-spaces, or pads a
   lost alignment column with repeated empty `& \quad` cells. `emit._tidy_math`

@@ -177,20 +177,21 @@ def _render_block(
     if b.type == BlockType.CODE:
         return f"```\n{b.text}\n```", CoverageStatus.EMITTED, None
     if b.type == BlockType.EQUATION:
-        recovered = b.extra.get("text_layer")
-        if recovered:  # vision LaTeX disagreed with the accurate text layer
+        reading = b.extra.get("text_layer")
+        if reading and b.extra.get("recovered"):  # text layer is the trustworthy content
             note = (f"> **[pdf2md: equation recovered from text layer; "
                     f"vision-LaTeX confidence {b.confidence:.2f}]**")
-            return f"{note}\n\n{recovered}", CoverageStatus.FLAGGED, _flag(b, "equation recovered from text layer")
+            return f"{note}\n\n{reading}", CoverageStatus.FLAGGED, _flag(b, "equation recovered from text layer")
         body = _tidy_math(txt.strip("$").strip())
         # Alignment markers (&, \\) are only valid inside an environment; bare $$
         # makes KaTeX/MathJax throw. Wrap multi-line equations in `aligned`.
         if "&" in body or r"\\" in body:
             body = f"\\begin{{aligned}}\n{body}\n\\end{{aligned}}"
         out = f"$$\n{body}\n$$"
-        if b.confidence is not None and b.confidence < RECOVER_BELOW:
+        if reading:  # kept the LaTeX but it's suspect; show the accurate reading too
             note = (f"> **[pdf2md: low-confidence equation ({b.confidence:.2f}); "
-                    f"LaTeX may contain transcription errors]**")
+                    f"LaTeX may have transcription errors]**\n"
+                    f"> text layer reads: `{reading}`")
             return f"{note}\n\n{out}", CoverageStatus.FLAGGED, _flag(b, "low-confidence equation")
         return out, CoverageStatus.EMITTED, None
     return txt, CoverageStatus.EMITTED, None

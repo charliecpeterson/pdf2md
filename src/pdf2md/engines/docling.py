@@ -154,14 +154,16 @@ class DoclingEngine:
                 if pc is not None and not pc.empty:
                     assessed = assess_equation(text, pc.text_region(bbox))
                     if assessed is not None:
-                        confidence, recovered = assessed
-                        if recovered:
-                            # Flat text-layer reading: accurate characters, clearly
-                            # marked. Not run through script detection — that is tuned
-                            # for prose and misfires on equation layout (the equation
-                            # number reads as a superscript), trading a flattened
-                            # exponent for a worse, wrong one.
-                            extra["text_layer"] = normalize_text(recovered)
+                        confidence, reading, recoverable = assessed
+                        if reading is not None:
+                            # The text-layer reading is flat (accurate characters,
+                            # clearly marked). Not run through script detection: that
+                            # is tuned for prose and misfires on equation layout (the
+                            # equation number reads as a superscript). When recoverable
+                            # it replaces the LaTeX; otherwise the emitter shows it as
+                            # a cross-reference beside the kept LaTeX.
+                            extra["text_layer"] = normalize_text(reading)
+                            extra["recovered"] = recoverable
             level = getattr(item, "level", None)
             if level is not None:
                 extra["level"] = level

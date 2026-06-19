@@ -113,10 +113,33 @@ def _align(text: str, scored: list[tuple[str, str | None]]) -> list[str | None]:
     return flags
 
 
+def _unsplit_numbers(text: str, flags: list[str | None]) -> list[str | None]:
+    """Clear a script flag that splits a numeric value. A digit raised or dropped
+    inside a number (191.4 -> ¹91.4, 251.5 -> 25¹.5) is a misdetection: the cost of
+    corrupting a value dwarfs the benefit. Within a run of digits/decimals, keep
+    only a script group that is a clean trailing suffix (a real exponent or citation
+    like 191.4⁶⁹); clear scripts that have baseline digits after them."""
+    i, n = 0, len(text)
+    while i < n:
+        if not (text[i].isdigit() or text[i] in ".,"):
+            i += 1
+            continue
+        j = i
+        while j < n and (text[j].isdigit() or text[j] in ".,"):
+            j += 1
+        k = j  # back up over the trailing contiguous scripted group, which we keep
+        while k > i and flags[k - 1] is not None:
+            k -= 1
+        for p in range(i, k):
+            flags[p] = None
+        i = j
+    return flags
+
+
 def apply_scripts(text: str, scored: list[tuple[str, str | None]], *, escape: bool = False) -> str:
     if not text or not any(f for _, f in scored):
         return _join(text, [None] * len(text), escape)
-    return _join(text, _align(text, scored), escape)
+    return _join(text, _unsplit_numbers(text, _align(text, scored)), escape)
 
 
 def _join(text: str, flags: list[str | None], escape: bool) -> str:
