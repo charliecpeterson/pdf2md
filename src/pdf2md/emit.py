@@ -29,6 +29,20 @@ from pdf2md.tables import render_table
 
 _BOILERPLATE = {BlockType.PAGE_HEADER, BlockType.PAGE_FOOTER}
 
+# Docling encodes trailing PDF whitespace and lost alignment columns as long runs
+# of LaTeX spacing commands (\quad, control-spaces) or empty `& \quad` cells, which
+# render as a wall of gaps. The (?<!\\) guard keeps `\\` line breaks intact.
+_MATH_SPACE = r"(?:(?<!\\)\\(?:qquad|quad|[,;:! ])|~)"
+_MATH_RUN = re.compile(rf"{_MATH_SPACE}(?:\s*{_MATH_SPACE})+")
+_MATH_TAIL = re.compile(rf"(?:{_MATH_SPACE}|\s|\\|&)+$")
+_MATH_EMPTY_CELLS = re.compile(rf"(?:&\s*{_MATH_SPACE}\s*){{2,}}")
+
+
+def _tidy_math(body: str) -> str:
+    body = _MATH_EMPTY_CELLS.sub(" & ", body)
+    body = _MATH_TAIL.sub("", body)
+    return _MATH_RUN.sub(r" \\quad ", body).strip()
+
 
 @dataclass
 class _Ctx:
@@ -148,7 +162,7 @@ def _render_block(
     if b.type == BlockType.CODE:
         return f"```\n{b.text}\n```", CoverageStatus.EMITTED, None
     if b.type == BlockType.EQUATION:
-        body = txt.strip("$").strip()
+        body = _tidy_math(txt.strip("$").strip())
         # Alignment markers (&, \\) are only valid inside an environment; bare $$
         # makes KaTeX/MathJax throw. Wrap multi-line equations in `aligned`.
         if "&" in body or r"\\" in body:

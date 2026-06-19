@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pdf2md.coverage import build_report
-from pdf2md.emit import emit_document
+from pdf2md.emit import _tidy_math, emit_document
 from pdf2md.schema import CoverageStatus
 from pdf2md.structure import build_structure
 
@@ -10,6 +10,20 @@ def _emit(tmp_path, doc):
     structure = build_structure(doc.blocks, None, title="Doc", page_count=doc.page_count)
     meta = {"title": "Doc", "authors": ["A. Author"], "year": "2021", "doi": None}
     return emit_document(doc, structure, tmp_path, meta, {"docling": "2.93.0", "pdf2md": "0.1.0"})
+
+
+def test_tidy_math_strips_spacing_blowups():
+    # Docling pads trailing PDF whitespace with runaway \quad / control-spaces.
+    trail = r"2 \pi _ { u } ^ { 2 } . \quad \ \ ( 9 ) \quad \ \ \ \ \ \ \ " + "\\"
+    assert _tidy_math(trail) == r"2 \pi _ { u } ^ { 2 } .  \quad ( 9 )"
+
+    # ...and pads lost alignment columns with repeated empty `& \quad` cells.
+    cells = r"E = E ( X ) & \quad & \quad & \quad & \quad"
+    assert _tidy_math(cells) == r"E = E ( X )"
+
+    # Legitimate multi-column equations (single `& \quad`, real `\\`) are untouched.
+    aligned = r"\Delta E & = E ( A ) & \quad \\ & - E ( B ) & \quad ( 5 )"
+    assert _tidy_math(aligned) == aligned
 
 
 def test_emit_structural_facts(tmp_path, sample_document):

@@ -21,6 +21,13 @@ here.
   renders differently from the raw glyphs (a spaced hyphen vs a raised minus) is
   recovered only partially.
 
+### Fixed
+- Equations no longer render as a wall of empty gaps when Docling encodes
+  trailing PDF whitespace as a runaway tail of `\quad`/control-spaces, or pads a
+  lost alignment column with repeated empty `& \quad` cells. `emit._tidy_math`
+  strips and collapses this spacing noise before wrapping; real `\\` line breaks
+  and genuine multi-column equations are left intact.
+
 ### Internal
 - Table grid→markup assembly moved to `tables.py` (`build_html`/`build_gfm`);
   GFM header row derived from cell header flags instead of assuming row 0;
