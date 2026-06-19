@@ -32,6 +32,20 @@ def test_tidy_math_strips_spacing_blowups():
     assert fixed.count("{") == fixed.count("}") == 2
 
 
+def test_table_data_renders_even_when_block_mislabelled():
+    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.schema import Block, BlockType, CoverageStatus, TableData
+
+    # Docling labels a TOC page 'other' but still parses cells; the data must render
+    # rather than the block being dropped as empty.
+    td = TableData(block_id="#/tables/2", page=21, bbox=None,
+                   gfm="| Chapter | Page |\n|---|---|\n| 1 | 5 |")
+    ctx = _Ctx(depth_of={}, tables={"#/tables/2": td}, figures={})
+    blk = Block(id="#/tables/2", type=BlockType.OTHER, text="", page=21)
+    text, status, _ = _render_block(blk, ctx, [])
+    assert "| Chapter | Page |" in text and status == CoverageStatus.EMITTED
+
+
 def test_failed_table_falls_back_to_image():
     from pdf2md.emit import _Ctx, _render_block
     from pdf2md.schema import Block, BlockType, CoverageStatus

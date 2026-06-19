@@ -51,10 +51,13 @@ here.
   recovered only partially.
 
 ### Fixed
-- A table Docling fails to parse into cells no longer vanishes. It keeps a bbox
-  but was emitted as an empty/dropped block; now the pipeline crops the region and
-  emits `![table](crop.png)` with a marker, the same image fallback equations use.
-  This closes the last path by which content could silently disappear.
+- Parsed table content no longer vanishes when Docling mislabels the block.
+  TOC-style pages come through as type `other` yet still carry parsed cells; emit
+  rendered tables only for type `TABLE`, so the data was orphaned and the block
+  dropped. emit now renders a block's `TableData` wherever it exists, regardless of
+  the block's label. A table with genuinely no cells (and a bbox) instead gets an
+  `![table](crop.png)` image fallback, the same one equations use, so a failed
+  table is never silently lost either.
 - Publication year is corrected upward from an arXiv id (in the filename or page
   text) when the first page-1 year is an older dataset/citation year — the
   Transformer paper read "2014" (its WMT dataset) instead of 2017. A year already

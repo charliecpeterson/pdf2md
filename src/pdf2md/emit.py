@@ -174,6 +174,13 @@ def _render_block(
         note = "> **[pdf2md: table not extracted as text — the image below is the source]**"
         return f"{note}\n\n![table]({crop})", CoverageStatus.CROPPED, _flag(b, "table image fallback")
 
+    # Render parsed table data wherever it exists, even when Docling labelled the
+    # block something other than TABLE (TOC pages come through as `other` but still
+    # carry cells) — otherwise the content is orphaned and the block dropped.
+    table = ctx.tables.get(b.id)
+    if table is not None:
+        return render_table(table), CoverageStatus.EMITTED, None
+
     if b.type == BlockType.FIGURE:
         fig = ctx.figures.get(b.id)
         if fig and fig.asset_path:
@@ -181,10 +188,7 @@ def _render_block(
             return f"![{alt}]({fig.asset_path})", CoverageStatus.CROPPED, None
         return _marker(b, "figure crop missing"), CoverageStatus.FLAGGED, _flag(b, "figure crop missing")
 
-    if b.type == BlockType.TABLE:
-        table = ctx.tables.get(b.id)
-        if table:
-            return render_table(table), CoverageStatus.EMITTED, None
+    if b.type == BlockType.TABLE:  # labelled a table but no cells parsed and no crop
         return _marker(b, "table not extracted"), CoverageStatus.FLAGGED, _flag(b, "table not extracted")
 
     if b.type == BlockType.FOOTNOTE:
