@@ -51,6 +51,15 @@ here.
   recovered only partially.
 
 ### Fixed
+- Two-column bleed in equations is now caught. Docling's formula model sometimes
+  weaves adjacent-column prose into an equation's LaTeX (`\text{or} & & \text{where}`),
+  and the old one-directional confidence missed it: the bled tokens only inflated
+  the LaTeX, leaving recall at 1.0 so the equation was trusted. Confidence is now
+  the two-way agreement (`min(recall, precision)`) between the LaTeX and the
+  single-column bbox text layer; precision drops when the LaTeX carries content the
+  bbox doesn't, so the equation is flagged and image-backed (the crop, being the
+  clean single column, is the authoritative source) rather than presenting the
+  bled LaTeX as fact.
 - Parsed table content no longer vanishes when Docling mislabels the block.
   TOC-style pages come through as type `other` yet still carry parsed cells; emit
   rendered tables only for type `TABLE`, so the data was orphaned and the block

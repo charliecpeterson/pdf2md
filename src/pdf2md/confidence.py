@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 
-RECOVER_BELOW = 0.85    # text-layer agreement below this means the extraction is suspect
+RECOVER_BELOW = 0.9     # two-way text-layer agreement below this means the extraction is suspect
 SCRAMBLED_ABOVE = 0.12  # reading_disorder above this means the text layer is unfit to show
 HINT_MIN_CONF = 0.5     # below this the text layer shares too little with the LaTeX to trust as a hint
 
@@ -47,12 +47,20 @@ def _latex_tokens(latex: str) -> set[str]:
 def assess_equation(latex: str, text_layer: str) -> tuple[float, str | None] | None:
     """Return (confidence, reading), or None when the text layer is too sparse to
     judge. `reading` is the cleaned text-layer string when the extraction is
-    suspect (confidence below RECOVER_BELOW), else None."""
+    suspect (confidence below RECOVER_BELOW), else None.
+
+    Confidence is the *two-way* agreement between the LaTeX and the text layer of
+    the equation's (single-column) bbox: recall catches missing content, precision
+    catches content the LaTeX has but the bbox doesn't — adjacent-column prose
+    Docling's formula model bled in. A one-directional score misses bleed entirely
+    (the bled tokens just inflate the LaTeX)."""
     toks = _TOKEN.findall(text_layer)
     if len(toks) < 3:
         return None
-    latex_toks = _latex_tokens(latex)
-    conf = sum(1 for t in toks if t in latex_toks) / len(toks)
+    text_set, latex_set = set(toks), _latex_tokens(latex)
+    recall = sum(1 for t in text_set if t in latex_set) / len(text_set)
+    precision = sum(1 for t in latex_set if t in text_set) / len(latex_set) if latex_set else 1.0
+    conf = min(recall, precision)
     if conf >= RECOVER_BELOW:
         return conf, None
     return conf, re.sub(r"\s+", " ", text_layer).strip()
