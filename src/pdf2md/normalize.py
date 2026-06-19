@@ -68,19 +68,23 @@ def has_split_ligature(text: str) -> bool:
     return bool(_LIG_SPLIT.search(text))
 
 
-def religature(text: str, reference: str) -> str:
+def vocabulary(reference: str) -> set[str]:
+    """Alphabetic words in a reference reading, ligatures folded (ﬀ -> ff) so a
+    rejoined ASCII word matches."""
+    return set(re.findall(r"[A-Za-z]+", unicodedata.normalize("NFKC", reference)))
+
+
+def religature(text: str, words: set[str]) -> str:
     """Rejoin a ligature Docling split with a stray space ('di ff erent').
 
     Some publishers (ACS) encode ﬀ/ﬁ/ﬂ and Docling emits the decomposed letters
-    flanked by spaces. `reference` is pdfium's reading of the same region, which
-    keeps the word intact. A join is applied only when it reconstructs a word the
-    reference actually contains, so a real boundary ('off the', 'cutoff value') is
-    never fused — the validation, not a heuristic, is what makes this safe."""
+    flanked by spaces. `words` is the vocabulary of pdfium's reading of the
+    document, which keeps the word intact. A join is applied only when it
+    reconstructs a word the document actually contains, so a real boundary ('off
+    the', 'cutoff value') is never fused — the validation, not a heuristic, is what
+    makes this safe."""
     if not _LIG_SPLIT.search(text):
         return text
-    # NFKC folds any ligature codepoints the reference still carries (ﬀ -> ff) so a
-    # rejoined ASCII word matches.
-    words = set(re.findall(r"[A-Za-z]+", unicodedata.normalize("NFKC", reference)))
 
     def merge(m: re.Match) -> str:
         left, lig, right = m.groups()

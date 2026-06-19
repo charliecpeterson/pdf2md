@@ -16,7 +16,7 @@ import pypdfium2 as pdfium
 from pdf2md.engines.base import EngineResult
 from pdf2md.logging import get_logger
 from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
-from pdf2md.normalize import has_split_ligature, normalize_text, religature
+from pdf2md.normalize import has_split_ligature, normalize_text, religature, vocabulary
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, TableData
 from pdf2md.scripts import PageChars, apply_scripts
 from pdf2md.tables import GridCell, build_gfm, build_html
@@ -97,6 +97,7 @@ class DoclingEngine:
 
         pdf = pdfium.PdfDocument(str(pdf_path)) if self._detect_scripts else None
         cache: dict[int, PageChars | None] = {}
+        vocab_cache: dict[str, set[str]] = {}
 
         def page_chars(page_no: int | None) -> PageChars | None:
             if pdf is None or page_no is None:
@@ -110,8 +111,21 @@ class DoclingEngine:
                     cache[page_no] = None
             return cache[page_no]
 
+        def doc_vocab() -> set[str]:
+            # Built once on first ligature split, from every page's pdfium reading:
+            # a word kept whole on any page confirms a join of its split elsewhere.
+            if "v" not in vocab_cache:
+                words: set[str] = set()
+                for i in range(len(pdf)) if pdf is not None else ():
+                    try:
+                        words |= vocabulary(pdf[i].get_textpage().get_text_range())
+                    except Exception as exc:  # noqa: BLE001 - best-effort
+                        log.warning("page text read failed on page %d: %s", i + 1, exc)
+                vocab_cache["v"] = words
+            return vocab_cache["v"]
+
         try:
-            blocks = self._blocks(doc, page_chars)
+            blocks = self._blocks(doc, page_chars, doc_vocab)
             tables = [self._table(doc, t, page_chars) for t in doc.tables]
             figures = [self._figure(doc, p) for p in doc.pictures]
             page_sizes = {no: (pg.size.width, pg.size.height) for no, pg in doc.pages.items()}
@@ -127,7 +141,7 @@ class DoclingEngine:
             engine_versions={"docling": version("docling"), "pdf2md": version("pdf2md")},
         )
 
-    def _blocks(self, doc, page_chars) -> list[Block]:
+    def _blocks(self, doc, page_chars, doc_vocab) -> list[Block]:
         blocks: list[Block] = []
         for item, _level in doc.iterate_items():
             value = _label_value(item)
@@ -153,7 +167,7 @@ class DoclingEngine:
                     # word whole). Do this before the script overlay; both align to
                     # the same glyphs.
                     if has_split_ligature(text):
-                        text = religature(text, pc.page_text)
+                        text = religature(text, doc_vocab())
                     text = apply_scripts(text, pc.scored_region(bbox))
             elif btype is BlockType.EQUATION and bbox is not None:
                 pc = page_chars(page)

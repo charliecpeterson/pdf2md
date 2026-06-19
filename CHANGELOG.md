@@ -55,9 +55,12 @@ here.
   some publishers decompose ﬀ/ﬁ/ﬂ and pad it) are rejoined. `normalize.religature`
   only merges when the result reconstructs a word pdfium's reading of the page
   actually contains, so a true boundary (`off the`, `cutoff value`, `electric
-  field`) is never fused — the validation against the page text, not a heuristic,
-  is what makes it safe. ~70% of one paper's 135 splits resolved with zero
-  corruption; the rest are left split rather than guessed.
+  field`) is never fused — the validation against the document's own words, not a
+  heuristic, is what makes it safe. The vocabulary is pdfium's reading of every
+  page (a word kept whole anywhere confirms a split of it elsewhere), built once
+  and only when a split is seen, so clean papers pay nothing. Most of one paper's
+  135 splits resolved with zero corruption; the unconfirmed rest are left split
+  rather than guessed.
 - Front-matter omits null-valued keys (`doi`, `authors` when unknown). Quarto's
   YAML schema rejects `doi: null` for a string field and fails the whole render.
 - Unverified-equation markers no longer read as a verdict that the equation is

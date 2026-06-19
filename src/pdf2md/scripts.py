@@ -167,7 +167,6 @@ class PageChars:
         # One text call for the whole page instead of one per char; fall back to
         # per-char only if the string and char count desync (rare encoded glyphs).
         full = tp.get_text_range()
-        self.page_text: str = full  # pdfium's reading of the page (ligatures intact)
         if len(full) != n:
             full = None
         self._chars: list[Char] = [
