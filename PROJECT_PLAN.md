@@ -185,6 +185,27 @@ structure. "Whatever produces the best markdown from a PDF wins."
   - **Revisit if**: validation shows Docling equation/table accuracy is
     insufficient on the corpus (→ wire MinerU as a second backend).
 
+- **[2026-06-20] Engine bake-off ran: MinerU evaluated, Docling kept**
+  - **Method**: Native-CLI head-to-head (no adapter), scored against the
+    labelled equation set — born-digital equations (transformer), scanned
+    equations (slater), a dense 24-row data table (transformer Table 3).
+  - **Result**: MinerU ≈ Docling on born-digital equations (mean 0.921 vs 0.905,
+    wins 2 / ties 1 / loses PE on array formatting); *better* on scanned
+    equations — it recovers the clipped left-hand sides (`ρ_ν =`, `Frequency =`)
+    that Docling's tight bbox crops drop and that has no downstream fix, in one
+    pass (no Surya multipass needed); tables a **wash** (both parse Table 3 with
+    comparable cell fidelity). MinerU's `middle.json` carries typed blocks +
+    bboxes + reading order, so an adapter is viable. License OK (Apache-2.0; the
+    100M-MAU / $20M-mo commercial terms are irrelevant here).
+  - **Choice**: Keep Docling as the single default; defer the MinerU adapter.
+    MinerU's only decisive edge is scanned-equation completeness, on content
+    that is image-backed anyway — the gain doesn't clear the cost of a new
+    adapter + re-validating section-splitting against MinerU's layout structure
+    (vs Docling's semantic hierarchy) + a second heavy model stack.
+  - **Revisit if**: scanned / equation-heavy documents become a priority. MinerU
+    is the validated, license-clear second backend; the swap seam keeps wiring
+    it a contained change.
+
 - **[2026-06-14] License: MIT, permissive open-source**
   - **Choice**: Publish under MIT (simplest permissive). PDF render/crop via
     pypdfium2 (BSD/Apache), NOT PyMuPDF (AGPL). Confirm Docling's transitive
@@ -254,12 +275,12 @@ structure. "Whatever produces the best markdown from a PDF wins."
 | Malicious-PDF hardening / sandboxing | Low threat model | Tool points at untrusted PDFs |
 
 ## Open Questions
-- **Default engine** — resolved empirically via a real-document bake-off of
-  Marker vs Docling vs MinerU (roadmap Phase 1). Criteria: layout/table/
-  equation fidelity on the user's docs, OCR quality on the scanned subset,
-  local-on-Mac performance, and **license** (Marker has commercial
-  restrictions; Docling is MIT; MinerU is AGPL — matters if docsmcp is ever
-  open-sourced).
+- **Default engine** — RESOLVED [2026-06-20]: bake-off ran (see Decision Log).
+  Docling kept as the single default; MinerU is the validated second-backend
+  candidate, deferred until scanned/equation-heavy docs warrant the adapter.
+  License note corrected: MinerU is **Apache-2.0** (not AGPL) with commercial
+  thresholds that don't bite here; Marker stays ruled out (GPL-3.0 + gated
+  weights); Docling MIT.
 - **Validation harness** — the 5-10 real-document set and the metrics that
   define "best effort" (text fidelity, table structure, equation accuracy).
 - Hidden-decision items under discussion in Phase 4 (input formats,
