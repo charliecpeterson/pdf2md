@@ -1,0 +1,37 @@
+[
+  {
+    "source": "1706.03762v7.pdf",
+    "block_id": "#/texts/89",
+    "latex": "\\text{Attention}(Q,K,V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V",
+    "note": "scaled dot-product attention",
+    "kind": "born-digital"
+  },
+  {
+    "source": "1706.03762v7.pdf",
+    "block_id": "#/texts/107",
+    "latex": "\\text{FFN}(x) = \\max(0, xW_1 + b_1)W_2 + b_2",
+    "note": "position-wise feed-forward",
+    "kind": "born-digital"
+  },
+  {
+    "source": "1706.03762v7.pdf",
+    "block_id": "#/texts/116",
+    "latex": "PE_{(pos,2i)} = \\sin(pos/10000^{2i/d_{model}}), PE_{(pos,2i+1)} = \\cos(pos/10000^{2i/d_{model}})",
+    "note": "sinusoidal positional encoding",
+    "kind": "born-digital"
+  },
+  {
+    "source": "1706.03762v7.pdf",
+    "block_id": "#/texts/135",
+    "latex": "lrate = d_{model}^{-0.5} \\cdot \\min(step\\_num^{-0.5}, step\\_num \\cdot warmup\\_steps^{-1.5})",
+    "note": "learning-rate schedule",
+    "kind": "born-digital"
+  },
+  {
+    "source": "slater-50page.pdf",
+    "block_id": "#/texts/111",
+    "latex": "\\rho_\\nu = \\frac{8\\pi\\nu^2}{c^3} kT",
+    "note": "Rayleigh-Jeans law (scanned; the c^3 vs c^8 case)",
+    "kind": "scanned"
+  }
+]
