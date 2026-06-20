@@ -33,9 +33,17 @@ _LEFT = re.compile(r"\\left(?![a-zA-Z])")
 _RIGHT = re.compile(r"\\right(?![a-zA-Z])")
 
 
-def _latest(doc_dir: Path) -> Path | None:
-    versions = sorted(doc_dir.glob("v*"), key=lambda p: int(p.name[1:]) if p.name[1:].isdigit() else -1)
-    return versions[-1] if versions else None
+def _latest_signals(doc_dir: Path) -> dict | None:
+    """Signals from the newest *complete* version — skip an interrupted run that
+    left a version dir without a provenance.json/document.md."""
+    versions = sorted(doc_dir.glob("v*"),
+                      key=lambda p: int(p.name[1:]) if p.name[1:].isdigit() else -1,
+                      reverse=True)
+    for v in versions:
+        sig = _signals(v)
+        if sig:
+            return sig
+    return None
 
 
 def _unbalanced(md: str) -> int:
@@ -81,10 +89,7 @@ def _signals(version_dir: Path) -> dict | None:
 def _collect(out_dir: Path) -> dict[str, dict]:
     out: dict[str, dict] = {}
     for doc_dir in sorted(p for p in out_dir.iterdir() if p.is_dir()):
-        latest = _latest(doc_dir)
-        if latest is None:
-            continue
-        sig = _signals(latest)
+        sig = _latest_signals(doc_dir)
         if sig:
             out[sig["source"]] = sig
     return out

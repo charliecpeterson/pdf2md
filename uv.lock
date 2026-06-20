@@ -1368,6 +1368,7 @@ dependencies = [
 [package.optional-dependencies]
 transcribe = [
     { name = "surya-ocr" },
+    { name = "transformers" },
 ]
 
 [package.dev-dependencies]
@@ -1382,6 +1383,7 @@ requires-dist = [
     { name = "pypdfium2", specifier = ">=4.30" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "surya-ocr", marker = "extra == 'transcribe'", specifier = ">=0.6" },
+    { name = "transformers", marker = "extra == 'transcribe'", specifier = "<5" },
     { name = "typer", specifier = ">=0.15" },
 ]
 provides-extras = ["transcribe"]
