@@ -45,11 +45,9 @@ class SuryaTranscriber:
     """Local math OCR via Surya (the maintained successor to texify). Loads the
     model once; safe to reuse across a batch.
 
-    The single version-specific surface is `_run`: Surya 0.17 recognizes a whole
-    image with `RecognitionPredictor` (no detection needed for a tight crop) and,
-    with `math_mode=True`, returns math as LaTeX in each line's `text`."""
-
-    _TASK = "ocr_without_boxes"
+    The single version-specific surface is `_run`: Surya 0.17 recognizes the crop
+    as one region (the whole-image bbox, so no detection model is needed) and, with
+    `math_mode=True`, returns the math as LaTeX wrapped in `<math>` tags."""
 
     def __init__(self, device: str | None = None) -> None:
         try:
@@ -64,7 +62,10 @@ class SuryaTranscriber:
         self._rec = RecognitionPredictor(FoundationPredictor(**kwargs))
 
     def _run(self, image) -> str:
-        result = self._rec([image], task_names=[self._TASK], math_mode=True)[0]
+        w, h = image.size
+        result = self._rec(
+            [image], task_names=["ocr_with_boxes"], bboxes=[[[0, 0, w, h]]], math_mode=True
+        )[0]
         return "\n".join(line.text for line in result.text_lines if line.text)
 
     def transcribe(self, image_path: Path) -> str | None:
