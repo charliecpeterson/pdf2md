@@ -115,16 +115,7 @@ def convert_file(
     if config.transcribe_equations:
         transcriber = transcriber or get_transcriber(config)
         if transcriber is not None:
-            with CropRenderer(pdf_path, dpi=config.transcribe_dpi,
-                              padding_pts=config.crop_padding_pts) as hires:
-                def transcribe_crop(b):  # a sharper crop than the markdown one, discarded after
-                    tmp = assets / f"_tx_{b.id.strip('#/').replace('/', '_')}.png"
-                    hires.crop(b.page, b.bbox, tmp)
-                    latex = transcriber.transcribe(tmp)
-                    tmp.unlink(missing_ok=True)
-                    return latex
-
-                _transcribe_equations(result.blocks, transcribe_crop)
+            _transcribe_equations(result.blocks, transcriber, vdir)
 
     doc = Document(
         doc_id=doc_id,
@@ -203,12 +194,12 @@ def _eq_crops(blocks) -> list:
     ]
 
 
-def _transcribe_equations(blocks, transcribe_crop) -> None:
-    """Store a better hint on each image-backed equation. `transcribe_crop(block) ->
-    latex | None` renders the crop (at transcription DPI) and runs the math-OCR."""
+def _transcribe_equations(blocks, transcriber, vdir: Path) -> None:
+    """Store a better hint on each image-backed equation from re-OCR'ing its crop."""
     for b in blocks:
-        if b.type is BlockType.EQUATION and b.extra.get("crop_path"):
-            latex = transcribe_crop(b)
+        crop = b.extra.get("crop_path")
+        if b.type is BlockType.EQUATION and crop:
+            latex = transcriber.transcribe(vdir / crop)
             if latex:
                 b.extra["transcribed"] = latex
 

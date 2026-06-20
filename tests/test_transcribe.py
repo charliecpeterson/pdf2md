@@ -3,6 +3,8 @@ the pipeline hook and emit, and the HTML->LaTeX extraction is a pure function.""
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from pdf2md.pipeline import _transcribe_equations
 from pdf2md.schema import BBox, Block, BlockType
 from pdf2md.transcribe import _latex_from_html
@@ -14,6 +16,15 @@ def test_latex_from_html():
     assert _latex_from_html(r"<math>a</math> x <math>b</math>") == "a b"  # joined
 
 
+class _FakeTranscriber:
+    def __init__(self, latex: str) -> None:
+        self.latex, self.seen = latex, []
+
+    def transcribe(self, image_path: Path):
+        self.seen.append(image_path)
+        return self.latex
+
+
 def test_transcribe_only_image_backed_equations():
     blocks = [
         Block(id="#/e1", type=BlockType.EQUATION, text="bad", page=1, bbox=BBox(0, 1, 1, 0),
@@ -22,17 +33,13 @@ def test_transcribe_only_image_backed_equations():
         Block(id="#/p", type=BlockType.PARAGRAPH, text="prose", page=1,
               extra={"crop_path": "assets/p.png"}),
     ]
-    seen = []
+    t = _FakeTranscriber(r"\rho = 8\pi\nu^2/c^3")
+    _transcribe_equations(blocks, t, Path("/out/v1"))
 
-    def fake_crop(b):
-        seen.append(b.id)
-        return r"\rho = 8\pi\nu^2/c^3"
-
-    _transcribe_equations(blocks, fake_crop)
     assert blocks[0].extra["transcribed"] == r"\rho = 8\pi\nu^2/c^3"  # image-backed eq
     assert "transcribed" not in blocks[1].extra                       # trusted eq, no crop
     assert "transcribed" not in blocks[2].extra                       # not an equation
-    assert seen == ["#/e1"]                                           # only the image-backed eq
+    assert t.seen == [Path("/out/v1/assets/e1.png")]                  # resolved against vdir
 
 
 def test_emit_prefers_transcribed_hint():

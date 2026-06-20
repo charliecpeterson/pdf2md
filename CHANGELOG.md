@@ -7,6 +7,15 @@ here.
 
 ## [Unreleased]
 ### Added
+- Labelled equation accuracy harness: `tests/equation_labels.json` (10
+  hand-checked equations, born-digital and scanned) plus
+  `scripts/eval_equations.py`, which scores the engine LaTeX and the math-OCR
+  transcription against ground truth. This is the measured complement to the
+  labels-free `scripts/qa.py`. It immediately earned its keep: it showed the
+  transcription beats the engine 4/4 on clean equations, and (over 6 scanned
+  equations) that raising the transcription crop DPI is a net regression on
+  degraded scans and that cross-DPI self-consistency voting isn't worth its cost —
+  so both were rejected by measurement rather than shipped on a hunch.
 - Multi-pass equation transcription (`--transcribe`, opt-in). Re-reads each
   image-backed equation crop with a local math-OCR model (Surya, the maintained
   successor to texify) and emits the result as the equation's text hint — turning
