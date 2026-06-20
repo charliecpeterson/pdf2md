@@ -91,7 +91,6 @@ def emit_document(
     doc: Document, structure, version_dir: Path, meta: dict, engine_versions: dict
 ) -> tuple[list[Path], list[CoverageFlag]]:
     version_dir.mkdir(parents=True, exist_ok=True)
-    by_id = {b.id: b for b in doc.blocks}
     ctx = _Ctx(
         depth_of=_depth_map(structure.root),
         tables={t.block_id: t for t in doc.tables},
@@ -214,17 +213,21 @@ def _render_block(
     if b.type == BlockType.EQUATION:
         if b.confidence is not None and b.confidence < RECOVER_BELOW:
             # The cross-check could not verify this equation's text extraction, so
-            # the cropped image is emitted as the authoritative source. The text
-            # below is a convenience rendering — the clean text-layer reading when
-            # it is in order, else the vision LaTeX (never scrambled token soup). A
-            # low score means "unverified", not "wrong": the LaTeX is often correct,
-            # which is why the score is no longer shown as a per-equation verdict.
+            # the cropped image is emitted as the authoritative source. The hint
+            # below is the best available text: a multi-pass re-transcription of the
+            # crop if we have one, else the clean text-layer reading, else the vision
+            # LaTeX (never scrambled token soup). The image stays the source.
+            transcribed = b.extra.get("transcribed")
             reading = b.extra.get("text_layer")
-            usable = reading and b.extra.get("ordered") and b.confidence >= HINT_MIN_CONF
-            hint = reading if usable else _equation_latex(txt)
+            if transcribed:
+                hint, source = _equation_latex(transcribed), "re-transcribed from the image (math OCR)"
+            elif reading and b.extra.get("ordered") and b.confidence >= HINT_MIN_CONF:
+                hint, source = reading, "the image below is the authoritative source"
+            else:
+                hint, source = _equation_latex(txt), "the image below is the authoritative source"
             crop = b.extra.get("crop_path")
             if crop:
-                note = "> **[pdf2md: equation extraction unverified — the image below is the authoritative source]**"
+                note = f"> **[pdf2md: equation extraction unverified — {source}]**"
                 return f"{note}\n\n![equation]({crop})\n\n{hint}", CoverageStatus.CROPPED, _flag(b, "equation: image is authoritative")
             note = "> **[pdf2md: equation extraction unverified — the rendering below may differ from the source]**"
             return f"{note}\n\n{hint}", CoverageStatus.FLAGGED, _flag(b, "equation extraction unverified")

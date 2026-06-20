@@ -25,6 +25,7 @@ from pdf2md.logging import get_logger
 from pdf2md.metadata import extract_metadata
 from pdf2md.render import CropRenderer
 from pdf2md.schema import FORMAT_VERSION, BlockType, CoverageReport, Document, Provenance
+from pdf2md.transcribe import Transcriber, get_transcriber
 from pdf2md.structure import build_structure
 
 log = get_logger("pipeline")
@@ -59,6 +60,7 @@ def convert_file(
     pdf_path: Path,
     *,
     engine: Engine | None = None,
+    transcriber: Transcriber | None = None,
     config: Config | None = None,
     force: bool = False,
 ) -> ConvertResult:
@@ -106,6 +108,14 @@ def convert_file(
 
     crop_blocks = _eq_crops(result.blocks) + _table_crops(result.blocks, result.tables)
     _render_crops(pdf_path, result.figures, crop_blocks, assets, config)
+
+    # Multi-pass: re-transcribe each image-backed equation with a local math-OCR
+    # model so its hint beats the engine's garbled/OCR LaTeX. The crop stays the
+    # authoritative source, so this only ever improves the rendering beside it.
+    if config.transcribe_equations:
+        transcriber = transcriber or get_transcriber(config)
+        if transcriber is not None:
+            _transcribe_equations(result.blocks, transcriber, vdir)
 
     doc = Document(
         doc_id=doc_id,
@@ -160,10 +170,12 @@ def convert_dir(
         return []
     config = config or Config()
     engine = _get_engine(engine, config)  # build once, reuse across the batch
+    transcriber = get_transcriber(config)  # loads the math-OCR model once, if enabled
     results: list[ConvertResult] = []
     for pdf in pdfs:
         try:
-            results.append(convert_file(pdf, engine=engine, config=config, force=force))
+            results.append(convert_file(
+                pdf, engine=engine, transcriber=transcriber, config=config, force=force))
         except Exception as exc:  # noqa: BLE001 - poison-pill isolation
             log.error("unhandled failure on %s: %s", pdf.name, exc)
             results.append(
@@ -180,6 +192,16 @@ def _eq_crops(blocks) -> list:
         if b.type is BlockType.EQUATION and b.bbox is not None
         and b.confidence is not None and b.confidence < RECOVER_BELOW
     ]
+
+
+def _transcribe_equations(blocks, transcriber, vdir: Path) -> None:
+    """Store a better hint on each image-backed equation from re-OCR'ing its crop."""
+    for b in blocks:
+        crop = b.extra.get("crop_path")
+        if b.type is BlockType.EQUATION and crop:
+            latex = transcriber.transcribe(vdir / crop)
+            if latex:
+                b.extra["transcribed"] = latex
 
 
 def _table_crops(blocks, tables) -> list:

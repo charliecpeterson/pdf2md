@@ -7,6 +7,17 @@ here.
 
 ## [Unreleased]
 ### Added
+- Multi-pass equation transcription (`--transcribe`, opt-in). Re-reads each
+  image-backed equation crop with a local math-OCR model (Surya, the maintained
+  successor to texify) and emits the result as the equation's text hint — turning
+  an OCR/garbled equation's wrong LaTeX (the scanned `c^5`-for-`c^3` case) into a
+  real transcription. The crop image stays the authoritative source, so a bad
+  transcription is never worse than before. `transcribe.py` is a small seam:
+  `Transcriber` (anything with `transcribe(image)->latex`) plus a lazy-imported
+  `SuryaTranscriber` whose only version-specific surface is one `_run` method;
+  with `surya-ocr` absent the pass is skipped. Install with the `transcribe`
+  extra. The Surya call targets Surya 2's inline-math HTML output and may need a
+  one-line adjustment for the installed version.
 - Image-crop fallback for low-confidence equations. Some journals (ACS) draw math
   glyph-by-glyph out of reading order, so the embedded text layer is scrambled
   token soup *before* pdf2md touches it, and the previous text-layer recovery

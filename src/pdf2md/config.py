@@ -15,6 +15,11 @@ class Config:
     do_formula_enrichment: bool = True
     # Recover inline sub/superscripts from glyph geometry (born-digital pages).
     detect_scripts: bool = True
+    # Re-transcribe flagged (image-backed) equation crops with a local math-OCR
+    # model (Surya). Opt-in: needs `surya-ocr` installed and is slow per crop, but
+    # turns an OCR/garbled equation's hint into a real transcription. The crop image
+    # stays the authoritative source either way.
+    transcribe_equations: bool = False
     crop_dpi: int = 220
     crop_padding_pts: float = 6.0
     # Blocks below this confidence become a visible marker rather than silent text.

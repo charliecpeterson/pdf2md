@@ -211,7 +211,10 @@ class PageChars:
             return 0.0
         cy = [(c[2] + c[4]) / 2 for c in chars]
         bands = sorted({round(y) for y in cy})
-        band = lambda y: max(i for i, b in enumerate(bands) if y >= b - 3)
+
+        def band(y: float) -> int:
+            return max(i for i, b in enumerate(bands) if y >= b - 3)
+
         order = sorted(range(n), key=lambda k: (-band(cy[k]), chars[k][1]))
         rank = {k: p for p, k in enumerate(order)}
         return sum(abs(k - rank[k]) for k in range(n)) / (n * n)

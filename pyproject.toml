@@ -13,6 +13,10 @@ dependencies = [
     "pyyaml>=6.0",
 ]
 
+[project.optional-dependencies]
+# Local math-OCR for the --transcribe multi-pass (heavy: torch + GB models).
+transcribe = ["surya-ocr>=0.6"]
+
 [project.scripts]
 pdf2md = "pdf2md.cli:main"
 
