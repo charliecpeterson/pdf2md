@@ -16,8 +16,8 @@ here.
   `Transcriber` (anything with `transcribe(image)->latex`) plus a lazy-imported
   `SuryaTranscriber` whose only version-specific surface is one `_run` method;
   with `surya-ocr` absent the pass is skipped. Install with the `transcribe`
-  extra. The Surya call targets Surya 2's inline-math HTML output and may need a
-  one-line adjustment for the installed version.
+  extra. The Surya call (`FoundationPredictor` -> `RecognitionPredictor`,
+  `ocr_without_boxes` + `math_mode`) is verified against surya-ocr 0.17's API.
 - Image-crop fallback for low-confidence equations. Some journals (ACS) draw math
   glyph-by-glyph out of reading order, so the embedded text layer is scrambled
   token soup *before* pdf2md touches it, and the previous text-layer recovery

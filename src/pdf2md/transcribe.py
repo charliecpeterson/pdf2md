@@ -43,23 +43,29 @@ def _latex_from_html(html: str) -> str | None:
 
 class SuryaTranscriber:
     """Local math OCR via Surya (the maintained successor to texify). Loads the
-    model once; safe to reuse across a batch."""
+    model once; safe to reuse across a batch.
 
-    def __init__(self) -> None:
+    The single version-specific surface is `_run`: Surya 0.17 recognizes a whole
+    image with `RecognitionPredictor` (no detection needed for a tight crop) and,
+    with `math_mode=True`, returns math as LaTeX in each line's `text`."""
+
+    _TASK = "ocr_without_boxes"
+
+    def __init__(self, device: str | None = None) -> None:
         try:
-            from surya.inference import SuryaInferenceManager
+            from surya.foundation import FoundationPredictor
             from surya.recognition import RecognitionPredictor
         except ImportError as exc:  # surya is an optional extra
             raise RuntimeError(
-                "transcribe_equations needs surya-ocr (`uv pip install surya-ocr`)"
+                'transcribe_equations needs surya-ocr — install the extra into the '
+                'env pdf2md runs from (e.g. `uv tool install --force -e ".[transcribe]"`)'
             ) from exc
-        self._predictor = RecognitionPredictor(SuryaInferenceManager())
+        kwargs = {"device": device} if device and device != "auto" else {}
+        self._rec = RecognitionPredictor(FoundationPredictor(**kwargs))
 
     def _run(self, image) -> str:
-        # The one Surya-version-specific call. Surya 2 does math inline as part of
-        # full-page recognition, returning HTML with `<math>` tags.
-        prediction = self._predictor([image])[0]
-        return getattr(prediction, "html", "") or ""
+        result = self._rec([image], task_names=[self._TASK], math_mode=True)[0]
+        return "\n".join(line.text for line in result.text_lines if line.text)
 
     def transcribe(self, image_path: Path) -> str | None:
         try:
@@ -76,4 +82,4 @@ def get_transcriber(config) -> Transcriber | None:
     """Build the configured transcriber, or None when the pass is off."""
     if not getattr(config, "transcribe_equations", False):
         return None
-    return SuryaTranscriber()
+    return SuryaTranscriber(device=getattr(config, "device", None))
