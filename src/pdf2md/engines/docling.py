@@ -14,9 +14,9 @@ from pathlib import Path
 import pypdfium2 as pdfium
 
 from pdf2md.engines.base import EngineResult
+from pdf2md.enrich import religatured
 from pdf2md.logging import get_logger
-from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
-from pdf2md.normalize import has_split_ligature, normalize_text, religature, vocabulary
+from pdf2md.normalize import normalize_text, vocabulary
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, TableData
 from pdf2md.scripts import PageChars, apply_scripts
 from pdf2md.tables import GridCell, build_gfm, build_html
@@ -40,22 +40,9 @@ _LABEL_MAP = {
     "page_footer": BlockType.PAGE_FOOTER,
 }
 
-# Block types whose prose carries inline scripts worth recovering.
-_SCRIPT_TYPES = {
-    BlockType.PARAGRAPH, BlockType.HEADING, BlockType.LIST,
-    BlockType.CAPTION, BlockType.FOOTNOTE, BlockType.OTHER,
-}
-
-
 def _label_value(item) -> str:
     label = getattr(item, "label", None)
     return getattr(label, "value", str(label))
-
-
-def _religatured(text: str, doc_vocab) -> str:
-    """Rejoin split ligatures in any text path (captions, table cells), building the
-    page vocabulary lazily only when a split is actually present."""
-    return religature(text, doc_vocab()) if has_split_ligature(text) else text
 
 
 def _prov(item) -> tuple[int | None, BBox | None]:
@@ -131,7 +118,7 @@ class DoclingEngine:
             return vocab_cache["v"]
 
         try:
-            blocks = self._blocks(doc, page_chars, doc_vocab)
+            blocks = self._blocks(doc)
             tables = [self._table(doc, t, page_chars, doc_vocab) for t in doc.tables]
             figures = [self._figure(doc, p, doc_vocab) for p in doc.pictures]
             page_sizes = {no: (pg.size.width, pg.size.height) for no, pg in doc.pages.items()}
@@ -147,11 +134,13 @@ class DoclingEngine:
             engine_versions={"docling": version("docling"), "pdf2md": version("pdf2md")},
         )
 
-    def _blocks(self, doc, page_chars, doc_vocab) -> list[Block]:
+    def _blocks(self, doc) -> list[Block]:
+        """Pure Docling -> schema translation. The verification layer (scripts,
+        ligatures, equation cross-check, OCR detection) runs afterwards in
+        `enrich.enrich_blocks`, off the engine, so any engine inherits it."""
         blocks: list[Block] = []
         for item, _level in doc.iterate_items():
-            value = _label_value(item)
-            btype = _LABEL_MAP.get(value, BlockType.OTHER)
+            btype = _LABEL_MAP.get(_label_value(item), BlockType.OTHER)
             page, bbox = _prov(item)
             if page is None:
                 continue
@@ -164,45 +153,12 @@ class DoclingEngine:
             if raw.strip() and not text.strip():
                 continue
             extra: dict = {}
-            confidence: float | None = None
-            pc = page_chars(page)
-            # A page with no embedded text layer was OCR'd from a scan: the text,
-            # LaTeX, and cells Docling produces are all OCR guesses, so nothing can
-            # be cross-checked and the scan pixels are the only ground truth.
-            ocr_page = self._detect_scripts and pc is None
-            if ocr_page:
-                extra["ocr"] = True
-            if btype in _SCRIPT_TYPES and pc is not None and bbox is not None:
-                # Rejoin ligatures Docling split with a stray space, validated
-                # against pdfium's reading of the same region (which keeps the word
-                # whole). Do this before the script overlay; both align to the
-                # same glyphs.
-                text = _religatured(text, doc_vocab)
-                text = apply_scripts(text, pc.scored_region(bbox))
-            elif btype is BlockType.EQUATION and bbox is not None:
-                if pc is not None:
-                    tl = pc.text_region(bbox)
-                    assessed = assess_equation(text, tl)
-                    if assessed is not None:
-                        confidence, reading = assessed
-                        if reading is not None:
-                            # Suspect extraction: the pipeline crops the equation
-                            # image as the faithful source. The flat text-layer
-                            # reading rides along as a labelled hint only when it is
-                            # clean and geometrically in reading order (some journals
-                            # draw glyphs out of order -> scrambled token soup).
-                            extra["text_layer"] = normalize_text(reading)
-                            extra["ordered"] = (
-                                is_clean(tl) and pc.reading_disorder(bbox) < SCRAMBLED_ABOVE
-                            )
-                elif ocr_page:
-                    confidence = 0.0  # no text layer to verify OCR LaTeX -> image-back it
             level = getattr(item, "level", None)
             if level is not None:
                 extra["level"] = level
             blocks.append(
                 Block(id=item.self_ref, type=btype, text=text, page=page, bbox=bbox,
-                      confidence=confidence, engine=self.name, extra=extra)
+                      engine=self.name, extra=extra)
             )
         return blocks
 
@@ -222,8 +178,8 @@ class DoclingEngine:
                 # rather than persist a flattened, misleading one.
                 gfm = "" if spanning else build_gfm(self._grid(data, pc, doc_vocab, escape=False), data.num_rows, data.num_cols)
         if gfm is None and html is None:
-            gfm = _religatured(normalize_text(t.export_to_markdown(doc)), doc_vocab)
-            html = _religatured(normalize_text(t.export_to_html(doc)), doc_vocab) if spanning else None
+            gfm = religatured(normalize_text(t.export_to_markdown(doc)), doc_vocab)
+            html = religatured(normalize_text(t.export_to_html(doc)), doc_vocab) if spanning else None
         return TableData(
             block_id=t.self_ref, page=page or 0, bbox=bbox,
             gfm=gfm or "", html=html, has_spanning_cells=spanning,
@@ -248,7 +204,7 @@ class DoclingEngine:
         return out
 
     def _cell_text(self, cell, pc: PageChars, doc_vocab, *, escape: bool) -> str:
-        raw = _religatured(normalize_text(getattr(cell, "text", "") or ""), doc_vocab)
+        raw = religatured(normalize_text(getattr(cell, "text", "") or ""), doc_vocab)
         cb = _cell_bbox(cell)
         scored = pc.scored_region(cb) if cb is not None else []
         return apply_scripts(raw, scored, escape=escape)
@@ -258,5 +214,5 @@ class DoclingEngine:
         caption = p.caption_text(doc) if hasattr(p, "caption_text") else None
         return FigureRef(
             block_id=p.self_ref, page=page or 0, bbox=bbox,
-            caption=_religatured(normalize_text(caption), doc_vocab) if caption else None,
+            caption=religatured(normalize_text(caption), doc_vocab) if caption else None,
         )

@@ -137,6 +137,14 @@ here.
   (≠, accented letters) are kept.
 
 ### Internal
+- Verification layer extracted from the Docling adapter into an engine-agnostic
+  `enrich` stage (`enrich.py`: `GlyphIndex` + `enrich_blocks`), run by the pipeline
+  on the `EngineResult`. The block-level scripts/ligatures/equation-cross-check/OCR
+  logic no longer lives behind the engine seam, so a second engine inherits it and
+  it is now unit-testable with a fake glyph source (the adapter's `_blocks` was
+  0%-covered). Behaviour-preserving — verified the same per-equation confidences on
+  a real PDF. The table/figure paths still build their own glyph index in the
+  adapter; a follow-up moves them too and removes the duplicate pass.
 - Table grid→markup assembly moved to `tables.py` (`build_html`/`build_gfm`);
   GFM header row derived from cell header flags instead of assuming row 0;
   spanning tables no longer persist a flattened GFM. `PageChars` reads page text

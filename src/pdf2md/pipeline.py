@@ -17,6 +17,7 @@ from pdf2md.bookmarks import read_bookmarks
 from pdf2md.cache import content_hash, doc_dir, latest_version, next_version
 from pdf2md.confidence import RECOVER_BELOW
 from pdf2md.config import Config
+from pdf2md.enrich import GlyphIndex, enrich_blocks
 from pdf2md.coverage import build_report
 from pdf2md.emit import emit_document
 from pdf2md.engines.base import Engine
@@ -83,6 +84,12 @@ def convert_file(
     except Exception as exc:  # noqa: BLE001 - document-level isolate-and-flag
         log.error("engine failed on %s: %s", pdf_path.name, exc)
         return ConvertResult(doc_id, 0, dd, [], failed=True, error=str(exc))
+
+    # Engine-agnostic verification layer (scripts, ligatures, equation cross-check,
+    # OCR detection), off the engine so any backend inherits it.
+    if config.detect_scripts:
+        with GlyphIndex(pdf_path) as glyphs:
+            enrich_blocks(result.blocks, glyphs)
 
     bookmarks = read_bookmarks(pdf_path)
     meta = extract_metadata(pdf_path, result.blocks)
