@@ -1,9 +1,11 @@
 """Docling adapter: translate a DoclingDocument into pdf2md's schema.
 
-The only module that imports docling. Blocks come out in Docling's reading order;
-tables and figures are matched back to their blocks by `self_ref`. On born-digital
-pages we overlay inline sub/superscripts (recovered from pypdfium2 glyph geometry,
-see `scripts`) and normalize unresolved Greek-letter glyph names (see `normalize`).
+The only module that imports docling, and pure translation — no pdfium, no
+verification. Blocks come out in Docling's reading order; tables and figures are
+matched back to their blocks by `self_ref`; text is normalized (Greek-letter glyph
+names, orphan combining marks). The ligature/script/equation verification — which
+needs glyph geometry — runs afterwards in `enrich`, off the engine, so any engine
+inherits it. Tables ship their structured cells (`RawTable`) for `enrich` to rebuild.
 """
 
 from __future__ import annotations
@@ -11,15 +13,10 @@ from __future__ import annotations
 from importlib.metadata import version
 from pathlib import Path
 
-import pypdfium2 as pdfium
-
 from pdf2md.engines.base import EngineResult
-from pdf2md.enrich import religatured
 from pdf2md.logging import get_logger
-from pdf2md.normalize import normalize_text, vocabulary
-from pdf2md.schema import BBox, Block, BlockType, FigureRef, TableData
-from pdf2md.scripts import PageChars, apply_scripts
-from pdf2md.tables import GridCell, build_gfm, build_html
+from pdf2md.normalize import normalize_text
+from pdf2md.schema import BBox, Block, BlockType, FigureRef, RawCell, RawTable, TableData
 
 log = get_logger("engines.docling")
 
@@ -61,6 +58,18 @@ def _cell_bbox(cell) -> BBox | None:
     return BBox(x0=b.l, y0=b.t, x1=b.r, y1=b.b)
 
 
+def _raw_cell(c) -> RawCell:
+    return RawCell(
+        text=normalize_text(getattr(c, "text", "") or ""),
+        bbox=_cell_bbox(c),
+        row=c.start_row_offset_idx,
+        col=c.start_col_offset_idx,
+        row_span=c.end_row_offset_idx - c.start_row_offset_idx,
+        col_span=c.end_col_offset_idx - c.start_col_offset_idx,
+        header=getattr(c, "column_header", False) or getattr(c, "row_header", False),
+    )
+
+
 class DoclingEngine:
     name = "docling"
 
@@ -69,13 +78,11 @@ class DoclingEngine:
         *,
         formula_enrichment: bool = True,
         artifacts_path: str | None = None,
-        detect_scripts: bool = True,
     ) -> None:
         from docling.datamodel.base_models import InputFormat
         from docling.datamodel.pipeline_options import PdfPipelineOptions
         from docling.document_converter import DocumentConverter, PdfFormatOption
 
-        self._detect_scripts = detect_scripts
         opts = PdfPipelineOptions()
         opts.do_formula_enrichment = formula_enrichment
         if artifacts_path:
@@ -88,43 +95,11 @@ class DoclingEngine:
         log.info("docling converting %s", pdf_path)
         doc = self._converter.convert(str(pdf_path)).document
 
-        pdf = pdfium.PdfDocument(str(pdf_path)) if self._detect_scripts else None
-        cache: dict[int, PageChars | None] = {}
-        vocab_cache: dict[str, set[str]] = {}
-
-        def page_chars(page_no: int | None) -> PageChars | None:
-            if pdf is None or page_no is None:
-                return None
-            if page_no not in cache:
-                try:
-                    pc = PageChars(pdf[page_no - 1])
-                    cache[page_no] = None if pc.empty else pc
-                except Exception as exc:  # noqa: BLE001 - geometry is best-effort
-                    log.warning("char geometry failed on page %d: %s", page_no, exc)
-                    cache[page_no] = None
-            return cache[page_no]
-
-        def doc_vocab() -> set[str]:
-            # Built once on first ligature split, from every page's pdfium reading:
-            # a word kept whole on any page confirms a join of its split elsewhere.
-            if "v" not in vocab_cache:
-                words: set[str] = set()
-                for i in range(len(pdf)) if pdf is not None else ():
-                    try:
-                        words |= vocabulary(pdf[i].get_textpage().get_text_range())
-                    except Exception as exc:  # noqa: BLE001 - best-effort
-                        log.warning("page text read failed on page %d: %s", i + 1, exc)
-                vocab_cache["v"] = words
-            return vocab_cache["v"]
-
-        try:
-            blocks = self._blocks(doc)
-            tables = [self._table(doc, t, page_chars, doc_vocab) for t in doc.tables]
-            figures = [self._figure(doc, p, doc_vocab) for p in doc.pictures]
-            page_sizes = {no: (pg.size.width, pg.size.height) for no, pg in doc.pages.items()}
-        finally:
-            if pdf is not None:
-                pdf.close()
+        blocks = self._blocks(doc)
+        raw_tables: dict[str, RawTable] = {}
+        tables = [self._table(doc, t, raw_tables) for t in doc.tables]
+        figures = [self._figure(doc, p) for p in doc.pictures]
+        page_sizes = {no: (pg.size.width, pg.size.height) for no, pg in doc.pages.items()}
 
         return EngineResult(
             blocks=blocks,
@@ -132,6 +107,7 @@ class DoclingEngine:
             figures=figures,
             page_sizes=page_sizes,
             engine_versions={"docling": version("docling"), "pdf2md": version("pdf2md")},
+            raw_tables=raw_tables,
         )
 
     def _blocks(self, doc) -> list[Block]:
@@ -162,57 +138,29 @@ class DoclingEngine:
             )
         return blocks
 
-    def _table(self, doc, t, page_chars, doc_vocab) -> TableData:
+    def _table(self, doc, t, raw_tables: dict[str, RawTable]) -> TableData:
+        """Translate a table: Docling's own rendering as the fallback markup, plus
+        the structured cells for `enrich` to rebuild with recovered scripts."""
         page, bbox = _prov(t)
         data = getattr(t, "data", None)
         cells = getattr(data, "table_cells", None) if data else None
         spanning = any(c.row_span > 1 or c.col_span > 1 for c in cells) if cells else False
-        pc = page_chars(page)
-
-        gfm = html = None
-        if pc is not None and cells:
-            rebuilt = build_html(self._grid(data, pc, doc_vocab, escape=True), data.num_rows, data.num_cols)
-            if "<sub>" in rebuilt or "<sup>" in rebuilt:  # only diverge from Docling when scripts help
-                html = rebuilt if spanning else None
-                # GFM can't express spans; leave it empty for spanning tables
-                # rather than persist a flattened, misleading one.
-                gfm = "" if spanning else build_gfm(self._grid(data, pc, doc_vocab, escape=False), data.num_rows, data.num_cols)
-        if gfm is None and html is None:
-            gfm = religatured(normalize_text(t.export_to_markdown(doc)), doc_vocab)
-            html = religatured(normalize_text(t.export_to_html(doc)), doc_vocab) if spanning else None
+        if cells:
+            raw_tables[t.self_ref] = RawTable(
+                cells=[_raw_cell(c) for c in cells],
+                num_rows=data.num_rows, num_cols=data.num_cols,
+            )
         return TableData(
             block_id=t.self_ref, page=page or 0, bbox=bbox,
-            gfm=gfm or "", html=html, has_spanning_cells=spanning,
+            gfm=normalize_text(t.export_to_markdown(doc)),
+            html=normalize_text(t.export_to_html(doc)) if spanning else None,
+            has_spanning_cells=spanning,
         )
 
-    def _grid(self, data, pc: PageChars, doc_vocab, *, escape: bool) -> list[GridCell]:
-        out = []
-        for c in data.table_cells:
-            text = self._cell_text(c, pc, doc_vocab, escape=escape)
-            if not escape:
-                text = text.replace("|", r"\|").replace("\n", " ")
-            out.append(
-                GridCell(
-                    text=text,
-                    row=c.start_row_offset_idx,
-                    col=c.start_col_offset_idx,
-                    row_span=c.end_row_offset_idx - c.start_row_offset_idx,
-                    col_span=c.end_col_offset_idx - c.start_col_offset_idx,
-                    header=getattr(c, "column_header", False) or getattr(c, "row_header", False),
-                )
-            )
-        return out
-
-    def _cell_text(self, cell, pc: PageChars, doc_vocab, *, escape: bool) -> str:
-        raw = religatured(normalize_text(getattr(cell, "text", "") or ""), doc_vocab)
-        cb = _cell_bbox(cell)
-        scored = pc.scored_region(cb) if cb is not None else []
-        return apply_scripts(raw, scored, escape=escape)
-
-    def _figure(self, doc, p, doc_vocab) -> FigureRef:
+    def _figure(self, doc, p) -> FigureRef:
         page, bbox = _prov(p)
         caption = p.caption_text(doc) if hasattr(p, "caption_text") else None
         return FigureRef(
             block_id=p.self_ref, page=page or 0, bbox=bbox,
-            caption=religatured(normalize_text(caption), doc_vocab) if caption else None,
+            caption=normalize_text(caption) if caption else None,
         )

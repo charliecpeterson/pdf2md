@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from pdf2md.schema import Block, FigureRef, TableData
+from pdf2md.schema import Block, FigureRef, RawTable, TableData
 
 
 @dataclass
@@ -22,6 +22,9 @@ class EngineResult:
     figures: list[FigureRef]
     page_sizes: dict[int, tuple[float, float]]  # page_no -> (width, height) in pts
     engine_versions: dict[str, str] = field(default_factory=dict)
+    # Structured cells per table (block_id -> RawTable), so `enrich` can rebuild a
+    # table with recovered scripts. Transient: lives here, never serialized.
+    raw_tables: dict[str, RawTable] = field(default_factory=dict)
 
 
 @runtime_checkable

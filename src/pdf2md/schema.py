@@ -84,6 +84,30 @@ class TableData:
 
 
 @dataclass
+class RawCell:
+    """A table cell as the engine translated it: text cleaned but not yet
+    ligature-repaired or script-annotated, plus the bbox `enrich` needs to recover
+    inline sub/superscripts from glyph geometry."""
+    text: str
+    bbox: BBox | None
+    row: int
+    col: int
+    row_span: int
+    col_span: int
+    header: bool
+
+
+@dataclass
+class RawTable:
+    """The engine's structured translation of a table, handed to `enrich` so the
+    religature + script rebuild happens engine-agnostically. Transient (rides on
+    `EngineResult`, never serialized)."""
+    cells: list[RawCell]
+    num_rows: int
+    num_cols: int
+
+
+@dataclass
 class FigureRef:
     block_id: str
     page: int

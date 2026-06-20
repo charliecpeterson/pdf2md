@@ -157,6 +157,16 @@ here.
   (≠, accented letters) are kept.
 
 ### Internal
+- Keystone refactor increment 2: the engine is now pure translation. Moved table
+  and figure verification (ligature repair + inline sub/superscript rebuild from
+  glyph geometry) out of the Docling adapter into the engine-agnostic `enrich.py`
+  (`enrich_tables` / `enrich_figures`). The adapter no longer imports pypdfium2 —
+  it ships each table's structured cells as a transient `RawTable` on
+  `EngineResult`, and `enrich` (one `GlyphIndex` pass, shared with block
+  enrichment) does the religature/script work. Removes the duplicate pdfium pass
+  and means a second engine inherits all verification for free. Verified
+  behaviour-preserving: a real reconvert leaves every table's GFM/HTML and figure
+  caption byte-identical; the script-rebuild path is covered by a unit test.
 - Quality-audit / regression harness (`scripts/qa.py` + `tests/qa_baseline.json`).
   Reads existing outputs (no reconversion) and reports per-document signals — the
   things we keep fixing: dropped content, split-ligature residue, unbalanced

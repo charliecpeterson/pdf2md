@@ -17,7 +17,7 @@ from pdf2md.bookmarks import read_bookmarks
 from pdf2md.cache import content_hash, doc_dir, latest_version, next_version
 from pdf2md.confidence import RECOVER_BELOW
 from pdf2md.config import Config
-from pdf2md.enrich import GlyphIndex, enrich_blocks
+from pdf2md.enrich import GlyphIndex, enrich_blocks, enrich_figures, enrich_tables
 from pdf2md.coverage import build_report
 from pdf2md.emit import emit_document
 from pdf2md.engines.base import Engine
@@ -52,7 +52,6 @@ def _get_engine(engine: Engine | None, config: Config) -> Engine:
     return DoclingEngine(
         formula_enrichment=config.do_formula_enrichment,
         artifacts_path=config.local_model_dir,
-        detect_scripts=config.detect_scripts,
     )
 
 
@@ -92,6 +91,8 @@ def convert_file(
     if config.detect_scripts:
         with GlyphIndex(pdf_path) as glyphs:
             enrich_blocks(result.blocks, glyphs)
+            enrich_tables(result.tables, result.raw_tables, glyphs)
+            enrich_figures(result.figures, glyphs)
 
     bookmarks = read_bookmarks(pdf_path)
     meta = extract_metadata(pdf_path, result.blocks)

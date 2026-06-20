@@ -19,8 +19,9 @@ import pypdfium2 as pdfium
 from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
 from pdf2md.logging import get_logger
 from pdf2md.normalize import has_split_ligature, normalize_text, religature, vocabulary
-from pdf2md.schema import Block, BlockType
+from pdf2md.schema import Block, BlockType, FigureRef, RawTable, TableData
 from pdf2md.scripts import PageChars, apply_scripts
+from pdf2md.tables import GridCell, build_gfm, build_html
 
 log = get_logger("enrich")
 
@@ -112,3 +113,54 @@ def enrich_blocks(blocks: list[Block], glyphs) -> None:
                         )
             else:  # no text layer to verify the OCR LaTeX -> image-back it
                 b.confidence = 0.0
+
+
+def enrich_tables(tables: list[TableData], raw_tables: dict[str, RawTable], glyphs) -> None:
+    """Finalize each table's markup engine-agnostically: rebuild the grid with
+    inline sub/superscripts recovered from glyph geometry when they're present,
+    otherwise just ligature-repair the engine's own rendering."""
+    for t in tables:
+        pc = glyphs.page_chars(t.page)
+        raw = raw_tables.get(t.block_id)
+        rebuilt = (
+            _rebuilt_table(raw, pc, glyphs.vocab, t.has_spanning_cells)
+            if pc is not None and raw is not None and raw.cells
+            else None
+        )
+        if rebuilt is not None:  # scripts helped -> diverge from the engine markup
+            t.gfm, t.html = rebuilt
+        else:
+            t.gfm = religatured(t.gfm, glyphs.vocab)
+            if t.html is not None:
+                t.html = religatured(t.html, glyphs.vocab)
+
+
+def enrich_figures(figures: list[FigureRef], glyphs) -> None:
+    for f in figures:
+        if f.caption:
+            f.caption = religatured(f.caption, glyphs.vocab)
+
+
+def _rebuilt_table(raw: RawTable, pc: PageChars, vocab, spanning: bool):
+    """Rebuilt (gfm, html) when recovered scripts justify diverging from the
+    engine's rendering, else None. GFM can't express spans, so a spanning table
+    keeps only the HTML and leaves GFM empty rather than a misleading flattening."""
+    rebuilt = build_html(_table_grid(raw, pc, vocab, escape=True), raw.num_rows, raw.num_cols)
+    if "<sub>" not in rebuilt and "<sup>" not in rebuilt:
+        return None
+    html = rebuilt if spanning else None
+    gfm = "" if spanning else build_gfm(_table_grid(raw, pc, vocab, escape=False), raw.num_rows, raw.num_cols)
+    return gfm, html
+
+
+def _table_grid(raw: RawTable, pc: PageChars, vocab, *, escape: bool) -> list[GridCell]:
+    out = []
+    for c in raw.cells:
+        text = apply_scripts(religatured(c.text, vocab),
+                             pc.scored_region(c.bbox) if c.bbox is not None else [],
+                             escape=escape)
+        if not escape:
+            text = text.replace("|", r"\|").replace("\n", " ")
+        out.append(GridCell(text=text, row=c.row, col=c.col,
+                            row_span=c.row_span, col_span=c.col_span, header=c.header))
+    return out

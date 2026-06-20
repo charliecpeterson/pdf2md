@@ -40,8 +40,12 @@ src/pdf2md/
 
   engines/
     base.py     Engine Protocol + EngineResult (the swap seam).
-    docling.py  the ONLY module that imports docling. Translates DoclingDocument → schema.
+    docling.py  the ONLY module that imports docling. PURE translation → schema (no
+                pdfium, no verification); tables ship RawTable cells for enrich to rebuild.
 
+  enrich.py     engine-agnostic verification (GlyphIndex + enrich_blocks/tables/figures):
+                ligature repair, inline scripts, equation text-layer cross-check, OCR
+                detection. Reads pypdfium2 glyph geometry; any engine inherits it.
   structure.py  Section tree → file layout. bookmarks → heading outline → single document.md.
   bookmarks.py  read embedded PDF TOC via pypdfium2.
   outline.py    heading depth (from section numbering) + section kind.
