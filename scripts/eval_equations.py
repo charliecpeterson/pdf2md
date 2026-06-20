@@ -7,7 +7,7 @@ LaTeX is *right*. This does, for a small hand-checked set: for each labelled
 equation it normalises and scores the engine's LaTeX and the math-OCR
 transcription against the known-correct LaTeX (a 0-1 similarity), so you can see
 whether the transcription is actually closer to truth than the engine — and
-whether a knob like transcribe_dpi helps. Reads outputs only; no reconversion.
+whether a render/engine change helps. Reads outputs only; no reconversion.
 
 The score is a guide, not a grade: LaTeX has many equivalent forms, so normalise
 what we can (whitespace, \\text wrappers, \\tag numbers, text-op backslashes) and

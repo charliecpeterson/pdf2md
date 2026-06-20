@@ -33,7 +33,7 @@ here.
   `SuryaTranscriber` whose only version-specific surface is one `_run` method;
   with `surya-ocr` absent the pass is skipped. Install with the `transcribe`
   extra. The Surya call (`FoundationPredictor` -> `RecognitionPredictor`,
-  `ocr_without_boxes` + `math_mode`) is verified against surya-ocr 0.17's API.
+  `ocr_with_boxes` + `math_mode`) is verified against surya-ocr 0.17's API.
 - Image-crop fallback for low-confidence equations. Some journals (ACS) draw math
   glyph-by-glyph out of reading order, so the embedded text layer is scrambled
   token soup *before* pdf2md touches it, and the previous text-layer recovery
@@ -76,8 +76,6 @@ here.
   Known ceiling: scripts are overlaid onto Docling's text, so an exponent Docling
   renders differently from the raw glyphs (a spaced hyphen vs a raised minus) is
   recovered only partially.
-
-### Added
 - Scanned/OCR page handling. A page with no embedded text layer (a full-page
   scan image) was the one input where the safety net inverted: nothing could be
   cross-checked, so equation confidence came back `None` and `None` meant "trust
@@ -162,6 +160,11 @@ here.
   `normalize.strip_orphan_combining` removes them, and a block left empty by the
   strip is dropped rather than printed as a slash. Legitimate base+mark pairs
   (≠, accented letters) are kept.
+- Multi-line equations with alignment markers (`&`, `\\`) are wrapped in
+  `\begin{aligned}` so KaTeX/MathJax render them instead of throwing.
+- Unmapped Greek-letter font glyph names (`/Delta1`→Δ, `/Pi1`→Π, `/Sigma1`→Σ,
+  and the rest of the Greek alphabet) are normalized to Unicode in text, tables,
+  and captions.
 
 ### Internal
 - Keystone refactor increment 2: the engine is now pure translation. Moved table
@@ -199,19 +202,6 @@ here.
 ### Changed
 - Output format → **0.2**: front-matter key `engine` renamed to
   `engine_versions` (`engine` is reserved by Quarto's YAML front-matter).
-
-### Fixed
-- Multi-line equations with alignment markers (`&`, `\\`) are wrapped in
-  `\begin{aligned}` so KaTeX/MathJax render them instead of throwing.
-- Unmapped Greek-letter font glyph names (`/Delta1`→Δ, `/Pi1`→Π, `/Sigma1`→Σ,
-  and the rest of the Greek alphabet) are normalized to Unicode in text, tables,
-  and captions.
-
-### Known limitations
-- Inline sub/superscripts (citation markers, chemistry multiplicities and
-  counts) are still flattened by Docling's text extraction — Docling's `script`
-  formatting is per-text-item, not per-inline-run, so they can't be recovered
-  reliably without guessing. Deferred.
 
 ## [0.1.0] - 2026-06-14
 Initial release, rebuilt from the abandoned `docsmcp` MCP server.

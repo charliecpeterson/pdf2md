@@ -31,21 +31,26 @@ pipeline stages with synthetic `EngineResult`/`Document` fixtures. The
 ```
 src/pdf2md/
   pipeline.py   convert_file / convert_dir — orchestrates engine → structure → render ∥ emit → coverage → disk.
-  schema.py     all dataclasses + enums (Document, Section, Block, BBox, TableData, FigureRef, Provenance, CoverageReport). FORMAT_VERSION lives here.
+  schema.py     all dataclasses + enums (Document, Section, Block, BBox, TableData, RawTable/RawCell, FigureRef, Provenance, CoverageReport). FORMAT_VERSION lives here.
   cache.py      doc_id (sha256), out_root(), doc_dir(), version helpers.
   config.py     frozen Config dataclass loaded from TOML (no Pydantic).
   logging.py    NullHandler in the library; CLI installs the only handler.
-  cli.py        Typer surface (convert / coverage / version / models pull).
+  cli.py        Typer surface (convert / coverage / prune / version / models pull).
   models.py     model warm-up (pinning + local-dir override still TODO).
 
   engines/
-    base.py     Engine Protocol + EngineResult (the swap seam).
+    base.py     Engine Protocol + EngineResult (the swap seam; carries raw_tables for enrich).
     docling.py  the ONLY module that imports docling. PURE translation → schema (no
                 pdfium, no verification); tables ship RawTable cells for enrich to rebuild.
 
   enrich.py     engine-agnostic verification (GlyphIndex + enrich_blocks/tables/figures):
-                ligature repair, inline scripts, equation text-layer cross-check, OCR
+                ligature/diacritic repair, inline scripts, equation text-layer cross-check, OCR
                 detection. Reads pypdfium2 glyph geometry; any engine inherits it.
+  normalize.py  text cleanup (Greek glyph names, orphan combining marks) + vocab-validated
+                ligature/diacritic word repair (religature, rejoin_split_word, vocabulary).
+  scripts.py    inline sub/superscript detector from glyph geometry (PageChars, apply_scripts).
+  confidence.py equation LaTeX vs text-layer cross-check scoring (assess_equation; RECOVER_BELOW, SCRAMBLED_ABOVE, HINT_MIN_CONF).
+  transcribe.py opt-in multi-pass: re-transcribe image-backed equation crops with local math-OCR (Surya). Transcriber seam + SuryaTranscriber.
   structure.py  Section tree → file layout. bookmarks → heading outline → single document.md.
   bookmarks.py  read embedded PDF TOC via pypdfium2.
   outline.py    heading depth (from section numbering) + section kind.
@@ -54,6 +59,9 @@ src/pdf2md/
   tables.py     GFM table render, HTML fallback for spanning cells.
   metadata.py   bibliographic fields: embedded PDF metadata + first-page heuristic.
   coverage.py   tally block dispositions into a CoverageReport.
+
+scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs tests/qa_baseline.json),
+                eval_equations.py (labelled accuracy vs tests/equation_labels.json), benchmark.py.
 ```
 
 ## Conventions
@@ -78,11 +86,17 @@ src/pdf2md/
 - **Formula enrichment** (`Config.do_formula_enrichment`, default on) turns
   equations into LaTeX but is slow (minutes for equation-heavy papers). Off →
   equations become flagged markers. `--no-formula` is the CLI lever.
+- **Equation confidence + image-backing live in `enrich.py`/`confidence.py`, not
+  the engine.** When the engine's LaTeX disagrees with the text layer (or a scan
+  has none), the equation is cropped to an authoritative image and the text rides
+  as a flagged hint. `--transcribe` re-OCRs that crop with Surya (`transcribe.py`).
 - Docling bboxes are bottom-left origin (`y0 > y1`); `render.py` flips Y. Don't
   re-flip elsewhere.
 - Docling formulas are `TextItem`s with label `formula` (self_ref `#/texts/N`),
   not a separate collection. The adapter maps label → `BlockType.EQUATION`.
 - Book splits currently land at top-level bookmarks (Parts, not chapters) — a
-  known coarse-granularity limitation. Sub/superscripts flatten in Docling text.
+  known coarse-granularity limitation. Inline sub/superscripts ARE recovered from
+  glyph geometry (`scripts.py`, default on); a residual ceiling remains where the
+  engine renders an exponent unlike the raw glyphs.
 - `output format` is a versioned contract: bump `FORMAT_VERSION` in `schema.py`
   when front-matter keys or the file layout change in a parser-breaking way.

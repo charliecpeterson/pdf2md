@@ -9,6 +9,10 @@ welcome, but there's no response-time guarantee and some may sit.
 - `uv run pytest -m integration` runs real Docling; set `PDF2MD_TEST_PDF`.
 - `uv run python scripts/benchmark.py <pdfs|dir>` reports per-document time,
   pages/sec, and coverage; add `--no-formula` to compare, `--json` to record.
+- After a change that reconverts the corpus, run the accuracy gates:
+  `scripts/qa.py <out> --check` (labels-free regression vs `tests/qa_baseline.json`,
+  fails on a hard-invariant regression) and `scripts/eval_equations.py <out>`
+  (labelled equation accuracy vs `tests/equation_labels.json`).
 - Match the conventions in `CLAUDE.md` (dataclasses, no Pydantic, stdlib logging,
   the engine seam stays the only place that imports docling).
 - `PROJECT_PLAN.md` records the design decisions and what's intentionally

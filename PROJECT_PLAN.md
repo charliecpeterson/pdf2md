@@ -1,10 +1,14 @@
 # Project Plan: pdf2md (rework of docsmcp → PDF-to-markdown converter)
 
 > Living document. Updated incrementally by the deep-planner skill.
-> Last updated: 2026-06-14
-> Current phase: **Phase 2 (hardening) essentially done.** CI (green),
-> Dependabot, prune, benchmark harness, repo docs/LICENSE. PyPI declined for now;
-> smart reconvert-stale deferred to a real Docling upgrade.
+> Last updated: 2026-06-20
+> Current phase: **Phase 3 (accuracy) underway.** Phase 2 hardening done (CI green,
+> Dependabot, prune, benchmark harness, repo docs/LICENSE). Phase 3 shipped so far:
+> inline sub/superscript recovery, equation confidence + image-backing, opt-in
+> multi-pass transcription (Surya), the engine bake-off (Docling kept, MinerU
+> deferred — see Decision Log 2026-06-20), and the accuracy harnesses (labels-free
+> regression + labelled-equation). Verification is engine-agnostic in `enrich.py`;
+> the engine is pure translation. PyPI declined for now.
 >
 > Timeline: open-ended side project; sustainability over speed.
 
@@ -449,8 +453,14 @@ authn/authz/multi-tenancy.
 **Effort**: incremental, as real use exposes the gaps.
 
 ### Phase 3: Accuracy and breadth (evidence-gated)
+- [x] Inline sub/superscript recovery from glyph geometry (`scripts.py` / `enrich.py`)
+- [x] Equation confidence + image-backing of suspect equations (`confidence.py`)
+- [x] Multi-pass equation transcription via local math-OCR — Surya (`transcribe.py`, `--transcribe`)
+- [x] Accuracy harnesses: labels-free regression (`scripts/qa.py`) + labelled-equation (`scripts/eval_equations.py`)
+- [~] Second engine backend (MinerU / PaddleOCR-VL) behind the seam — bake-off RAN
+      [2026-06-20]: Docling kept, MinerU is the validated *deferred* second backend
+      (its only decisive edge is scanned equations; revisit if those dominate). See Decision Log.
 - [ ] HTML complex-table rendering (upgrade from crop fallback)
-- [ ] Second engine backend (MinerU / PaddleOCR-VL) behind the seam — ONLY if Phase 1 validation shows Docling accuracy insufficient
 - [ ] CrossRef metadata enrichment when a DOI is present
 - [ ] Non-PDF inputs (images / DjVu / EPUB) for the scanned-book slice
 - [ ] Originally-deferred layers if still wanted: MCP server, search/RAG, VLM equation verification, chart-data extraction

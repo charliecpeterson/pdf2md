@@ -14,7 +14,11 @@ bibliographic front-matter, figure cropping, and a per-document coverage audit.
 
 ```bash
 uv sync
-uv run pdf2md models pull   # first run downloads Docling's models
+uv run pdf2md models pull              # first run downloads Docling's models
+uv run pdf2md models pull --local-dir ~/pdf2md-models   # offline/reproducible snapshot
+
+# optional: local math-OCR (Surya) for re-transcribing image-backed equations
+uv sync --extra transcribe
 ```
 
 ## Use
@@ -30,7 +34,15 @@ uv run pdf2md convert ~/papers --out ~/library
 # markers instead of LaTeX. Use for large or equation-light documents.
 uv run pdf2md convert book.pdf --no-formula
 
-uv run pdf2md coverage paper.pdf   # per-document coverage report (no re-run)
+# Skip inline sub/superscript recovery (a little faster on large docs).
+uv run pdf2md convert book.pdf --no-scripts
+
+# Re-transcribe image-backed equations with local math-OCR (needs the transcribe
+# extra; slow). Best on scanned or equation-heavy documents.
+uv run pdf2md convert scan.pdf --transcribe
+
+uv run pdf2md coverage paper.pdf    # per-document coverage report (no re-run)
+uv run pdf2md prune --keep 2        # keep the newest N versions per document
 uv run pdf2md version
 ```
 
@@ -56,14 +68,19 @@ out/<doc_id[:16]>/v<n>/
   no-op unless `--force`. New runs create `v<n+1>`, never overwriting.
 - Front-matter carries `format_version`, bibliographic metadata, and the engine
   + model versions that produced the file.
-- `DOCSMCP_OUT` → `PDF2MD_OUT` sets the output root (default `./out`).
+- `PDF2MD_OUT` sets the output root (default `./out`).
 
 ## Known limits (v1)
 
 - **Equation enrichment is slow** (minutes for equation-heavy papers). Use
   `--no-formula` to trade LaTeX for speed.
-- **Sub/superscripts flatten** (`5f²` → `5f 2`) — a Docling text limitation. The
-  data is present, just not formatted.
+- **Suspect equations are image-backed.** When the engine's LaTeX disagrees with
+  the page's text layer (or there's no text layer — a scan), the equation is
+  cropped to a faithful image that becomes the authoritative source, with the
+  text as a flagged hint. `--transcribe` upgrades that hint via local math-OCR.
+- **Sub/superscripts** are recovered from glyph geometry on born-digital pages
+  (`5f²` stays `5f²`), on by default (`--no-scripts` to disable). A residual
+  ceiling remains where the engine renders an exponent unlike the raw glyphs.
 - **Book splits land at top-level bookmarks** (e.g. Parts, not chapters) and
   crops include journal furniture (logos, banners). Refinements, not yet done.
 
