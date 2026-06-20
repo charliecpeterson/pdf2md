@@ -20,6 +20,11 @@ class Config:
     # turns an OCR/garbled equation's hint into a real transcription. The crop image
     # stays the authoritative source either way.
     transcribe_equations: bool = False
+    # DPI for the crop the math-OCR model reads (separate from the markdown crop).
+    # Scans are often ~600 DPI native, so the 220 markdown crop under-samples them;
+    # a higher render gives the model a sharper image (fixes e.g. a c^3 misread as
+    # c^8). The markdown reference crop stays at crop_dpi.
+    transcribe_dpi: int = 400
     crop_dpi: int = 220
     crop_padding_pts: float = 6.0
     # Blocks below this confidence become a visible marker rather than silent text.
