@@ -30,8 +30,43 @@
   {
     "source": "slater-50page.pdf",
     "block_id": "#/texts/111",
-    "latex": "\\rho_\\nu = \\frac{8\\pi\\nu^2}{c^3} kT",
-    "note": "Rayleigh-Jeans law (scanned; the c^3 vs c^8 case)",
+    "latex": "\\frac{8\\pi\\nu^2}{c^3} kT",
+    "note": "Rayleigh-Jeans law, eq 1-1 (scanned, LHS clipped)",
+    "kind": "scanned"
+  },
+  {
+    "source": "slater-50page.pdf",
+    "block_id": "#/texts/121",
+    "latex": "= \\frac{8\\pi\\nu^2}{c^3}\\frac{h\\nu}{e^{h\\nu/kT}-1}",
+    "note": "Planck law, eq 1-3 (scanned, LHS clipped)",
+    "kind": "scanned"
+  },
+  {
+    "source": "slater-50page.pdf",
+    "block_id": "#/texts/141",
+    "latex": "R\\left(\\frac{1}{4} - \\frac{1}{n^2}\\right)",
+    "note": "Balmer series, eq 1-4 (scanned, LHS clipped)",
+    "kind": "scanned"
+  },
+  {
+    "source": "slater-50page.pdf",
+    "block_id": "#/texts/168",
+    "latex": "E_i - E_j = h\\nu",
+    "note": "Bohr frequency condition, eq 1-8 (scanned)",
+    "kind": "scanned"
+  },
+  {
+    "source": "physics-50page.pdf",
+    "block_id": "#/texts/676",
+    "latex": "Hev = \\frac{mv^2}{r}",
+    "note": "magnetic force = centripetal, eq 3-1 (scanned)",
+    "kind": "scanned"
+  },
+  {
+    "source": "physics-50page.pdf",
+    "block_id": "#/texts/678",
+    "latex": "\\frac{e}{m} = \\frac{v}{Hr}",
+    "note": "charge-to-mass ratio, eq 3-2 (scanned)",
     "kind": "scanned"
   }
 ]
