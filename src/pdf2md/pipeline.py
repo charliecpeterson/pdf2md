@@ -176,13 +176,14 @@ def _eq_crops(blocks) -> list:
 
 
 def _table_crops(blocks, tables) -> list:
-    """Tables Docling failed to parse into cells (it labels them anything from TABLE
-    to OTHER) would otherwise be dropped or marked. They keep a bbox, so crop the
-    region as a faithful image instead of losing it."""
+    """Tables to image-back: ones Docling failed to parse into cells (kept a bbox
+    but no renderable content, would otherwise drop), and ones on an OCR'd scan
+    page (the cells are OCR guesses, so the scan pixels are the ground truth)."""
     rendered = {t.block_id for t in tables if (t.gfm or "").strip() or t.html}
     return [
         b for b in blocks
-        if b.bbox is not None and b.id.startswith("#/tables/") and b.id not in rendered
+        if b.bbox is not None and b.id.startswith("#/tables/")
+        and (b.id not in rendered or b.extra.get("ocr"))
     ]
 
 

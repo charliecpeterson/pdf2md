@@ -59,6 +59,12 @@ def test_failed_table_falls_back_to_image():
     assert "![table](assets/tables_2_p21.png)" in text
     assert status == CoverageStatus.CROPPED and flag is not None
 
+    # On a scanned page the marker says the OCR text is unreliable.
+    ocr = Block(id="#/tables/3", type=BlockType.OTHER, text="", page=5,
+                extra={"crop_path": "assets/tables_3_p5.png", "ocr": True})
+    text, status, _ = _render_block(ocr, ctx, [])
+    assert "scanned page" in text and "![table](assets/tables_3_p5.png)" in text
+
 
 def test_balance_delims():
     from pdf2md.emit import _balance_delims

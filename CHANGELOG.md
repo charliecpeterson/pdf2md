@@ -50,6 +50,18 @@ here.
   renders differently from the raw glyphs (a spaced hyphen vs a raised minus) is
   recovered only partially.
 
+### Added
+- Scanned/OCR page handling. A page with no embedded text layer (a full-page
+  scan image) was the one input where the safety net inverted: nothing could be
+  cross-checked, so equation confidence came back `None` and `None` meant "trust
+  the LaTeX" — which on a scan is an OCR mis-transcription (a Rayleigh-Jeans law
+  emitted with `c^5` instead of `c^3`), presented as authoritative. Now a page
+  with no text layer is detected as OCR-sourced: its equations are always
+  image-backed (the scan pixels are the only ground truth, the OCR LaTeX rides
+  along as an unverified hint), its tables are cropped rather than rendered from
+  OCR cells, and front-matter carries `ocr_scanned_pages` so a consumer knows the
+  text is a transcription to verify against the images.
+
 ### Fixed
 - Two-column bleed in equations is now caught. Docling's formula model sometimes
   weaves adjacent-column prose into an equation's LaTeX (`\text{or} & & \text{where}`),

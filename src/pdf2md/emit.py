@@ -171,8 +171,10 @@ def _render_block(
     # own crop handling in the EQUATION branch below).
     crop = b.extra.get("crop_path")
     if crop and b.type is not BlockType.EQUATION:
-        note = "> **[pdf2md: table not extracted as text — the image below is the source]**"
-        return f"{note}\n\n![table]({crop})", CoverageStatus.CROPPED, _flag(b, "table image fallback")
+        reason = ("scanned page — the image is the source, the OCR text is unreliable"
+                  if b.extra.get("ocr")
+                  else "table not extracted as text — the image below is the source")
+        return f"> **[pdf2md: {reason}]**\n\n![table]({crop})", CoverageStatus.CROPPED, _flag(b, "table image fallback")
 
     # Render parsed table data wherever it exists, even when Docling labelled the
     # block something other than TABLE (TOC pages come through as `other` but still
@@ -258,6 +260,11 @@ def _front_matter(doc: Document, meta: dict, section_source: str, engine_version
         # "image_backed" = extraction couldn't be verified, so an authoritative
         # crop is attached; the rest render as LaTeX the cross-check agreed with.
         front["equations"] = {"total": len(eqs), "image_backed": image_backed}
+    # Pages OCR'd from a scan: the text is a best-effort transcription, not the
+    # source of truth — downstream consumers should verify against the images.
+    scanned = sorted({b.page for b in doc.blocks if b.extra.get("ocr")})
+    if scanned:
+        front["ocr_scanned_pages"] = len(scanned)
     return front
 
 

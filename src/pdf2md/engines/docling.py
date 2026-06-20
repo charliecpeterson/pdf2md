@@ -165,18 +165,22 @@ class DoclingEngine:
                 continue
             extra: dict = {}
             confidence: float | None = None
-            if btype in _SCRIPT_TYPES and bbox is not None:
-                pc = page_chars(page)
-                if pc is not None and not pc.empty:
-                    # Rejoin ligatures Docling split with a stray space, validated
-                    # against pdfium's reading of the same region (which keeps the
-                    # word whole). Do this before the script overlay; both align to
-                    # the same glyphs.
-                    text = _religatured(text, doc_vocab)
-                    text = apply_scripts(text, pc.scored_region(bbox))
+            pc = page_chars(page)
+            # A page with no embedded text layer was OCR'd from a scan: the text,
+            # LaTeX, and cells Docling produces are all OCR guesses, so nothing can
+            # be cross-checked and the scan pixels are the only ground truth.
+            ocr_page = self._detect_scripts and pc is None
+            if ocr_page:
+                extra["ocr"] = True
+            if btype in _SCRIPT_TYPES and pc is not None and bbox is not None:
+                # Rejoin ligatures Docling split with a stray space, validated
+                # against pdfium's reading of the same region (which keeps the word
+                # whole). Do this before the script overlay; both align to the
+                # same glyphs.
+                text = _religatured(text, doc_vocab)
+                text = apply_scripts(text, pc.scored_region(bbox))
             elif btype is BlockType.EQUATION and bbox is not None:
-                pc = page_chars(page)
-                if pc is not None and not pc.empty:
+                if pc is not None:
                     tl = pc.text_region(bbox)
                     assessed = assess_equation(text, tl)
                     if assessed is not None:
@@ -191,6 +195,8 @@ class DoclingEngine:
                             extra["ordered"] = (
                                 is_clean(tl) and pc.reading_disorder(bbox) < SCRAMBLED_ABOVE
                             )
+                elif ocr_page:
+                    confidence = 0.0  # no text layer to verify OCR LaTeX -> image-back it
             level = getattr(item, "level", None)
             if level is not None:
                 extra["level"] = level
