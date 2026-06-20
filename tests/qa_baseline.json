@@ -67,11 +67,11 @@
   "physics-50page.pdf": {
     "blocks": 357,
     "dropped": 0,
-    "eq_image_backed": 0,
+    "eq_image_backed": 4,
     "eq_total": 4,
     "ligature_residual": 0,
     "lossless": true,
-    "ocr_pages": 0,
+    "ocr_pages": 49,
     "pages": 50,
     "source": "physics-50page.pdf",
     "tables": 7,
