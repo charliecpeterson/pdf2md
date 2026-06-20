@@ -144,6 +144,24 @@ def test_religature():
     assert religature("di ff use", vocabulary("a diﬀuse cloud")) == "diffuse"
 
 
+def test_rejoin_split_word():
+    from pdf2md.normalize import rejoin_split_word, vocabulary
+
+    vocab = vocabulary("Lowdin and Mulliken charge data set of the linear part")
+    # diacritic-dropped word reassembles: 'Lo' is a stem fragment, not a word.
+    assert rejoin_split_word("Lo wdin charge", vocab) == "Lowdin charge"
+    # the dropped diacritic often leaves a double space — tolerate it.
+    assert rejoin_split_word("Lo  wdin charge", vocab) == "Lowdin charge"
+    # even when the broken tail leaked into the vocabulary, the stem guard fires.
+    assert rejoin_split_word("Lo wdin", vocabulary("Lowdin wdin elsewhere")) == "Lowdin"
+    # legitimate pairs whose LEFT piece is a real word are never fused.
+    assert rejoin_split_word("data set", vocab) == "data set"
+    assert rejoin_split_word("of the value", vocab) == "of the value"
+    assert rejoin_split_word("non linear part", vocab) == "non linear part"
+    # no confirming joined word in the vocabulary -> leave it split.
+    assert rejoin_split_word("Lo wdin", vocabulary("unrelated")) == "Lo wdin"
+
+
 def test_assess_equation():
     from pdf2md.confidence import assess_equation
 

@@ -102,3 +102,30 @@ def religature(text: str, words: set[str]) -> str:
         if text == prev:
             break
     return text
+
+
+# A word broken by a stray space that no ligature explains — the other way the
+# text layer fractures a word, e.g. a dropped diacritic ('Löwdin' -> 'Lo wdin').
+# Right piece is lowercase so a sentence boundary or proper noun ('New York')
+# never matches.
+_WORD_SPLIT = re.compile(r"\b([A-Za-z]{2,}) +([a-z]{2,})\b")
+
+
+def has_split_word(text: str) -> bool:
+    return bool(_WORD_SPLIT.search(text))
+
+
+def rejoin_split_word(text: str, words: set[str]) -> str:
+    """Rejoin a word the text layer split with a stray space, validated the same
+    way `religature` is: join only when the LEFT piece (the stem before the break)
+    is not a word the document uses on its own, yet the joined form is. So
+    'Lo wdin' -> 'Lowdin' ('Lo' is a stem fragment), but 'of the', 'data set' and
+    'non linear' (left piece is a real word) are left untouched. The stem is the
+    reliable signal: a consistent split puts the broken *tail* ('wdin') into the
+    vocabulary, so guarding on the tail would silently stop firing."""
+    def merge(m: re.Match) -> str:
+        left, right = m.groups()
+        joined = left + right
+        return joined if left not in words and joined in words else m.group(0)
+
+    return _WORD_SPLIT.sub(merge, text)

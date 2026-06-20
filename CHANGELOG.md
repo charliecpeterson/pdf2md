@@ -7,6 +7,13 @@ here.
 
 ## [Unreleased]
 ### Added
+- Diacritic-split repair: words the text layer fractures where a diacritic was
+  dropped ('Löwdin' -> 'Lo wdin', 'Schädel' -> 'Scha del') are rejoined, reusing
+  the ligature machinery's vocabulary validation. Guarded on the *stem* (left
+  piece): join only when the stem isn't a word the document uses on its own but
+  the joined form is — so a consistent split that leaks the broken tail into the
+  vocabulary can't defeat it, and real pairs ('of the', 'data set') are never
+  fused. Corpus audit: 4 joins, all correct author names, zero false positives.
 - Labelled equation accuracy harness: `tests/equation_labels.json` (10
   hand-checked equations, born-digital and scanned) plus
   `scripts/eval_equations.py`, which scores the engine LaTeX and the math-OCR

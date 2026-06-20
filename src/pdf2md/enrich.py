@@ -18,7 +18,14 @@ import pypdfium2 as pdfium
 
 from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
 from pdf2md.logging import get_logger
-from pdf2md.normalize import has_split_ligature, normalize_text, religature, vocabulary
+from pdf2md.normalize import (
+    has_split_ligature,
+    has_split_word,
+    normalize_text,
+    rejoin_split_word,
+    religature,
+    vocabulary,
+)
 from pdf2md.schema import Block, BlockType, FigureRef, RawTable, TableData
 from pdf2md.scripts import PageChars, apply_scripts
 from pdf2md.tables import GridCell, build_gfm, build_html
@@ -33,9 +40,17 @@ _SCRIPT_TYPES = {
 
 
 def religatured(text: str, vocab) -> str:
-    """Rejoin split ligatures in any text path, building the page vocabulary
-    lazily (via the `vocab` callable) only when a split is actually present."""
-    return religature(text, vocab()) if has_split_ligature(text) else text
+    """Repair words the text layer fractured — ligature splits ('di ff erent') and
+    diacritic splits ('Lo wdin') — against the page vocabulary. The (cached)
+    vocabulary is built via the `vocab` callable only when a candidate split is
+    present, so clean text pays nothing."""
+    lig = has_split_ligature(text)
+    if not lig and not has_split_word(text):
+        return text
+    words = vocab()
+    if lig:
+        text = religature(text, words)
+    return rejoin_split_word(text, words)
 
 
 class GlyphIndex:
