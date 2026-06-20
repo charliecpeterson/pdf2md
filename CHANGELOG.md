@@ -137,6 +137,15 @@ here.
   (≠, accented letters) are kept.
 
 ### Internal
+- Quality-audit / regression harness (`scripts/qa.py` + `tests/qa_baseline.json`).
+  Reads existing outputs (no reconversion) and reports per-document signals — the
+  things we keep fixing: dropped content, split-ligature residue, unbalanced
+  equation LaTeX, image-backing, scanned-page count, losslessness. `--check` gates
+  on the hard invariants (lossless / dropped / ligature / unbalanced must not
+  regress) and reports the rest as drift; `--update` refreshes the baseline. The
+  labels-free half of the accuracy story: it can't say the LaTeX is correct, but
+  it catches the day it silently gets worse, instead of finding out one paper at a
+  time. (It already caught a stale scanned output that predated OCR detection.)
 - Verification layer extracted from the Docling adapter into an engine-agnostic
   `enrich` stage (`enrich.py`: `GlyphIndex` + `enrich_blocks`), run by the pipeline
   on the `EngineResult`. The block-level scripts/ligatures/equation-cross-check/OCR

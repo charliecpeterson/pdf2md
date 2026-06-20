@@ -1,0 +1,93 @@
+{
+  "094103_1_online.pdf": {
+    "blocks": 229,
+    "dropped": 0,
+    "eq_image_backed": 7,
+    "eq_total": 10,
+    "ligature_residual": 0,
+    "lossless": true,
+    "ocr_pages": 0,
+    "pages": 13,
+    "source": "094103_1_online.pdf",
+    "tables": 9,
+    "unbalanced_eq": 0
+  },
+  "1706.03762v7.pdf": {
+    "blocks": 169,
+    "dropped": 0,
+    "eq_image_backed": 4,
+    "eq_total": 5,
+    "ligature_residual": 0,
+    "lossless": true,
+    "ocr_pages": 0,
+    "pages": 15,
+    "source": "1706.03762v7.pdf",
+    "tables": 4,
+    "unbalanced_eq": 0
+  },
+  "2207.10841v3.pdf": {
+    "blocks": 260,
+    "dropped": 0,
+    "eq_image_backed": 23,
+    "eq_total": 40,
+    "ligature_residual": 0,
+    "lossless": true,
+    "ocr_pages": 0,
+    "pages": 37,
+    "source": "2207.10841v3.pdf",
+    "tables": 5,
+    "unbalanced_eq": 0
+  },
+  "atkins-50page.pdf": {
+    "blocks": 445,
+    "dropped": 0,
+    "eq_image_backed": 20,
+    "eq_total": 33,
+    "ligature_residual": 0,
+    "lossless": true,
+    "ocr_pages": 0,
+    "pages": 50,
+    "source": "atkins-50page.pdf",
+    "tables": 20,
+    "unbalanced_eq": 0
+  },
+  "papertest.pdf": {
+    "blocks": 276,
+    "dropped": 0,
+    "eq_image_backed": 16,
+    "eq_total": 16,
+    "ligature_residual": 0,
+    "lossless": true,
+    "ocr_pages": 0,
+    "pages": 17,
+    "source": "papertest.pdf",
+    "tables": 3,
+    "unbalanced_eq": 0
+  },
+  "physics-50page.pdf": {
+    "blocks": 357,
+    "dropped": 0,
+    "eq_image_backed": 0,
+    "eq_total": 4,
+    "ligature_residual": 0,
+    "lossless": true,
+    "ocr_pages": 0,
+    "pages": 50,
+    "source": "physics-50page.pdf",
+    "tables": 7,
+    "unbalanced_eq": 0
+  },
+  "slater-50page.pdf": {
+    "blocks": 246,
+    "dropped": 0,
+    "eq_image_backed": 41,
+    "eq_total": 41,
+    "ligature_residual": 1,
+    "lossless": true,
+    "ocr_pages": 50,
+    "pages": 50,
+    "source": "slater-50page.pdf",
+    "tables": 4,
+    "unbalanced_eq": 0
+  }
+}
