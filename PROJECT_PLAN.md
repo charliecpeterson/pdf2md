@@ -10,14 +10,16 @@
 > regression + labelled-equation). Verification is engine-agnostic in `enrich.py`;
 > the engine is pure translation. PyPI declined for now.
 >
-> **Active workstream: "Trust, measured" (2026-06-21).** Two real docs exposed a
-> blind spot — coverage measures *disposition* (every block got a status) but not
+> **Workstream "Trust, measured" — COMPLETE (2026-06-21).** Two real docs exposed a
+> blind spot — coverage measured *disposition* (every block got a status) but not
 > *legibility* (the text is real). A broken-font PDF (GRASP2018) came out 67%
 > dingbat mojibake and `CoverageReport.lossless` still reported clean, because the
-> property is an accounting identity. The fix is a measured legibility signal that
-> (1) repairs font-decode failures from the pdfium text layer pdf2md already loads,
-> and (2) makes the lossless invariant refuse to call garbage clean. See the
-> 2026-06-21 Decision Log entry and the Phase 3 roadmap items.
+> property is an accounting identity. Shipped: a measured legibility signal that
+> (1) repairs font-decode failures from the pdfium text layer pdf2md already loads
+> (GRASP illegible 1653 → 0), and (2) makes the lossless invariant refuse to call
+> garbage clean. Steps 1–4 landed (`legibility.py`, enrich refill, honest coverage,
+> `FORMAT_VERSION` 0.5); Step 5 (scan/OCR honesty) closed by evidence — already
+> satisfied. See the 2026-06-21 Decision Log entry and the Phase 3 roadmap items.
 >
 > Timeline: open-ended side project; sustainability over speed.
 
@@ -529,9 +531,19 @@ authn/authz/multi-tenancy.
         `CoverageReport.illegible` tally; still-garbage prose → FLAGGED + visible
         marker + front-matter `illegible_blocks`, not silent EMITTED. **`FORMAT_VERSION`
         0.4 → 0.5**; CHANGELOG + CLAUDE.md updated.
-  - [ ] **Step 5 — scan/OCR honesty** (evidence-gated): on true scans, optionally
-        surface Docling's formula LaTeX as a default hint instead of discarding it;
-        slater-50page in the corpus decides. Defer if marginal.
+  - [x] **Step 5 — scan/OCR honesty: CLOSED by evidence (2026-06-21).** The planned
+        work (surface Docling's formula LaTeX on scans instead of discarding it) was
+        already done: `emit.py`'s unverified-equation branch renders the OCR LaTeX as
+        a hint below the authoritative image even without `--transcribe`. Confirmed on
+        slater-50page — scanned equations emit clean LaTeX hints. The real residual is
+        OCR *prose* quality (garbled lines like "Lyly-aay sogosoidde…" emitted as-is),
+        but Docling exposes no per-block OCR confidence — only a page-level
+        `ConfidenceReport` — and catching garbled prose needs the vowel-ratio/dictionary
+        heuristic Step 1 deliberately rejected (false-flags chemistry notation). Better
+        scanned prose is an OCR-engine ceiling → the **deferred MinerU/better-OCR
+        decision** (Deferred Register), not a Step increment. Optional, not built:
+        piping Docling's page-level `ocr_score` into front-matter as a "verify against
+        image" label (marginal — labels, doesn't fix).
 - [~] Second engine backend (MinerU / PaddleOCR-VL) behind the seam — bake-off RAN
       [2026-06-20]: Docling kept, MinerU is the validated *deferred* second backend
       (its only decisive edge is scanned equations; revisit if those dominate). See Decision Log.
