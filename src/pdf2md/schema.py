@@ -14,7 +14,8 @@ from typing import Any
 
 # Bumped when the on-disk output contract changes in a way that would break a
 # naive downstream parser (front-matter keys removed/renamed, file layout shift).
-FORMAT_VERSION = "0.4"
+# 0.5: front-matter gains optional `illegible_blocks`; coverage gains `illegible`.
+FORMAT_VERSION = "0.5"
 
 
 class BlockType(str, Enum):
@@ -157,6 +158,7 @@ class CoverageReport:
     cropped: int
     flagged: int
     dropped: int
+    illegible: int = 0  # prose blocks whose text stayed symbol-font garbage (a subset of flagged)
     flags: list[CoverageFlag] = field(default_factory=list)
 
     @property

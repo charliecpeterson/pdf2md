@@ -60,6 +60,20 @@ def normalize_text(text: str) -> str:
     return strip_orphan_combining(unglyph(text))
 
 
+# Control chars a symbol font maps glyphs to (a list bullet -> U+0015, say); pdfium
+# surfaces them literally in a text-region reading. Excludes the whitespace controls
+# handled by the collapse that follows.
+_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
+
+
+def clean_reading(text: str) -> str:
+    """Flatten a pdfium text-region reading into single-line prose: drop the raw
+    line breaks and stray control-mapped glyphs a multi-line block carries, collapse
+    runs of whitespace. Used when refilling a block whose engine text was symbol-font
+    garbage from the (clean) pdfium glyph layer."""
+    return re.sub(r"\s+", " ", _CONTROL.sub(" ", text)).strip()
+
+
 # A ligature cluster left stranded between two word-fragments by a stray space.
 _LIG_SPLIT = re.compile(r"(\w+) (ff|ffi|ffl|fi|fl) (\w+)")
 

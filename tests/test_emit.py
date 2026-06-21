@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pdf2md.coverage import build_report
 from pdf2md.emit import _tidy_math, emit_document
-from pdf2md.schema import CoverageStatus
+from pdf2md.schema import FORMAT_VERSION, CoverageStatus
 from pdf2md.structure import build_structure
 
 
@@ -107,7 +107,7 @@ def test_emit_structural_facts(tmp_path, sample_document):
     assert [p.name for p in md_files] == ["document.md"]
     text = md_files[0].read_text()
 
-    assert "format_version: '0.4'" in text
+    assert f"format_version: '{FORMAT_VERSION}'" in text
     assert "engine_versions:" in text and "\nengine:" not in text
     assert "# 1 Introduction" in text          # heading depth 1
     assert "## 1.1 Background" in text          # nested heading depth 2
@@ -132,3 +132,28 @@ def test_emit_is_lossless(tmp_path, sample_document):
 def test_emit_snapshot(tmp_path, sample_document, snapshot):
     md_files, _ = _emit(tmp_path, sample_document)
     assert md_files[0].read_text() == snapshot
+
+
+def test_illegible_prose_flagged_not_silently_emitted(tmp_path):
+    # A prose block still symbol-font garbage after enrich's refill must surface as
+    # a visible marker + an `illegible` tally, not pass as readable text — the exact
+    # blind spot that let GRASP report lossless while 67% was dingbats.
+    from pdf2md.schema import Block, BlockType, Document
+    from pdf2md.structure import build_structure
+
+    g = Block(id="#/texts/0", type=BlockType.PARAGRAPH, text="❆ ♣/a114❛❝/a116✐❝❛❧", page=1)
+    structure = build_structure([g], None, title="Doc", page_count=1)
+    doc = Document(
+        doc_id="abc123def456789a", source_path="/x/Doc.pdf", source_sha256="abc123def456789a",
+        version=1, page_count=1, sections=structure.root, blocks=[g], tables=[], figures=[],
+    )
+    md_files, flags = emit_document(doc, structure, tmp_path, {"title": "Doc"},
+                                    {"docling": "2.93.0", "pdf2md": "0.1.0"})
+    text = md_files[0].read_text()
+
+    assert "[pdf2md: illegible text layer]" in text
+    assert "❆" not in text                 # the garbage itself is not emitted as prose
+    assert "illegible_blocks: 1" in text    # front-matter surfaces it
+    assert g.coverage_status == CoverageStatus.FLAGGED
+    report = build_report(doc.doc_id, doc.blocks, flags)
+    assert report.illegible == 1 and report.lossless

@@ -14,6 +14,8 @@ from pathlib import Path
 import yaml
 
 from pdf2md.confidence import HINT_MIN_CONF, RECOVER_BELOW
+from pdf2md.coverage import ILLEGIBLE_REASON
+from pdf2md.legibility import is_garbage
 from pdf2md.outline import heading_depth
 from pdf2md.schema import (
     FORMAT_VERSION,
@@ -29,6 +31,12 @@ from pdf2md.schema import (
 from pdf2md.tables import render_table
 
 _BOILERPLATE = {BlockType.PAGE_HEADER, BlockType.PAGE_FOOTER}
+
+# Prose-bearing types held to the legibility bar. A block here whose text is still
+# symbol-font garbage after enrich's pdfium refill gets a visible marker, never a
+# silent emit (equations/tables/code carry their own non-prose representations).
+_PROSE = {BlockType.PARAGRAPH, BlockType.HEADING, BlockType.LIST,
+          BlockType.CAPTION, BlockType.OTHER}
 
 # Docling encodes trailing PDF whitespace and lost alignment columns as long runs
 # of LaTeX spacing commands (\quad, control-spaces) or empty `& \quad` cells, which
@@ -200,6 +208,12 @@ def _render_block(
     if not txt:
         return _marker(b, f"empty {b.type.value} block"), CoverageStatus.DROPPED, _flag(b, "empty block")
 
+    if b.type in _PROSE and is_garbage(txt):
+        # enrich's pdfium refill couldn't rescue this block (the glyph layer was
+        # garbage too). Emit a visible marker so the lossless audit counts it as
+        # illegible instead of passing symbol-font noise off as readable prose.
+        return _marker(b, ILLEGIBLE_REASON), CoverageStatus.FLAGGED, _flag(b, ILLEGIBLE_REASON)
+
     if b.type == BlockType.HEADING:
         depth = ctx.depth_of.get(b.id) or heading_depth(b)
         hashes = "#" * max(1, min(depth, 6))
@@ -268,6 +282,12 @@ def _front_matter(doc: Document, meta: dict, section_source: str, engine_version
     scanned = sorted({b.page for b in doc.blocks if b.extra.get("ocr")})
     if scanned:
         front["ocr_scanned_pages"] = len(scanned)
+    # Prose blocks whose text stayed symbol-font garbage (broken font, no pdfium
+    # rescue): surfaced so a downstream reader knows the doc is partly unreadable.
+    illegible = sum(1 for b in doc.blocks
+                    if b.type in _PROSE and b.text.strip() and is_garbage(b.text))
+    if illegible:
+        front["illegible_blocks"] = illegible
     return front
 
 

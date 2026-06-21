@@ -1,7 +1,7 @@
 # Project Plan: pdf2md (rework of docsmcp → PDF-to-markdown converter)
 
 > Living document. Updated incrementally by the deep-planner skill.
-> Last updated: 2026-06-20
+> Last updated: 2026-06-21
 > Current phase: **Phase 3 (accuracy) underway.** Phase 2 hardening done (CI green,
 > Dependabot, prune, benchmark harness, repo docs/LICENSE). Phase 3 shipped so far:
 > inline sub/superscript recovery, equation confidence + image-backing, opt-in
@@ -9,6 +9,15 @@
 > deferred — see Decision Log 2026-06-20), and the accuracy harnesses (labels-free
 > regression + labelled-equation). Verification is engine-agnostic in `enrich.py`;
 > the engine is pure translation. PyPI declined for now.
+>
+> **Active workstream: "Trust, measured" (2026-06-21).** Two real docs exposed a
+> blind spot — coverage measures *disposition* (every block got a status) but not
+> *legibility* (the text is real). A broken-font PDF (GRASP2018) came out 67%
+> dingbat mojibake and `CoverageReport.lossless` still reported clean, because the
+> property is an accounting identity. The fix is a measured legibility signal that
+> (1) repairs font-decode failures from the pdfium text layer pdf2md already loads,
+> and (2) makes the lossless invariant refuse to call garbage clean. See the
+> 2026-06-21 Decision Log entry and the Phase 3 roadmap items.
 >
 > Timeline: open-ended side project; sustainability over speed.
 
@@ -210,6 +219,37 @@ structure. "Whatever produces the best markdown from a PDF wins."
     is the validated, license-clear second backend; the swap seam keeps wiring
     it a contained change.
 
+- **[2026-06-21] Legibility as a measured signal; font-decode repair from pdfium**
+  - **Context**: A broken-font born-digital PDF (GRASP2018 manual) converted to
+    67% dingbat mojibake (`❆ ♣/a114❛❝/a116✐❝❛❧` = "A practical guide") while
+    coverage reported it lossless. Root cause: Docling's default `DoclingParseV4`
+    backend reads the font's built-in glyph codes instead of applying the
+    ToUnicode CMap; pypdfium2 reads the same file perfectly. A separate doc (Slater
+    vol. 1) is a genuine scan (zero text chars/page) — its image-backed equations
+    are correct, a different failure not addressed here.
+  - **Choice**: (1) Make text legibility a measured signal (`legibility.py`):
+    PUA/dingbat/glyph-name density + a plausibility check. (2) Repair font-decode
+    failures per-block inside `enrich.py` by refilling garbage block text from
+    `PageChars.text_region(bbox)` — the pdfium layer pdf2md already loads. (3) Make
+    the lossless invariant honest: a block still garbage after repair is FLAGGED
+    with a visible marker, never silently EMITTED; coverage reports legibility
+    alongside disposition.
+  - **Why per-block refill, not a Docling backend swap**: Docling's *layout* on
+    GRASP is correct — right blocks, right bboxes; only its glyph→char mapping is
+    broken. Refilling text per block keeps all of Docling's structure work, needs
+    no second Docling pass, stays engine-agnostic, and lives where the project
+    already puts verification (`enrich.py` reads pdfium geometry; any engine
+    inherits it). It generalizes beyond GRASP to the whole font-decode class
+    (common in older physics/chem PDFs, subset/Type 3 fonts, bad OCR text layers).
+  - **Alternatives considered**: re-run Docling with `PyPdfiumDocumentBackend` on
+    detection (clean text + Docling's reading order, but a second full Docling pass
+    on bad docs and risk of weaker tables/layout — kept as the documented fallback
+    if per-block pdfium text comes out mis-ordered on wrapped/multi-column blocks,
+    a question the corpus decides); always use the pypdfium backend (rejected —
+    regresses normal docs where DoclingParseV4 is stronger).
+  - **Revisit if**: the labelled corpus shows per-block pdfium text is mis-ordered
+    often enough to need the backend-swap fallback.
+
 - **[2026-06-14] License: MIT, permissive open-source**
   - **Choice**: Publish under MIT (simplest permissive). PDF render/crop via
     pypdfium2 (BSD/Apache), NOT PyMuPDF (AGPL). Confirm Docling's transitive
@@ -285,8 +325,13 @@ structure. "Whatever produces the best markdown from a PDF wins."
   License note corrected: MinerU is **Apache-2.0** (not AGPL) with commercial
   thresholds that don't bite here; Marker stays ruled out (GPL-3.0 + gated
   weights); Docling MIT.
-- **Validation harness** — the 5-10 real-document set and the metrics that
-  define "best effort" (text fidelity, table structure, equation accuracy).
+- **Validation harness** — PARTIALLY RESOLVED [2026-06-21]: the "Trust, measured"
+  workstream builds the diverse labelled corpus (6–8 archetypes: clean
+  born-digital, broken-font, pure scan, two-column, table-heavy, equation-heavy)
+  and adds a **legibility** metric to the existing text-fidelity / table-structure
+  / equation-accuracy set. Storage uses 50-page slices + small public-domain PDFs
+  behind `PDF2MD_TEST_PDF` / the `integration` marker so the fast suite stays
+  Docling-free.
 - Hidden-decision items under discussion in Phase 4 (input formats,
   bibliographic metadata, boilerplate/footnote handling, batch reporting).
 
@@ -457,6 +502,36 @@ authn/authz/multi-tenancy.
 - [x] Equation confidence + image-backing of suspect equations (`confidence.py`)
 - [x] Multi-pass equation transcription via local math-OCR — Surya (`transcribe.py`, `--transcribe`)
 - [x] Accuracy harnesses: labels-free regression (`scripts/qa.py`) + labelled-equation (`scripts/eval_equations.py`)
+- **"Trust, measured" — legibility signal + font-decode repair** (2026-06-21, see Decision Log):
+  - [x] **Step 1 — legibility primitive** (`legibility.py`): pure `score_legibility` /
+        `is_garbage`, scoped to the symbol-substitution signal (dingbat/PUA/glyph-name
+        density) — no vowel-ratio/dictionary check, which would false-flag chemistry
+        notation. Unit-tested; validated on real output (GRASP blocks median 0.0,
+        Slater clean-OCR median 1.0, zero false positives).
+  - [x] **Step 2 — corpus + legibility gate** in `scripts/qa.py`: `illegible` signal
+        (prose blocks scoring as garbage) added as a **gated invariant** (must not
+        rise); `_signals` now audits split/book outputs too (was skipping any doc
+        without `document.md`, which is why GRASP was untracked). GRASP added to
+        `qa_baseline.json` as the broken-font archetype (illegible 1653/2166 — the
+        current broken state; Step 3 drives it to ~0). The committed corpus now spans
+        8 archetypes (clean born-digital, scan/OCR, table-heavy, equation-heavy,
+        split-book, broken-font). Resolves the validation-harness Open Question.
+  - [x] **Step 3 — source selection + pdfium repair** (`enrich.py`): garbage prose
+        text refilled from `PageChars.text_region(bbox)` via `normalize.clean_reading`,
+        stamped `text_source="pdfium"`; only swaps when pdfium is cleaner. Validated on
+        GRASP: illegible prose 1653 → 0, text readable, metadata recovered. Residual:
+        broken-font ﬀ/ﬁ/ﬂ ligatures lack ToUnicode for pdfium too, so they drop
+        ('e cient'); legible-but-imperfect, far better than dingbats. **Table-cell
+        refill deferred** — the `illegible` metric counts prose only, and table cells
+        entangle with `_rebuilt_table`'s scripts-divergence logic; revisit if a
+        broken-font doc's tables prove materially garbled.
+  - [x] **Step 4 — honest invariant** (`schema.py`, `coverage.py`, `emit.py`):
+        `CoverageReport.illegible` tally; still-garbage prose → FLAGGED + visible
+        marker + front-matter `illegible_blocks`, not silent EMITTED. **`FORMAT_VERSION`
+        0.4 → 0.5**; CHANGELOG + CLAUDE.md updated.
+  - [ ] **Step 5 — scan/OCR honesty** (evidence-gated): on true scans, optionally
+        surface Docling's formula LaTeX as a default hint instead of discarding it;
+        slater-50page in the corpus decides. Defer if marginal.
 - [~] Second engine backend (MinerU / PaddleOCR-VL) behind the seam — bake-off RAN
       [2026-06-20]: Docling kept, MinerU is the validated *deferred* second backend
       (its only decisive edge is scanned equations; revisit if those dominate). See Decision Log.

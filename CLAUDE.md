@@ -45,10 +45,13 @@ src/pdf2md/
 
   enrich.py     engine-agnostic verification (GlyphIndex + enrich_blocks/tables/figures):
                 ligature/diacritic repair, inline scripts, equation text-layer cross-check, OCR
-                detection. Reads pypdfium2 glyph geometry; any engine inherits it.
-  normalize.py  text cleanup (Greek glyph names, orphan combining marks) + vocab-validated
-                ligature/diacritic word repair (religature, rejoin_split_word, vocabulary).
+                detection, font-decode repair (garbage prose refilled from the pdfium glyph
+                layer). Reads pypdfium2 glyph geometry; any engine inherits it.
+  normalize.py  text cleanup (Greek glyph names, orphan combining marks, clean_reading) + vocab-
+                validated ligature/diacritic word repair (religature, rejoin_split_word, vocabulary).
   scripts.py    inline sub/superscript detector from glyph geometry (PageChars, apply_scripts).
+  legibility.py symbol-font garbage detector (score_legibility/is_garbage): dingbat/PUA/glyph-name
+                density. Gates the enrich refill and the emit `illegible` flag.
   confidence.py equation LaTeX vs text-layer cross-check scoring (assess_equation; RECOVER_BELOW, SCRAMBLED_ABOVE, HINT_MIN_CONF).
   transcribe.py opt-in multi-pass: re-transcribe image-backed equation crops with local math-OCR (Surya). Transcriber seam + SuryaTranscriber.
   structure.py  Section tree → file layout. bookmarks → heading outline → single document.md.
@@ -90,6 +93,13 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   the engine.** When the engine's LaTeX disagrees with the text layer (or a scan
   has none), the equation is cropped to an authoritative image and the text rides
   as a flagged hint. `--transcribe` re-OCRs that crop with Surya (`transcribe.py`).
+- **Broken-font text (dingbat mojibake) is repaired from pdfium, not the engine.**
+  A font with no usable ToUnicode CMap makes Docling's default backend emit symbol-
+  font garbage (`/a114❛❝...`); pypdfium2 decodes it correctly. `enrich.py` detects
+  garbage prose (`legibility.is_garbage`) and refills it from `PageChars.text_region`.
+  A block that's still garbage after the refill is flagged `illegible` by `emit.py`,
+  never emitted as prose. Residual: the font's ﬀ/ﬁ/ﬂ ligatures also lack ToUnicode,
+  so pdfium drops them ('e cient'); legible but imperfect.
 - Docling bboxes are bottom-left origin (`y0 > y1`); `render.py` flips Y. Don't
   re-flip elsewhere.
 - Docling formulas are `TextItem`s with label `formula` (self_ref `#/texts/N`),

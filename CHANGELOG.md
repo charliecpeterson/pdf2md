@@ -7,6 +7,27 @@ here.
 
 ## [Unreleased]
 ### Added
+- Legibility signal + font-decode repair ("Trust, measured"). A PDF whose embedded
+  font lacks a usable ToUnicode CMap extracts as symbol-font garbage (dingbats and
+  `/aNNN` glyph-name tokens — `❆ ♣/a114❛❝/a116✐❝❛❧` for "A practical guide"), which
+  Docling's default backend trusts; pypdfium2 decodes the same file correctly.
+  - `legibility.py`: a pure `score_legibility` / `is_garbage` over the
+    symbol-substitution signal (no vowel-ratio/dictionary check, which would
+    false-flag dense chemistry/math notation).
+  - `enrich.py` refills any garbage prose block from the pdfium glyph layer
+    (`PageChars.text_region`), stamping `text_source="pdfium"`; only swaps when
+    pdfium is actually cleaner, so a truly undecodable block stays flagged.
+  - `emit.py` flags a block that's still garbage after the refill (visible marker +
+    `illegible` coverage tally + front-matter `illegible_blocks`) instead of
+    passing it off as readable prose — the blind spot that let a 67%-dingbat doc
+    report lossless. `scripts/qa.py` gains an `illegible` gated invariant and now
+    audits split/book outputs (it was skipping any doc without `document.md`).
+    **`FORMAT_VERSION` 0.4 -> 0.5** (optional `illegible_blocks` front-matter key;
+    `illegible` count added to the coverage report).
+  - Validated on the GRASP2018 manual: illegible prose blocks 1653 → 0, text
+    readable, bibliographic metadata recovered. Known residual: the broken font's
+    ﬀ/ﬁ/ﬂ ligature glyphs also lack a ToUnicode mapping, so pdfium drops them
+    ('e cient' for 'efficient'); legible but imperfect, far better than dingbats.
 - Diacritic-split repair: words the text layer fractures where a diacritic was
   dropped ('Löwdin' -> 'Lo wdin', 'Schädel' -> 'Scha del') are rejoined, reusing
   the ligature machinery's vocabulary validation. Guarded on the *stem* (left

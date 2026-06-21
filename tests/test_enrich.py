@@ -72,6 +72,26 @@ def test_prose_religatured_against_vocab():
     assert p.text == "a different result"  # ligature rejoined, no scripts to overlay
 
 
+def test_garbage_prose_refilled_from_pdfium():
+    # Engine text is symbol-font garbage (broken ToUnicode); the pdfium glyph layer
+    # decodes the same bbox cleanly, so the block is refilled and stamped.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH,
+              text="❆ ♣/a114❛❝/a116✐❝❛❧ ❣✉✐❞❡", page=1, bbox=_BB)
+    glyphs = _FakeGlyphs({1: _FakePC(text="A practical guide\r\n")})
+    enrich_blocks([p], glyphs)
+    assert p.text == "A practical guide"
+    assert p.extra["text_source"] == "pdfium"
+
+
+def test_garbage_prose_kept_when_pdfium_also_garbage():
+    # Both readings are garbage (a truly undecodable block): no swap, so the block
+    # stays flagged illegible downstream rather than swapped for different garbage.
+    garbage = "❆ ♣/a114❛❝/a116✐❝❛❧"
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text=garbage, page=1, bbox=_BB)
+    enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="/a80/a114❡❢❛❝❡")}))
+    assert p.text == garbage and "text_source" not in p.extra
+
+
 def test_table_rebuilt_when_scripts_recovered():
     # A cell whose glyphs carry a superscript -> rebuild from cells, not the flat
     # engine markup. This is the table path that used to live inside the adapter.

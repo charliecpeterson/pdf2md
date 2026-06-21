@@ -7,6 +7,11 @@ from __future__ import annotations
 
 from pdf2md.schema import Block, CoverageFlag, CoverageReport, CoverageStatus
 
+# Flag reason for a prose block whose text stayed symbol-font garbage after the
+# pdfium refill (emit sets it; this module tallies it). Shared so the producer and
+# the counter can't drift on the string.
+ILLEGIBLE_REASON = "illegible text layer"
+
 
 def build_report(doc_id: str, blocks: list[Block], flags: list[CoverageFlag]) -> CoverageReport:
     def count(status: CoverageStatus) -> int:
@@ -19,5 +24,6 @@ def build_report(doc_id: str, blocks: list[Block], flags: list[CoverageFlag]) ->
         cropped=count(CoverageStatus.CROPPED),
         flagged=count(CoverageStatus.FLAGGED),
         dropped=count(CoverageStatus.DROPPED),
+        illegible=sum(1 for f in flags if f.reason == ILLEGIBLE_REASON),
         flags=flags,
     )

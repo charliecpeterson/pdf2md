@@ -18,7 +18,9 @@ import pypdfium2 as pdfium
 
 from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
 from pdf2md.logging import get_logger
+from pdf2md.legibility import is_garbage
 from pdf2md.normalize import (
+    clean_reading,
     has_split_ligature,
     has_split_word,
     normalize_text,
@@ -108,6 +110,15 @@ def enrich_blocks(blocks: list[Block], glyphs) -> None:
         if pc is None:
             b.extra["ocr"] = True
         if b.type in _SCRIPT_TYPES and pc is not None and b.bbox is not None:
+            # When the engine's text is symbol-font garbage (a broken ToUnicode CMap
+            # the engine trusted), refill it from the pdfium glyph layer, which
+            # decodes the same bbox correctly. Only swap when pdfium is actually
+            # better, so a truly undecodable block stays flagged downstream.
+            if is_garbage(b.text):
+                refilled = clean_reading(normalize_text(pc.text_region(b.bbox)))
+                if not is_garbage(refilled):
+                    b.text = refilled
+                    b.extra["text_source"] = "pdfium"
             # Rejoin split ligatures (validated against the page vocabulary), then
             # overlay scripts; both align to the same glyphs.
             b.text = religatured(b.text, glyphs.vocab)

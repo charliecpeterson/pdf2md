@@ -22,9 +22,17 @@ import json
 import re
 from pathlib import Path
 
+from pdf2md.legibility import is_garbage
+
 # Counts that must never rise (and lossless must stay True). Everything else is
-# informational drift — printed, never gated.
-_INVARIANTS = ("dropped", "ligature_residual", "unbalanced_eq")
+# informational drift — printed, never gated. `illegible` guards the font-decode
+# class: a block whose text is symbol-font garbage (broken ToUnicode) must never
+# silently pass as readable prose.
+_INVARIANTS = ("dropped", "ligature_residual", "unbalanced_eq", "illegible")
+
+# Prose-bearing block types whose text is held to the legibility bar (equations,
+# tables, and figures are judged elsewhere). Mirrors enrich's `_SCRIPT_TYPES`.
+_PROSE = {"paragraph", "heading", "list", "caption", "footnote", "other"}
 
 _LIG = re.compile(r"\w (?:ff|fi|fl|ffi|ffl) \w")
 _EQ = re.compile(r"^\$\$\n(.*?)\n\$\$", re.MULTILINE | re.DOTALL)
@@ -57,12 +65,15 @@ def _unbalanced(md: str) -> int:
 
 
 def _signals(version_dir: Path) -> dict | None:
+    # Single-document papers emit `document.md`; split books emit one `.md` per
+    # section. Concatenate whatever is there so book outputs are audited too (the
+    # md-based signals scan every section, not just a missing `document.md`).
     prov = version_dir / "provenance.json"
-    md_path = version_dir / "document.md"
-    if not prov.exists() or not md_path.exists():
+    md_files = sorted(version_dir.glob("*.md"))
+    if not prov.exists() or not md_files:
         return None
     d = json.loads(prov.read_text())
-    md = md_path.read_text()
+    md = "\n".join(p.read_text() for p in md_files)
     blocks = d.get("blocks", [])
 
     def status(s: str) -> int:
@@ -83,6 +94,10 @@ def _signals(version_dir: Path) -> dict | None:
         "tables": len(d.get("tables", [])),
         "ligature_residual": len(_LIG.findall(md)),
         "unbalanced_eq": _unbalanced(md),
+        "illegible": sum(
+            1 for b in blocks
+            if b.get("type") in _PROSE and b.get("text", "").strip() and is_garbage(b["text"])
+        ),
     }
 
 
@@ -97,14 +112,15 @@ def _collect(out_dir: Path) -> dict[str, dict]:
 
 def _print_table(sigs: dict[str, dict]) -> None:
     hdr = (f"{'DOC':28s} {'PG':>3} {'BLK':>4} {'LOSS':>4} {'DROP':>4} "
-           f"{'EQ':>3} {'IMG':>3} {'OCR':>3} {'TBL':>3} {'LIG':>3} {'UNBAL':>5}")
+           f"{'EQ':>3} {'IMG':>3} {'OCR':>3} {'TBL':>3} {'LIG':>3} {'UNBAL':>5} {'ILLEG':>5}")
     print(hdr)
     print("-" * len(hdr))
     for s in sigs.values():
         print(f"{s['source'][:28]:28s} {s['pages']:3d} {s['blocks']:4d} "
               f"{('OK' if s['lossless'] else 'NO'):>4} {s['dropped']:4d} "
               f"{s['eq_total']:3d} {s['eq_image_backed']:3d} {s['ocr_pages']:3d} "
-              f"{s['tables']:3d} {s['ligature_residual']:3d} {s['unbalanced_eq']:5d}")
+              f"{s['tables']:3d} {s['ligature_residual']:3d} {s['unbalanced_eq']:5d} "
+              f"{s['illegible']:5d}")
 
 
 def _check(sigs: dict[str, dict], baseline: dict[str, dict]) -> list[str]:
