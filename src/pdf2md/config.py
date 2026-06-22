@@ -20,6 +20,16 @@ class Config:
     # turns an OCR/garbled equation's hint into a real transcription. The crop image
     # stays the authoritative source either way.
     transcribe_equations: bool = False
+    # Describe image crops (figures, image-fallback tables, image-backed equations)
+    # with a vision model over an OpenAI-compatible API. Opt-in: needs the `openai`
+    # extra and a reachable `vlm_base_url`, and adds latency/cost per crop. The crop
+    # stays the authoritative source; the description rides below it as a labelled aid.
+    # `vlm_base_url` points at a local server (ollama/vLLM/LM Studio) or a remote
+    # endpoint; `vlm_model` must be a model that endpoint serves.
+    describe_figures: bool = False
+    vlm_base_url: str = "http://localhost:11434/v1"
+    vlm_model: str = "qwen2.5vl"
+    vlm_api_key: str | None = None
     crop_dpi: int = 220
     crop_padding_pts: float = 6.0
     # Blocks below this confidence become a visible marker rather than silent text.
