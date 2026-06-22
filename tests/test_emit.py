@@ -165,6 +165,21 @@ def test_heading_plan_label_plus_title_dup_dropped():
     assert "#/h0" in skip and "#/h1" in skip and "#/h0" not in text
 
 
+def test_section_refs_linkified_outside_fences(tmp_path):
+    from pdf2md.emit import _link_refs
+
+    p = tmp_path / "doc.md"
+    p.write_text("---\ntitle: x\n---\n\nSee section 9.2 here. Also section 1.1.\n\n"
+                 "```\nrun and read section 9.2 now\n```\n\nAnd section 7 (no dot).\n")
+    smap = {"9.2": ("09_x.md", "92-foo"), "1.1": ("doc.md", "11-bar")}
+    _link_refs(p, smap)
+    out = p.read_text()
+    assert "[section 9.2](09_x.md#92-foo)" in out   # cross-file link
+    assert "[section 1.1](#11-bar)" in out          # same-file -> bare anchor
+    assert "run and read section 9.2 now" in out    # inside a code fence: left verbatim
+    assert "And section 7 (no dot)." in out         # bare number: not linked (ambiguous)
+
+
 def test_illegible_prose_flagged_not_silently_emitted(tmp_path):
     # A prose block still symbol-font garbage after enrich's refill must surface as
     # a visible marker + an `illegible` tally, not pass as readable text — the exact

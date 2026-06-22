@@ -7,6 +7,11 @@ here.
 
 ## [Unreleased]
 ### Added
+- Cross-reference links: a "see section 9.2" reference is turned into a link to that
+  heading (in the same file or another), resolved against the actual headings so a
+  number with no matching section is left as plain text. Dotted numbers only (a bare
+  "section 9" is ambiguous with a chapter), and code fences are skipped so a console
+  session that prints "section 9.2" stays verbatim.
 - `index.md` contents file for split books: every section file linked, with its
   chapters and numbered sections nested beneath as in-file anchor links, built from
   the actual emitted (deduped/merged/nested) headings. One navigation entry point and

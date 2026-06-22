@@ -170,9 +170,17 @@ def emit_document(
             outline.append((path.name, section.title, heads))
         written.append(_write_index(version_dir, base_front, meta, outline))
     else:
-        path, _ = _write(version_dir / "document.md", base_front,
-                         meta.get("title") or "Document", doc.blocks, ctx)
+        path, heads = _write(version_dir / "document.md", base_front,
+                             meta.get("title") or "Document", doc.blocks, ctx)
         written.append(path)
+        outline = [(path.name, "", heads)]
+
+    # Turn "see section 9.2" into a link to that heading (in this file or another).
+    section_map = _section_map(outline)
+    if section_map:
+        for p in written:
+            if p.name != "index.md":
+                _link_refs(p, section_map)
 
     # Anything never touched by a file (shouldn't happen) is an honest drop.
     for b in doc.blocks:
@@ -186,6 +194,55 @@ def _anchor(text: str) -> str:
     """GitHub-style heading anchor: lowercase, drop punctuation, spaces to hyphens."""
     s = re.sub(r"[^\w\s-]", "", text.strip().lower())
     return re.sub(r"\s+", "-", s)
+
+
+# A cross-reference to a numbered section: "section 9.2", "Sect. 3.5", "§1.1". The
+# number must be dotted, so a bare "section 9" (ambiguous with a chapter) is left
+# alone; it is linked only when the number resolves to a real heading.
+_SECTION_REF = re.compile(r"\b(?:sections?|sect\.?|§)\s*(\d+(?:\.\d+)+)\b", re.I)
+
+
+def _section_map(outline) -> dict[str, tuple[str, str]]:
+    """number -> (file, anchor) from headings whose text starts with a dotted number."""
+    m: dict[str, tuple[str, str]] = {}
+    for fname, _title, heads in outline:
+        for _level, text, _page in heads:
+            mm = re.match(r"^(\d+(?:\.\d+)+)\b", text)
+            if mm:
+                m.setdefault(mm.group(1), (fname, _anchor(text)))
+    return m
+
+
+def _link_refs(path: Path, section_map: dict[str, tuple[str, str]]) -> None:
+    """Linkify numbered-section references in a file's body, skipping front-matter and
+    code fences (a console session that mentions 'section 9.2' must stay verbatim)."""
+    def repl(m: re.Match) -> str:
+        target = section_map.get(m.group(1))
+        if target is None:
+            return m.group(0)
+        fname, anchor = target
+        href = f"#{anchor}" if fname == path.name else f"{fname}#{anchor}"
+        return f"[{m.group(0)}]({href})"
+
+    out: list[str] = []
+    in_fm = fm_done = fenced = False
+    for i, line in enumerate(path.read_text().splitlines()):
+        if not fm_done:
+            if i == 0 and line.strip() == "---":
+                in_fm = True
+                out.append(line)
+                continue
+            if in_fm:
+                if line.strip() == "---":
+                    fm_done = True
+                out.append(line)
+                continue
+        if line.startswith("```"):
+            fenced = not fenced
+            out.append(line)
+            continue
+        out.append(line if fenced else _SECTION_REF.sub(repl, line))
+    path.write_text("\n".join(out) + "\n")
 
 
 def _write_index(version_dir: Path, base_front: dict, meta: dict, outline) -> Path:
