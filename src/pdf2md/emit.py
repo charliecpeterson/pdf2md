@@ -173,6 +173,11 @@ def _render_block(
     if b.type in _BOILERPLATE:  # intentionally stripped, not lost
         return None, CoverageStatus.EMITTED, None
 
+    # A console transcript enrich re-read line-preserved (Docling mislabelled it
+    # prose): emit in a code fence so the layout survives reading-order collapse.
+    if b.extra.get("preformatted") and txt:
+        return f"```\n{b.text}\n```", CoverageStatus.EMITTED, None
+
     # A table Docling couldn't parse to cells still has a bbox; the pipeline cropped
     # it, so emit the image rather than dropping the region (equations carry their
     # own crop handling in the EQUATION branch below).
@@ -188,6 +193,8 @@ def _render_block(
     # carry cells) — otherwise the content is orphaned and the block dropped.
     table = ctx.tables.get(b.id)
     if table is not None:
+        if table.preformatted:  # ASCII-art table -> code fence, not a mangled grid
+            return f"```\n{table.preformatted}\n```", CoverageStatus.EMITTED, None
         return render_table(table), CoverageStatus.EMITTED, None
 
     if b.type == BlockType.FIGURE:

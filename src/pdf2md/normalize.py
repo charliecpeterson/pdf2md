@@ -74,6 +74,13 @@ def clean_reading(text: str) -> str:
     return re.sub(r"\s+", " ", _CONTROL.sub(" ", text)).strip()
 
 
+def clean_preformatted(text: str) -> str:
+    """Like `clean_reading` but keep the line breaks — for console/ASCII blocks whose
+    meaning is the layout. Strips control-mapped glyphs and trailing space per line."""
+    lines = [_CONTROL.sub("", unglyph(ln)).rstrip() for ln in text.splitlines()]
+    return "\n".join(lines).strip("\n")
+
+
 # A ligature cluster left stranded between two word-fragments by a stray space.
 _LIG_SPLIT = re.compile(r"(\w+) (ff|ffi|ffl|fi|fl) (\w+)")
 

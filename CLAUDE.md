@@ -52,6 +52,9 @@ src/pdf2md/
   scripts.py    inline sub/superscript detector from glyph geometry (PageChars, apply_scripts).
   legibility.py symbol-font garbage detector (score_legibility/is_garbage): dingbat/PUA/glyph-name
                 density. Gates the enrich refill and the emit `illegible` flag.
+  preformat.py  console/ASCII-table detector (is_preformatted): banner/rule lines (+ pipe columns
+                for tables). Routes code blocks, mislabelled console prose, and ASCII tables to
+                fenced code-block emission with line structure preserved.
   confidence.py equation LaTeX vs text-layer cross-check scoring (assess_equation; RECOVER_BELOW, SCRAMBLED_ABOVE, HINT_MIN_CONF).
   transcribe.py opt-in multi-pass: re-transcribe image-backed equation crops with local math-OCR (Surya). Transcriber seam + SuryaTranscriber.
   structure.py  Section tree → file layout. bookmarks → heading outline → single document.md.

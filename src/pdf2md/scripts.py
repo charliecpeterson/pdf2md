@@ -163,6 +163,7 @@ class PageChars:
 
     def __init__(self, page: "pdfium.PdfPage") -> None:
         tp = page.get_textpage()
+        self._tp = tp  # kept for text_lines (pdfium's native line detection)
         n = tp.count_chars()
         # One text call for the whole page instead of one per char; fall back to
         # per-char only if the string and char count desync (rare encoded glyphs).
@@ -198,6 +199,14 @@ class PageChars:
         """Raw text-layer string of the glyphs inside `bbox`, in reading order: the
         born-digital character truth used to cross-check an equation's LaTeX."""
         return "".join(c[0] for c in self._region(bbox))
+
+    def text_lines(self, bbox) -> str:
+        """Text inside `bbox` with pdfium's native line breaks preserved — the layout
+        of a console transcript or ASCII table, which `text_region`'s flat join and
+        the script grouping both destroy."""
+        left, right = min(bbox.x0, bbox.x1), max(bbox.x0, bbox.x1)
+        bottom, top = min(bbox.y0, bbox.y1), max(bbox.y0, bbox.y1)
+        return self._tp.get_text_bounded(left=left, bottom=bottom, right=right, top=top)
 
     def reading_disorder(self, bbox) -> float:
         """How far the text layer's draw order departs from geometric reading order

@@ -532,6 +532,17 @@ authn/authz/multi-tenancy.
         script overlay's long-standing glyph mis-alignment). Guarded by a new
         `illegible_table_rows` invariant in `qa.py`. Validated: GRASP tables readable,
         atkins-50page unaffected.
+  - [x] **Step 3c — preformatted content (console / ASCII tables) (2026-06-21).**
+        GRASP's sample-runs chapter is program I/O transcripts and ASCII-art tables —
+        monospace text whose meaning is the line layout, which the prose/table model
+        flattens or mis-grids. New `preformat.is_preformatted` (banner/rule lines, +
+        pipe columns for tables) + `PageChars.text_lines` (pdfium native line breaks)
+        + `normalize.clean_preformatted`. `enrich` routes Docling `code` blocks
+        (refilled line-preserved), banner-bearing prose the engine mislabelled, and
+        ASCII-art tables to fenced code-block emission. Banner detector: 0 false
+        positives on the clean control paper. Detection signal: font fixed-pitch flag
+        is unusable (pdfium returns empty font info for these subset fonts), so the
+        signal is content (banner/rule lines) + table-only pipe columns, not geometry.
   - [x] **Step 4 — honest invariant** (`schema.py`, `coverage.py`, `emit.py`):
         `CoverageReport.illegible` tally; still-garbage prose → FLAGGED + visible
         marker + front-matter `illegible_blocks`, not silent EMITTED. **`FORMAT_VERSION`

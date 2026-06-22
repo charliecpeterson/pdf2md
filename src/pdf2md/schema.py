@@ -82,6 +82,9 @@ class TableData:
     gfm: str
     html: str | None = None
     has_spanning_cells: bool = False
+    # Set when the "table" is really an ASCII-art / console block the engine can't
+    # grid: the line-preserved text, emitted as a code fence instead of a GFM table.
+    preformatted: str | None = None
 
 
 @dataclass

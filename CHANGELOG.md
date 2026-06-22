@@ -7,6 +7,23 @@ here.
 
 ## [Unreleased]
 ### Added
+- Preformatted-content handling for console transcripts and ASCII-art tables
+  (software manuals like GRASP). These are monospace text whose meaning is the line
+  layout: the engine flattens a console session into one run-on paragraph or
+  mis-grids an ASCII table, and (with the broken font) emits dingbats.
+  - `preformat.py` (`is_preformatted`): banner/rule-line detection (a line that is
+    almost entirely `*`/`-`/`=`/`_`/`#`), plus literal `|` column rows for tables.
+    Banner detection tested at zero false positives on a clean paper.
+  - `PageChars.text_lines`: pdfium's native bounded text, with line breaks preserved
+    (unlike `text_region`'s flat join). `normalize.clean_preformatted` cleans it
+    while keeping the lines.
+  - `enrich.py`: a `code` block (Docling labels console sessions as code) is refilled
+    from the pdfium glyph layer line-preserved; a prose block whose re-read carries
+    banner lines (console the engine mislabelled) is marked `preformatted`; a "table"
+    that is really ASCII-art (`TableData.preformatted`) keeps its line layout. All
+    three emit as fenced code blocks instead of flattened prose or mangled grids.
+  - Validated on GRASP: console I/O sessions and energy-level listings now render
+    readably with structure intact; the clean control paper gains zero code fences.
 - Font-decode repair extended to table cells. The prose refill (below) left table
   cells in symbol-font garbage because cells aren't prose blocks and the `illegible`
   metric is prose-only. Now `enrich._table_grid` refills garbage cells from the same

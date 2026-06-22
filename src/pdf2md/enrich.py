@@ -21,6 +21,7 @@ from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
 from pdf2md.logging import get_logger
 from pdf2md.legibility import is_garbage
 from pdf2md.normalize import (
+    clean_preformatted,
     clean_reading,
     has_split_ligature,
     has_split_word,
@@ -29,6 +30,7 @@ from pdf2md.normalize import (
     religature,
     vocabulary,
 )
+from pdf2md.preformat import is_preformatted
 from pdf2md.schema import Block, BlockType, FigureRef, RawTable, TableData
 from pdf2md.scripts import PageChars, apply_scripts
 from pdf2md.tables import GridCell, build_gfm, build_html
@@ -123,7 +125,22 @@ def enrich_blocks(blocks: list[Block], glyphs) -> None:
         # be cross-checked and the scan pixels are the only ground truth.
         if pc is None:
             b.extra["ocr"] = True
-        if b.type in _SCRIPT_TYPES and pc is not None and b.bbox is not None:
+        if b.type is BlockType.CODE and pc is not None and b.bbox is not None:
+            # Docling labels program/console transcripts as code, but its text is the
+            # same symbol-font garbage; re-read from pdfium with line breaks preserved
+            # (the layout is the content) so the code fence shows the real session.
+            relines = clean_preformatted(pc.text_lines(b.bbox))
+            if relines and not is_garbage(relines):
+                b.text = relines
+        elif b.type in _SCRIPT_TYPES and pc is not None and b.bbox is not None:
+            # A console transcript Docling mislabels as prose (rather than code): its
+            # banner lines mark it preformatted, so re-read line-preserved and emit as
+            # a code fence instead of letting reading-order collapse flatten it.
+            lines = pc.text_lines(b.bbox)
+            if is_preformatted(lines):
+                b.text = clean_preformatted(lines)
+                b.extra["preformatted"] = True
+                continue
             # When the engine's text is symbol-font garbage (a broken ToUnicode CMap
             # the engine trusted), refill it from the pdfium glyph layer, which
             # decodes the same bbox correctly.
@@ -159,6 +176,14 @@ def enrich_tables(tables: list[TableData], raw_tables: dict[str, RawTable], glyp
     otherwise just ligature-repair the engine's own rendering."""
     for t in tables:
         pc = glyphs.page_chars(t.page)
+        # A "table" that is really an ASCII-art block (console listing, monospace
+        # data table with rule lines) can't be gridded; keep it as line-preserved
+        # text for code-fence emission rather than a mangled grid.
+        if pc is not None and t.bbox is not None:
+            lines = pc.text_lines(t.bbox)
+            if is_preformatted(lines, pipes=True):
+                t.preformatted = clean_preformatted(lines)
+                continue
         raw = raw_tables.get(t.block_id)
         rebuilt = (
             _rebuilt_table(raw, pc, glyphs.vocab, t.has_spanning_cells)

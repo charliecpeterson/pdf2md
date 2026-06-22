@@ -13,11 +13,14 @@ _BB = BBox(x0=0, y0=10, x1=10, y1=0)
 class _FakePC:
     empty = False
 
-    def __init__(self, text: str = "", scored=None, disorder: float = 0.0) -> None:
-        self._text, self._scored, self._disorder = text, scored or [], disorder
+    def __init__(self, text: str = "", scored=None, disorder: float = 0.0, lines: str = "") -> None:
+        self._text, self._scored, self._disorder, self._lines = text, scored or [], disorder, lines
 
     def text_region(self, bbox) -> str:
         return self._text
+
+    def text_lines(self, bbox) -> str:
+        return self._lines
 
     def scored_region(self, bbox):
         return self._scored
@@ -103,6 +106,53 @@ def test_table_rebuilt_when_scripts_recovered():
     glyphs = _FakeGlyphs({1: _FakePC(scored=[("n", None), ("2", "sup")])})
     enrich_tables([t], {"#/t": raw}, glyphs)
     assert "<sup>2</sup>" in t.gfm
+
+
+def test_code_block_refilled_from_pdfium():
+    # Docling labels a console transcript as code but its text is symbol-font garbage;
+    # enrich re-reads it from pdfium with line breaks preserved.
+    console = "\n".join([">>rnucleus", "Enter the atomic number:", ">>26"])
+    b = Block(id="#/c", type=BlockType.CODE, text="❆/a114❝ ❣❛/a114❜❛❣❡", page=1, bbox=_BB)
+    enrich_blocks([b], _FakeGlyphs({1: _FakePC(lines=console)}))
+    assert b.text == console and "\n" in b.text
+
+
+def test_console_prose_block_marked_preformatted():
+    # A console transcript Docling mislabels as a paragraph: its banner lines mark it
+    # preformatted, so enrich keeps the line structure for code-fence emission.
+    console = "\n".join([
+        "*****************************",
+        "* RUN RNUCLEUS *",
+        "*****************************",
+        ">>rnucleus",
+        "Enter the atomic number:",
+    ])
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="flattened garbage", page=1, bbox=_BB)
+    enrich_blocks([p], _FakeGlyphs({1: _FakePC(lines=console)}))
+    assert p.extra.get("preformatted") is True and "\n" in p.text
+
+
+def test_prose_with_pipes_not_preformatted():
+    # A prose block must not be flagged just for containing '|' (bra-ket, abs value);
+    # the pipe signal is table-only. No banner lines here -> stays prose.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="x", page=1, bbox=_BB)
+    pc = _FakePC(lines="the state |a| and |b| and |c|\nare normalized\nsee eq 3")
+    enrich_blocks([p], _FakeGlyphs({1: pc}, vocab=set()))
+    assert "preformatted" not in p.extra
+
+
+def test_ascii_table_emitted_as_preformatted():
+    # An ASCII-art "table" (literal pipe columns) Docling can't grid: keep it as
+    # line-preserved text for a code fence, not a mangled GFM grid.
+    ascii_tbl = "\n".join([
+        "Configuration | Term | J | Level",
+        "--------------|------|---|------",
+        "2p6.3s2       | 1S   | 0 | 0",
+        "3s.3p         | 3P*  | 0 | 233842",
+    ])
+    t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="| mangled |", has_spanning_cells=False)
+    enrich_tables([t], {}, _FakeGlyphs({1: _FakePC(lines=ascii_tbl)}))
+    assert t.preformatted is not None and "Configuration | Term" in t.preformatted
 
 
 def test_garbage_table_cell_refilled_from_pdfium():
