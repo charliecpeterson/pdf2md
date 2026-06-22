@@ -58,6 +58,7 @@ src/pdf2md/
   confidence.py equation LaTeX vs text-layer cross-check scoring (assess_equation; RECOVER_BELOW, SCRAMBLED_ABOVE, HINT_MIN_CONF).
   transcribe.py opt-in multi-pass: re-transcribe image-backed equation crops with local math-OCR (Surya). Transcriber seam + SuryaTranscriber.
   structure.py  Section tree → file layout. bookmarks → heading outline → single document.md.
+                emit dedups/merges/nests book headings (_heading_plan) and writes index.md.
   bookmarks.py  read embedded PDF TOC via pypdfium2.
   outline.py    heading depth (from section numbering) + section kind.
   render.py     pypdfium2 bbox crops → assets/ (Y-flip, per-page geometry, full-page fallback).

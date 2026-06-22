@@ -7,6 +7,11 @@ here.
 
 ## [Unreleased]
 ### Added
+- `index.md` contents file for split books: every section file linked, with its
+  chapters and numbered sections nested beneath as in-file anchor links, built from
+  the actual emitted (deduped/merged/nested) headings. One navigation entry point and
+  a map of where everything lives, for a human or a model. Single-file papers are
+  unaffected.
 - Heading hierarchy for split books. Bookmarks only mark Parts, so chapters and
   sections arrived flat (everything `#`) with the bookmark title duplicated by the
   page's own heading ("# I Overview" then "# Part I Overview"; "# Chapter 1" then

@@ -100,6 +100,7 @@ class _Ctx:
     base_depth: int = 0
     head_skip: set[str] = field(default_factory=set)
     head_text: dict[str, str] = field(default_factory=dict)
+    headings: list[tuple[int, str, int]] = field(default_factory=list)  # (level, text, page) for the index
 
 
 # Strip a leading "Part/Chapter/Appendix" word and/or a standalone number or roman
@@ -127,8 +128,14 @@ def _heading_plan(blocks: list[Block], title: str) -> tuple[set[str], dict[str, 
             skip.add(b.id)
         elif is_label_heading(h) and i + 1 < len(headings):
             nxt = headings[i + 1]
-            text[b.id] = f"{h}: {nxt.text.strip()}"
-            skip.add(nxt.id)
+            if norm_title and _norm_title(nxt.text) == norm_title:
+                # "Part IV" + "Issues of convergence …" together just restate the file
+                # title — drop both rather than merge them into a duplicate heading.
+                skip.add(b.id)
+                skip.add(nxt.id)
+            else:
+                text[b.id] = f"{h}: {nxt.text.strip()}"
+                skip.add(nxt.id)
     return skip, text
 
 
@@ -145,26 +152,27 @@ def emit_document(
 
     written: list[Path] = []
     if structure.split:
+        outline: list[tuple[str, str, list[tuple[int, str, int]]]] = []  # (filename, title, headings)
         front_ids = list(structure.root.block_ids)
         if front_ids:
-            written.append(
-                _write(version_dir / "00_front.md", base_front, "Front matter",
-                       _ordered(doc.blocks, set(front_ids)), ctx, base_depth=1)
-            )
+            path, heads = _write(version_dir / "00_front.md", base_front, "Front matter",
+                                 _ordered(doc.blocks, set(front_ids)), ctx, base_depth=1)
+            written.append(path)
+            outline.append((path.name, "Front matter", heads))
         for i, section in enumerate(structure.root.children, start=1):
             ids = _subtree_ids(section)
             name = f"{i:02d}_{_slug(section.title)}.md"
             # The file title is the section's H1; deepen body headings so chapters
             # and numbered sections nest under it instead of all landing at H1.
-            written.append(
-                _write(version_dir / name, base_front, section.title,
-                       _ordered(doc.blocks, ids), ctx, base_depth=1)
-            )
+            path, heads = _write(version_dir / name, base_front, section.title,
+                                 _ordered(doc.blocks, ids), ctx, base_depth=1)
+            written.append(path)
+            outline.append((path.name, section.title, heads))
+        written.append(_write_index(version_dir, base_front, meta, outline))
     else:
-        written.append(
-            _write(version_dir / "document.md", base_front,
-                   meta.get("title") or "Document", doc.blocks, ctx)
-        )
+        path, _ = _write(version_dir / "document.md", base_front,
+                         meta.get("title") or "Document", doc.blocks, ctx)
+        written.append(path)
 
     # Anything never touched by a file (shouldn't happen) is an honest drop.
     for b in doc.blocks:
@@ -174,20 +182,46 @@ def emit_document(
     return written, ctx.flags
 
 
+def _anchor(text: str) -> str:
+    """GitHub-style heading anchor: lowercase, drop punctuation, spaces to hyphens."""
+    s = re.sub(r"[^\w\s-]", "", text.strip().lower())
+    return re.sub(r"\s+", "-", s)
+
+
+def _write_index(version_dir: Path, base_front: dict, meta: dict, outline) -> Path:
+    """A navigable contents file for a split book: each section file linked, with its
+    chapters/sections nested beneath as in-file anchor links. Gives a reader (human or
+    model) one entry point and a map of where everything lives."""
+    title = meta.get("title") or "Document"
+    lines = [f"# {title} — Contents", ""]
+    for fname, ftitle, heads in outline:
+        lines.append(f"- [{ftitle}]({fname})")
+        # File entry is the list root (indent 0); a body heading at level N nests
+        # N-1 deep beneath it (a chapter at H2 -> one level in).
+        for level, htext, _page in heads:
+            lines.append(f"{'  ' * (level - 1)}- [{htext}]({fname}#{_anchor(htext)})")
+    front = {k: v for k, v in {**base_front, "section_title": "Contents"}.items() if v is not None}
+    fm = yaml.safe_dump(front, sort_keys=False, allow_unicode=True).strip()
+    path = version_dir / "index.md"
+    path.write_text(f"---\n{fm}\n---\n\n" + "\n".join(lines) + "\n")
+    return path
+
+
 def _write(path: Path, base_front: dict, title: str, blocks: list[Block], ctx: _Ctx,
-           *, base_depth: int = 0) -> Path:
+           *, base_depth: int = 0) -> tuple[Path, list[tuple[int, str, int]]]:
     # Drop null-valued keys: Quarto's schema rejects `doi: null` / `authors: null`
     # (a field declared as a string can't be null), failing the whole render.
     front = {k: v for k, v in {**base_front, "section_title": title}.items() if v is not None}
     body = _render_blocks(blocks, ctx, title=title, base_depth=base_depth)
     fm = yaml.safe_dump(front, sort_keys=False, allow_unicode=True).strip()
     path.write_text(f"---\n{fm}\n---\n\n# {title}\n\n{body}\n")
-    return path
+    return path, list(ctx.headings)
 
 
 def _render_blocks(blocks: list[Block], ctx: _Ctx, *, title: str = "", base_depth: int = 0) -> str:
     ctx.base_depth = base_depth
     ctx.head_skip, ctx.head_text = _heading_plan(blocks, title)
+    ctx.headings = []
     parts: list[str] = []
     footnotes: list[str] = []
     prev_page: int | None = None
@@ -267,9 +301,9 @@ def _render_block(
         if b.id in ctx.head_skip:  # duplicates the file title, or merged into a label
             return None, CoverageStatus.EMITTED, None
         text = ctx.head_text.get(b.id, txt)
-        depth = (ctx.depth_of.get(b.id) or heading_depth(b)) + ctx.base_depth
-        hashes = "#" * max(1, min(depth, 6))
-        return f"{hashes} {text}", CoverageStatus.EMITTED, None
+        level = max(1, min((ctx.depth_of.get(b.id) or heading_depth(b)) + ctx.base_depth, 6))
+        ctx.headings.append((level, text, b.page))
+        return f"{'#' * level} {text}", CoverageStatus.EMITTED, None
     if b.type == BlockType.LIST:
         return f"- {txt}", CoverageStatus.EMITTED, None
     if b.type == BlockType.CAPTION:

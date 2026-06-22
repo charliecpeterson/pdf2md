@@ -151,6 +151,20 @@ def test_heading_plan_dedup_and_merge():
     assert "#/h3" not in skip and "#/h3" not in text  # a normal numbered section is left alone
 
 
+def test_heading_plan_label_plus_title_dup_dropped():
+    # When a "Part N" label is followed by a heading that restates the file title,
+    # both are dropped (the file title already says it), not merged into a duplicate.
+    from pdf2md.emit import _heading_plan
+    from pdf2md.schema import Block, BlockType
+
+    blocks = [
+        Block("#/h0", BlockType.HEADING, "Part IV", 1),
+        Block("#/h1", BlockType.HEADING, "Issues of convergence and non-default options", 1),
+    ]
+    skip, text = _heading_plan(blocks, "IV Issues of convergence and non-default options")
+    assert "#/h0" in skip and "#/h1" in skip and "#/h0" not in text
+
+
 def test_illegible_prose_flagged_not_silently_emitted(tmp_path):
     # A prose block still symbol-font garbage after enrich's refill must surface as
     # a visible marker + an `illegible` tally, not pass as readable text — the exact
