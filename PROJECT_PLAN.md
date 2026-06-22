@@ -221,6 +221,21 @@ structure. "Whatever produces the best markdown from a PDF wins."
     is the validated, license-clear second backend; the swap seam keeps wiring
     it a contained change.
 
+- **[2026-06-21] Readability pass: headings, index, cross-refs, figure captions**
+  - **Context**: With GRASP's font/console/table content readable, a survey exposed
+    structural readability gaps that hurt both human and AI consumers.
+  - **Choice**: (1) **Heading hierarchy** for split books (`emit._heading_plan`): drop
+    a page heading that restates the bookmark file title, merge a bare "Chapter N"
+    label into the title after it, and deepen body headings so Part → Chapter →
+    section nest as `#`/`##`/`###`. (2) **`index.md`** contents file: every section
+    file linked, chapters/sections nested as in-file anchors, built from the emitted
+    headings. (3) **Cross-reference links**: dotted "section 9.2" refs linked to the
+    resolved heading, fence- and front-matter-aware, map-resolved so no dangling
+    links. (4) **Figure-caption font-decode refill** (`FigureRef.caption_bbox`) — the
+    last dingbat leak. Single-file papers unchanged throughout.
+  - **Deferred**: VLM figure/diagram descriptions (the biggest remaining AI-readability
+    lever) — a separate plan; figures are still opaque PNGs to a text consumer.
+
 - **[2026-06-21] Legibility as a measured signal; font-decode repair from pdfium**
   - **Context**: A broken-font born-digital PDF (GRASP2018 manual) converted to
     67% dingbat mojibake (`❆ ♣/a114❛❝/a116✐❝❛❧` = "A practical guide") while
