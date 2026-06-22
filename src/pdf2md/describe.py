@@ -52,9 +52,15 @@ def _prompt(kind: str, context: str = "") -> str:
     return f"{base}\n\nContext: {context.strip()}" if context.strip() else base
 
 
+# Transcription-heavy kinds: an OCR-tuned model reads their text/grids/math more
+# faithfully than a general VLM, so they route to `ocr_model` when one is configured.
+_OCR_KINDS = {"table", "equation"}
+
+
 @runtime_checkable
 class Describer(Protocol):
     def describe(self, image_path: Path, kind: str, context: str = "") -> str | None: ...
+    def model_for(self, kind: str) -> str: ...
 
 
 def _data_uri(image_path: Path) -> str:
@@ -66,7 +72,8 @@ class OpenAIVisionDescriber:
     server-specific surface is `_run` (the chat-completions call); pointing at a
     different host or model is pure config (`base_url`, `model`, `api_key`)."""
 
-    def __init__(self, base_url: str, model: str, api_key: str | None = None) -> None:
+    def __init__(self, base_url: str, model: str, api_key: str | None = None,
+                 ocr_model: str | None = None) -> None:
         try:
             from openai import OpenAI
         except ImportError as exc:  # openai is an optional extra
@@ -77,10 +84,14 @@ class OpenAIVisionDescriber:
         # Local servers (ollama, vLLM) ignore the key, but the client requires one set.
         self._client = OpenAI(base_url=base_url, api_key=api_key or "not-needed")
         self._model = model
+        self._ocr_model = ocr_model or model  # OCR kinds fall back to the main model
 
-    def _run(self, prompt: str, data_uri: str) -> str:
+    def model_for(self, kind: str) -> str:
+        return self._ocr_model if kind in _OCR_KINDS else self._model
+
+    def _run(self, model: str, prompt: str, data_uri: str) -> str:
         resp = self._client.chat.completions.create(
-            model=self._model,
+            model=model,
             messages=[{"role": "user", "content": [
                 {"type": "text", "text": prompt},
                 {"type": "image_url", "image_url": {"url": data_uri}},
@@ -90,7 +101,7 @@ class OpenAIVisionDescriber:
 
     def describe(self, image_path: Path, kind: str, context: str = "") -> str | None:
         try:
-            return self._run(_prompt(kind, context), _data_uri(image_path)) or None
+            return self._run(self.model_for(kind), _prompt(kind, context), _data_uri(image_path)) or None
         except Exception as exc:  # noqa: BLE001 - best-effort; the crop is the source
             log.warning("description failed for %s: %s", image_path.name, exc)
             return None
@@ -104,4 +115,5 @@ def get_describer(config) -> Describer | None:
         base_url=getattr(config, "vlm_base_url", "http://localhost:11434/v1"),
         model=getattr(config, "vlm_model", ""),
         api_key=getattr(config, "vlm_api_key", None),
+        ocr_model=getattr(config, "vlm_ocr_model", None),
     )

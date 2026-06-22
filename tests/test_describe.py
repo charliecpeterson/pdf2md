@@ -6,6 +6,9 @@ endpoint."""
 from __future__ import annotations
 
 import base64
+from dataclasses import replace
+
+import pytest
 
 from pdf2md.config import Config
 from pdf2md.describe import _data_uri, _prompt, get_describer
@@ -13,6 +16,16 @@ from pdf2md.describe import _data_uri, _prompt, get_describer
 
 def test_describer_off_by_default():
     assert get_describer(Config()) is None
+
+
+def test_model_routing_by_kind():
+    pytest.importorskip("openai")
+    d = get_describer(replace(Config(), describe_figures=True, vlm_model="vlm", vlm_ocr_model="ocr"))
+    assert d.model_for("figure") == "vlm"        # plots -> general VLM
+    assert d.model_for("table") == "ocr"         # transcription -> OCR model
+    assert d.model_for("equation") == "ocr"
+    d2 = get_describer(replace(Config(), describe_figures=True, vlm_model="vlm"))
+    assert d2.model_for("table") == "vlm"        # no ocr_model -> everything on the main model
 
 
 def test_prompt_is_kind_aware():
@@ -39,6 +52,9 @@ def test_data_uri_is_base64_png(tmp_path):
 class _FakeDescriber:
     def describe(self, image_path, kind, context=""):
         return f"desc of {kind}"
+
+    def model_for(self, kind):
+        return "fake"
 
 
 def test_describe_crops_routes_by_kind(tmp_path):
@@ -75,10 +91,13 @@ def test_describe_cache_skips_reinference(tmp_path):
             self.calls += 1
             return "a description"
 
+        def model_for(self, kind):
+            return "m"
+
     d = _Counting()
-    _describe_crops([FigureRef("#/p", 1, BBox(0, 1, 1, 0), asset_path="assets/p0.png")], [], d, tmp_path, "m")
+    _describe_crops([FigureRef("#/p", 1, BBox(0, 1, 1, 0), asset_path="assets/p0.png")], [], d, tmp_path)
     fig2 = FigureRef("#/p", 1, BBox(0, 1, 1, 0), asset_path="assets/p0.png")
-    _describe_crops([fig2], [], d, tmp_path, "m")  # same crop bytes + model
+    _describe_crops([fig2], [], d, tmp_path)  # same crop bytes + model
     assert d.calls == 1 and fig2.description == "a description"  # second run hit the cache
 
 
