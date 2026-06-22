@@ -6,6 +6,17 @@ separately by `FORMAT_VERSION` in `schema.py`; a breaking change there is noted
 here.
 
 ## [Unreleased]
+### Added
+- Heading hierarchy for split books. Bookmarks only mark Parts, so chapters and
+  sections arrived flat (everything `#`) with the bookmark title duplicated by the
+  page's own heading ("# I Overview" then "# Part I Overview"; "# Chapter 1" then
+  "# GRASP2018"). `emit._heading_plan` now drops a heading that restates the file
+  title (normalised so "Part IV: Issues …" matches the bookmark "IV Issues …"),
+  merges a bare "Chapter N" / "Part N" label into the title heading after it
+  ("## Chapter 1: GRASP2018"), and deepens body headings under the file-title H1 so
+  Part → Chapter → numbered section nest as `#`/`##`/`###`. Single-file papers are
+  unchanged.
+
 ### Fixed
 - Figure captions in a broken font stayed symbol-font garbage: `enrich_figures` only
   ligature-repaired them, never font-decode-refilled. The docling adapter now carries

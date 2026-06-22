@@ -134,6 +134,23 @@ def test_emit_snapshot(tmp_path, sample_document, snapshot):
     assert md_files[0].read_text() == snapshot
 
 
+def test_heading_plan_dedup_and_merge():
+    from pdf2md.emit import _heading_plan
+    from pdf2md.schema import Block, BlockType
+
+    blocks = [
+        Block("#/h0", BlockType.HEADING, "Part I Overview of GRASP2018", 1),
+        Block("#/h1", BlockType.HEADING, "Chapter 1", 1),
+        Block("#/h2", BlockType.HEADING, "GRASP2018", 1),
+        Block("#/h3", BlockType.HEADING, "1.1 Relativistic calculations", 1),
+    ]
+    skip, text = _heading_plan(blocks, "I Overview of GRASP2018")
+    assert "#/h0" in skip                            # restates the file title -> dropped
+    assert text["#/h1"] == "Chapter 1: GRASP2018"    # bare label merged with its title
+    assert "#/h2" in skip                            # the title was consumed by the merge
+    assert "#/h3" not in skip and "#/h3" not in text  # a normal numbered section is left alone
+
+
 def test_illegible_prose_flagged_not_silently_emitted(tmp_path):
     # A prose block still symbol-font garbage after enrich's refill must surface as
     # a visible marker + an `illegible` tally, not pass as readable text — the exact

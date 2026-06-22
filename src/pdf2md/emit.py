@@ -16,7 +16,7 @@ import yaml
 from pdf2md.confidence import HINT_MIN_CONF, RECOVER_BELOW
 from pdf2md.coverage import ILLEGIBLE_REASON
 from pdf2md.legibility import is_garbage
-from pdf2md.outline import heading_depth
+from pdf2md.outline import heading_depth, is_label_heading
 from pdf2md.schema import (
     FORMAT_VERSION,
     Block,
@@ -93,6 +93,43 @@ class _Ctx:
     figures: dict[str, FigureRef]
     footnotes: list[str] = field(default_factory=list)
     flags: list[CoverageFlag] = field(default_factory=list)
+    # Per-file heading state, reset by `_render_blocks`: how much to deepen body
+    # headings (so they nest under the file-title H1), headings to suppress
+    # (file-title duplicates, label headings merged into the next), and override text
+    # (a label heading merged with its title).
+    base_depth: int = 0
+    head_skip: set[str] = field(default_factory=set)
+    head_text: dict[str, str] = field(default_factory=dict)
+
+
+# Strip a leading "Part/Chapter/Appendix" word and/or a standalone number or roman
+# numeral so "Part IV: Issues …" and the bookmark title "IV Issues …" compare equal.
+# The `\b` keeps a real word ("Introduction") from losing its leading "I".
+_TITLE_PREFIX = re.compile(r"^(?:(?:part|chapter|appendix)\s+)?(?:\d+|[ivxlcdm]+)\b[.:]?\s*", re.I)
+
+
+def _norm_title(t: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", _TITLE_PREFIX.sub("", t.strip().lower())).strip()
+
+
+def _heading_plan(blocks: list[Block], title: str) -> tuple[set[str], dict[str, str]]:
+    """Decide which heading blocks to drop or rewrite for one file: drop a heading
+    that just restates the file title (the bookmark title and the page heading are
+    the same line), and fold a bare 'Chapter N' label into the title heading that
+    follows it."""
+    skip: set[str] = set()
+    text: dict[str, str] = {}
+    headings = [b for b in blocks if b.type == BlockType.HEADING and b.text.strip()]
+    norm_title = _norm_title(title)
+    for i, b in enumerate(headings):
+        h = b.text.strip()
+        if norm_title and _norm_title(h) == norm_title:
+            skip.add(b.id)
+        elif is_label_heading(h) and i + 1 < len(headings):
+            nxt = headings[i + 1]
+            text[b.id] = f"{h}: {nxt.text.strip()}"
+            skip.add(nxt.id)
+    return skip, text
 
 
 def emit_document(
@@ -112,14 +149,16 @@ def emit_document(
         if front_ids:
             written.append(
                 _write(version_dir / "00_front.md", base_front, "Front matter",
-                       _ordered(doc.blocks, set(front_ids)), ctx)
+                       _ordered(doc.blocks, set(front_ids)), ctx, base_depth=1)
             )
         for i, section in enumerate(structure.root.children, start=1):
             ids = _subtree_ids(section)
             name = f"{i:02d}_{_slug(section.title)}.md"
+            # The file title is the section's H1; deepen body headings so chapters
+            # and numbered sections nest under it instead of all landing at H1.
             written.append(
                 _write(version_dir / name, base_front, section.title,
-                       _ordered(doc.blocks, ids), ctx)
+                       _ordered(doc.blocks, ids), ctx, base_depth=1)
             )
     else:
         written.append(
@@ -135,17 +174,20 @@ def emit_document(
     return written, ctx.flags
 
 
-def _write(path: Path, base_front: dict, title: str, blocks: list[Block], ctx: _Ctx) -> Path:
+def _write(path: Path, base_front: dict, title: str, blocks: list[Block], ctx: _Ctx,
+           *, base_depth: int = 0) -> Path:
     # Drop null-valued keys: Quarto's schema rejects `doi: null` / `authors: null`
     # (a field declared as a string can't be null), failing the whole render.
     front = {k: v for k, v in {**base_front, "section_title": title}.items() if v is not None}
-    body = _render_blocks(blocks, ctx)
+    body = _render_blocks(blocks, ctx, title=title, base_depth=base_depth)
     fm = yaml.safe_dump(front, sort_keys=False, allow_unicode=True).strip()
     path.write_text(f"---\n{fm}\n---\n\n# {title}\n\n{body}\n")
     return path
 
 
-def _render_blocks(blocks: list[Block], ctx: _Ctx) -> str:
+def _render_blocks(blocks: list[Block], ctx: _Ctx, *, title: str = "", base_depth: int = 0) -> str:
+    ctx.base_depth = base_depth
+    ctx.head_skip, ctx.head_text = _heading_plan(blocks, title)
     parts: list[str] = []
     footnotes: list[str] = []
     prev_page: int | None = None
@@ -222,9 +264,12 @@ def _render_block(
         return _marker(b, ILLEGIBLE_REASON), CoverageStatus.FLAGGED, _flag(b, ILLEGIBLE_REASON)
 
     if b.type == BlockType.HEADING:
-        depth = ctx.depth_of.get(b.id) or heading_depth(b)
+        if b.id in ctx.head_skip:  # duplicates the file title, or merged into a label
+            return None, CoverageStatus.EMITTED, None
+        text = ctx.head_text.get(b.id, txt)
+        depth = (ctx.depth_of.get(b.id) or heading_depth(b)) + ctx.base_depth
         hashes = "#" * max(1, min(depth, 6))
-        return f"{hashes} {txt}", CoverageStatus.EMITTED, None
+        return f"{hashes} {text}", CoverageStatus.EMITTED, None
     if b.type == BlockType.LIST:
         return f"- {txt}", CoverageStatus.EMITTED, None
     if b.type == BlockType.CAPTION:

@@ -9,6 +9,15 @@ from pdf2md.schema import Block, SectionKind
 # Leading section number: "3", "3.5", "3.5.1" → depth = dotted-component count.
 _NUMBERING = re.compile(r"^\s*(\d+(?:\.\d+)*)\s")
 
+# A bare structural label — "Chapter 1", "Part I", "Appendix A" — with no title of
+# its own. Books print these on their own line above the chapter title; we merge the
+# two into one heading rather than emit "Chapter 1" and "GRASP2018" as siblings.
+_LABEL_HEADING = re.compile(r"^(?:chapter|part|appendix)\s+(?:\d+|[ivxlcdm]+|[a-z])\.?$", re.I)
+
+
+def is_label_heading(text: str) -> bool:
+    return bool(_LABEL_HEADING.match(text.strip()))
+
 
 def heading_depth(block: Block) -> int:
     """1-based heading depth. Docling's own heading level is unreliable (it tends
