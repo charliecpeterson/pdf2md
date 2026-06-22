@@ -121,6 +121,23 @@ def test_garbage_table_cell_refilled_from_pdfium():
     assert "A practical guide" in t.gfm and "❆" not in t.gfm
 
 
+def test_refilled_cell_strips_column_rule_pipes():
+    # This PDF draws table column rules as literal '|' glyphs the refill reads in;
+    # strip those (else cells become \|-soup) but keep a content pipe like bra-ket.
+    from pdf2md.enrich import _RULE_PIPE
+    assert _RULE_PIPE.sub(" ", "| 3F* | 2 | 559600 |").split() == ["3F*", "2", "559600"]
+    assert "|" in _RULE_PIPE.sub(" ", "|psi>")  # no surrounding space -> content, kept
+
+    raw = RawTable(
+        cells=[RawCell(text="❆/a114❝", bbox=_BB, row=0, col=0,
+                       row_span=1, col_span=1, header=False)],
+        num_rows=1, num_cols=1,
+    )
+    t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="garbage", has_spanning_cells=False)
+    enrich_tables([t], {"#/t": raw}, _FakeGlyphs({1: _FakePC(text="| 3F* |")}))
+    assert "3F*" in t.gfm and "\\|" not in t.gfm
+
+
 def test_table_falls_back_to_religatured_markup():
     # No structured cells -> keep the engine's rendering, ligature-repaired.
     t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="a di ff erent cell")

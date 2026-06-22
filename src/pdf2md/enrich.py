@@ -12,6 +12,7 @@ added here, not in an engine adapter.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pypdfium2 as pdfium
@@ -192,10 +193,19 @@ def _rebuilt_table(raw: RawTable, pc: PageChars, vocab, spanning: bool):
     return gfm, html
 
 
+# A '|' fenced by spaces or a cell edge is a column-rule glyph this PDF draws as a
+# literal separator (the refill reads it in); a '|' touching a non-space (bra-ket
+# `|ψ⟩`, `|x|`) is content and kept.
+_RULE_PIPE = re.compile(r"(?:(?<=\s)|^)\|(?=\s|$)")
+
+
 def _table_grid(raw: RawTable, pc: PageChars, vocab, *, escape: bool) -> list[GridCell]:
     out = []
     for c in raw.cells:
-        text = apply_scripts(religatured(refilled(c.text, c.bbox, pc), vocab),
+        cell = refilled(c.text, c.bbox, pc)
+        if cell != c.text:  # refilled from pdfium: drop captured column-rule pipes
+            cell = " ".join(_RULE_PIPE.sub(" ", cell).split())
+        text = apply_scripts(religatured(cell, vocab),
                              pc.scored_region(c.bbox) if c.bbox is not None else [],
                              escape=escape)
         if not escape:
