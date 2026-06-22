@@ -119,6 +119,7 @@ class FigureRef:
     caption: str | None = None
     caption_bbox: BBox | None = None  # the caption text's own bbox, for font-decode refill
     asset_path: str = ""  # relative path under the version dir, set by render
+    description: str | None = None  # optional VLM description of the crop (--describe)
 
 
 @dataclass

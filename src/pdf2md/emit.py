@@ -319,7 +319,8 @@ def _render_block(
         reason = ("scanned page — the image is the source, the OCR text is unreliable"
                   if b.extra.get("ocr")
                   else "table not extracted as text — the image below is the source")
-        return f"> **[pdf2md: {reason}]**\n\n![table]({crop})", CoverageStatus.CROPPED, _flag(b, "table image fallback")
+        out = f"> **[pdf2md: {reason}]**\n\n![table]({crop})" + _description(b.extra.get("description"))
+        return out, CoverageStatus.CROPPED, _flag(b, "table image fallback")
 
     # Render parsed table data wherever it exists, even when Docling labelled the
     # block something other than TABLE (TOC pages come through as `other` but still
@@ -334,7 +335,7 @@ def _render_block(
         fig = ctx.figures.get(b.id)
         if fig and fig.asset_path:
             alt = _clean_alt(fig.caption or "figure")
-            return f"![{alt}]({fig.asset_path})", CoverageStatus.CROPPED, None
+            return f"![{alt}]({fig.asset_path})" + _description(fig.description), CoverageStatus.CROPPED, None
         return _marker(b, "figure crop missing"), CoverageStatus.FLAGGED, _flag(b, "figure crop missing")
 
     if b.type == BlockType.TABLE:  # labelled a table but no cells parsed and no crop
@@ -394,6 +395,13 @@ def _render_block(
 
 def _marker(b: Block, reason: str) -> str:
     return f"> **[pdf2md: {reason}]** page {b.page}, block `{b.id}`"
+
+
+def _description(text: str | None) -> str:
+    """A VLM crop description (`--describe`), labelled as generated and placed below
+    the image. Empty when there's none, so it appends cleanly. The content rides
+    outside the marker blockquote so a transcribed GFM table still renders."""
+    return f"\n\n> **[pdf2md: AI-generated description]**\n\n{text}" if text else ""
 
 
 def _flag(b: Block, reason: str) -> CoverageFlag:

@@ -7,6 +7,17 @@ here.
 
 ## [Unreleased]
 ### Added
+- `--describe`: vision-model descriptions of image crops (opt-in). Figures, image-
+  fallback tables, and image-backed equations are opaque PNGs to a text consumer;
+  `describe.py` sends each crop to an OpenAI-compatible vision endpoint (`vlm_base_url`
+  / `vlm_model`, so localhost ollama/vLLM/LM-Studio or a remote host with no code
+  change) and emits a labelled description block below the image — except an equation,
+  whose transcription rides as its existing hint (and never overrides math-OCR). The
+  crop stays authoritative; the kind-aware prompt forbids inventing values. Needs the
+  `describe` extra (just the `openai` client) and a reachable endpoint. Validated
+  against ollama `qwen3-vl:8b`: accurate figure descriptions (the Transformer
+  architecture and attention diagrams read correctly). Still TODO: a crop-hash cache
+  so `--force` re-runs don't re-infer.
 - Cross-reference links: a "see section 9.2" reference is turned into a link to that
   heading (in the same file or another), resolved against the actual headings so a
   number with no matching section is left as plain text. Dotted numbers only (a bare

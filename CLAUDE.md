@@ -57,6 +57,8 @@ src/pdf2md/
                 fenced code-block emission with line structure preserved.
   confidence.py equation LaTeX vs text-layer cross-check scoring (assess_equation; RECOVER_BELOW, SCRAMBLED_ABOVE, HINT_MIN_CONF).
   transcribe.py opt-in multi-pass: re-transcribe image-backed equation crops with local math-OCR (Surya). Transcriber seam + SuryaTranscriber.
+  describe.py   opt-in (--describe): describe figure/table/equation crops with a vision model over an
+                OpenAI-compatible API (ollama/vLLM/remote). Describer seam + OpenAIVisionDescriber.
   structure.py  Section tree → file layout. bookmarks → heading outline → single document.md.
                 emit dedups/merges/nests book headings (_heading_plan) and writes index.md.
   bookmarks.py  read embedded PDF TOC via pypdfium2.

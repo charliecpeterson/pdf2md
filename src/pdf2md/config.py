@@ -28,7 +28,7 @@ class Config:
     # endpoint; `vlm_model` must be a model that endpoint serves.
     describe_figures: bool = False
     vlm_base_url: str = "http://localhost:11434/v1"
-    vlm_model: str = "qwen2.5vl"
+    vlm_model: str = "qwen3-vl:8b"
     vlm_api_key: str | None = None
     crop_dpi: int = 220
     crop_padding_pts: float = 6.0

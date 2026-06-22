@@ -36,6 +36,12 @@ def convert(
         False, "--transcribe",
         help="Re-transcribe image-backed equations with local math-OCR (needs surya-ocr; slow)."
     ),
+    describe: bool = typer.Option(
+        False, "--describe",
+        help="Describe figure/table/equation crops with a vision model over an "
+             "OpenAI-compatible API (needs the `describe` extra + a reachable endpoint; slow)."
+    ),
+    vlm_model: str = typer.Option(None, "--vlm-model", help="Vision model for --describe (overrides config)."),
     verbose: bool = typer.Option(False, "--verbose", "-v"),
 ) -> None:
     """Convert a PDF (or every PDF in a directory) to markdown."""
@@ -49,6 +55,10 @@ def convert(
         cfg = replace(cfg, detect_scripts=False)
     if transcribe:
         cfg = replace(cfg, transcribe_equations=True)
+    if describe:
+        cfg = replace(cfg, describe_figures=True)
+    if vlm_model:
+        cfg = replace(cfg, vlm_model=vlm_model)
 
     if path.is_dir():
         results = convert_dir(path, config=cfg, force=force)

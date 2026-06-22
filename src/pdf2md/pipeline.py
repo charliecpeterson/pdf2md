@@ -17,6 +17,7 @@ from pdf2md.bookmarks import read_bookmarks
 from pdf2md.cache import content_hash, doc_dir, latest_version, next_version
 from pdf2md.confidence import RECOVER_BELOW
 from pdf2md.config import Config
+from pdf2md.describe import Describer, get_describer
 from pdf2md.enrich import GlyphIndex, enrich_blocks, enrich_figures, enrich_tables
 from pdf2md.coverage import build_report
 from pdf2md.emit import emit_document
@@ -60,6 +61,7 @@ def convert_file(
     *,
     engine: Engine | None = None,
     transcriber: Transcriber | None = None,
+    describer: Describer | None = None,
     config: Config | None = None,
     force: bool = False,
 ) -> ConvertResult:
@@ -118,6 +120,13 @@ def convert_file(
         if transcriber is not None:
             _transcribe_equations(result.blocks, transcriber, vdir)
 
+    # Describe each crop (figure, image-fallback table, image-backed equation) with a
+    # vision model so the opaque PNG carries a text aid. The crop stays authoritative.
+    if config.describe_figures:
+        describer = describer or get_describer(config)
+        if describer is not None:
+            _describe_crops(result.figures, result.blocks, describer, vdir)
+
     doc = Document(
         doc_id=doc_id,
         source_path=str(pdf_path),
@@ -172,11 +181,13 @@ def convert_dir(
     config = config or Config()
     engine = _get_engine(engine, config)  # build once, reuse across the batch
     transcriber = get_transcriber(config)  # loads the math-OCR model once, if enabled
+    describer = get_describer(config)      # one vision client, reused across the batch
     results: list[ConvertResult] = []
     for pdf in pdfs:
         try:
             results.append(convert_file(
-                pdf, engine=engine, transcriber=transcriber, config=config, force=force))
+                pdf, engine=engine, transcriber=transcriber, describer=describer,
+                config=config, force=force))
         except Exception as exc:  # noqa: BLE001 - poison-pill isolation
             log.error("unhandled failure on %s: %s", pdf.name, exc)
             results.append(
@@ -203,6 +214,31 @@ def _transcribe_equations(blocks, transcriber, vdir: Path) -> None:
             latex = transcriber.transcribe(vdir / crop)
             if latex:
                 b.extra["transcribed"] = latex
+
+
+def _describe_crops(figures, blocks, describer: Describer, vdir: Path) -> None:
+    """Add a vision-model description to every rendered crop: figures and image-backed
+    tables get a labelled aid beside the image; an equation's transcription rides as
+    its hint (unless math-OCR already filled it). Best-effort — a crop with no
+    description just keeps what it had."""
+    for fig in figures:
+        if fig.asset_path:
+            desc = describer.describe(vdir / fig.asset_path, "figure", fig.caption or "")
+            if desc:
+                fig.description = desc
+    for b in blocks:
+        crop = b.extra.get("crop_path")
+        if not crop:
+            continue
+        if b.type is BlockType.EQUATION:
+            if not b.extra.get("transcribed"):
+                latex = describer.describe(vdir / crop, "equation", b.text or "")
+                if latex:
+                    b.extra["transcribed"] = latex
+        else:  # image-fallback table
+            desc = describer.describe(vdir / crop, "table", b.text or "")
+            if desc:
+                b.extra["description"] = desc
 
 
 def _table_crops(blocks, tables) -> list:
