@@ -16,8 +16,9 @@ here.
   crop stays authoritative; the kind-aware prompt forbids inventing values. Needs the
   `describe` extra (just the `openai` client) and a reachable endpoint. Validated
   against ollama `qwen3-vl:8b`: accurate figure descriptions (the Transformer
-  architecture and attention diagrams read correctly). Still TODO: a crop-hash cache
-  so `--force` re-runs don't re-infer.
+  architecture and attention diagrams read correctly). Descriptions are cached at the
+  doc level by (model, kind, crop bytes), so a `--force` re-run reuses them instead of
+  paying the vision model again.
 - Cross-reference links: a "see section 9.2" reference is turned into a link to that
   heading (in the same file or another), resolved against the actual headings so a
   number with no matching section is left as plain text. Dotted numbers only (a bare

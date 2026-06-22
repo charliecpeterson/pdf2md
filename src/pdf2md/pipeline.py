@@ -7,6 +7,7 @@ never aborts a batch.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -125,7 +126,7 @@ def convert_file(
     if config.describe_figures:
         describer = describer or get_describer(config)
         if describer is not None:
-            _describe_crops(result.figures, result.blocks, describer, vdir)
+            _describe_crops(result.figures, result.blocks, describer, vdir, config.vlm_model)
 
     doc = Document(
         doc_id=doc_id,
@@ -216,14 +217,31 @@ def _transcribe_equations(blocks, transcriber, vdir: Path) -> None:
                 b.extra["transcribed"] = latex
 
 
-def _describe_crops(figures, blocks, describer: Describer, vdir: Path) -> None:
+def _describe_crops(figures, blocks, describer: Describer, vdir: Path, model: str = "") -> None:
     """Add a vision-model description to every rendered crop: figures and image-backed
     tables get a labelled aid beside the image; an equation's transcription rides as
     its hint (unless math-OCR already filled it). Best-effort — a crop with no
-    description just keeps what it had."""
+    description just keeps what it had.
+
+    Descriptions are cached at the doc level by (model, kind, crop bytes), so a
+    `--force` re-run or a re-render with the same crops doesn't pay the vision model
+    again. The crop's pixels are the cache key, so a DPI/crop change misses correctly."""
+    cache_file = vdir.parent / "describe_cache.json"
+    cache: dict = json.loads(cache_file.read_text()) if cache_file.exists() else {}
+
+    def described(crop_rel: str, kind: str, context: str) -> str | None:
+        path = vdir / crop_rel
+        key = f"{model}:{kind}:{hashlib.sha256(path.read_bytes()).hexdigest()}"
+        if key in cache:
+            return cache[key]
+        text = describer.describe(path, kind, context)
+        if text:
+            cache[key] = text
+        return text
+
     for fig in figures:
         if fig.asset_path:
-            desc = describer.describe(vdir / fig.asset_path, "figure", fig.caption or "")
+            desc = described(fig.asset_path, "figure", fig.caption or "")
             if desc:
                 fig.description = desc
     for b in blocks:
@@ -232,13 +250,15 @@ def _describe_crops(figures, blocks, describer: Describer, vdir: Path) -> None:
             continue
         if b.type is BlockType.EQUATION:
             if not b.extra.get("transcribed"):
-                latex = describer.describe(vdir / crop, "equation", b.text or "")
+                latex = described(crop, "equation", b.text or "")
                 if latex:
                     b.extra["transcribed"] = latex
         else:  # image-fallback table
-            desc = describer.describe(vdir / crop, "table", b.text or "")
+            desc = described(crop, "table", b.text or "")
             if desc:
                 b.extra["description"] = desc
+
+    cache_file.write_text(json.dumps(cache, indent=2))
 
 
 def _table_crops(blocks, tables) -> list:

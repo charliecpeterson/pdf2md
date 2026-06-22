@@ -242,12 +242,15 @@ structure. "Whatever produces the best markdown from a PDF wins."
       lossless invariant. Prompt forbids inventing exact numeric values.
     - **Caching**: keyed by crop content hash so re-runs and incremental conversion
       don't re-infer.
-  - **Roadmap**:
-    - [ ] `describe.py`: `Describer` Protocol + `OpenAIVisionDescriber`; `get_describer(config)`.
-    - [ ] config/cli: `do_describe`, `vlm_base_url`, `vlm_model`, `vlm_api_key`; `--describe`.
-    - [ ] pipeline: run describer over each crop after render; store text on the block/figure.
-    - [ ] emit: labeled description block below each image; `qa.py` tracks `figures_described`.
-    - [ ] cache by crop hash; spot-check quality on GRASP + a chemistry paper.
+  - **Roadmap** (SHIPPED 2026-06-21):
+    - [x] `describe.py`: `Describer` Protocol + `OpenAIVisionDescriber`; `get_describer(config)`.
+    - [x] config/cli: `describe_figures`, `vlm_base_url`/`vlm_model`/`vlm_api_key`; `--describe`, `--vlm-model`.
+    - [x] pipeline `_describe_crops`: describer over each crop after render; figure/table → description,
+          equation → hint (never overrides math-OCR).
+    - [x] emit: labelled description block below figure/table images (`_description`).
+    - [x] cache by (model, kind, crop bytes) at the doc level; verified `--force` reuses it.
+    - [x] Validated against ollama `qwen3-vl:8b`: accurate Transformer-architecture / attention-diagram
+          descriptions. (`qa.py` figures_described counter not added — deferred as marginal.)
   - **Revisit if**: descriptions prove low-value or the hosted-model cost/latency doesn't
     justify; equation-crop description overlaps `--transcribe` (Surya) — keep whichever wins.
 
