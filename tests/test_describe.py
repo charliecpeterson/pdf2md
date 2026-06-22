@@ -22,8 +22,8 @@ def test_model_routing_by_kind():
     pytest.importorskip("openai")
     d = get_describer(replace(Config(), describe_figures=True, vlm_model="vlm", vlm_ocr_model="ocr"))
     assert d.model_for("figure") == "vlm"        # plots -> general VLM
-    assert d.model_for("table") == "ocr"         # transcription -> OCR model
-    assert d.model_for("equation") == "ocr"
+    assert d.model_for("table") == "ocr"         # dense grid -> OCR model
+    assert d.model_for("equation") == "vlm"      # equations transcribe cleaner on the VLM
     d2 = get_describer(replace(Config(), describe_figures=True, vlm_model="vlm"))
     assert d2.model_for("table") == "vlm"        # no ocr_model -> everything on the main model
 

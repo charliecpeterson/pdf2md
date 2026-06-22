@@ -29,9 +29,9 @@ class Config:
     describe_figures: bool = False
     vlm_base_url: str = "http://localhost:11434/v1"
     vlm_model: str = "qwen3-vl:8b"
-    # Optional OCR-tuned model for transcription-heavy crops (tables, equations); a
-    # general VLM describes plots best, but an OCR model reads dense text/math more
-    # faithfully. None → use vlm_model for every crop.
+    # Optional OCR-tuned model for table crops; an OCR model reads dense grids more
+    # faithfully than a general VLM. Equations/figures stay on vlm_model (VLMs give
+    # cleaner LaTeX and plot descriptions). None → use vlm_model for every crop.
     vlm_ocr_model: str | None = None
     vlm_api_key: str | None = None
     crop_dpi: int = 220

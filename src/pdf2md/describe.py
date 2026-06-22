@@ -52,9 +52,11 @@ def _prompt(kind: str, context: str = "") -> str:
     return f"{base}\n\nContext: {context.strip()}" if context.strip() else base
 
 
-# Transcription-heavy kinds: an OCR-tuned model reads their text/grids/math more
-# faithfully than a general VLM, so they route to `ocr_model` when one is configured.
-_OCR_KINDS = {"table", "equation"}
+# Tables route to `ocr_model` (when configured): an OCR-tuned model reads dense grids
+# more faithfully. Equations do NOT — a general VLM transcribes them to cleaner LaTeX
+# (OCR models add the equation-number \tag and CJK punctuation), and --transcribe
+# (Surya) is the dedicated math path if you want one.
+_OCR_KINDS = {"table"}
 
 
 @runtime_checkable

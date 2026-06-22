@@ -18,12 +18,13 @@ here.
   against ollama `qwen3-vl:8b`: accurate figure descriptions (the Transformer
   architecture and attention diagrams read correctly). Descriptions are cached at the
   doc level by (model, kind, crop bytes), so a `--force` re-run reuses them instead of
-  paying the vision model again. Models route by crop kind: figures use `vlm_model`
-  (a general VLM describes plots best), while tables and equations use an optional
-  OCR-tuned `vlm_ocr_model` (`--vlm-ocr-model`, e.g. glm-ocr) that reads dense
-  text/math more faithfully — a review found the general 8B model mangles embedded
-  command names while an OCR model reads them correctly. The equation hint now labels
-  its source ("math OCR" vs "vision model") instead of always claiming math OCR.
+  paying the vision model again. Models route by crop kind: figures and equations use
+  `vlm_model` (a general VLM describes plots and transcribes LaTeX cleanly), while
+  tables can use an optional OCR-tuned `vlm_ocr_model` (`--vlm-ocr-model`, e.g.
+  glm-ocr) that reads dense grids more faithfully. (A review found OCR models add a
+  `\tag` and CJK punctuation to equations, so equations stay on the VLM; a bigger VLM
+  like qwen3-vl:32b also reads embedded figure text better than the 8B.) The equation
+  hint now labels its source ("math OCR" vs "vision model"), not always math OCR.
 - Cross-reference links: a "see section 9.2" reference is turned into a link to that
   heading (in the same file or another), resolved against the actual headings so a
   number with no matching section is left as plain text. Dotted numbers only (a bare
