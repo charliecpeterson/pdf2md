@@ -200,8 +200,14 @@ def enrich_tables(tables: list[TableData], raw_tables: dict[str, RawTable], glyp
 
 def enrich_figures(figures: list[FigureRef], glyphs) -> None:
     for f in figures:
-        if f.caption:
-            f.caption = religatured(f.caption, glyphs.vocab)
+        if not f.caption:
+            continue
+        # A caption in the broken font is symbol-font garbage like any prose; refill
+        # it from the pdfium glyph layer (its own bbox), then ligature-repair.
+        pc = glyphs.page_chars(f.page)
+        if pc is not None and f.caption_bbox is not None:
+            f.caption = refilled(f.caption, f.caption_bbox, pc)
+        f.caption = religatured(f.caption, glyphs.vocab)
 
 
 def _rebuilt_table(raw: RawTable, pc: PageChars, vocab, spanning: bool):

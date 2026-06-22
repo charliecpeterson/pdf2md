@@ -6,6 +6,12 @@ separately by `FORMAT_VERSION` in `schema.py`; a breaking change there is noted
 here.
 
 ## [Unreleased]
+### Fixed
+- Figure captions in a broken font stayed symbol-font garbage: `enrich_figures` only
+  ligature-repaired them, never font-decode-refilled. The docling adapter now carries
+  the caption's own bbox (`FigureRef.caption_bbox`), and enrich refills a garbled
+  caption from the pdfium glyph layer ("❋✐❣✉/a114❡ ✸✳✶" -> "Figure 3.1: ...").
+
 ### Added
 - Preformatted-content handling for console transcripts and ASCII-art tables
   (software manuals like GRASP). These are monospace text whose meaning is the line

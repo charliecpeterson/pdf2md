@@ -195,6 +195,14 @@ def test_table_falls_back_to_religatured_markup():
     assert t.gfm == "a different cell"
 
 
+def test_figure_caption_refilled_from_pdfium():
+    # A caption in the broken font is dingbats; refill it from the glyph layer using
+    # the caption's own bbox (not the picture's).
+    f = FigureRef(block_id="#/f", page=1, bbox=_BB, caption="❋✐❣✉/a114❡ ✸✳✶", caption_bbox=_BB)
+    enrich_figures([f], _FakeGlyphs({1: _FakePC(text="Figure 3.1: sequence")}))
+    assert f.caption == "Figure 3.1: sequence"
+
+
 def test_figure_caption_religatured():
     f = FigureRef(block_id="#/f", page=1, bbox=_BB, caption="a di ff erent fig")
     enrich_figures([f], _FakeGlyphs({1: _FakePC()}, vocab={"different"}))

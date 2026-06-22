@@ -51,6 +51,19 @@ def _prov(item) -> tuple[int | None, BBox | None]:
     return p.page_no, BBox(x0=b.l, y0=b.t, x1=b.r, y1=b.b)
 
 
+def _caption_bbox(doc, pic) -> BBox | None:
+    """Bbox of a picture's first caption item (BOTTOMLEFT prov, like blocks) so
+    `enrich` can font-decode-refill a garbled caption from the glyph layer."""
+    caps = getattr(pic, "captions", None) or []
+    for ref in caps:
+        item = ref.resolve(doc)
+        prov = getattr(item, "prov", None)
+        if prov:
+            b = prov[0].bbox
+            return BBox(x0=b.l, y0=b.t, x1=b.r, y1=b.b)
+    return None
+
+
 def _cell_bbox(cell, page_height: float | None) -> BBox | None:
     b = getattr(cell, "bbox", None)
     if b is None:
@@ -170,4 +183,5 @@ class DoclingEngine:
         return FigureRef(
             block_id=p.self_ref, page=page or 0, bbox=bbox,
             caption=normalize_text(caption) if caption else None,
+            caption_bbox=_caption_bbox(doc, p),
         )

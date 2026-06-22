@@ -117,6 +117,7 @@ class FigureRef:
     page: int
     bbox: BBox | None
     caption: str | None = None
+    caption_bbox: BBox | None = None  # the caption text's own bbox, for font-decode refill
     asset_path: str = ""  # relative path under the version dir, set by render
 
 
