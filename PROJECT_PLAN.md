@@ -221,6 +221,36 @@ structure. "Whatever produces the best markdown from a PDF wins."
     is the validated, license-clear second backend; the swap seam keeps wiring
     it a contained change.
 
+- **[2026-06-21] VLM crop interpretation (opt-in, OpenAI-compatible API) — PLANNED**
+  - **Context**: Figures/charts/diagrams are opaque PNG crops — invisible to any text
+    consumer (human screen-reader or LLM). The biggest remaining AI-readability lever.
+    Image-fallback tables and image-backed equations are the same opaque-crop problem.
+  - **Choice (decided 2026-06-21, not yet built)**:
+    - **Backend**: one **OpenAI-compatible vision client** (`/v1/chat/completions` with
+      a base64 image). Configurable `base_url` + `model` + optional `api_key`, so it
+      points at localhost (ollama / vLLM / LM Studio) or a remote endpoint with no code
+      change and no model lock-in. Opt-in via `--describe` (off by default), the
+      client library an optional extra (like surya-ocr for `--transcribe`).
+    - **Scope**: all crops — figure pictures, image-fallback tables, image-backed
+      equations — with a type-aware prompt (figure → concise factual description;
+      table → GFM transcription else structure description; equation → LaTeX).
+    - **Output**: a labeled block **below the image** —
+      `> **[pdf2md: AI-generated description]** …` — keeping the real caption as alt
+      text. Additive and clearly marked generated.
+    - **Lossless stance**: the crop stays authoritative; the VLM text is an aid/hint
+      (same as equation LaTeX today), never the source of truth, and never gates the
+      lossless invariant. Prompt forbids inventing exact numeric values.
+    - **Caching**: keyed by crop content hash so re-runs and incremental conversion
+      don't re-infer.
+  - **Roadmap**:
+    - [ ] `describe.py`: `Describer` Protocol + `OpenAIVisionDescriber`; `get_describer(config)`.
+    - [ ] config/cli: `do_describe`, `vlm_base_url`, `vlm_model`, `vlm_api_key`; `--describe`.
+    - [ ] pipeline: run describer over each crop after render; store text on the block/figure.
+    - [ ] emit: labeled description block below each image; `qa.py` tracks `figures_described`.
+    - [ ] cache by crop hash; spot-check quality on GRASP + a chemistry paper.
+  - **Revisit if**: descriptions prove low-value or the hosted-model cost/latency doesn't
+    justify; equation-crop description overlaps `--transcribe` (Surya) — keep whichever wins.
+
 - **[2026-06-21] Readability pass: headings, index, cross-refs, figure captions**
   - **Context**: With GRASP's font/console/table content readable, a survey exposed
     structural readability gaps that hurt both human and AI consumers.
