@@ -33,6 +33,8 @@ def doc_dir(doc_id: str) -> Path:
 
 
 def _versions(doc_dir_path: Path) -> list[int]:
+    """All `v<n>` dirs on disk (including crashed/partial ones) — used by prune to
+    clean everything up."""
     if not doc_dir_path.exists():
         return []
     return [
@@ -42,13 +44,21 @@ def _versions(doc_dir_path: Path) -> list[int]:
     ]
 
 
+def _complete_versions(doc_dir_path: Path) -> list[int]:
+    """Versions with a provenance.json — written last, so its absence marks a crashed
+    run. The cache reasons over these so a partial run never counts as cached output
+    (otherwise an interrupted run blocks every later one)."""
+    return [v for v in _versions(doc_dir_path)
+            if (doc_dir_path / f"v{v}" / "provenance.json").exists()]
+
+
 def next_version(doc_dir_path: Path) -> int:
-    versions = _versions(doc_dir_path)
+    versions = _complete_versions(doc_dir_path)
     return (max(versions) + 1) if versions else 1
 
 
 def latest_version(doc_dir_path: Path) -> int | None:
-    versions = _versions(doc_dir_path)
+    versions = _complete_versions(doc_dir_path)
     return max(versions) if versions else None
 
 

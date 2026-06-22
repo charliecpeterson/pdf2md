@@ -51,14 +51,28 @@ def test_content_hash(tmp_path):
     assert content_hash(p) == hashlib.sha256(b"hello").hexdigest()
 
 
+def _complete_version(dd, n):
+    (dd / f"v{n}").mkdir(parents=True)
+    (dd / f"v{n}" / "provenance.json").write_text("{}")
+
+
 def test_versioning(tmp_path):
     dd = tmp_path / "doc"
     assert latest_version(dd) is None
     assert next_version(dd) == 1
-    (dd / "v1").mkdir(parents=True)
-    (dd / "v2").mkdir()
+    _complete_version(dd, 1)
+    _complete_version(dd, 2)
     assert latest_version(dd) == 2
     assert next_version(dd) == 3
+
+
+def test_incomplete_version_ignored(tmp_path):
+    # A crashed run leaves a version dir with crops but no provenance.json (written
+    # last). It must not count as cached output, or it blocks every later run.
+    dd = tmp_path / "doc"
+    (dd / "v1" / "assets").mkdir(parents=True)  # crops written, crash before emit/provenance
+    assert latest_version(dd) is None
+    assert next_version(dd) == 1                # the next run reuses v1, not v2
 
 
 def test_prune_keeps_newest(tmp_path, monkeypatch):

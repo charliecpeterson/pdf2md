@@ -73,13 +73,20 @@ def convert_file(
 
     cached = latest_version(dd)
     if cached is not None and not force:
+        extra = (" (--describe/--transcribe apply on a fresh run; add --force)"
+                 if (config.describe_figures or config.transcribe_equations) else "")
         vdir = dd / f"v{cached}"
-        log.info("cached: %s (v%d); use force=True to re-convert", pdf_path.name, cached)
+        log.info("cached: %s (v%d); use force=True to re-convert%s", pdf_path.name, cached, extra)
         prov = vdir / "provenance.json"
         pages = json.loads(prov.read_text()).get("page_count", 0) if prov.exists() else 0
         return ConvertResult(
             doc_id, cached, vdir, sorted(vdir.glob("*.md")), page_count=pages, cached=True
         )
+
+    # Build the optional vision client up front (cheap, no network) so --describe
+    # without the extra fails here, before the engine runs and writes a partial dir.
+    if config.describe_figures and describer is None:
+        describer = get_describer(config)
 
     started = datetime.now(timezone.utc)
     engine = _get_engine(engine, config)

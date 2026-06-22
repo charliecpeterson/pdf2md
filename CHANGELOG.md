@@ -40,6 +40,15 @@ here.
   unchanged.
 
 ### Fixed
+- A crashed conversion no longer wedges the cache. The version number is assigned
+  before output is written and provenance.json is written last, so an interrupted run
+  (e.g. `--describe` without the `openai` extra, which died after rendering crops but
+  before emit) left a `v<n>` dir with assets but no markdown — and the cache counted
+  it, so every later run reported "cached" and no-opped. `latest_version`/`next_version`
+  now ignore versions without provenance.json (prune still removes them). And the
+  vision client is built before the engine runs, so a missing `describe` extra fails
+  fast instead of after a full conversion. A cached doc with `--describe`/`--transcribe`
+  now says those passes need `--force`.
 - Figure captions in a broken font stayed symbol-font garbage: `enrich_figures` only
   ligature-repaired them, never font-decode-refilled. The docling adapter now carries
   the caption's own bbox (`FigureRef.caption_bbox`), and enrich refills a garbled
