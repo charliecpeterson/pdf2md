@@ -25,10 +25,12 @@ from pathlib import Path
 from pdf2md.legibility import is_garbage
 
 # Counts that must never rise (and lossless must stay True). Everything else is
-# informational drift — printed, never gated. `illegible` guards the font-decode
-# class: a block whose text is symbol-font garbage (broken ToUnicode) must never
-# silently pass as readable prose.
-_INVARIANTS = ("dropped", "ligature_residual", "unbalanced_eq", "illegible")
+# informational drift — printed, never gated. `illegible` / `illegible_table_rows`
+# guard the font-decode class: prose blocks (from provenance) and rendered table
+# rows whose text is symbol-font garbage (broken ToUnicode) must never silently pass
+# as readable. Tables are gated separately because cells aren't provenance blocks.
+_INVARIANTS = ("dropped", "ligature_residual", "unbalanced_eq", "illegible",
+               "illegible_table_rows")
 
 # Prose-bearing block types whose text is held to the legibility bar (equations,
 # tables, and figures are judged elsewhere). Mirrors enrich's `_SCRIPT_TYPES`.
@@ -98,6 +100,11 @@ def _signals(version_dir: Path) -> dict | None:
             1 for b in blocks
             if b.get("type") in _PROSE and b.get("text", "").strip() and is_garbage(b["text"])
         ),
+        # Table cells aren't provenance blocks, so scan the rendered GFM rows — this
+        # is what catches a broken-font table the prose `illegible` count can't see.
+        "illegible_table_rows": sum(
+            1 for ln in md.splitlines() if ln.startswith("|") and is_garbage(ln)
+        ),
     }
 
 
@@ -112,7 +119,8 @@ def _collect(out_dir: Path) -> dict[str, dict]:
 
 def _print_table(sigs: dict[str, dict]) -> None:
     hdr = (f"{'DOC':28s} {'PG':>3} {'BLK':>4} {'LOSS':>4} {'DROP':>4} "
-           f"{'EQ':>3} {'IMG':>3} {'OCR':>3} {'TBL':>3} {'LIG':>3} {'UNBAL':>5} {'ILLEG':>5}")
+           f"{'EQ':>3} {'IMG':>3} {'OCR':>3} {'TBL':>3} {'LIG':>3} {'UNBAL':>5} "
+           f"{'ILLEG':>5} {'ILTBL':>5}")
     print(hdr)
     print("-" * len(hdr))
     for s in sigs.values():
@@ -120,7 +128,7 @@ def _print_table(sigs: dict[str, dict]) -> None:
               f"{('OK' if s['lossless'] else 'NO'):>4} {s['dropped']:4d} "
               f"{s['eq_total']:3d} {s['eq_image_backed']:3d} {s['ocr_pages']:3d} "
               f"{s['tables']:3d} {s['ligature_residual']:3d} {s['unbalanced_eq']:5d} "
-              f"{s['illegible']:5d}")
+              f"{s['illegible']:5d} {s['illegible_table_rows']:5d}")
 
 
 def _check(sigs: dict[str, dict], baseline: dict[str, dict]) -> list[str]:

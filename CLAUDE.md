@@ -100,8 +100,10 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   A block that's still garbage after the refill is flagged `illegible` by `emit.py`,
   never emitted as prose. Residual: the font's ﬀ/ﬁ/ﬂ ligatures also lack ToUnicode,
   so pdfium drops them ('e cient'); legible but imperfect.
-- Docling bboxes are bottom-left origin (`y0 > y1`); `render.py` flips Y. Don't
-  re-flip elsewhere.
+- Docling block/prov bboxes are bottom-left origin (`y0 > y1`); `render.py` flips Y.
+  Don't re-flip elsewhere. **Exception: table-cell bboxes are TOPLEFT** — the docling
+  adapter (`_cell_bbox`) flips them to bottom-left so enrich's glyph lookups (script
+  overlay, font-decode refill) land on the right region.
 - Docling formulas are `TextItem`s with label `formula` (self_ref `#/texts/N`),
   not a separate collection. The adapter maps label → `BlockType.EQUATION`.
 - Book splits currently land at top-level bookmarks (Parts, not chapters) — a

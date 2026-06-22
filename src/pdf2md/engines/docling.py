@@ -51,17 +51,23 @@ def _prov(item) -> tuple[int | None, BBox | None]:
     return p.page_no, BBox(x0=b.l, y0=b.t, x1=b.r, y1=b.b)
 
 
-def _cell_bbox(cell) -> BBox | None:
+def _cell_bbox(cell, page_height: float | None) -> BBox | None:
     b = getattr(cell, "bbox", None)
     if b is None:
         return None
+    # Table-cell bboxes come in TOPLEFT origin, unlike block prov bboxes (BOTTOMLEFT,
+    # y0>y1). Flip Y so a cell bbox matches pdfium's coordinate space — otherwise
+    # enrich's glyph lookups (script overlay, font-decode refill) land on the wrong
+    # part of the page.
+    if page_height is not None and getattr(getattr(b, "coord_origin", None), "name", "") == "TOPLEFT":
+        return BBox(x0=b.l, y0=page_height - b.t, x1=b.r, y1=page_height - b.b)
     return BBox(x0=b.l, y0=b.t, x1=b.r, y1=b.b)
 
 
-def _raw_cell(c) -> RawCell:
+def _raw_cell(c, page_height: float | None) -> RawCell:
     return RawCell(
         text=normalize_text(getattr(c, "text", "") or ""),
-        bbox=_cell_bbox(c),
+        bbox=_cell_bbox(c, page_height),
         row=c.start_row_offset_idx,
         col=c.start_col_offset_idx,
         row_span=c.end_row_offset_idx - c.start_row_offset_idx,
@@ -142,12 +148,13 @@ class DoclingEngine:
         """Translate a table: Docling's own rendering as the fallback markup, plus
         the structured cells for `enrich` to rebuild with recovered scripts."""
         page, bbox = _prov(t)
+        ph = doc.pages[page].size.height if page is not None and page in doc.pages else None
         data = getattr(t, "data", None)
         cells = getattr(data, "table_cells", None) if data else None
         spanning = any(c.row_span > 1 or c.col_span > 1 for c in cells) if cells else False
         if cells:
             raw_tables[t.self_ref] = RawTable(
-                cells=[_raw_cell(c) for c in cells],
+                cells=[_raw_cell(c, ph) for c in cells],
                 num_rows=data.num_rows, num_cols=data.num_cols,
             )
         return TableData(

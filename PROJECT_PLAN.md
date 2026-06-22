@@ -523,10 +523,15 @@ authn/authz/multi-tenancy.
         stamped `text_source="pdfium"`; only swaps when pdfium is cleaner. Validated on
         GRASP: illegible prose 1653 → 0, text readable, metadata recovered. Residual:
         broken-font ﬀ/ﬁ/ﬂ ligatures lack ToUnicode for pdfium too, so they drop
-        ('e cient'); legible-but-imperfect, far better than dingbats. **Table-cell
-        refill deferred** — the `illegible` metric counts prose only, and table cells
-        entangle with `_rebuilt_table`'s scripts-divergence logic; revisit if a
-        broken-font doc's tables prove materially garbled.
+        ('e cient'); legible-but-imperfect, far better than dingbats.
+  - [x] **Step 3b — table-cell refill (2026-06-21).** Initially deferred; done after
+        GRASP's tables proved garbled. Garbage cells refilled via the shared
+        `enrich.refilled` helper, forcing a table rebuild even without scripts. Fixing
+        it surfaced a coordinate bug — **table-cell bboxes are TOPLEFT** vs blocks'
+        BOTTOMLEFT — so `docling._cell_bbox` now flips Y (this also fixes the table
+        script overlay's long-standing glyph mis-alignment). Guarded by a new
+        `illegible_table_rows` invariant in `qa.py`. Validated: GRASP tables readable,
+        atkins-50page unaffected.
   - [x] **Step 4 — honest invariant** (`schema.py`, `coverage.py`, `emit.py`):
         `CoverageReport.illegible` tally; still-garbage prose → FLAGGED + visible
         marker + front-matter `illegible_blocks`, not silent EMITTED. **`FORMAT_VERSION`

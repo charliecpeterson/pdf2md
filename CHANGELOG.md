@@ -7,6 +7,18 @@ here.
 
 ## [Unreleased]
 ### Added
+- Font-decode repair extended to table cells. The prose refill (below) left table
+  cells in symbol-font garbage because cells aren't prose blocks and the `illegible`
+  metric is prose-only. Now `enrich._table_grid` refills garbage cells from the same
+  pdfium glyph layer (shared `enrich.refilled` helper), forcing a rebuild even when
+  no scripts are present. Fixing this surfaced a coordinate bug: **table-cell bboxes
+  are TOPLEFT origin** (unlike block prov bboxes, which are BOTTOMLEFT), so the
+  docling adapter (`_cell_bbox`) now flips Y to page-bottom — which also repairs the
+  glyph alignment the table sub/superscript overlay had been getting wrong. `qa.py`
+  gains an `illegible_table_rows` gated invariant (rendered GFM rows that are garbage)
+  so a broken-font table can't pass silently the way GRASP's did. `refilled` no longer
+  replaces a cell with an empty pdfium reading (which would lose the cell). Validated:
+  GRASP TOC/data tables now readable, atkins-50page tables unaffected.
 - Legibility signal + font-decode repair ("Trust, measured"). A PDF whose embedded
   font lacks a usable ToUnicode CMap extracts as symbol-font garbage (dingbats and
   `/aNNN` glyph-name tokens — `❆ ♣/a114❛❝/a116✐❝❛❧` for "A practical guide"), which

@@ -55,6 +55,19 @@ def religatured(text: str, vocab) -> str:
     return rejoin_split_word(text, words)
 
 
+def refilled(text: str, bbox, pc) -> str:
+    """Replace symbol-font garbage (a broken ToUnicode CMap the engine trusted) with
+    the pdfium glyph-layer reading of the same bbox, which decodes it correctly.
+    Returns the original when it isn't garbage or pdfium can't do better, so a truly
+    undecodable region stays flagged downstream. Shared by prose blocks and cells."""
+    if bbox is None or not is_garbage(text):
+        return text
+    reading = clean_reading(normalize_text(pc.text_region(bbox)))
+    # Keep the original when pdfium gives nothing (empty isn't "garbage", but
+    # replacing text with blank would lose the cell) or no better than the garbage.
+    return reading if reading and not is_garbage(reading) else text
+
+
 class GlyphIndex:
     """Per-document pypdfium2 glyph access: per-page `PageChars` (cached) and the
     page-text vocabulary (lazy). Engine-independent — built straight from the PDF."""
@@ -112,13 +125,11 @@ def enrich_blocks(blocks: list[Block], glyphs) -> None:
         if b.type in _SCRIPT_TYPES and pc is not None and b.bbox is not None:
             # When the engine's text is symbol-font garbage (a broken ToUnicode CMap
             # the engine trusted), refill it from the pdfium glyph layer, which
-            # decodes the same bbox correctly. Only swap when pdfium is actually
-            # better, so a truly undecodable block stays flagged downstream.
-            if is_garbage(b.text):
-                refilled = clean_reading(normalize_text(pc.text_region(b.bbox)))
-                if not is_garbage(refilled):
-                    b.text = refilled
-                    b.extra["text_source"] = "pdfium"
+            # decodes the same bbox correctly.
+            swapped = refilled(b.text, b.bbox, pc)
+            if swapped != b.text:
+                b.text = swapped
+                b.extra["text_source"] = "pdfium"
             # Rejoin split ligatures (validated against the page vocabulary), then
             # overlay scripts; both align to the same glyphs.
             b.text = religatured(b.text, glyphs.vocab)
@@ -168,11 +179,13 @@ def enrich_figures(figures: list[FigureRef], glyphs) -> None:
 
 
 def _rebuilt_table(raw: RawTable, pc: PageChars, vocab, spanning: bool):
-    """Rebuilt (gfm, html) when recovered scripts justify diverging from the
-    engine's rendering, else None. GFM can't express spans, so a spanning table
-    keeps only the HTML and leaves GFM empty rather than a misleading flattening."""
+    """Rebuilt (gfm, html) when recovered scripts or a font-decode refill justify
+    diverging from the engine's rendering, else None. GFM can't express spans, so a
+    spanning table keeps only the HTML and leaves GFM empty rather than a misleading
+    flattening."""
+    refill = any(c.bbox is not None and is_garbage(c.text) for c in raw.cells)
     rebuilt = build_html(_table_grid(raw, pc, vocab, escape=True), raw.num_rows, raw.num_cols)
-    if "<sub>" not in rebuilt and "<sup>" not in rebuilt:
+    if not refill and "<sub>" not in rebuilt and "<sup>" not in rebuilt:
         return None
     html = rebuilt if spanning else None
     gfm = "" if spanning else build_gfm(_table_grid(raw, pc, vocab, escape=False), raw.num_rows, raw.num_cols)
@@ -182,7 +195,7 @@ def _rebuilt_table(raw: RawTable, pc: PageChars, vocab, spanning: bool):
 def _table_grid(raw: RawTable, pc: PageChars, vocab, *, escape: bool) -> list[GridCell]:
     out = []
     for c in raw.cells:
-        text = apply_scripts(religatured(c.text, vocab),
+        text = apply_scripts(religatured(refilled(c.text, c.bbox, pc), vocab),
                              pc.scored_region(c.bbox) if c.bbox is not None else [],
                              escape=escape)
         if not escape:

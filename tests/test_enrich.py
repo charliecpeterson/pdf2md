@@ -105,6 +105,22 @@ def test_table_rebuilt_when_scripts_recovered():
     assert "<sup>2</sup>" in t.gfm
 
 
+def test_garbage_table_cell_refilled_from_pdfium():
+    # A cell carrying the same broken font as the prose: refill from the pdfium
+    # glyph layer and rebuild, even with no scripts to recover (the divergence the
+    # rebuild needs is triggered by the garbage, not only by sub/superscripts).
+    t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="| ❆ ♣/a114❛❝/a116✐❝❛❧ |",
+                  has_spanning_cells=False)
+    raw = RawTable(
+        cells=[RawCell(text="❆ ♣/a114❛❝/a116✐❝❛❧", bbox=_BB, row=0, col=0,
+                       row_span=1, col_span=1, header=False)],
+        num_rows=1, num_cols=1,
+    )
+    glyphs = _FakeGlyphs({1: _FakePC(text="A practical guide")})
+    enrich_tables([t], {"#/t": raw}, glyphs)
+    assert "A practical guide" in t.gfm and "❆" not in t.gfm
+
+
 def test_table_falls_back_to_religatured_markup():
     # No structured cells -> keep the engine's rendering, ligature-repaired.
     t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="a di ff erent cell")

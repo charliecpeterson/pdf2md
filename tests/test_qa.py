@@ -26,11 +26,13 @@ def test_unbalanced_equation_detection():
 
 def test_check_gates_only_on_hard_invariants():
     base = {"d.pdf": {"lossless": True, "dropped": 0, "ligature_residual": 0,
-                      "unbalanced_eq": 0, "illegible": 0, "eq_image_backed": 5}}
+                      "unbalanced_eq": 0, "illegible": 0, "illegible_table_rows": 0,
+                      "eq_image_backed": 5}}
     # image-backing dropping is drift, not a regression; lossless loss and a risen
     # dropped count are.
     cur = {"d.pdf": {"lossless": False, "dropped": 2, "ligature_residual": 0,
-                     "unbalanced_eq": 0, "illegible": 0, "eq_image_backed": 1}}
+                     "unbalanced_eq": 0, "illegible": 0, "illegible_table_rows": 0,
+                     "eq_image_backed": 1}}
     regressions = qa._check(cur, base)
     assert any("lossless" in r for r in regressions)
     assert any("dropped 0 -> 2" in r for r in regressions)
@@ -41,10 +43,13 @@ def test_check_gates_only_on_hard_invariants():
 
 
 def test_check_gates_on_illegible_regression():
-    # A font-decode regression (clean prose turning to symbol-font garbage) must
-    # fail the gate, not pass silently as it did before the legibility signal.
+    # A font-decode regression (clean text turning to symbol-font garbage) must fail
+    # the gate, not pass silently as it did before the legibility signal — for prose
+    # blocks and, separately, for rendered table rows.
     base = {"d.pdf": {"lossless": True, "dropped": 0, "ligature_residual": 0,
-                      "unbalanced_eq": 0, "illegible": 0}}
+                      "unbalanced_eq": 0, "illegible": 0, "illegible_table_rows": 0}}
     cur = {"d.pdf": {"lossless": True, "dropped": 0, "ligature_residual": 0,
-                     "unbalanced_eq": 0, "illegible": 37}}
-    assert any("illegible 0 -> 37" in r for r in qa._check(cur, base))
+                     "unbalanced_eq": 0, "illegible": 37, "illegible_table_rows": 8}}
+    regressions = qa._check(cur, base)
+    assert any("illegible 0 -> 37" in r for r in regressions)
+    assert any("illegible_table_rows 0 -> 8" in r for r in regressions)
