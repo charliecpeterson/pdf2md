@@ -27,10 +27,14 @@ log = get_logger("describe")
 # faithful reading and forbids the exact-value invention a vision model is prone to.
 _PROMPTS = {
     "figure": (
-        "Describe this figure from a scientific document in 1-3 sentences: the kind of "
-        "figure (plot, diagram, scheme, ...), what it shows, and the key variables or "
-        "relationships. Be specific and factual. Do not invent exact numerical values "
-        "you cannot read clearly."
+        "Describe this figure from a scientific document: the kind of figure (plot, "
+        "diagram, scheme, flowchart, ...), what it shows, and the key variables or "
+        "relationships. Transcribe embedded text — axis labels, legends, and any program "
+        "or command names — exactly as written, character for character. If there are "
+        "several curves or data series, describe each distinct one, not just the most "
+        "prominent. Be specific and factual but do not invent exact numerical values you "
+        "cannot read clearly. Write a few sentences of plain prose — no bullet lists, no "
+        "repetition, and no asides about typos or image quality."
     ),
     "table": (
         "Transcribe this table to GitHub-flavored Markdown. If its structure is too "

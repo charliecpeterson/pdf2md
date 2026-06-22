@@ -222,6 +222,7 @@ def _transcribe_equations(blocks, transcriber, vdir: Path) -> None:
             latex = transcriber.transcribe(vdir / crop)
             if latex:
                 b.extra["transcribed"] = latex
+                b.extra["transcribed_source"] = "math OCR"
 
 
 def _describe_crops(figures, blocks, describer: Describer, vdir: Path, model: str = "") -> None:
@@ -260,6 +261,7 @@ def _describe_crops(figures, blocks, describer: Describer, vdir: Path, model: st
                 latex = described(crop, "equation", b.text or "")
                 if latex:
                     b.extra["transcribed"] = latex
+                    b.extra["transcribed_source"] = "vision model"
         else:  # image-fallback table
             desc = described(crop, "table", b.text or "")
             if desc:

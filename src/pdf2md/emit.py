@@ -378,7 +378,9 @@ def _render_block(
             transcribed = b.extra.get("transcribed")
             reading = b.extra.get("text_layer")
             if transcribed:
-                hint, source = _equation_latex(transcribed), "re-transcribed from the image (math OCR)"
+                by = b.extra.get("transcribed_source")
+                hint = _equation_latex(transcribed)
+                source = f"re-transcribed from the image ({by})" if by else "re-transcribed from the image"
             elif reading and b.extra.get("ordered") and b.confidence >= HINT_MIN_CONF:
                 hint, source = reading, "the image below is the authoritative source"
             else:
