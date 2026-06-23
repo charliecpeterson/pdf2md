@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -84,9 +85,10 @@ def convert_file(
             doc_id, cached, vdir, sorted(vdir.glob("*.md")), page_count=pages, cached=True
         )
 
-    # Build the optional vision client up front (cheap, no network) so --describe
-    # without the extra fails here, before the engine runs and writes a partial dir.
-    if config.describe_figures and describer is None:
+    # Build the optional vision client up front (cheap, no network) so --describe /
+    # --ocr-vlm without the extra fails here, before the engine runs and writes a
+    # partial dir.
+    if (config.describe_figures or config.ocr_vlm) and describer is None:
         describer = get_describer(config)
 
     started = datetime.now(timezone.utc)
@@ -104,6 +106,12 @@ def convert_file(
             enrich_blocks(result.blocks, glyphs)
             enrich_tables(result.tables, result.raw_tables, glyphs)
             enrich_figures(result.figures, glyphs)
+
+    # Re-OCR scanned prose with the vision model (better than the engine's RapidOCR),
+    # before metadata/structure so they read the cleaned text. The page image stays
+    # the source of truth.
+    if config.ocr_vlm and describer is not None:
+        _vlm_ocr_scanned(result.blocks, describer, pdf_path, config, dd)
 
     bookmarks = read_bookmarks(pdf_path)
     meta = extract_metadata(pdf_path, result.blocks)
@@ -229,6 +237,48 @@ def _transcribe_equations(blocks, transcriber, vdir: Path) -> None:
             if latex:
                 b.extra["transcribed"] = latex
                 b.extra["transcribed_source"] = "math OCR"
+
+
+# Scanned-page block types whose OCR text the vision model re-transcribes (equations
+# and tables are image-backed; figures are crops).
+_PROSE_OCR = {"paragraph", "heading", "list", "caption", "footnote", "other"}
+
+
+def _vlm_ocr_scanned(blocks, describer: Describer, pdf_path: Path, config: Config,
+                     doc_dir: Path) -> None:
+    """Replace each scanned prose block's RapidOCR text with a vision-model
+    transcription of the block's crop. Cropped to a temp dir (the text replaces it, so
+    no asset is kept); cached at the doc level by (model, crop bytes), so a re-run
+    doesn't re-OCR. Best-effort — a block the model can't read keeps its engine text."""
+    targets = [b for b in blocks if b.extra.get("ocr") and b.bbox is not None
+               and b.type.value in _PROSE_OCR and b.text.strip()]
+    if not targets:
+        return
+    doc_dir.mkdir(parents=True, exist_ok=True)
+    cache_file = doc_dir / "describe_cache.json"
+    cache: dict = json.loads(cache_file.read_text()) if cache_file.exists() else {}
+    model = describer.model_for("ocr")
+
+    with tempfile.TemporaryDirectory() as td, \
+            CropRenderer(pdf_path, dpi=config.crop_dpi, padding_pts=config.crop_padding_pts) as cr:
+        tmp = Path(td)
+        for b in targets:
+            crop = tmp / f"{b.id.strip('#/').replace('/', '_')}.png"
+            try:
+                cr.crop(b.page, b.bbox, crop)
+            except Exception as exc:  # noqa: BLE001 - page-level isolate-and-flag
+                log.warning("ocr crop failed for %s: %s", b.id, exc)
+                continue
+            key = f"{model}:ocr:{hashlib.sha256(crop.read_bytes()).hexdigest()}"
+            text = cache.get(key)
+            if text is None:
+                text = describer.describe(crop, "ocr", "")
+                if text:
+                    cache[key] = text
+            if text:
+                b.text = text
+                b.extra["text_source"] = "vlm-ocr"
+    cache_file.write_text(json.dumps(cache, indent=2))
 
 
 def _describe_crops(figures, blocks, describer: Describer, vdir: Path) -> None:

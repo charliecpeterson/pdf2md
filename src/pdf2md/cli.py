@@ -41,6 +41,11 @@ def convert(
         help="Describe figure/table/equation crops with a vision model over an "
              "OpenAI-compatible API (needs the `describe` extra + a reachable endpoint; slow)."
     ),
+    ocr_vlm: bool = typer.Option(
+        False, "--ocr-vlm",
+        help="Re-OCR scanned prose blocks with the vision model instead of RapidOCR "
+             "(needs the describe extra + endpoint; slow). Best on degraded scans."
+    ),
     vlm_model: str = typer.Option(None, "--vlm-model", help="Vision model for --describe figures (overrides config)."),
     vlm_ocr_model: str = typer.Option(
         None, "--vlm-ocr-model",
@@ -61,6 +66,8 @@ def convert(
         cfg = replace(cfg, transcribe_equations=True)
     if describe:
         cfg = replace(cfg, describe_figures=True)
+    if ocr_vlm:
+        cfg = replace(cfg, ocr_vlm=True)
     if vlm_model:
         cfg = replace(cfg, vlm_model=vlm_model)
     if vlm_ocr_model:

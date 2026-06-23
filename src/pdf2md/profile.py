@@ -36,8 +36,9 @@ def build_profile(doc: Document) -> DocumentProfile:
     legibility = (len(prose) - illegible) / len(prose) if prose else 1.0
     lossless = doc.coverage.lossless if doc.coverage else True
 
+    ocr_by_vlm = any(b.extra.get("text_source") == "vlm-ocr" for b in blocks)
     grade, reasons = _confidence(lossless, illegible, ocr_pages, doc.page_count,
-                                 len(eqs), image_backed)
+                                 len(eqs), image_backed, ocr_by_vlm)
     return DocumentProfile(
         pages=doc.page_count,
         blocks=len(blocks),
@@ -56,9 +57,10 @@ def build_profile(doc: Document) -> DocumentProfile:
     )
 
 
-def _confidence(lossless, illegible, ocr_pages, pages, equations, image_backed):
+def _confidence(lossless, illegible, ocr_pages, pages, equations, image_backed, ocr_by_vlm=False):
     grade = "high"
     reasons: list[str] = []
+    by = "OCR by a vision model" if ocr_by_vlm else "OCR text"
     if not lossless:
         grade = _downgrade(grade, "low")
         reasons.append("not lossless — content was dropped without a marker")
@@ -67,9 +69,9 @@ def _confidence(lossless, illegible, ocr_pages, pages, equations, image_backed):
         reasons.append(f"{illegible} illegible block(s) — broken font not recovered")
     if pages and ocr_pages / pages > 0.5:
         grade = _downgrade(grade, "medium")
-        reasons.append(f"{ocr_pages}/{pages} pages scanned — OCR text, verify against the images")
+        reasons.append(f"{ocr_pages}/{pages} pages scanned — {by}, verify against the images")
     elif ocr_pages:
-        reasons.append(f"{ocr_pages} scanned page(s) — text is OCR, not a born-digital layer")
+        reasons.append(f"{ocr_pages} scanned page(s) — {by}, not a born-digital layer")
     if equations and image_backed:
         reasons.append(f"{image_backed}/{equations} equations image-backed — LaTeX unverified, "
                        "the crop is authoritative")

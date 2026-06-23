@@ -27,6 +27,11 @@ class Config:
     # `vlm_base_url` points at a local server (ollama/vLLM/LM Studio) or a remote
     # endpoint; `vlm_model` must be a model that endpoint serves.
     describe_figures: bool = False
+    # Re-OCR scanned prose blocks with the vision model instead of the engine's
+    # RapidOCR (substantially more accurate on degraded scans). Opt-in: same `describe`
+    # extra + endpoint, slow (one call per block). Replaces the text; the page image
+    # stays the source of truth. It is still OCR, so it can misread — verify.
+    ocr_vlm: bool = False
     vlm_base_url: str = "http://localhost:11434/v1"
     vlm_model: str = "qwen3-vl:8b"
     # Optional OCR-tuned model for table crops; an OCR model reads dense grids more

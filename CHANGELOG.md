@@ -7,6 +7,14 @@ here.
 
 ## [Unreleased]
 ### Added
+- `--ocr-vlm`: re-OCR scanned prose blocks with the vision model instead of the
+  engine's RapidOCR (opt-in, same `describe` extra + endpoint). Crops each scanned
+  prose block, transcribes it, and replaces the text — much more accurate on degraded
+  scans. Validated on the Slater scan: RapidOCR's "the dificulty … equipartition of
+  euergy … in classical statistical mecbanics" becomes "the difficulty … energy … in
+  classical statistical mechanics". The page image stays the source of truth, the text
+  is still OCR (the profile grades the doc "medium" and notes "OCR by a vision model"),
+  and results are cached by crop bytes. Slow (one call per block).
 - Labelled accuracy harness (`scripts/eval_accuracy.py` + `tests/accuracy_labels.json`):
   the third leg beside `qa.py` (labels-free regression) and `eval_equations.py`
   (equation accuracy). It scores converted output against per-archetype facts a human

@@ -88,11 +88,15 @@ structure. "Whatever produces the best markdown from a PDF wins."
           Resolves the long-open validation-harness question. *Extensible:* table-cell
           facts and the Phase-5 reading-order metric (narrow-block column sequence) can
           be added to the labels as new fact types.
-    - [ ] **Phase 4 — VLM page-OCR for scans.** Opt-in: detect scanned pages (no text
-          layer), transcribe each page image with the vision client (reuse `describe`),
-          use it as the page text (beats RapidOCR). Profile/confidence reflects scan
-          fraction + whether VLM-OCR ran. Prose, not crop-authoritative → flag
-          hallucination risk; opt-in.
+    - [x] **Phase 4 — VLM OCR for scans (2026-06-22).** `--ocr-vlm`: re-OCR scanned
+          prose blocks (crop each, transcribe, replace text) with the describe client;
+          equations/tables stay image-backed, figures cropped. `describe` "ocr" kind
+          (routes to the OCR model), doc-level cache by crop bytes, temp crops (not
+          kept). Profile notes "OCR by a vision model". Validated on Slater: RapidOCR's
+          "dificulty/euergy/mecbanics" → "difficulty/energy/mechanics". Both qwen3-vl
+          and glm-ocr fix the within-word errors; qwen output is cleaner (glm sometimes
+          adds a markdown fence). Slow (one call per block); a full run + the accuracy
+          harness loop (Slater must_contain facts) is the measured follow-up.
     - [x] **Phase 5 — Reading-order audit: CHECKED, no fix needed (2026-06-22).**
           Two-column papers read correctly: on 094103's two-column references page the
           numbers run 18→42 in sequence down the left column then the right (interleaving

@@ -53,6 +53,10 @@ uv run pdf2md convert paper.pdf --describe --vlm-model qwen3-vl:32b     # bigger
 uv run pdf2md convert paper.pdf --describe --vlm-ocr-model glm-ocr:bf16 # OCR model for dense table crops
 # point at vLLM / a remote endpoint with vlm_base_url + vlm_api_key in a --config TOML
 
+# Re-OCR scanned prose with the vision model instead of RapidOCR (needs the describe
+# extra + endpoint; slow, one call per block). Much more accurate on degraded scans.
+uv run pdf2md convert scan.pdf --ocr-vlm
+
 uv run pdf2md coverage paper.pdf    # per-document coverage report (no re-run)
 uv run pdf2md prune --keep 2        # keep the newest N versions per document
 uv run pdf2md version

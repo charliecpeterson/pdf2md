@@ -23,9 +23,17 @@ def test_model_routing_by_kind():
     d = get_describer(replace(Config(), describe_figures=True, vlm_model="vlm", vlm_ocr_model="ocr"))
     assert d.model_for("figure") == "vlm"        # plots -> general VLM
     assert d.model_for("table") == "ocr"         # dense grid -> OCR model
+    assert d.model_for("ocr") == "ocr"           # scanned-page text -> OCR model
     assert d.model_for("equation") == "vlm"      # equations transcribe cleaner on the VLM
     d2 = get_describer(replace(Config(), describe_figures=True, vlm_model="vlm"))
     assert d2.model_for("table") == "vlm"        # no ocr_model -> everything on the main model
+
+
+def test_describer_built_for_ocr_vlm_only():
+    pytest.importorskip("openai")
+    # --ocr-vlm alone (no --describe) must still build a describer.
+    assert get_describer(replace(Config(), ocr_vlm=True)) is not None
+    assert get_describer(Config()) is None  # both off -> none
 
 
 def test_prompt_is_kind_aware():

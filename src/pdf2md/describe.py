@@ -44,6 +44,10 @@ _PROMPTS = {
     "equation": (
         "Transcribe this equation to LaTeX. Output only the LaTeX, with no surrounding text."
     ),
+    "ocr": (
+        "Transcribe the text in this image exactly as written. Output only the "
+        "transcription as plain text — no commentary, no markdown fences."
+    ),
 }
 
 
@@ -52,11 +56,11 @@ def _prompt(kind: str, context: str = "") -> str:
     return f"{base}\n\nContext: {context.strip()}" if context.strip() else base
 
 
-# Tables route to `ocr_model` (when configured): an OCR-tuned model reads dense grids
-# more faithfully. Equations do NOT — a general VLM transcribes them to cleaner LaTeX
-# (OCR models add the equation-number \tag and CJK punctuation), and --transcribe
-# (Surya) is the dedicated math path if you want one.
-_OCR_KINDS = {"table"}
+# Kinds that route to `ocr_model` (when configured): table grids and scanned-page text
+# read more faithfully on an OCR-tuned model. Equations do NOT — a general VLM
+# transcribes them to cleaner LaTeX (OCR models add the equation-number \tag and CJK
+# punctuation), and --transcribe (Surya) is the dedicated math path if you want one.
+_OCR_KINDS = {"table", "ocr"}
 
 
 @runtime_checkable
@@ -110,8 +114,8 @@ class OpenAIVisionDescriber:
 
 
 def get_describer(config) -> Describer | None:
-    """Build the configured describer, or None when the pass is off."""
-    if not getattr(config, "describe_figures", False):
+    """Build the configured describer, or None when both vision passes are off."""
+    if not (getattr(config, "describe_figures", False) or getattr(config, "ocr_vlm", False)):
         return None
     return OpenAIVisionDescriber(
         base_url=getattr(config, "vlm_base_url", "http://localhost:11434/v1"),
