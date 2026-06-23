@@ -72,7 +72,9 @@ src/pdf2md/
                 + README.md (human run summary). build_profile / write_profile / write_readme.
 
 scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs tests/qa_baseline.json),
-                eval_equations.py (labelled accuracy vs tests/equation_labels.json), benchmark.py.
+                eval_equations.py (labelled equation accuracy vs tests/equation_labels.json),
+                eval_accuracy.py (labelled per-archetype facts vs tests/accuracy_labels.json + profile.json),
+                benchmark.py.
 ```
 
 ## Conventions

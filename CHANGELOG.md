@@ -7,6 +7,14 @@ here.
 
 ## [Unreleased]
 ### Added
+- Labelled accuracy harness (`scripts/eval_accuracy.py` + `tests/accuracy_labels.json`):
+  the third leg beside `qa.py` (labels-free regression) and `eval_equations.py`
+  (equation accuracy). It scores converted output against per-archetype facts a human
+  verified from the source — text that must appear, font-decode dingbats that must
+  not, a legibility floor, the expected confidence grade, scan detection — and
+  validates the profile.json signals against ground truth, turning "is the conversion
+  accurate?" into a number per document type. `--check` gates. Resolves the long-open
+  validation-harness question. (Currently 16 facts across 4 archetypes, all passing.)
 - Per-document profile, written on every conversion: `profile.json` (machine-readable
   content inventory + quality signals + a coarse confidence grade, for an AI consumer)
   and `README.md` (a human run summary: what the doc is, what's in it, a high/medium/low

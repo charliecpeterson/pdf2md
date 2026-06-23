@@ -79,10 +79,15 @@ structure. "Whatever produces the best markdown from a PDF wins."
     - [x] **Phase 2b — Human run summary `README.md` (2026-06-22).** Title, content
           inventory, confidence (high/med/low) with reasons, and where-to-start.
           Validated: a born-digital paper grades "high", a scan grades "medium".
-    - [ ] **Phase 3 — Accuracy harness.** Labelled structural facts per archetype
-          (text fidelity, table structure, reading order) + metrics + an accuracy
-          report that validates the Phase-1 signals against ground truth. The
-          sustainability foundation (resolves the long-open validation-harness question).
+    - [x] **Phase 3 — Accuracy harness (2026-06-22).** `scripts/eval_accuracy.py` +
+          `tests/accuracy_labels.json`: per-archetype facts verified from the source
+          (must_contain text, must_not_contain dingbats, legibility floor, confidence
+          grade, scan detection), scored against the output + profile.json, with a
+          per-doc and overall accuracy number and a `--check` gate. 16 facts across 4
+          archetypes (born-digital paper/book, broken-font book, scan), all passing.
+          Resolves the long-open validation-harness question. *Extensible:* table-cell
+          facts and the Phase-5 reading-order metric (narrow-block column sequence) can
+          be added to the labels as new fact types.
     - [ ] **Phase 4 — VLM page-OCR for scans.** Opt-in: detect scanned pages (no text
           layer), transcribe each page image with the vision client (reuse `describe`),
           use it as the page text (beats RapidOCR). Profile/confidence reflects scan
