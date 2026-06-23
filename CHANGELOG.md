@@ -79,6 +79,11 @@ here.
   unchanged.
 
 ### Fixed
+- Pin `rapidocr<3.9`. rapidocr 3.9.0 (pulled transitively by Docling) defaults its
+  detection model to PP-OCRv6, which its torch backend rejects ("Unsupported
+  configuration: torch.PP-OCRv6.det.small"), so every conversion failed at OCR init —
+  even born-digital PDFs that never run OCR. 3.8.x (PP-OCRv4) works. A loose
+  `docling>=2.90` had let `uv tool install` resolve the broken version.
 - Deep-code-review cleanup. (1) The "prose-bearing types" set was defined five times and
   had drifted (emit's omitted FOOTNOTE), so a broken-font footnote was emitted as garbage
   with no marker and inflated `prose_legibility` — now one `schema.PROSE_TYPES` frozenset,
