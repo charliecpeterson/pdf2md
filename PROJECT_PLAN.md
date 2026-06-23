@@ -88,9 +88,15 @@ structure. "Whatever produces the best markdown from a PDF wins."
           use it as the page text (beats RapidOCR). Profile/confidence reflects scan
           fraction + whether VLM-OCR ran. Prose, not crop-authoritative → flag
           hallucination risk; opt-in.
-    - [ ] **Phase 5 — Reading-order audit.** Verify two-column / multi-column / sidebar
-          layouts on corpus papers (094103, 2207); scope a fix only if Docling
-          mis-orders. Investigate-first.
+    - [x] **Phase 5 — Reading-order audit: CHECKED, no fix needed (2026-06-22).**
+          Two-column papers read correctly: on 094103's two-column references page the
+          numbers run 18→42 in sequence down the left column then the right (interleaving
+          would scramble them), and body pages read `LLLL…RRRR` with coherent prose
+          across the column break; 2207 is mostly single-column. Caveat for any
+          reading-order *metric* (Phase 3): classify only narrow (column-width) blocks —
+          full-width blocks (references, titles) sit at the page center and a naive
+          x-center test mis-flags them as interleaved. That narrow-block column-sequence
+          + reference-number monotonicity check is a good candidate harness metric.
     - [ ] **Phase 6 — Polish.** Ligature-drop repair (broken-font ﬀ/ﬁ/ﬂ gaps,
           dictionary-validated); CrossRef metadata when a DOI is present.
   - **Decisions (locked 2026-06-22)**: AI metadata → doc-level `profile.json` + nav
