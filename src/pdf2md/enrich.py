@@ -32,17 +32,11 @@ from pdf2md.normalize import (
     vocabulary,
 )
 from pdf2md.preformat import is_preformatted
-from pdf2md.schema import Block, BlockType, FigureRef, RawTable, TableData
+from pdf2md.schema import PROSE_TYPES, Block, BlockType, FigureRef, RawTable, TableData
 from pdf2md.scripts import PageChars, apply_scripts
 from pdf2md.tables import GridCell, build_gfm, build_html
 
 log = get_logger("enrich")
-
-# Block types whose prose carries inline scripts and ligatures worth recovering.
-_SCRIPT_TYPES = {
-    BlockType.PARAGRAPH, BlockType.HEADING, BlockType.LIST,
-    BlockType.CAPTION, BlockType.FOOTNOTE, BlockType.OTHER,
-}
 
 
 def religatured(text: str, vocab) -> str:
@@ -134,7 +128,7 @@ def enrich_blocks(blocks: list[Block], glyphs) -> None:
             relines = clean_preformatted(pc.text_lines(b.bbox))
             if relines and not is_garbage(relines):
                 b.text = relines
-        elif b.type in _SCRIPT_TYPES and pc is not None and b.bbox is not None:
+        elif b.type in PROSE_TYPES and pc is not None and b.bbox is not None:
             # A console transcript Docling mislabels as prose (rather than code): its
             # banner lines mark it preformatted, so re-read line-preserved and emit as
             # a code fence instead of letting reading-order collapse flatten it.

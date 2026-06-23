@@ -79,6 +79,21 @@ here.
   unchanged.
 
 ### Fixed
+- Deep-code-review cleanup. (1) The "prose-bearing types" set was defined five times and
+  had drifted (emit's omitted FOOTNOTE), so a broken-font footnote was emitted as garbage
+  with no marker and inflated `prose_legibility` — now one `schema.PROSE_TYPES` frozenset,
+  and illegible footnotes are flagged. (2) A crash between creating the version dir and
+  writing provenance left a dirty dir the next run wrote *into* (after the cache fix made
+  it reuse the number); the dir is now cleared first, and provenance.json is written
+  atomically (temp + `os.replace`) so a truncated marker can't look complete. (3) Added a
+  Docling-free fast test of the adapter's cell-bbox TOPLEFT→bottom-left flip and the
+  label→BlockType map — the highest-churn code, previously only covered by the opt-in
+  integration test. (4) `config.device` now actually reaches the Docling engine
+  (`AcceleratorOptions`); it was silently ignored. (5) Removed the dead
+  `coverage_confidence_floor` config. Smaller: `--ocr-vlm` added to the cached-run nudge;
+  `repair_ligature_drops` preserves all-caps; the title-dedup no longer reads an initial
+  ("C. elegans") as a section numeral; `convert_dir` no longer re-hashes a failed file in
+  its poison-pill handler; CI now runs `ruff`; untracked a stray `.Rhistory`.
 - A crashed conversion no longer wedges the cache. The version number is assigned
   before output is written and provenance.json is written last, so an interrupted run
   (e.g. `--describe` without the `openai` extra, which died after rendering crops but

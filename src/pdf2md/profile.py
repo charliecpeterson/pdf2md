@@ -13,10 +13,8 @@ from collections import Counter
 from dataclasses import asdict
 from pathlib import Path
 
-from pdf2md.schema import BlockType, Document, DocumentProfile
+from pdf2md.schema import PROSE_TYPES, BlockType, Document, DocumentProfile
 
-# Prose-bearing types held to the legibility bar (mirrors enrich/emit/qa).
-_PROSE = {"paragraph", "heading", "list", "caption", "footnote", "other"}
 _GRADES = ("high", "medium", "low")  # ordered best -> worst
 
 
@@ -31,7 +29,7 @@ def build_profile(doc: Document) -> DocumentProfile:
     image_backed = sum(1 for b in eqs if b.extra.get("crop_path"))
     ocr_pages = len({b.page for b in blocks if b.extra.get("ocr")})
 
-    prose = [b for b in blocks if b.type.value in _PROSE and b.text.strip()]
+    prose = [b for b in blocks if b.type in PROSE_TYPES and b.text.strip()]
     illegible = doc.coverage.illegible if doc.coverage else 0
     legibility = (len(prose) - illegible) / len(prose) if prose else 1.0
     lossless = doc.coverage.lossless if doc.coverage else True

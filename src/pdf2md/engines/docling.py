@@ -97,7 +97,9 @@ class DoclingEngine:
         *,
         formula_enrichment: bool = True,
         artifacts_path: str | None = None,
+        device: str = "auto",
     ) -> None:
+        from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
         from docling.datamodel.base_models import InputFormat
         from docling.datamodel.pipeline_options import PdfPipelineOptions
         from docling.document_converter import DocumentConverter, PdfFormatOption
@@ -106,6 +108,7 @@ class DoclingEngine:
         opts.do_formula_enrichment = formula_enrichment
         if artifacts_path:
             opts.artifacts_path = artifacts_path
+        opts.accelerator_options = AcceleratorOptions(device=AcceleratorDevice(device))
         self._converter = DocumentConverter(
             format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=opts)}
         )

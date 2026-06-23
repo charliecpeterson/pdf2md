@@ -23,6 +23,7 @@ import re
 from pathlib import Path
 
 from pdf2md.legibility import is_garbage
+from pdf2md.schema import PROSE_TYPES
 
 # Counts that must never rise (and lossless must stay True). Everything else is
 # informational drift — printed, never gated. `illegible` / `illegible_table_rows`
@@ -32,9 +33,8 @@ from pdf2md.legibility import is_garbage
 _INVARIANTS = ("dropped", "ligature_residual", "unbalanced_eq", "illegible",
                "illegible_table_rows")
 
-# Prose-bearing block types whose text is held to the legibility bar (equations,
-# tables, and figures are judged elsewhere). Mirrors enrich's `_SCRIPT_TYPES`.
-_PROSE = {"paragraph", "heading", "list", "caption", "footnote", "other"}
+# String forms of the prose types (provenance.json stores the enum value as a string).
+_PROSE = {t.value for t in PROSE_TYPES}
 
 _LIG = re.compile(r"\w (?:ff|fi|fl|ffi|ffl) \w")
 _EQ = re.compile(r"^\$\$\n(.*?)\n\$\$", re.MULTILINE | re.DOTALL)

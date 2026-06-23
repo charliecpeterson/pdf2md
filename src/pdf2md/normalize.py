@@ -117,8 +117,11 @@ def repair_ligature_drops(text: str) -> str:
         return text
 
     def repl(m: re.Match) -> str:
-        word = _LIG_DROPS[m.group(0).lower()]
-        return word.capitalize() if m.group(0)[0].isupper() else word
+        matched = m.group(0)
+        word = _LIG_DROPS[matched.lower()]
+        if matched.isupper():
+            return word.upper()                       # "DI ERENT" -> "DIFFERENT"
+        return word.capitalize() if matched[0].isupper() else word
 
     return _LIG_DROP_RE.sub(repl, text)
 

@@ -15,9 +15,21 @@ def test_repair_ligature_drops():
 
     assert repair_ligature_drops("more e cient use") == "more efficient use"
     assert repair_ligature_drops("a di erent con guration") == "a different configuration"
-    assert repair_ligature_drops("Di erent results") == "Different results"  # caps preserved
+    assert repair_ligature_drops("Di erent results") == "Different results"  # title-case preserved
+    assert repair_ligature_drops("DI ERENT RESULTS") == "DIFFERENT RESULTS"  # all-caps preserved
     assert repair_ligature_drops("the specific field here") == "the specific field here"  # clean untouched
     assert repair_ligature_drops("coe cient and di culty") == "coefficient and difficulty"
+
+
+def test_norm_title_dedup_and_initial_guard():
+    from pdf2md.emit import _norm_title
+
+    # bookmark title and the part-prefixed page heading normalise equal (dedup works)
+    assert _norm_title("IV Issues of convergence") == _norm_title("Part IV: Issues of convergence")
+    assert _norm_title("I Overview of GRASP") == "overview of grasp"
+    # an initial ("C.") is NOT read as a section numeral (the period blocks the bare form)
+    assert _norm_title("C. elegans data") == "c elegans data"
+    assert _norm_title("Introduction") == "introduction"  # leading "I" not stripped from a word
 
 
 def test_table_strips_caption_prefix():

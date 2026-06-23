@@ -33,6 +33,15 @@ class BlockType(str, Enum):
     OTHER = "other"
 
 
+# The text-bearing block types — held to ligature/script/refill repair, the legibility
+# gate, VLM re-OCR, and the prose-legibility tally. One definition so the four call
+# sites can't drift (they had, on FOOTNOTE).
+PROSE_TYPES = frozenset({
+    BlockType.PARAGRAPH, BlockType.HEADING, BlockType.LIST,
+    BlockType.CAPTION, BlockType.FOOTNOTE, BlockType.OTHER,
+})
+
+
 class CoverageStatus(str, Enum):
     """How a block was accounted for, set by the coverage auditor."""
 

@@ -39,7 +39,7 @@ def score_legibility(text: str) -> float:
     glyph_names = len(_GLYPH_NAME.findall(text))
     stripped = _GLYPH_NAME.sub("", text)
     suspect = glyph_names + sum(1 for c in stripped if _is_substitute(c))
-    letters = sum(1 for c in stripped if c.isalpha() and not _is_substitute(c))
+    letters = sum(1 for c in stripped if c.isalpha())  # no substitute-range char is alpha
     base = letters + suspect
     if base == 0:
         return 1.0

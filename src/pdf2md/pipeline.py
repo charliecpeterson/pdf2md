@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -28,7 +29,14 @@ from pdf2md.logging import get_logger
 from pdf2md.metadata import extract_metadata
 from pdf2md.profile import build_profile, write_profile, write_readme
 from pdf2md.render import CropRenderer
-from pdf2md.schema import FORMAT_VERSION, BlockType, CoverageReport, Document, Provenance
+from pdf2md.schema import (
+    FORMAT_VERSION,
+    PROSE_TYPES,
+    BlockType,
+    CoverageReport,
+    Document,
+    Provenance,
+)
 from pdf2md.transcribe import Transcriber, get_transcriber
 from pdf2md.structure import build_structure
 
@@ -56,6 +64,7 @@ def _get_engine(engine: Engine | None, config: Config) -> Engine:
     return DoclingEngine(
         formula_enrichment=config.do_formula_enrichment,
         artifacts_path=config.local_model_dir,
+        device=config.device,
     )
 
 
@@ -75,8 +84,9 @@ def convert_file(
 
     cached = latest_version(dd)
     if cached is not None and not force:
-        extra = (" (--describe/--transcribe apply on a fresh run; add --force)"
-                 if (config.describe_figures or config.transcribe_equations) else "")
+        extra = (" (--describe/--transcribe/--ocr-vlm apply on a fresh run; add --force)"
+                 if (config.describe_figures or config.transcribe_equations or config.ocr_vlm)
+                 else "")
         vdir = dd / f"v{cached}"
         log.info("cached: %s (v%d); use force=True to re-convert%s", pdf_path.name, cached, extra)
         prov = vdir / "provenance.json"
@@ -124,6 +134,10 @@ def convert_file(
 
     version = next_version(dd)
     vdir = dd / f"v{version}"
+    # A crashed earlier run can leave this version's dir (it had no provenance.json, so
+    # next_version reuses the number); clear it so stale crops/md don't survive.
+    if vdir.exists():
+        shutil.rmtree(vdir)
     assets = vdir / "assets"
 
     crop_blocks = _eq_crops(result.blocks) + _table_crops(result.blocks, result.tables)
@@ -176,7 +190,12 @@ def convert_file(
         duration_s=round((finished - started).total_seconds(), 2),
         section_source=structure.section_source,
     )
-    (vdir / "provenance.json").write_text(json.dumps(doc.to_dict(), indent=2, default=str))
+    # provenance.json is the completion marker (its presence = a finished run), so write
+    # it atomically — a truncated marker from a killed process must never look complete.
+    prov_path = vdir / "provenance.json"
+    tmp_prov = prov_path.with_suffix(".json.tmp")
+    tmp_prov.write_text(json.dumps(doc.to_dict(), indent=2, default=str))
+    tmp_prov.replace(prov_path)
 
     log.info(
         "converted %s -> v%d (%d md files, %s)",
@@ -212,8 +231,10 @@ def convert_dir(
                 config=config, force=force))
         except Exception as exc:  # noqa: BLE001 - poison-pill isolation
             log.error("unhandled failure on %s: %s", pdf.name, exc)
+            # Don't re-hash here — if the file is unreadable, that throws too and aborts
+            # the batch this handler exists to protect. The name is enough to report it.
             results.append(
-                ConvertResult(content_hash(pdf), 0, root, [], failed=True, error=str(exc))
+                ConvertResult(pdf.name, 0, root, [], failed=True, error=str(exc))
             )
     return results
 
@@ -239,11 +260,6 @@ def _transcribe_equations(blocks, transcriber, vdir: Path) -> None:
                 b.extra["transcribed_source"] = "math OCR"
 
 
-# Scanned-page block types whose OCR text the vision model re-transcribes (equations
-# and tables are image-backed; figures are crops).
-_PROSE_OCR = {"paragraph", "heading", "list", "caption", "footnote", "other"}
-
-
 def _vlm_ocr_scanned(blocks, describer: Describer, pdf_path: Path, config: Config,
                      doc_dir: Path) -> None:
     """Replace each scanned prose block's RapidOCR text with a vision-model
@@ -251,7 +267,7 @@ def _vlm_ocr_scanned(blocks, describer: Describer, pdf_path: Path, config: Confi
     no asset is kept); cached at the doc level by (model, crop bytes), so a re-run
     doesn't re-OCR. Best-effort — a block the model can't read keeps its engine text."""
     targets = [b for b in blocks if b.extra.get("ocr") and b.bbox is not None
-               and b.type.value in _PROSE_OCR and b.text.strip()]
+               and b.type in PROSE_TYPES and b.text.strip()]
     if not targets:
         return
     doc_dir.mkdir(parents=True, exist_ok=True)

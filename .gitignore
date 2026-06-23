@@ -37,3 +37,6 @@ out/
 # OS
 .DS_Store
 Thumbs.db
+
+# stray R history
+.Rhistory

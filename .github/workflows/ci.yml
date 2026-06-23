@@ -23,4 +23,5 @@ jobs:
       # imports it — engine imports are lazy — so this keeps CI lean and also
       # enforces that the engine seam stays lazily loaded.
       - run: uv sync --no-install-package docling
+      - run: uvx ruff check src tests scripts
       - run: uv run --no-sync pytest -q

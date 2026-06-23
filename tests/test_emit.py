@@ -129,6 +129,20 @@ def test_emit_is_lossless(tmp_path, sample_document):
     assert all(b.coverage_status != CoverageStatus.PENDING for b in sample_document.blocks)
 
 
+def test_illegible_footnote_flagged_not_emitted():
+    # A broken-font footnote is symbol-font garbage like any prose; it must be flagged,
+    # not appended to the footnote list as readable text (the FOOTNOTE branch gates it).
+    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.schema import Block, BlockType
+
+    ctx = _Ctx(depth_of={}, tables={}, figures={})
+    fn = Block(id="#/fn", type=BlockType.FOOTNOTE, text="❆ ♣/a114❛❝", page=1)
+    footnotes: list[str] = []
+    text, status, flag = _render_block(fn, ctx, footnotes)
+    assert status == CoverageStatus.FLAGGED and "illegible text layer" in text
+    assert footnotes == []  # not passed off as readable
+
+
 def test_emit_snapshot(tmp_path, sample_document, snapshot):
     md_files, _ = _emit(tmp_path, sample_document)
     assert md_files[0].read_text() == snapshot

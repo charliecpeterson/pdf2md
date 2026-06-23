@@ -19,6 +19,7 @@ from pdf2md.legibility import is_garbage
 from pdf2md.outline import heading_depth, is_label_heading
 from pdf2md.schema import (
     FORMAT_VERSION,
+    PROSE_TYPES,
     Block,
     BlockType,
     CoverageFlag,
@@ -31,12 +32,6 @@ from pdf2md.schema import (
 from pdf2md.tables import render_table
 
 _BOILERPLATE = {BlockType.PAGE_HEADER, BlockType.PAGE_FOOTER}
-
-# Prose-bearing types held to the legibility bar. A block here whose text is still
-# symbol-font garbage after enrich's pdfium refill gets a visible marker, never a
-# silent emit (equations/tables/code carry their own non-prose representations).
-_PROSE = {BlockType.PARAGRAPH, BlockType.HEADING, BlockType.LIST,
-          BlockType.CAPTION, BlockType.OTHER}
 
 # Docling encodes trailing PDF whitespace and lost alignment columns as long runs
 # of LaTeX spacing commands (\quad, control-spaces) or empty `& \quad` cells, which
@@ -105,8 +100,14 @@ class _Ctx:
 
 # Strip a leading "Part/Chapter/Appendix" word and/or a standalone number or roman
 # numeral so "Part IV: Issues …" and the bookmark title "IV Issues …" compare equal.
-# The `\b` keeps a real word ("Introduction") from losing its leading "I".
-_TITLE_PREFIX = re.compile(r"^(?:(?:part|chapter|appendix)\s+)?(?:\d+|[ivxlcdm]+)\b[.:]?\s*", re.I)
+# The bare numeral must be followed by whitespace, so an initial like "C. elegans" (a
+# period, not a space) keeps its "C" instead of being read as a section numeral. `\b`
+# keeps a real word ("Introduction") from losing its leading "I".
+_TITLE_PREFIX = re.compile(
+    r"^(?:(?:part|chapter|appendix)\s+(?:\d+|[ivxlcdm]+)\b[.:]?\s*"
+    r"|(?:\d+|[ivxlcdm]+)\b\s+)",
+    re.I,
+)
 
 
 def _norm_title(t: str) -> str:
@@ -342,6 +343,8 @@ def _render_block(
         return _marker(b, "table not extracted"), CoverageStatus.FLAGGED, _flag(b, "table not extracted")
 
     if b.type == BlockType.FOOTNOTE:
+        if txt and is_garbage(txt):  # a broken-font footnote is garbage like any prose
+            return _marker(b, ILLEGIBLE_REASON), CoverageStatus.FLAGGED, _flag(b, ILLEGIBLE_REASON)
         if txt:
             footnotes.append(txt)
         return None, CoverageStatus.EMITTED, None
@@ -349,7 +352,7 @@ def _render_block(
     if not txt:
         return _marker(b, f"empty {b.type.value} block"), CoverageStatus.DROPPED, _flag(b, "empty block")
 
-    if b.type in _PROSE and is_garbage(txt):
+    if b.type in PROSE_TYPES and is_garbage(txt):
         # enrich's pdfium refill couldn't rescue this block (the glyph layer was
         # garbage too). Emit a visible marker so the lossless audit counts it as
         # illegible instead of passing symbol-font noise off as readable prose.
@@ -438,7 +441,7 @@ def _front_matter(doc: Document, meta: dict, section_source: str, engine_version
     # Prose blocks whose text stayed symbol-font garbage (broken font, no pdfium
     # rescue): surfaced so a downstream reader knows the doc is partly unreadable.
     illegible = sum(1 for b in doc.blocks
-                    if b.type in _PROSE and b.text.strip() and is_garbage(b.text))
+                    if b.type in PROSE_TYPES and b.text.strip() and is_garbage(b.text))
     if illegible:
         front["illegible_blocks"] = illegible
     return front

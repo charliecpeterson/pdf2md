@@ -41,8 +41,6 @@ class Config:
     vlm_api_key: str | None = None
     crop_dpi: int = 220
     crop_padding_pts: float = 6.0
-    # Blocks below this confidence become a visible marker rather than silent text.
-    coverage_confidence_floor: float = 0.0
     # Directory of pre-downloaded Docling models (see `pdf2md models pull
     # --local-dir`). Set it to run fully offline and reproducibly — the local
     # snapshot is the pin. None = Docling's default Hugging Face cache.
