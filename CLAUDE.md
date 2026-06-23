@@ -48,7 +48,8 @@ src/pdf2md/
                 detection, font-decode repair (garbage prose refilled from the pdfium glyph
                 layer). Reads pypdfium2 glyph geometry; any engine inherits it.
   normalize.py  text cleanup (Greek glyph names, orphan combining marks, clean_reading) + vocab-
-                validated ligature/diacritic word repair (religature, rejoin_split_word, vocabulary).
+                validated ligature/diacritic word repair (religature, rejoin_split_word, vocabulary)
+                + curated dropped-ligature repair (repair_ligature_drops: 'e cient'→efficient).
   scripts.py    inline sub/superscript detector from glyph geometry (PageChars, apply_scripts).
   legibility.py symbol-font garbage detector (score_legibility/is_garbage): dingbat/PUA/glyph-name
                 density. Gates the enrich refill and the emit `illegible` flag.

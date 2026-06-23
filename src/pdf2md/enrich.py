@@ -28,6 +28,7 @@ from pdf2md.normalize import (
     normalize_text,
     rejoin_split_word,
     religature,
+    repair_ligature_drops,
     vocabulary,
 )
 from pdf2md.preformat import is_preformatted
@@ -45,10 +46,11 @@ _SCRIPT_TYPES = {
 
 
 def religatured(text: str, vocab) -> str:
-    """Repair words the text layer fractured — ligature splits ('di ff erent') and
-    diacritic splits ('Lo wdin') — against the page vocabulary. The (cached)
+    """Repair words the text layer fractured — dropped ﬀ/ﬁ/ﬂ ligatures ('e cient'),
+    ligature splits ('di ff erent'), and diacritic splits ('Lo wdin'). The (cached)
     vocabulary is built via the `vocab` callable only when a candidate split is
     present, so clean text pays nothing."""
+    text = repair_ligature_drops(text)
     lig = has_split_ligature(text)
     if not lig and not has_split_word(text):
         return text

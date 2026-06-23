@@ -7,6 +7,15 @@ here.
 
 ## [Unreleased]
 ### Added
+- Dropped-ligature repair. A broken font whose ﬀ/ﬁ/ﬂ ligatures lack a ToUnicode
+  mapping makes pdfium drop them, leaving a gap ("e cient" for "efficient"). `enrich`
+  now reinserts the ligature for a curated set of unambiguous multi-fragment words
+  ("e cient"→efficient, "con guration"→configuration, "di erent"→different,
+  "coe cient"→coefficient, …) — these spaced forms never occur in clean text, so the
+  fix is zero-risk; word-initial drops ("rst"→first) are left as too ambiguous.
+  Validated on GRASP: "more e cient use … con guration state functions … di erent
+  computer systems" → "more efficient use … configuration state functions … different
+  computer systems".
 - `--ocr-vlm`: re-OCR scanned prose blocks with the vision model instead of the
   engine's RapidOCR (opt-in, same `describe` extra + endpoint). Crops each scanned
   prose block, transcribes it, and replaces the text — much more accurate on degraded

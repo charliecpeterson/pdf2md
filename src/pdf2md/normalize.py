@@ -81,6 +81,48 @@ def clean_preformatted(text: str) -> str:
     return "\n".join(lines).strip("\n")
 
 
+# A broken font whose ﬀ/ﬁ/ﬂ ligatures lack a ToUnicode mapping makes pdfium drop them,
+# leaving a gap ("e cient" for "efficient"). We repair only multi-fragment drops whose
+# two pieces uniquely name one word — these spaced forms never occur in real text, so
+# the fix is safe. Word-initial drops ("rst"→first, "eld"→field) are too ambiguous and
+# left alone. Keys are lowercase, one space at the dropped ligature.
+_LIG_DROPS = {
+    "e cient": "efficient", "e ciency": "efficiency", "e ciently": "efficiently",
+    "di erent": "different", "di erence": "difference", "di erences": "differences",
+    "di erently": "differently", "di cult": "difficult", "di culty": "difficulty",
+    "di culties": "difficulties", "su cient": "sufficient", "su ciently": "sufficiently",
+    "coe cient": "coefficient", "coe cients": "coefficients",
+    "speci c": "specific", "speci cally": "specifically",
+    "speci cation": "specification", "speci cations": "specifications",
+    "con guration": "configuration", "con gurations": "configurations",
+    "con gure": "configure", "con gured": "configured",
+    "signi cant": "significant", "signi cantly": "significantly",
+    "signi cance": "significance", "scienti c": "scientific",
+    "classi cation": "classification", "classi ed": "classified",
+    "modi cation": "modification", "modi cations": "modifications", "modi ed": "modified",
+    "identi cation": "identification", "identi ed": "identified",
+    "simpli ed": "simplified", "simpli cation": "simplification",
+    "justi cation": "justification", "justi ed": "justified",
+}
+_LIG_DROP_RE = re.compile(
+    r"\b(" + "|".join(re.escape(k) for k in sorted(_LIG_DROPS, key=len, reverse=True)) + r")\b",
+    re.IGNORECASE,
+)
+
+
+def repair_ligature_drops(text: str) -> str:
+    """Reinsert ﬀ/ﬁ/ﬂ ligatures a broken font dropped, for the curated unambiguous
+    words above. A no-op on clean text (the spaced forms don't occur there)."""
+    if " " not in text:
+        return text
+
+    def repl(m: re.Match) -> str:
+        word = _LIG_DROPS[m.group(0).lower()]
+        return word.capitalize() if m.group(0)[0].isupper() else word
+
+    return _LIG_DROP_RE.sub(repl, text)
+
+
 # A ligature cluster left stranded between two word-fragments by a stray space.
 _LIG_SPLIT = re.compile(r"(\w+) (ff|ffi|ffl|fi|fl) (\w+)")
 

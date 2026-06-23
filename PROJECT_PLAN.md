@@ -106,8 +106,13 @@ structure. "Whatever produces the best markdown from a PDF wins."
           full-width blocks (references, titles) sit at the page center and a naive
           x-center test mis-flags them as interleaved. That narrow-block column-sequence
           + reference-number monotonicity check is a good candidate harness metric.
-    - [ ] **Phase 6 — Polish.** Ligature-drop repair (broken-font ﬀ/ﬁ/ﬂ gaps,
-          dictionary-validated); CrossRef metadata when a DOI is present.
+    - [x] **Phase 6 — Ligature-drop repair (2026-06-22).** `normalize.repair_ligature_drops`:
+          reinserts dropped ﬀ/ﬁ/ﬂ ligatures for a curated set of unambiguous multi-fragment
+          words ("e cient"→efficient, "con guration"→configuration). Zero-risk (spaced forms
+          don't occur in clean text); word-initial drops left as too ambiguous. Validated on
+          GRASP. **CrossRef metadata DEFERRED** — it adds the network dependency the project
+          has deliberately avoided (offline/reproducible default); revisit only if bibliographic
+          metadata becomes a priority and the dependency is acceptable.
   - **Decisions (locked 2026-06-22)**: AI metadata → doc-level `profile.json` + nav
     keys in front-matter. Human summary → `README.md` in the output dir (renders
     first / "start here"). Confidence → component signals + a coarse high/med/low

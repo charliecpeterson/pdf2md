@@ -10,6 +10,16 @@ from pdf2md.schema import Block, BlockType, CoverageStatus, TableData
 from pdf2md.tables import render_table
 
 
+def test_repair_ligature_drops():
+    from pdf2md.normalize import repair_ligature_drops
+
+    assert repair_ligature_drops("more e cient use") == "more efficient use"
+    assert repair_ligature_drops("a di erent con guration") == "a different configuration"
+    assert repair_ligature_drops("Di erent results") == "Different results"  # caps preserved
+    assert repair_ligature_drops("the specific field here") == "the specific field here"  # clean untouched
+    assert repair_ligature_drops("coe cient and di culty") == "coefficient and difficulty"
+
+
 def test_table_strips_caption_prefix():
     t = TableData("#/tables/0", 1, None, gfm="Table 1: x\n\n| a |\n|---|\n| 1 |")
     assert render_table(t).startswith("| a |")
