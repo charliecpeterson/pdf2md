@@ -173,6 +173,27 @@ class CoverageReport:
 
 
 @dataclass
+class DocumentProfile:
+    """A per-document portrait of what was converted and how much to trust it: content
+    inventory, quality signals, and a coarse confidence grade. Surfaced as profile.json
+    (for an AI) and README.md (for a human); validated by the accuracy harness."""
+    pages: int
+    blocks: int
+    by_type: dict[str, int]            # block-type value -> count
+    figures: int
+    tables: int
+    equations: int
+    equations_image_backed: int        # LaTeX the cross-check couldn't verify; crop is the source
+    code_blocks: int
+    illegible_blocks: int              # prose still symbol-font garbage after repair
+    ocr_pages: int                     # pages with no text layer (scanned)
+    lossless: bool
+    prose_legibility: float            # fraction of prose blocks that are legible, 0..1
+    confidence: str                    # "high" | "medium" | "low"
+    confidence_reasons: list[str]
+
+
+@dataclass
 class Document:
     doc_id: str
     source_path: str

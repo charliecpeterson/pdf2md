@@ -68,6 +68,8 @@ src/pdf2md/
   tables.py     GFM table render, HTML fallback for spanning cells.
   metadata.py   bibliographic fields: embedded PDF metadata + first-page heuristic.
   coverage.py   tally block dispositions into a CoverageReport.
+  profile.py    DocumentProfile (inventory + quality + confidence grade) → profile.json (AI)
+                + README.md (human run summary). build_profile / write_profile / write_readme.
 
 scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs tests/qa_baseline.json),
                 eval_equations.py (labelled accuracy vs tests/equation_labels.json), benchmark.py.

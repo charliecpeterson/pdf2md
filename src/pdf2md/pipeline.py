@@ -25,6 +25,7 @@ from pdf2md.emit import emit_document
 from pdf2md.engines.base import Engine
 from pdf2md.logging import get_logger
 from pdf2md.metadata import extract_metadata
+from pdf2md.profile import build_profile, write_profile, write_readme
 from pdf2md.render import CropRenderer
 from pdf2md.schema import FORMAT_VERSION, BlockType, CoverageReport, Document, Provenance
 from pdf2md.transcribe import Transcriber, get_transcriber
@@ -148,6 +149,11 @@ def convert_file(
     )
     md_files, flags = emit_document(doc, structure, vdir, meta, result.engine_versions)
     doc.coverage = build_report(doc_id, result.blocks, flags)
+
+    # Per-doc profile, surfaced for an AI (profile.json) and a human (README.md).
+    profile = build_profile(doc)
+    write_profile(vdir, doc, profile, md_files)
+    write_readme(vdir, doc, meta, profile, md_files)
 
     finished = datetime.now(timezone.utc)
     doc.provenance = Provenance(

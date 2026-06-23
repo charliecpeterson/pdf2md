@@ -73,6 +73,8 @@ out/<doc_id[:16]>/v<n>/
   document.md          # paper: one file
   00_front.md ...      # book (bookmarked, large): one file per top-level section
   index.md             # book: linked contents tree (sections, chapters, anchors)
+  README.md            # human run summary: contents, confidence (high/med/low) + reasons
+  profile.json         # machine-readable: inventory, quality signals, confidence, file list
   assets/<id>_p<n>.png # cropped figures, referenced by relative path
   provenance.json      # source of truth: blocks, bboxes, coverage, lineage
 ```

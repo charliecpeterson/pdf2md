@@ -7,6 +7,14 @@ here.
 
 ## [Unreleased]
 ### Added
+- Per-document profile, written on every conversion: `profile.json` (machine-readable
+  content inventory + quality signals + a coarse confidence grade, for an AI consumer)
+  and `README.md` (a human run summary: what the doc is, what's in it, a high/medium/low
+  confidence read *with reasons* — "50/50 pages scanned: verify against images",
+  "29/41 equations image-backed" — and where to start). `profile.py` computes the
+  `DocumentProfile` once; both files render from it. A born-digital paper grades "high";
+  a scan grades "medium" with the scan reason. (Front-matter nav keys + a full
+  section→file→page map in profile.json are a planned refinement.)
 - `--describe`: vision-model descriptions of image crops (opt-in). Figures, image-
   fallback tables, and image-backed equations are opaque PNGs to a text consumer;
   `describe.py` sends each crop to an OpenAI-compatible vision endpoint (`vlm_base_url`

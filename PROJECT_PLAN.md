@@ -68,19 +68,17 @@ structure. "Whatever produces the best markdown from a PDF wins."
     all draw on one **per-document profile** — content inventory + structure + quality
     signals. Compute it once (`profile.py`), surface it three ways. Build that first.
   - **Roadmap** (ordered by dependency, then value):
-    - [ ] **Phase 1 — Document profile.** From the converted `Document`: content
-          inventory (counts by block type; #figures/tables/equations/code/illegible/
-          image-backed; OCR page count), structure (heading outline → file/page map),
-          and quality signals (legibility %, lossless, equation verified-vs-image-backed
-          %, OCR fraction, flag list). One model in `profile.py` + schema.
-    - [ ] **Phase 2a — Richer AI metadata.** Surface the profile machine-readably: a
-          doc-level `profile.json` (full structure + nav map + quality) and a few nav
-          keys in front-matter, so an AI opening the md knows the structure, where
-          things live, and how much to trust each part.
-    - [ ] **Phase 2b — Human run summary** (`README.md` in the output dir): what the
-          doc is, content inventory, an honest quality/confidence read (high/med/low
-          with reasons — "3 illegible blocks p.62", "510 OCR pages: verify vs images",
-          "29/41 equations image-backed"), and a navigation guide.
+    - [x] **Phase 1 — Document profile (2026-06-22).** `profile.py` `build_profile`:
+          content inventory (counts by block type; figures/tables/equations/code/
+          illegible/image-backed; OCR page count), quality (legibility %, lossless,
+          image-backed equations), and a coarse confidence grade + reasons. `schema.py`
+          `DocumentProfile`. Wired into the pipeline after coverage.
+    - [x] **Phase 2a — AI metadata: `profile.json` (2026-06-22).** Doc-level JSON: the
+          profile + output file list + contents pointer. *Remaining:* a few nav keys in
+          front-matter and a full section→file→page map in profile.json (refinement).
+    - [x] **Phase 2b — Human run summary `README.md` (2026-06-22).** Title, content
+          inventory, confidence (high/med/low) with reasons, and where-to-start.
+          Validated: a born-digital paper grades "high", a scan grades "medium".
     - [ ] **Phase 3 — Accuracy harness.** Labelled structural facts per archetype
           (text fidelity, table structure, reading order) + metrics + an accuracy
           report that validates the Phase-1 signals against ground truth. The
@@ -95,11 +93,11 @@ structure. "Whatever produces the best markdown from a PDF wins."
           mis-orders. Investigate-first.
     - [ ] **Phase 6 — Polish.** Ligature-drop repair (broken-font ﬀ/ﬁ/ﬂ gaps,
           dictionary-validated); CrossRef metadata when a DOI is present.
-  - **Open decisions (recommendations in parens)**: AI metadata location (doc-level
-    `profile.json` + nav keys in front-matter); human summary filename (`README.md`,
-    renders first / "start here"); confidence shape (component scores + coarse
-    high/med/low grade, not a false-precision single number); VLM page-OCR
-    replace-vs-augment RapidOCR (replace for scanned pages, image still referenced).
+  - **Decisions (locked 2026-06-22)**: AI metadata → doc-level `profile.json` + nav
+    keys in front-matter. Human summary → `README.md` in the output dir (renders
+    first / "start here"). Confidence → component signals + a coarse high/med/low
+    grade with reasons (no false-precision single number). VLM page-OCR → replace
+    RapidOCR text on scanned pages (image still referenced).
   - **Revisit if**: measurement (Phase 3) shows a gap not on this list.
 
 - **[2026-06-13] Deliverable shape: focused converter, not MCP server**
