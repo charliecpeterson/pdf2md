@@ -19,6 +19,10 @@ uv run pdf2md models pull --local-dir ~/pdf2md-models   # offline/reproducible s
 
 # optional: local math-OCR (Surya) for re-transcribing image-backed equations
 uv sync --extra transcribe
+
+# optional: vision-model descriptions of figure/table/equation crops, over any
+# OpenAI-compatible endpoint (ollama, vLLM, LM Studio, or a remote API)
+uv sync --extra describe
 ```
 
 ## Use
@@ -41,6 +45,14 @@ uv run pdf2md convert book.pdf --no-scripts
 # extra; slow). Best on scanned or equation-heavy documents.
 uv run pdf2md convert scan.pdf --transcribe
 
+# Describe image crops (figures, tables, equations) with a vision model over an
+# OpenAI-compatible API (needs the describe extra + a running endpoint; slow). The
+# crop stays authoritative; the description rides below it as a labelled aid.
+uv run pdf2md convert paper.pdf --describe                              # localhost ollama, default model
+uv run pdf2md convert paper.pdf --describe --vlm-model qwen3-vl:32b     # bigger VLM reads embedded text better
+uv run pdf2md convert paper.pdf --describe --vlm-ocr-model glm-ocr:bf16 # OCR model for dense table crops
+# point at vLLM / a remote endpoint with vlm_base_url + vlm_api_key in a --config TOML
+
 uv run pdf2md coverage paper.pdf    # per-document coverage report (no re-run)
 uv run pdf2md prune --keep 2        # keep the newest N versions per document
 uv run pdf2md version
@@ -60,6 +72,7 @@ print(result.coverage.lossless, result.md_files)
 out/<doc_id[:16]>/v<n>/
   document.md          # paper: one file
   00_front.md ...      # book (bookmarked, large): one file per top-level section
+  index.md             # book: linked contents tree (sections, chapters, anchors)
   assets/<id>_p<n>.png # cropped figures, referenced by relative path
   provenance.json      # source of truth: blocks, bboxes, coverage, lineage
 ```
@@ -83,6 +96,10 @@ out/<doc_id[:16]>/v<n>/
   ceiling remains where the engine renders an exponent unlike the raw glyphs.
 - **Book splits land at top-level bookmarks** (e.g. Parts, not chapters) and
   crops include journal furniture (logos, banners). Refinements, not yet done.
+- **`--describe` is an AI aid, not ground truth.** A vision model describes each
+  crop; the description is clearly labelled and the crop stays authoritative, so
+  verify specifics against the image. A larger model (e.g. `qwen3-vl:32b`) reads
+  embedded text more faithfully than a small one.
 
 ## Dependencies
 
