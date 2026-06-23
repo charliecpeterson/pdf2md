@@ -58,6 +58,50 @@ structure. "Whatever produces the best markdown from a PDF wins."
   crop-and-reference is the backbone instead).
 
 ## Decision Log
+- **[2026-06-22] "Insight & accuracy" workstream — PLANNED**
+  - **Context**: pdf2md is strong on born-digital + broken-font docs. The remaining
+    gaps: we improve by eyeballing (no measured accuracy), scans are the weak class,
+    complex-layout reading order is unverified, and the output doesn't tell a consumer
+    how much to trust it. User also wants richer AI-facing JSON metadata and a
+    human-facing run summary.
+  - **Unifying insight**: the accuracy harness, the AI metadata, and the human summary
+    all draw on one **per-document profile** — content inventory + structure + quality
+    signals. Compute it once (`profile.py`), surface it three ways. Build that first.
+  - **Roadmap** (ordered by dependency, then value):
+    - [ ] **Phase 1 — Document profile.** From the converted `Document`: content
+          inventory (counts by block type; #figures/tables/equations/code/illegible/
+          image-backed; OCR page count), structure (heading outline → file/page map),
+          and quality signals (legibility %, lossless, equation verified-vs-image-backed
+          %, OCR fraction, flag list). One model in `profile.py` + schema.
+    - [ ] **Phase 2a — Richer AI metadata.** Surface the profile machine-readably: a
+          doc-level `profile.json` (full structure + nav map + quality) and a few nav
+          keys in front-matter, so an AI opening the md knows the structure, where
+          things live, and how much to trust each part.
+    - [ ] **Phase 2b — Human run summary** (`README.md` in the output dir): what the
+          doc is, content inventory, an honest quality/confidence read (high/med/low
+          with reasons — "3 illegible blocks p.62", "510 OCR pages: verify vs images",
+          "29/41 equations image-backed"), and a navigation guide.
+    - [ ] **Phase 3 — Accuracy harness.** Labelled structural facts per archetype
+          (text fidelity, table structure, reading order) + metrics + an accuracy
+          report that validates the Phase-1 signals against ground truth. The
+          sustainability foundation (resolves the long-open validation-harness question).
+    - [ ] **Phase 4 — VLM page-OCR for scans.** Opt-in: detect scanned pages (no text
+          layer), transcribe each page image with the vision client (reuse `describe`),
+          use it as the page text (beats RapidOCR). Profile/confidence reflects scan
+          fraction + whether VLM-OCR ran. Prose, not crop-authoritative → flag
+          hallucination risk; opt-in.
+    - [ ] **Phase 5 — Reading-order audit.** Verify two-column / multi-column / sidebar
+          layouts on corpus papers (094103, 2207); scope a fix only if Docling
+          mis-orders. Investigate-first.
+    - [ ] **Phase 6 — Polish.** Ligature-drop repair (broken-font ﬀ/ﬁ/ﬂ gaps,
+          dictionary-validated); CrossRef metadata when a DOI is present.
+  - **Open decisions (recommendations in parens)**: AI metadata location (doc-level
+    `profile.json` + nav keys in front-matter); human summary filename (`README.md`,
+    renders first / "start here"); confidence shape (component scores + coarse
+    high/med/low grade, not a false-precision single number); VLM page-OCR
+    replace-vs-augment RapidOCR (replace for scanned pages, image still referenced).
+  - **Revisit if**: measurement (Phase 3) shows a gap not on this list.
+
 - **[2026-06-13] Deliverable shape: focused converter, not MCP server**
   - **Choice**: Rework as a PDF→markdown converter (library + CLI). MCP,
     search, and verification become separate optional layers added later.
