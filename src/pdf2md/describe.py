@@ -85,8 +85,9 @@ class OpenAIVisionDescriber:
             from openai import OpenAI
         except ImportError as exc:  # openai is an optional extra
             raise RuntimeError(
-                'describe needs the openai client — install the extra into the env '
-                'pdf2md runs from (e.g. `uv tool install --force -e ".[describe]"`)'
+                "describe needs the openai client — add the `describe` extra to the env "
+                "pdf2md runs from: `uv run --extra describe pdf2md ...` from the project, "
+                'or `uv tool install --force -e ".[describe]"` for the global tool.'
             ) from exc
         # Local servers (ollama, vLLM) ignore the key, but the client requires one set.
         # A whole-document run fires one call per crop/block (thousands on a long scan),
