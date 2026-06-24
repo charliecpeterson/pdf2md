@@ -167,7 +167,7 @@ class PageChars:
         n = tp.count_chars()
         # One text call for the whole page instead of one per char; fall back to
         # per-char only if the string and char count desync (rare encoded glyphs).
-        full = tp.get_text_range()
+        full = tp.get_text_bounded()  # default get_text_range() redirects here anyway
         if len(full) != n:
             full = None
         self._chars: list[Char] = [

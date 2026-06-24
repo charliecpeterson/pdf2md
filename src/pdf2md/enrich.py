@@ -93,7 +93,7 @@ class GlyphIndex:
             words: set[str] = set()
             for i in range(len(self._pdf)):
                 try:
-                    words |= vocabulary(self._pdf[i].get_textpage().get_text_range())
+                    words |= vocabulary(self._pdf[i].get_textpage().get_text_bounded())
                 except Exception as exc:  # noqa: BLE001 - best-effort
                     log.warning("page text read failed on page %d: %s", i + 1, exc)
             self._vocab = words
