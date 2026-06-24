@@ -79,6 +79,12 @@ here.
   unchanged.
 
 ### Fixed
+- Pin `pypdfium2>=4.30,<5`. pypdfium2 5.x rewrote the TOC API (`bookmark.get_dest()
+  .get_index()` instead of `.page_index`, and no longer yields the bookmark level the
+  heading outline needs), so on a freshly-resolved `uv tool install` (which pulled 5.10)
+  bookmark reading raised, chapter splitting silently collapsed to one `document.md`, and
+  `index.md` vanished. render/scripts target the 4.x glyph API too. Migrating to 5.x is a
+  deliberate change, tracked separately.
 - Vision passes (`--describe` / `--ocr-vlm`) survive a busy endpoint. A whole-document
   run fires one call per crop/block (thousands on a long scan), which makes a local
   server (ollama/vLLM) drop connections under load; every drop was swallowed as a warning

@@ -18,7 +18,11 @@ dependencies = [
     # Belt-and-suspenders with the onnx backend: 3.9.0 changed the default detection model
     # to PP-OCRv6; stay on 3.8.x (PP-OCRv4) until 3.9.x is verified against onnxruntime.
     "rapidocr<3.9",
-    "pypdfium2>=4.30",
+    # Target the pypdfium2 4.x API. 5.x rewrote the TOC (bookmark.get_dest().get_index()
+    # instead of .page_index, and no longer yields the level the heading outline needs),
+    # which silently collapses chapter splitting to one file. render/scripts use 4.x glyph
+    # APIs too; migrating to 5.x is a deliberate change, not a transitive surprise.
+    "pypdfium2>=4.30,<5",
     "typer>=0.15",
     "pyyaml>=6.0",
 ]

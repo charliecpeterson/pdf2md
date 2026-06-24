@@ -1550,7 +1550,7 @@ requires-dist = [
     { name = "docling", specifier = ">=2.90" },
     { name = "onnxruntime", specifier = ">=1.17" },
     { name = "openai", marker = "extra == 'describe'", specifier = ">=1.0" },
-    { name = "pypdfium2", specifier = ">=4.30" },
+    { name = "pypdfium2", specifier = ">=4.30,<5" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "rapidocr", specifier = "<3.9" },
     { name = "surya-ocr", marker = "extra == 'transcribe'", specifier = ">=0.6" },
