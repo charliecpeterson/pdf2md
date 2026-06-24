@@ -8,10 +8,15 @@ license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
     "docling>=2.90",
-    # Pin Docling's OCR engine below 3.9: rapidocr 3.9.0 defaults its detection model
-    # to PP-OCRv6, which its torch backend rejects ("Unsupported configuration:
-    # torch.PP-OCRv6.det.small"), failing every conversion at OCR init even for
-    # born-digital PDFs. 3.8.x (PP-OCRv4 default) works. Lift when 3.9.x fixes it.
+    # Docling drives OCR through rapidocr, whose default backend is onnxruntime — but
+    # without onnxruntime installed it silently falls back to a torch backend that fails
+    # at OCR init two different ways across versions ("Unsupported configuration:
+    # torch.PP-OCRv6.det.small" on rapidocr 3.9; "storage has wrong byte size" loading a
+    # .pth on torch 2.12). onnxruntime is the stable, light backend and makes OCR
+    # independent of the torch version Docling happens to pull.
+    "onnxruntime>=1.17",
+    # Belt-and-suspenders with the onnx backend: 3.9.0 changed the default detection model
+    # to PP-OCRv6; stay on 3.8.x (PP-OCRv4) until 3.9.x is verified against onnxruntime.
     "rapidocr<3.9",
     "pypdfium2>=4.30",
     "typer>=0.15",

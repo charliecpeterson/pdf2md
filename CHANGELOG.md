@@ -96,11 +96,15 @@ here.
   those bytes back to letters before the control-strip — deterministic and complete, not
   a word list. This supersedes the curated `repair_ligature_drops` dictionary, now
   removed. Soft hyphens at line breaks ("practi-cal") are joined in the same pass.
-- Pin `rapidocr<3.9`. rapidocr 3.9.0 (pulled transitively by Docling) defaults its
-  detection model to PP-OCRv6, which its torch backend rejects ("Unsupported
-  configuration: torch.PP-OCRv6.det.small"), so every conversion failed at OCR init —
-  even born-digital PDFs that never run OCR. 3.8.x (PP-OCRv4) works. A loose
-  `docling>=2.90` had let `uv tool install` resolve the broken version.
+- Depend on `onnxruntime` so OCR uses a stable backend. Docling drives OCR through
+  rapidocr, whose default backend is onnxruntime — but with onnxruntime absent it
+  silently falls back to a torch backend that breaks at OCR init in two different ways
+  across versions: "Unsupported configuration: torch.PP-OCRv6.det.small" (rapidocr 3.9)
+  and "storage has wrong byte size" loading a `.pth` (torch 2.12). Both failed every
+  conversion, even born-digital PDFs that never OCR, and both came from `uv tool install`
+  resolving newer transitive versions than the tested lockfile. Installing onnxruntime
+  (light, ~30 MB) makes OCR independent of the torch version Docling pulls. `rapidocr<3.9`
+  stays as a secondary guard until 3.9 is verified against the onnx backend.
 - Deep-code-review cleanup. (1) The "prose-bearing types" set was defined five times and
   had drifted (emit's omitted FOOTNOTE), so a broken-font footnote was emitted as garbage
   with no marker and inflated `prose_legibility` — now one `schema.PROSE_TYPES` frozenset,
