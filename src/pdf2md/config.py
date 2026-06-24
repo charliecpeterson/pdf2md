@@ -39,6 +39,10 @@ class Config:
     # cleaner LaTeX and plot descriptions). None → use vlm_model for every crop.
     vlm_ocr_model: str | None = None
     vlm_api_key: str | None = None
+    # Per-call timeout (s) for the vision endpoint. A long whole-document run hammers a
+    # local server; the client retries transient connection errors with backoff so they
+    # don't silently degrade the output. Raise for a slow model, lower for a fast remote.
+    vlm_timeout: float = 180.0
     crop_dpi: int = 220
     crop_padding_pts: float = 6.0
     # Directory of pre-downloaded Docling models (see `pdf2md models pull

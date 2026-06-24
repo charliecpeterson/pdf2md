@@ -36,6 +36,24 @@ def test_describer_built_for_ocr_vlm_only():
     assert get_describer(Config()) is None  # both off -> none
 
 
+def test_describe_counts_failures(tmp_path, monkeypatch):
+    # A dropped endpoint connection must be counted, not silently swallowed, so a
+    # degraded whole-document run can be surfaced instead of passing as clean.
+    pytest.importorskip("openai")
+    from pdf2md.describe import OpenAIVisionDescriber
+
+    img = tmp_path / "x.png"
+    img.write_bytes(b"\x89PNG\r\n")
+    d = OpenAIVisionDescriber(base_url="http://localhost:1/v1", model="m")
+
+    def boom(*_a, **_k):
+        raise ConnectionError("dropped")
+
+    monkeypatch.setattr(d, "_run", boom)
+    assert d.describe(img, "figure") is None
+    assert d.calls == 1 and d.failures == 1
+
+
 def test_prompt_is_kind_aware():
     assert "LaTeX" in _prompt("equation")
     assert "Markdown" in _prompt("table")

@@ -158,6 +158,13 @@ def convert_file(
         if describer is not None:
             _describe_crops(result.figures, result.blocks, describer, vdir)
 
+    # A degraded vision run (endpoint dropped connections under load) must not pass as a
+    # clean conversion — the OCR text fell back to the engine and crops have no aid.
+    if describer is not None and describer.failures:
+        log.warning("%d/%d vision calls failed (endpoint errors) after retries — "
+                    "descriptions/OCR are incomplete; rerun with --force once the "
+                    "endpoint is healthy", describer.failures, describer.calls)
+
     doc = Document(
         doc_id=doc_id,
         source_path=str(pdf_path),

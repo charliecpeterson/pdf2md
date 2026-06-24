@@ -79,7 +79,8 @@ class OpenAIVisionDescriber:
     different host or model is pure config (`base_url`, `model`, `api_key`)."""
 
     def __init__(self, base_url: str, model: str, api_key: str | None = None,
-                 ocr_model: str | None = None) -> None:
+                 ocr_model: str | None = None, timeout: float = 180.0,
+                 max_retries: int = 5) -> None:
         try:
             from openai import OpenAI
         except ImportError as exc:  # openai is an optional extra
@@ -88,9 +89,15 @@ class OpenAIVisionDescriber:
                 'pdf2md runs from (e.g. `uv tool install --force -e ".[describe]"`)'
             ) from exc
         # Local servers (ollama, vLLM) ignore the key, but the client requires one set.
-        self._client = OpenAI(base_url=base_url, api_key=api_key or "not-needed")
+        # A whole-document run fires one call per crop/block (thousands on a long scan),
+        # which makes a local endpoint drop connections under load; max_retries backs off
+        # and retries transient errors so those failures don't silently degrade the output.
+        self._client = OpenAI(base_url=base_url, api_key=api_key or "not-needed",
+                              timeout=timeout, max_retries=max_retries)
         self._model = model
         self._ocr_model = ocr_model or model  # OCR kinds fall back to the main model
+        self.calls = 0
+        self.failures = 0
 
     def model_for(self, kind: str) -> str:
         return self._ocr_model if kind in _OCR_KINDS else self._model
@@ -106,9 +113,11 @@ class OpenAIVisionDescriber:
         return (resp.choices[0].message.content or "").strip()
 
     def describe(self, image_path: Path, kind: str, context: str = "") -> str | None:
+        self.calls += 1
         try:
             return self._run(self.model_for(kind), _prompt(kind, context), _data_uri(image_path)) or None
         except Exception as exc:  # noqa: BLE001 - best-effort; the crop is the source
+            self.failures += 1
             log.warning("description failed for %s: %s", image_path.name, exc)
             return None
 
@@ -122,4 +131,5 @@ def get_describer(config) -> Describer | None:
         model=getattr(config, "vlm_model", ""),
         api_key=getattr(config, "vlm_api_key", None),
         ocr_model=getattr(config, "vlm_ocr_model", None),
+        timeout=getattr(config, "vlm_timeout", 180.0),
     )

@@ -79,6 +79,14 @@ here.
   unchanged.
 
 ### Fixed
+- Vision passes (`--describe` / `--ocr-vlm`) survive a busy endpoint. A whole-document
+  run fires one call per crop/block (thousands on a long scan), which makes a local
+  server (ollama/vLLM) drop connections under load; every drop was swallowed as a warning
+  and the block fell back silently — so a 500-page `--ocr-vlm` run could report "lossless"
+  while most of its OCR was the engine's degraded text. The client now retries transient
+  errors with backoff (`max_retries=5`, configurable `vlm_timeout`, default 180s), and a
+  run with remaining failures logs a loud `N/M vision calls failed … rerun with --force`
+  summary instead of passing as clean.
 - Born-digital f-ligatures are no longer corrupted. A broken TeX font (Computer Modern /
   OT1, no ToUnicode) makes pdfium surface its ﬀ/ﬁ/ﬂ/ﬃ/ﬄ ligatures and discretionary
   hyphen as C0 control bytes (`\x1b`-`\x1f`, `\x02`); `clean_reading` was stripping them
