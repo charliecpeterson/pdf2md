@@ -32,7 +32,7 @@ dependencies = [
 # surya-ocr 0.17 uses the pre-5 transformers config API (SuryaDecoderConfig
 # .pad_token_id), but only requires `transformers>=4.56`, so cap it ourselves —
 # transformers 5.x breaks it at model load.
-transcribe = ["surya-ocr>=0.6", "transformers<5"]
+transcribe = ["surya-ocr>=0.6", "transformers<6"]
 # Vision-model crop descriptions for --describe, over any OpenAI-compatible endpoint
 # (the client is light; the model runs on the configured server, local or remote).
 describe = ["openai>=1.0"]
