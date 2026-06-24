@@ -65,65 +65,37 @@ def normalize_text(text: str) -> str:
 # handled by the collapse that follows.
 _CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
 
+# A TeX text font (Computer Modern / OT1 encoding) puts its f-ligatures and the
+# discretionary hyphen in the C0 control range with no ToUnicode entry, so pdfium
+# surfaces them as raw control bytes. Without this they'd be stripped to spaces by
+# _CONTROL, manufacturing "rst"/"con guration"/"di erence" from first/configuration/
+# difference. Expand them to letters BEFORE the strip — deterministic, and these bytes
+# never carry real text. (OT1 ligature slots 0x0B-0x0F, here offset into 0x1B-0x1F.)
+_GLYPH_LIGATURES = {
+    0x02: "",  # discretionary hyphen at a line break -> join the word (practi-cal)
+    0x1B: "ff", 0x1C: "fi", 0x1D: "fl", 0x1E: "ffi", 0x1F: "ffl",
+}
+
+
+def expand_ligature_glyphs(text: str) -> str:
+    """Map a broken TeX font's control-byte f-ligatures back to letters."""
+    return text.translate(_GLYPH_LIGATURES)
+
 
 def clean_reading(text: str) -> str:
     """Flatten a pdfium text-region reading into single-line prose: drop the raw
     line breaks and stray control-mapped glyphs a multi-line block carries, collapse
     runs of whitespace. Used when refilling a block whose engine text was symbol-font
     garbage from the (clean) pdfium glyph layer."""
-    return re.sub(r"\s+", " ", _CONTROL.sub(" ", text)).strip()
+    return re.sub(r"\s+", " ", _CONTROL.sub(" ", expand_ligature_glyphs(text))).strip()
 
 
 def clean_preformatted(text: str) -> str:
     """Like `clean_reading` but keep the line breaks — for console/ASCII blocks whose
     meaning is the layout. Strips control-mapped glyphs and trailing space per line."""
-    lines = [_CONTROL.sub("", unglyph(ln)).rstrip() for ln in text.splitlines()]
+    lines = [_CONTROL.sub("", expand_ligature_glyphs(unglyph(ln))).rstrip()
+             for ln in text.splitlines()]
     return "\n".join(lines).strip("\n")
-
-
-# A broken font whose ﬀ/ﬁ/ﬂ ligatures lack a ToUnicode mapping makes pdfium drop them,
-# leaving a gap ("e cient" for "efficient"). We repair only multi-fragment drops whose
-# two pieces uniquely name one word — these spaced forms never occur in real text, so
-# the fix is safe. Word-initial drops ("rst"→first, "eld"→field) are too ambiguous and
-# left alone. Keys are lowercase, one space at the dropped ligature.
-_LIG_DROPS = {
-    "e cient": "efficient", "e ciency": "efficiency", "e ciently": "efficiently",
-    "di erent": "different", "di erence": "difference", "di erences": "differences",
-    "di erently": "differently", "di cult": "difficult", "di culty": "difficulty",
-    "di culties": "difficulties", "su cient": "sufficient", "su ciently": "sufficiently",
-    "coe cient": "coefficient", "coe cients": "coefficients",
-    "speci c": "specific", "speci cally": "specifically",
-    "speci cation": "specification", "speci cations": "specifications",
-    "con guration": "configuration", "con gurations": "configurations",
-    "con gure": "configure", "con gured": "configured",
-    "signi cant": "significant", "signi cantly": "significantly",
-    "signi cance": "significance", "scienti c": "scientific",
-    "classi cation": "classification", "classi ed": "classified",
-    "modi cation": "modification", "modi cations": "modifications", "modi ed": "modified",
-    "identi cation": "identification", "identi ed": "identified",
-    "simpli ed": "simplified", "simpli cation": "simplification",
-    "justi cation": "justification", "justi ed": "justified",
-}
-_LIG_DROP_RE = re.compile(
-    r"\b(" + "|".join(re.escape(k) for k in sorted(_LIG_DROPS, key=len, reverse=True)) + r")\b",
-    re.IGNORECASE,
-)
-
-
-def repair_ligature_drops(text: str) -> str:
-    """Reinsert ﬀ/ﬁ/ﬂ ligatures a broken font dropped, for the curated unambiguous
-    words above. A no-op on clean text (the spaced forms don't occur there)."""
-    if " " not in text:
-        return text
-
-    def repl(m: re.Match) -> str:
-        matched = m.group(0)
-        word = _LIG_DROPS[matched.lower()]
-        if matched.isupper():
-            return word.upper()                       # "DI ERENT" -> "DIFFERENT"
-        return word.capitalize() if matched[0].isupper() else word
-
-    return _LIG_DROP_RE.sub(repl, text)
 
 
 # A ligature cluster left stranded between two word-fragments by a stray space.

@@ -49,7 +49,8 @@ src/pdf2md/
                 layer). Reads pypdfium2 glyph geometry; any engine inherits it.
   normalize.py  text cleanup (Greek glyph names, orphan combining marks, clean_reading) + vocab-
                 validated ligature/diacritic word repair (religature, rejoin_split_word, vocabulary)
-                + curated dropped-ligature repair (repair_ligature_drops: 'e cient'→efficient).
+                + TeX f-ligature glyph expansion (expand_ligature_glyphs: pdfium's C0 control
+                bytes \x1b-\x1f -> ff/fi/fl/ffi/ffl, \x02 soft hyphen -> join).
   scripts.py    inline sub/superscript detector from glyph geometry (PageChars, apply_scripts).
   legibility.py symbol-font garbage detector (score_legibility/is_garbage): dingbat/PUA/glyph-name
                 density. Gates the enrich refill and the emit `illegible` flag.
@@ -109,8 +110,11 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   font garbage (`/a114❛❝...`); pypdfium2 decodes it correctly. `enrich.py` detects
   garbage prose (`legibility.is_garbage`) and refills it from `PageChars.text_region`.
   A block that's still garbage after the refill is flagged `illegible` by `emit.py`,
-  never emitted as prose. Residual: the font's ﬀ/ﬁ/ﬂ ligatures also lack ToUnicode,
-  so pdfium drops them ('e cient'); legible but imperfect.
+  never emitted as prose. The font's ﬀ/ﬁ/ﬂ ligatures also lack ToUnicode, but pdfium
+  surfaces them as C0 control bytes (TeX OT1 slots, `\x1b`-`\x1f`), not dropped, so
+  `normalize.expand_ligature_glyphs` maps them back to ff/fi/fl/ffi/ffl (and `\x02`
+  soft-hyphen → join) in `clean_reading` before the control-strip — deterministic, no
+  dictionary.
 - Docling block/prov bboxes are bottom-left origin (`y0 > y1`); `render.py` flips Y.
   Don't re-flip elsewhere. **Exception: table-cell bboxes are TOPLEFT** — the docling
   adapter (`_cell_bbox`) flips them to bottom-left so enrich's glyph lookups (script

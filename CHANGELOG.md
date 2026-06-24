@@ -79,6 +79,15 @@ here.
   unchanged.
 
 ### Fixed
+- Born-digital f-ligatures are no longer corrupted. A broken TeX font (Computer Modern /
+  OT1, no ToUnicode) makes pdfium surface its ﬀ/ﬁ/ﬂ/ﬃ/ﬄ ligatures and discretionary
+  hyphen as C0 control bytes (`\x1b`-`\x1f`, `\x02`); `clean_reading` was stripping them
+  to spaces, manufacturing "rst"/"con guration"/"di erence"/"e cient" from
+  first/configuration/difference/efficient (an external review counted 106 "les" for
+  "files", 36 "rst" for "first" in GRASP). `normalize.expand_ligature_glyphs` now maps
+  those bytes back to letters before the control-strip — deterministic and complete, not
+  a word list. This supersedes the curated `repair_ligature_drops` dictionary, now
+  removed. Soft hyphens at line breaks ("practi-cal") are joined in the same pass.
 - Pin `rapidocr<3.9`. rapidocr 3.9.0 (pulled transitively by Docling) defaults its
   detection model to PP-OCRv6, which its torch backend rejects ("Unsupported
   configuration: torch.PP-OCRv6.det.small"), so every conversion failed at OCR init —

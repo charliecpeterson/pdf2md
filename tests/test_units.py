@@ -10,15 +10,15 @@ from pdf2md.schema import Block, BlockType, CoverageStatus, TableData
 from pdf2md.tables import render_table
 
 
-def test_repair_ligature_drops():
-    from pdf2md.normalize import repair_ligature_drops
+def test_expand_ligature_glyphs():
+    # A broken TeX font surfaces its f-ligatures and discretionary hyphen as C0 control
+    # bytes; clean_reading must expand them to letters, not strip them to spaces.
+    from pdf2md.normalize import clean_reading
 
-    assert repair_ligature_drops("more e cient use") == "more efficient use"
-    assert repair_ligature_drops("a di erent con guration") == "a different configuration"
-    assert repair_ligature_drops("Di erent results") == "Different results"  # title-case preserved
-    assert repair_ligature_drops("DI ERENT RESULTS") == "DIFFERENT RESULTS"  # all-caps preserved
-    assert repair_ligature_drops("the specific field here") == "the specific field here"  # clean untouched
-    assert repair_ligature_drops("coe cient and di culty") == "coefficient and difficulty"
+    assert clean_reading("the \x1crst con\x1cguration \x1cles") == "the first configuration files"
+    assert clean_reading("di\x1berent e\x1ecient \x1doating") == "different efficient floating"
+    assert clean_reading("practi\x02cal") == "practical"  # soft hyphen -> join
+    assert clean_reading("normal clean text") == "normal clean text"  # untouched
 
 
 def test_norm_title_dedup_and_initial_guard():
