@@ -131,6 +131,9 @@ def write_readme(version_dir: Path, doc: Document, meta: dict, profile: Document
         "`profile.json` has this summary in machine-readable form.",
         "Image-backed equations and cropped figures keep the image as the authoritative "
         "source; any `[pdf2md: ...]` marker flags something to verify against it.",
+        *([f"Each of the {p.ocr_pages} scanned page(s) links its full-page image "
+           "(`[page N scan]`) so the OCR text can be checked against the original."]
+          if p.ocr_pages else []),
         "",
     ]
     path = version_dir / "README.md"

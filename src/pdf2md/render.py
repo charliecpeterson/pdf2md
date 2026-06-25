@@ -37,6 +37,13 @@ class CropRenderer:
             self._page_cache[page] = (pg.get_size(), pg.render(scale=self._scale).to_pil())
         return self._page_cache[page]
 
+    def full_page(self, page: int, out_path: Path) -> None:
+        """Render the whole page (1-based) to `out_path` — the verification raster for a
+        scanned page, where the OCR text isn't authoritative and the image is."""
+        _, full = self._page_image(page)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        full.save(out_path)
+
     def crop(self, page: int, bbox: BBox, out_path: Path) -> None:
         """Crop `bbox` on `page` (1-based) to `out_path`. Falls back to the full
         page if the bbox is malformed, so a visual is never silently lost."""

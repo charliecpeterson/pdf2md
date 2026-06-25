@@ -45,6 +45,12 @@ class Config:
     vlm_timeout: float = 180.0
     crop_dpi: int = 220
     crop_padding_pts: float = 6.0
+    # Retain a full-page raster for each scanned (OCR) page, linked from its page anchor,
+    # so "verify against the image" works for prose — not just for the element crops. Only
+    # scanned pages (born-digital pages have an authoritative text layer). Lower DPI than
+    # crops: these are for reading the page, not pixel-faithful reproduction.
+    page_images: bool = True
+    page_image_dpi: int = 150
     # Directory of pre-downloaded Docling models (see `pdf2md models pull
     # --local-dir`). Set it to run fully offline and reproducibly — the local
     # snapshot is the pin. None = Docling's default Hugging Face cache.

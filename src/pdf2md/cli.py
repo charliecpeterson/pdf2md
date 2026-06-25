@@ -51,6 +51,11 @@ def convert(
         None, "--vlm-ocr-model",
         help="OCR-tuned model for --describe tables/equations (e.g. glm-ocr); defaults to --vlm-model."
     ),
+    no_page_images: bool = typer.Option(
+        False, "--no-page-images",
+        help="Skip the per-page verification raster for scanned pages (saves disk on a "
+             "long scanned book; born-digital docs are unaffected either way)."
+    ),
     verbose: bool = typer.Option(False, "--verbose", "-v"),
 ) -> None:
     """Convert a PDF (or every PDF in a directory) to markdown."""
@@ -72,6 +77,8 @@ def convert(
         cfg = replace(cfg, vlm_model=vlm_model)
     if vlm_ocr_model:
         cfg = replace(cfg, vlm_ocr_model=vlm_ocr_model)
+    if no_page_images:
+        cfg = replace(cfg, page_images=False)
 
     if path.is_dir():
         results = convert_dir(path, config=cfg, force=force)

@@ -96,6 +96,7 @@ class _Ctx:
     head_skip: set[str] = field(default_factory=set)
     head_text: dict[str, str] = field(default_factory=dict)
     headings: list[tuple[int, str, int]] = field(default_factory=list)  # (level, text, page) for the index
+    page_rasters: dict[int, str] = field(default_factory=dict)  # scanned page -> asset relpath
 
 
 # Strip a leading "Part/Chapter/Appendix" word and/or a standalone number or roman
@@ -141,13 +142,15 @@ def _heading_plan(blocks: list[Block], title: str) -> tuple[set[str], dict[str, 
 
 
 def emit_document(
-    doc: Document, structure, version_dir: Path, meta: dict, engine_versions: dict
+    doc: Document, structure, version_dir: Path, meta: dict, engine_versions: dict,
+    page_rasters: dict[int, str] | None = None,
 ) -> tuple[list[Path], list[CoverageFlag]]:
     version_dir.mkdir(parents=True, exist_ok=True)
     ctx = _Ctx(
         depth_of=_depth_map(structure.root),
         tables={t.block_id: t for t in doc.tables},
         figures={f.block_id: f for f in doc.figures},
+        page_rasters=page_rasters or {},
     )
     base_front = _front_matter(doc, meta, structure.section_source, engine_versions)
 
@@ -286,6 +289,9 @@ def _render_blocks(blocks: list[Block], ctx: _Ctx, *, title: str = "", base_dept
     for b in blocks:
         if b.page != prev_page:
             parts.append(f"<!-- page {b.page} -->")
+            raster = ctx.page_rasters.get(b.page)
+            if raster:  # scanned page: link its image so OCR prose can be verified
+                parts.append(f"[page {b.page} scan]({raster})")
             prev_page = b.page
         text, status, flag = _render_block(b, ctx, footnotes)
         b.coverage_status = status

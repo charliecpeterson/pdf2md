@@ -66,6 +66,7 @@ src/pdf2md/
   bookmarks.py  read embedded PDF TOC via pypdfium2.
   outline.py    heading depth (from section numbering) + section kind.
   render.py     pypdfium2 bbox crops → assets/ (Y-flip, per-page geometry, full-page fallback).
+                full_page() renders whole scanned pages as verification rasters.
   emit.py       Section tree → .md files + YAML front-matter; sets coverage_status, collects flags.
   tables.py     GFM table render, HTML fallback for spanning cells.
   metadata.py   bibliographic fields: embedded PDF metadata + first-page heuristic.

@@ -7,6 +7,12 @@ here.
 
 ## [Unreleased]
 ### Added
+- Full-page verification rasters for scanned pages. Each OCR page is rendered to
+  `assets/page_NNN.png` and linked from its `<!-- page N -->` anchor (`[page N scan]`),
+  so "verify against the image" works for prose, not just for element crops — closing
+  the gap where a garbled OCR paragraph had nothing to check against. Only scanned pages
+  (born-digital pages have an authoritative text layer); on by default, `--no-page-images`
+  to skip, `page_image_dpi` (default 150) to tune. The README notes it when present.
 - Dropped-ligature repair. A broken font whose ﬀ/ﬁ/ﬂ ligatures lack a ToUnicode
   mapping makes pdfium drop them, leaving a gap ("e cient" for "efficient"). `enrich`
   now reinserts the ligature for a curated set of unambiguous multi-fragment words

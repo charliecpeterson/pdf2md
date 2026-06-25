@@ -143,6 +143,13 @@ def convert_file(
     crop_blocks = _eq_crops(result.blocks) + _table_crops(result.blocks, result.tables)
     _render_crops(pdf_path, result.figures, crop_blocks, assets, config)
 
+    # Verification rasters for scanned pages: their OCR text isn't authoritative, so the
+    # page image is — linked from each page anchor so prose can be checked, not just crops.
+    page_rasters: dict[int, str] = {}
+    if config.page_images:
+        ocr_pages = {b.page for b in result.blocks if b.extra.get("ocr")}
+        page_rasters = _render_pages(pdf_path, ocr_pages, assets, config)
+
     # Multi-pass: re-transcribe each image-backed equation with a local math-OCR
     # model so its hint beats the engine's garbled/OCR LaTeX. The crop stays the
     # authoritative source, so this only ever improves the rendering beside it.
@@ -176,7 +183,8 @@ def convert_file(
         tables=result.tables,
         figures=result.figures,
     )
-    md_files, flags = emit_document(doc, structure, vdir, meta, result.engine_versions)
+    md_files, flags = emit_document(doc, structure, vdir, meta, result.engine_versions,
+                                    page_rasters=page_rasters)
     doc.coverage = build_report(doc_id, result.blocks, flags)
 
     # Per-doc profile, surfaced for an AI (profile.json) and a human (README.md).
@@ -360,6 +368,23 @@ def _table_crops(blocks, tables) -> list:
         if b.bbox is not None and b.id.startswith("#/tables/")
         and (b.id not in rendered or b.extra.get("ocr"))
     ]
+
+
+def _render_pages(pdf_path: Path, pages: set[int], assets: Path, config: Config) -> dict[int, str]:
+    """Render each scanned page to assets/page_NNN.png; returns page -> asset relpath."""
+    if not pages:
+        return {}
+    rasters: dict[int, str] = {}
+    with CropRenderer(pdf_path, dpi=config.page_image_dpi) as cr:
+        for p in sorted(pages):
+            name = f"page_{p:03d}.png"
+            try:
+                cr.full_page(p, assets / name)
+            except Exception as exc:  # noqa: BLE001 - one bad page shouldn't abort the run
+                log.warning("page raster failed for page %d: %s", p, exc)
+                continue
+            rasters[p] = f"assets/{name}"
+    return rasters
 
 
 def _render_crops(pdf_path: Path, figures, eq_blocks, assets: Path, config: Config) -> None:

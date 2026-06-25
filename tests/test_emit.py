@@ -143,6 +143,29 @@ def test_illegible_footnote_flagged_not_emitted():
     assert footnotes == []  # not passed off as readable
 
 
+def test_page_raster_linked_only_at_scanned_page_anchors(tmp_path):
+    # A scanned page links its full-page image so OCR prose can be verified; a
+    # born-digital page (authoritative text layer) gets no such link.
+    from pdf2md.schema import Block, BlockType, Document
+    from pdf2md.structure import build_structure
+
+    blocks = [
+        Block(id="#/t0", type=BlockType.PARAGRAPH, text="born-digital page", page=1),
+        Block(id="#/t1", type=BlockType.PARAGRAPH, text="scanned page text", page=2,
+              extra={"ocr": True}),
+    ]
+    structure = build_structure(blocks, None, title="Doc", page_count=2)
+    doc = Document(doc_id="abc123def4567890", source_path="/x/Doc.pdf",
+                   source_sha256="abc123def4567890", version=1, page_count=2,
+                   sections=structure.root, blocks=blocks, tables=[], figures=[])
+    md_files, _ = emit_document(doc, structure, tmp_path, {"title": "Doc"},
+                                {"docling": "2.93.0", "pdf2md": "0.1.0"},
+                                page_rasters={2: "assets/page_002.png"})
+    text = md_files[0].read_text()
+    assert "[page 2 scan](assets/page_002.png)" in text  # scanned page linked
+    assert "page 1 scan" not in text                     # born-digital page not linked
+
+
 def test_emit_snapshot(tmp_path, sample_document, snapshot):
     md_files, _ = _emit(tmp_path, sample_document)
     assert md_files[0].read_text() == snapshot
