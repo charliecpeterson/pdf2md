@@ -7,7 +7,7 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
-    "docling>=2.90",
+    "docling>=2.107.0",
     # Docling drives OCR through rapidocr, whose default backend is onnxruntime — but
     # without onnxruntime installed it silently falls back to a torch backend that fails
     # at OCR init two different ways across versions ("Unsupported configuration:
