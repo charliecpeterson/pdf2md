@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "artifacts": {
+    "numeric_confidence_report": {
+      "path": "out/reviews/numeric-confidence-v1/report.json",
+      "sha256": "4170cea038737cba82b3ec28e997a0b9c2b06e58322dd3aaab2b76466bd58404"
+    },
+    "sampling_sources": {
+      "path": "tests/active_review_sampling_sources.json",
+      "sha256": "4ec7de63a7fe70dabb02b11ce80788a5048eb095745f430fb53436493ae64862"
+    }
+  },
+  "expected": {
+    "sources_sha256": "4ec7de63a7fe70dabb02b11ce80788a5048eb095745f430fb53436493ae64862",
+    "sampling_frame": {
+      "cells": 2113,
+      "labelled_errors": 14,
+      "documents": 31,
+      "table_families": 9,
+      "typographies": 9,
+      "role_used_for_ranking": false,
+      "outcome_used_for_ranking": false,
+      "prevalence_claim_allowed": false
+    },
+    "signal_coverage": {
+      "reader_disagreement": 182,
+      "reader_refusal": 853,
+      "geometry_refusal": 122,
+      "malformed_primary_syntax": 9,
+      "malformed_disagreeing_reader_syntax": 47,
+      "resolver_or_validator_conflict": 145,
+      "crop_path_instability": {
+        "available": 0,
+        "status": "unavailable_on_natural_error_frame"
+      },
+      "preprocessing_instability": {
+        "available": 0,
+        "status": "unavailable_on_natural_error_frame"
+      },
+      "typography_and_family_novelty": {
+        "typographies": 9,
+        "table_families": 9,
+        "status": "used_without_labelled_error_rates"
+      }
+    },
+    "active": {
+      "curve": [
+        {
+          "budget": 10,
+          "errors_found": 8,
+          "error_documents_found": 2,
+          "errors_per_100_reviews": 80.0
+        },
+        {
+          "budget": 20,
+          "errors_found": 9,
+          "error_documents_found": 2,
+          "errors_per_100_reviews": 45.0
+        },
+        {
+          "budget": 40,
+          "errors_found": 11,
+          "error_documents_found": 2,
+          "errors_per_100_reviews": 27.5
+        },
+        {
+          "budget": 80,
+          "errors_found": 12,
+          "error_documents_found": 3,
+          "errors_per_100_reviews": 15.0
+        },
+        {
+          "budget": 120,
+          "errors_found": 12,
+          "error_documents_found": 3,
+          "errors_per_100_reviews": 10.0
+        },
+        {
+          "budget": 200,
+          "errors_found": 13,
+          "error_documents_found": 3,
+          "errors_per_100_reviews": 6.5
+        }
+      ],
+      "ranking_sha256": "99ad62c4140674e563eb28805137c5fdc9564faecbc03ad123599bec6876353a"
+    },
+    "random": {
+      "curve": [
+        {"budget": 10, "trials": 1000, "mean_errors_found": 0.06, "median_errors_found": 0.0, "p10_errors_found": 0, "p90_errors_found": 0, "minimum_errors_found": 0, "maximum_errors_found": 2},
+        {"budget": 20, "trials": 1000, "mean_errors_found": 0.128, "median_errors_found": 0.0, "p10_errors_found": 0, "p90_errors_found": 1, "minimum_errors_found": 0, "maximum_errors_found": 3},
+        {"budget": 40, "trials": 1000, "mean_errors_found": 0.26, "median_errors_found": 0.0, "p10_errors_found": 0, "p90_errors_found": 1, "minimum_errors_found": 0, "maximum_errors_found": 4},
+        {"budget": 80, "trials": 1000, "mean_errors_found": 0.53, "median_errors_found": 0.0, "p10_errors_found": 0, "p90_errors_found": 2, "minimum_errors_found": 0, "maximum_errors_found": 4},
+        {"budget": 120, "trials": 1000, "mean_errors_found": 0.78, "median_errors_found": 1.0, "p10_errors_found": 0, "p90_errors_found": 2, "minimum_errors_found": 0, "maximum_errors_found": 5},
+        {"budget": 200, "trials": 1000, "mean_errors_found": 1.322, "median_errors_found": 1.0, "p10_errors_found": 0, "p90_errors_found": 3, "minimum_errors_found": 0, "maximum_errors_found": 5}
+      ]
+    },
+    "confidence_stratified": {
+      "curve": [
+        {"budget": 10, "trials": 1000, "mean_errors_found": 1.32, "median_errors_found": 1.0, "p10_errors_found": 1, "p90_errors_found": 2, "minimum_errors_found": 0, "maximum_errors_found": 3},
+        {"budget": 20, "trials": 1000, "mean_errors_found": 2.628, "median_errors_found": 3.0, "p10_errors_found": 1, "p90_errors_found": 4, "minimum_errors_found": 0, "maximum_errors_found": 5},
+        {"budget": 40, "trials": 1000, "mean_errors_found": 5.286, "median_errors_found": 5.0, "p10_errors_found": 4, "p90_errors_found": 7, "minimum_errors_found": 3, "maximum_errors_found": 9},
+        {"budget": 80, "trials": 1000, "mean_errors_found": 10.31, "median_errors_found": 10.0, "p10_errors_found": 9, "p90_errors_found": 12, "minimum_errors_found": 9, "maximum_errors_found": 13},
+        {"budget": 120, "trials": 1000, "mean_errors_found": 11.987, "median_errors_found": 12.0, "p10_errors_found": 11, "p90_errors_found": 13, "minimum_errors_found": 9, "maximum_errors_found": 14},
+        {"budget": 200, "trials": 1000, "mean_errors_found": 13.228, "median_errors_found": 13.0, "p10_errors_found": 13, "p90_errors_found": 14, "minimum_errors_found": 13, "maximum_errors_found": 14}
+      ]
+    },
+    "conclusion": {
+      "small_budget": 40,
+      "small_budget_active_errors_found": 11,
+      "small_budget_random_mean_errors_found": 0.26,
+      "small_budget_confidence_stratified_mean_errors_found": 5.286,
+      "small_budget_active_error_recall": 0.78571429,
+      "reference_budget": 120,
+      "reference_budget_active_errors_found": 12,
+      "reference_budget_random_mean_errors_found": 0.78,
+      "reference_budget_confidence_stratified_mean_errors_found": 11.987,
+      "reference_budget_active_error_recall": 0.85714286,
+      "promotion": "retain_confidence_stratified_default_pending_heldout_evaluation",
+      "interpretation": "active ranking is a strong small-budget candidate, but its weights were evaluated on the same error-enriched corpus that motivated the signals",
+      "limitation": "crop-path and preprocessing-instability signals require a future shared natural-cell frame"
+    }
+  }
+}

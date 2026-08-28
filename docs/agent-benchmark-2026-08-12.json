@@ -1,0 +1,245 @@
+{
+  "schema": "pdf2md.agent_benchmark_snapshot.v1",
+  "recorded_at": "2026-08-12",
+  "source_artifact": "out/agent-benchmark/qwen3-vl-32b-full-seeded-lean.json",
+  "source_artifact_sha256": "5cee2d73cf08ba2d837c1f5a8afb15479a0b924fca341964fff0e7c203093a30",
+  "model": "qwen3-vl:32b",
+  "reasoning_effort": "none",
+  "seed": 0,
+  "settings": {
+    "max_chunks": 1,
+    "max_assets": 1,
+    "max_tokens": 4096,
+    "temperature": 0
+  },
+  "exit_criteria": {
+    "bundle_accuracy_at_least_pdf": true,
+    "bundle_input_token_reduction_at_least_20_percent": true,
+    "no_release_blockers": true,
+    "passed": true
+  },
+  "summary": {
+    "bundle": {
+      "correct": 11,
+      "runs": 11,
+      "valid_citations": 11,
+      "assets_opened": 3,
+      "input_tokens": 8693
+    },
+    "pdf": {
+      "correct": 10,
+      "runs": 11,
+      "refused": 1,
+      "valid_citations": 10,
+      "assets_opened": 11,
+      "input_tokens": 21427
+    },
+    "bundle_input_token_reduction": 0.5943,
+    "bundle_accuracy_minus_pdf": 0.0909,
+    "release_blockers": 0
+  },
+  "results": [
+    {
+      "question_id": "grasp2018-radial-wave-extension",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "w",
+      "citation_page": 26,
+      "assets": [],
+      "input_tokens": 754
+    },
+    {
+      "question_id": "grasp2018-radial-wave-extension",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "w",
+      "citation_page": 26,
+      "assets": ["grasp2018-radial-wave-extension-page-26.png"],
+      "input_tokens": 3095
+    },
+    {
+      "question_id": "grasp-table-radial-wave-extension",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "w",
+      "citation_page": 1,
+      "assets": [],
+      "input_tokens": 740
+    },
+    {
+      "question_id": "grasp-table-radial-wave-extension",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "w",
+      "citation_page": 26,
+      "assets": ["grasp-table-radial-wave-extension-page-26.png"],
+      "input_tokens": 3095
+    },
+    {
+      "question_id": "grasp-equation-number",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "(4.1)",
+      "citation_page": 1,
+      "assets": ["mineru_1_equation_12_p1.png"],
+      "review_flagged": true,
+      "input_tokens": 1434
+    },
+    {
+      "question_id": "grasp-equation-number",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "4.1",
+      "citation_page": 34,
+      "assets": ["grasp-equation-number-page-34.png"],
+      "input_tokens": 3095
+    },
+    {
+      "question_id": "slater-volume-phase-space-shape",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "an ellipse",
+      "citation_page": 37,
+      "assets": ["page_037.png"],
+      "review_flagged": true,
+      "input_tokens": 1871
+    },
+    {
+      "question_id": "slater-volume-phase-space-shape",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "an ellipse",
+      "citation_page": 37,
+      "assets": ["slater-volume-phase-space-shape-page-37.png"],
+      "input_tokens": 1634
+    },
+    {
+      "question_id": "slater-page-phase-space-shape",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "ellipse",
+      "citation_page": 1,
+      "assets": ["page_001.png"],
+      "review_flagged": true,
+      "input_tokens": 1862
+    },
+    {
+      "question_id": "slater-page-phase-space-shape",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "an ellipse",
+      "citation_page": 37,
+      "assets": ["slater-page-phase-space-shape-page-37.png"],
+      "input_tokens": 1627
+    },
+    {
+      "question_id": "raster-figure-data-table",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "Table 5",
+      "citation_page": 1,
+      "assets": [],
+      "input_tokens": 293
+    },
+    {
+      "question_id": "raster-figure-data-table",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "Table 5",
+      "citation_page": 1,
+      "assets": ["raster-figure-data-table-page-1.png"],
+      "input_tokens": 3095
+    },
+    {
+      "question_id": "vector-line-value",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "16.0241",
+      "citation_page": 1,
+      "assets": [],
+      "input_tokens": 247
+    },
+    {
+      "question_id": "vector-line-value",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "16",
+      "citation_page": 1,
+      "assets": ["vector-line-value-page-1.png"],
+      "input_tokens": 1154
+    },
+    {
+      "question_id": "scatter-value",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "4.9086",
+      "citation_page": 1,
+      "assets": [],
+      "input_tokens": 314
+    },
+    {
+      "question_id": "scatter-value",
+      "mode": "pdf",
+      "outcome": "refused",
+      "answer": "",
+      "citation_page": null,
+      "assets": ["scatter-value-page-1.png"],
+      "finish_reason": "length",
+      "input_tokens": 1156
+    },
+    {
+      "question_id": "scatter-intersection",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "(4.001, 4.0074)",
+      "citation_page": 1,
+      "assets": [],
+      "input_tokens": 420
+    },
+    {
+      "question_id": "scatter-intersection",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "(4, 4)",
+      "citation_page": 1,
+      "assets": ["scatter-intersection-page-1.png"],
+      "input_tokens": 1152
+    },
+    {
+      "question_id": "subplots-values",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "First panel: 6.0117, Second panel: 40.1189",
+      "citation_page": 1,
+      "assets": [],
+      "input_tokens": 526
+    },
+    {
+      "question_id": "subplots-values",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "First panel: 6, Second panel: 40",
+      "citation_page": 1,
+      "assets": ["subplots-values-page-1.png"],
+      "input_tokens": 1168
+    },
+    {
+      "question_id": "bar-maximum",
+      "mode": "bundle",
+      "outcome": "correct",
+      "answer": "4.0005, 9.0094",
+      "citation_page": 1,
+      "assets": [],
+      "input_tokens": 232
+    },
+    {
+      "question_id": "bar-maximum",
+      "mode": "pdf",
+      "outcome": "correct",
+      "answer": "x position 4 has the tallest bar with a height of 9",
+      "citation_page": 1,
+      "assets": ["bar-maximum-page-1.png"],
+      "input_tokens": 1156
+    }
+  ]
+}

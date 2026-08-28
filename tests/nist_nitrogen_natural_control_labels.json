@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked controls from a dense two-lane serif spectroscopy table whose auxiliary-reader geometry is unsafe.",
+  "documents": [
+    {
+      "source_sha256": "2f03bfb0f006acc0ebbfcebc597a5c8fdfe577f5903636dae673db83bb06e05a",
+      "source": "out/natural-errors-scanned/2f03bfb0f006acc0/source.pdf",
+      "version": "v1",
+      "cells": [
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 1, "column": 3, "expected": "0.0", "label": "NIST slice page 1; left-lane ground-state level"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 1, "column": 8, "expected": "505554.0", "label": "NIST slice page 1; right-lane level"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 3, "column": 3, "expected": "67209.2", "label": "NIST slice page 1; left-lane level"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 3, "column": 9, "expected": "42.4", "label": "NIST slice page 1; right-lane interval"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 7, "column": 3, "expected": "175535.4", "label": "NIST slice page 1; left-lane level"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 7, "column": 8, "expected": "511440", "label": "NIST slice page 1; integer right-lane level"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 10, "column": 3, "expected": "188882.5", "label": "NIST slice page 1; left-lane level"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 10, "column": 9, "expected": "-51.1", "label": "NIST slice page 1; signed right-lane interval"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 15, "column": 3, "expected": "404522.4", "label": "NIST slice page 1; left-lane level"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 15, "column": 9, "expected": "8.2", "label": "NIST slice page 1; short right-lane interval"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 23, "column": 3, "expected": "465291.8", "label": "NIST slice page 1; lower left-lane level"},
+        {"page": 1, "block_id": "#/mineru/1/table/2", "row": 23, "column": 8, "expected": "550232.6", "label": "NIST slice page 1; lower right-lane level"}
+      ]
+    }
+  ]
+}

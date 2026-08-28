@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "purpose": "Pinned CUDA runtime used for the multi-family degradation extraction.",
+  "host_role": "linux-4090",
+  "gpu": {
+    "model": "NVIDIA GeForce RTX 4090",
+    "driver": "595.45.04",
+    "reported_cuda": "13.2"
+  },
+  "container": {
+    "image": "pdf2md-mineru:3.4.4",
+    "image_id": "sha256:b1ddeb898393a2cdfeebced56e62ba7bc77364d235eb577fd955bf62d8b9e33d",
+    "dockerfile_sha256": "eecc2307a6b31950fb93ebaa75057900209c5ded68ad52e4651120e91298d84b",
+    "upstream_dockerfile_sha256": "c50c1f0ff6415982eb7c25ee86cd9116239478e1e3b52817cb0ed117b466f370",
+    "base": "vllm/vllm-openai:v0.21.0",
+    "base_manifest_sha256": "a230095847e93bd4df9888b33dab956fa9504537b828a23657d2b26fed57b5c9"
+  },
+  "packages": {
+    "mineru": "3.4.4",
+    "vllm": "0.21.0",
+    "torch": "2.11.0+cu130",
+    "transformers": "4.57.6"
+  },
+  "model": {
+    "id": "opendatalab/MinerU2.5-Pro-2605-1.2B",
+    "snapshot": "bff20d4ae2bf202df9f45284b4d43681555a97ed"
+  },
+  "command": {
+    "backend": "hybrid-engine",
+    "effort": "high",
+    "image_analysis": true
+  },
+  "transport_sha256": "3b1994c9a6b4f7b50576a0930ea74184be46d4a7bfe930d5a640f13cd95ab723"
+}

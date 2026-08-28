@@ -1,0 +1,1099 @@
+{
+  "schema_version": 1,
+  "purpose": "Frozen comparison of row-local runs, header lanes, repeated-row separators, typed lanes, and PDF glyph geometry.",
+  "artifacts": {
+    "sources": {
+      "path": "tests/column_geometry_methods_sources.json",
+      "sha256": "f2ef5c44d66c58c59feb76867d31fcc2995b4b0bb7836fe5c9de7f5f2ec55924"
+    },
+    "report": {
+      "path": "out/reviews/column-geometry-methods-v1/report.json",
+      "sha256": "5c38b679c36763543b2fcd4ebfcf0acbd65c68dcb16da6c1a55967fe86bb1eea"
+    }
+  },
+  "expected": {
+    "sources_sha256": "f2ef5c44d66c58c59feb76867d31fcc2995b4b0bb7836fe5c9de7f5f2ec55924",
+    "panels": 6,
+    "rows": 114,
+    "baseline_row_runs": {
+      "exact": 87,
+      "refused": 27
+    },
+    "header_fixed_lanes": {
+      "exact": 113,
+      "refused": 1
+    },
+    "repeated_row_consensus": {
+      "exact": 113,
+      "refused": 1
+    },
+    "typed_consensus": {
+      "exact": 113,
+      "refused": 1
+    },
+    "selected_cells": {
+      "checked": 56,
+      "agree": 56,
+      "disagree": 0,
+      "tool_refused": 0
+    },
+    "pdf_glyph_reference": {
+      "checked": 4184,
+      "agree": 4184,
+      "disagree": 0,
+      "no_reference_panels": 1
+    },
+    "per_panel": [
+      {
+        "id": "grasp-nixiv-41",
+        "rows": 41,
+        "columns": 8,
+        "baseline": {
+          "exact": 41,
+          "refused": 0,
+          "run_counts": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ]
+        },
+        "header_fixed": {
+          "exact": 41,
+          "refused": 0
+        },
+        "consensus": {
+          "exact": 41,
+          "refused": 0,
+          "lanes": [
+            [
+              0,
+              120
+            ],
+            [
+              120,
+              185
+            ],
+            [
+              185,
+              283
+            ],
+            [
+              283,
+              350
+            ],
+            [
+              350,
+              697
+            ],
+            [
+              697,
+              980
+            ],
+            [
+              980,
+              1210
+            ],
+            [
+              1210,
+              2028
+            ]
+          ],
+          "refusal": null,
+          "evidence": {
+            "method": "repeated_row_separator_consensus",
+            "expected_columns": 8,
+            "rows": 41,
+            "merge_gap": 25,
+            "cluster_tolerance": 25,
+            "minimum_row_support": 21,
+            "row_run_counts": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "candidates": [
+              {
+                "center": 120.0,
+                "median_width": 48,
+                "row_support": 41
+              },
+              {
+                "center": 185.0,
+                "median_width": 48,
+                "row_support": 41
+              },
+              {
+                "center": 283.0,
+                "median_width": 26,
+                "row_support": 41
+              },
+              {
+                "center": 349.5,
+                "median_width": 71,
+                "row_support": 41
+              },
+              {
+                "center": 697.0,
+                "median_width": 70.0,
+                "row_support": 40
+              },
+              {
+                "center": 751.5,
+                "median_width": 179,
+                "row_support": 1
+              },
+              {
+                "center": 980.0,
+                "median_width": 112.5,
+                "row_support": 40
+              },
+              {
+                "center": 1013.5,
+                "median_width": 179,
+                "row_support": 1
+              },
+              {
+                "center": 1209.5,
+                "median_width": 49,
+                "row_support": 41
+              }
+            ],
+            "selected_separators": [
+              120,
+              185,
+              283,
+              350,
+              697,
+              980,
+              1210
+            ],
+            "lanes": [
+              [
+                0,
+                120
+              ],
+              [
+                120,
+                185
+              ],
+              [
+                185,
+                283
+              ],
+              [
+                283,
+                350
+              ],
+              [
+                350,
+                697
+              ],
+              [
+                697,
+                980
+              ],
+              [
+                980,
+                1210
+              ],
+              [
+                1210,
+                2028
+              ]
+            ],
+            "minimum_lane_width": 63
+          }
+        },
+        "typed_consensus": {
+          "exact": 41,
+          "refused": 0
+        },
+        "selected_cells": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "pdf_glyph_reference": {
+          "status": "available",
+          "checked": 2169,
+          "agree": 2169,
+          "disagree": 0
+        }
+      },
+      {
+        "id": "grasp-mgiii-26",
+        "rows": 26,
+        "columns": 8,
+        "baseline": {
+          "exact": 0,
+          "refused": 26,
+          "run_counts": [
+            9,
+            10,
+            10,
+            10,
+            10,
+            9,
+            9,
+            9,
+            9,
+            9,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        "header_fixed": {
+          "exact": 26,
+          "refused": 0
+        },
+        "consensus": {
+          "exact": 26,
+          "refused": 0,
+          "lanes": [
+            [
+              0,
+              120
+            ],
+            [
+              120,
+              196
+            ],
+            [
+              196,
+              272
+            ],
+            [
+              272,
+              348
+            ],
+            [
+              348,
+              741
+            ],
+            [
+              741,
+              1078
+            ],
+            [
+              1078,
+              1340
+            ],
+            [
+              1340,
+              2020
+            ]
+          ],
+          "refusal": null,
+          "evidence": {
+            "method": "repeated_row_separator_consensus",
+            "expected_columns": 8,
+            "rows": 26,
+            "merge_gap": 25,
+            "cluster_tolerance": 25,
+            "minimum_row_support": 13,
+            "row_run_counts": [
+              9,
+              10,
+              10,
+              10,
+              10,
+              9,
+              9,
+              9,
+              9,
+              9,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "candidates": [
+              {
+                "center": 120.0,
+                "median_width": 48.0,
+                "row_support": 26
+              },
+              {
+                "center": 196.0,
+                "median_width": 71.0,
+                "row_support": 26
+              },
+              {
+                "center": 271.5,
+                "median_width": 49.0,
+                "row_support": 26
+              },
+              {
+                "center": 348.0,
+                "median_width": 74.0,
+                "row_support": 26
+              },
+              {
+                "center": 740.75,
+                "median_width": 157.0,
+                "row_support": 26
+              },
+              {
+                "center": 1078.5,
+                "median_width": 179.0,
+                "row_support": 26
+              },
+              {
+                "center": 1340.0,
+                "median_width": 48.0,
+                "row_support": 26
+              },
+              {
+                "center": 1678.0,
+                "median_width": 26.0,
+                "row_support": 20
+              },
+              {
+                "center": 1741.5,
+                "median_width": 35,
+                "row_support": 1
+              },
+              {
+                "center": 1809.0,
+                "median_width": 27,
+                "row_support": 25
+              }
+            ],
+            "selected_separators": [
+              120,
+              196,
+              272,
+              348,
+              741,
+              1078,
+              1340
+            ],
+            "lanes": [
+              [
+                0,
+                120
+              ],
+              [
+                120,
+                196
+              ],
+              [
+                196,
+                272
+              ],
+              [
+                272,
+                348
+              ],
+              [
+                348,
+                741
+              ],
+              [
+                741,
+                1078
+              ],
+              [
+                1078,
+                1340
+              ],
+              [
+                1340,
+                2020
+              ]
+            ],
+            "minimum_lane_width": 63
+          }
+        },
+        "typed_consensus": {
+          "exact": 26,
+          "refused": 0
+        },
+        "selected_cells": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "pdf_glyph_reference": {
+          "status": "available",
+          "checked": 1004,
+          "agree": 1004,
+          "disagree": 0
+        }
+      },
+      {
+        "id": "fischer-stability-table-ii",
+        "rows": 10,
+        "columns": 5,
+        "baseline": {
+          "exact": 9,
+          "refused": 1,
+          "run_counts": [
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            4
+          ]
+        },
+        "header_fixed": {
+          "exact": 9,
+          "refused": 1
+        },
+        "consensus": {
+          "exact": 9,
+          "refused": 1,
+          "lanes": [
+            [
+              0,
+              278
+            ],
+            [
+              278,
+              575
+            ],
+            [
+              575,
+              868
+            ],
+            [
+              868,
+              1178
+            ],
+            [
+              1178,
+              1505
+            ]
+          ],
+          "refusal": null,
+          "evidence": {
+            "method": "repeated_row_separator_consensus",
+            "expected_columns": 5,
+            "rows": 10,
+            "merge_gap": 30,
+            "cluster_tolerance": 30,
+            "minimum_row_support": 5,
+            "row_run_counts": [
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              4
+            ],
+            "candidates": [
+              {
+                "center": 278.0,
+                "median_width": 189.0,
+                "row_support": 10
+              },
+              {
+                "center": 575.25,
+                "median_width": 180.5,
+                "row_support": 10
+              },
+              {
+                "center": 867.5,
+                "median_width": 182.0,
+                "row_support": 8
+              },
+              {
+                "center": 901.0,
+                "median_width": 226,
+                "row_support": 1
+              },
+              {
+                "center": 1032.0,
+                "median_width": 510,
+                "row_support": 1
+              },
+              {
+                "center": 1178.5,
+                "median_width": 216,
+                "row_support": 9
+              }
+            ],
+            "selected_separators": [
+              278,
+              575,
+              868,
+              1178
+            ],
+            "lanes": [
+              [
+                0,
+                278
+              ],
+              [
+                278,
+                575
+              ],
+              [
+                575,
+                868
+              ],
+              [
+                868,
+                1178
+              ],
+              [
+                1178,
+                1505
+              ]
+            ],
+            "minimum_lane_width": 75
+          }
+        },
+        "typed_consensus": {
+          "exact": 9,
+          "refused": 1
+        },
+        "selected_cells": {
+          "checked": 12,
+          "agree": 12,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "pdf_glyph_reference": {
+          "status": "available",
+          "checked": 294,
+          "agree": 294,
+          "disagree": 0
+        }
+      },
+      {
+        "id": "fischer-stability-table-iii",
+        "rows": 10,
+        "columns": 4,
+        "baseline": {
+          "exact": 10,
+          "refused": 0,
+          "run_counts": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ]
+        },
+        "header_fixed": {
+          "exact": 10,
+          "refused": 0
+        },
+        "consensus": {
+          "exact": 10,
+          "refused": 0,
+          "lanes": [
+            [
+              0,
+              335
+            ],
+            [
+              335,
+              762
+            ],
+            [
+              762,
+              1161
+            ],
+            [
+              1161,
+              1505
+            ]
+          ],
+          "refusal": null,
+          "evidence": {
+            "method": "repeated_row_separator_consensus",
+            "expected_columns": 4,
+            "rows": 10,
+            "merge_gap": 38,
+            "cluster_tolerance": 38,
+            "minimum_row_support": 5,
+            "row_run_counts": [
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            "candidates": [
+              {
+                "center": 335.25,
+                "median_width": 310.0,
+                "row_support": 10
+              },
+              {
+                "center": 762.5,
+                "median_width": 321.0,
+                "row_support": 10
+              },
+              {
+                "center": 1161.0,
+                "median_width": 252.0,
+                "row_support": 10
+              }
+            ],
+            "selected_separators": [
+              335,
+              762,
+              1161
+            ],
+            "lanes": [
+              [
+                0,
+                335
+              ],
+              [
+                335,
+                762
+              ],
+              [
+                762,
+                1161
+              ],
+              [
+                1161,
+                1505
+              ]
+            ],
+            "minimum_lane_width": 94
+          }
+        },
+        "typed_consensus": {
+          "exact": 10,
+          "refused": 0
+        },
+        "selected_cells": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "pdf_glyph_reference": {
+          "status": "available",
+          "checked": 202,
+          "agree": 202,
+          "disagree": 0
+        }
+      },
+      {
+        "id": "slater-thomas-fermi-right",
+        "rows": 19,
+        "columns": 2,
+        "baseline": {
+          "exact": 19,
+          "refused": 0,
+          "run_counts": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        "header_fixed": {
+          "exact": 19,
+          "refused": 0
+        },
+        "consensus": {
+          "exact": 19,
+          "refused": 0,
+          "lanes": [
+            [
+              440,
+              554
+            ],
+            [
+              554,
+              741
+            ]
+          ],
+          "refusal": null,
+          "evidence": {
+            "method": "repeated_row_separator_consensus",
+            "expected_columns": 2,
+            "rows": 19,
+            "merge_gap": 15,
+            "cluster_tolerance": 15,
+            "minimum_row_support": 10,
+            "row_run_counts": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "candidates": [
+              {
+                "center": 554.5,
+                "median_width": 74,
+                "row_support": 19
+              }
+            ],
+            "selected_separators": [
+              554
+            ],
+            "lanes": [
+              [
+                440,
+                554
+              ],
+              [
+                554,
+                741
+              ]
+            ],
+            "minimum_lane_width": 38
+          }
+        },
+        "typed_consensus": {
+          "exact": 19,
+          "refused": 0
+        },
+        "selected_cells": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "pdf_glyph_reference": {
+          "status": "no_text_layer_reference",
+          "checked": 0
+        }
+      },
+      {
+        "id": "grasp-scientific-p186",
+        "rows": 8,
+        "columns": 8,
+        "baseline": {
+          "exact": 8,
+          "refused": 0,
+          "run_counts": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ]
+        },
+        "header_fixed": {
+          "exact": 8,
+          "refused": 0
+        },
+        "consensus": {
+          "exact": 8,
+          "refused": 0,
+          "lanes": [
+            [
+              0,
+              252
+            ],
+            [
+              252,
+              494
+            ],
+            [
+              494,
+              686
+            ],
+            [
+              686,
+              914
+            ],
+            [
+              914,
+              1099
+            ],
+            [
+              1099,
+              1345
+            ],
+            [
+              1345,
+              1573
+            ],
+            [
+              1573,
+              1744
+            ]
+          ],
+          "refusal": null,
+          "evidence": {
+            "method": "repeated_row_separator_consensus",
+            "expected_columns": 8,
+            "rows": 8,
+            "merge_gap": 22,
+            "cluster_tolerance": 22,
+            "minimum_row_support": 4,
+            "row_run_counts": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "candidates": [
+              {
+                "center": 252.5,
+                "median_width": 57.0,
+                "row_support": 8
+              },
+              {
+                "center": 494.25,
+                "median_width": 135.5,
+                "row_support": 4
+              },
+              {
+                "center": 532.25,
+                "median_width": 59.5,
+                "row_support": 4
+              },
+              {
+                "center": 686.0,
+                "median_width": 160.0,
+                "row_support": 8
+              },
+              {
+                "center": 914.0,
+                "median_width": 56.0,
+                "row_support": 8
+              },
+              {
+                "center": 1099.25,
+                "median_width": 54.5,
+                "row_support": 8
+              },
+              {
+                "center": 1345.0,
+                "median_width": 54.0,
+                "row_support": 8
+              },
+              {
+                "center": 1573.0,
+                "median_width": 54.0,
+                "row_support": 8
+              }
+            ],
+            "selected_separators": [
+              252,
+              494,
+              686,
+              914,
+              1099,
+              1345,
+              1573
+            ],
+            "lanes": [
+              [
+                0,
+                252
+              ],
+              [
+                252,
+                494
+              ],
+              [
+                494,
+                686
+              ],
+              [
+                686,
+                914
+              ],
+              [
+                914,
+                1099
+              ],
+              [
+                1099,
+                1345
+              ],
+              [
+                1345,
+                1573
+              ],
+              [
+                1573,
+                1744
+              ]
+            ],
+            "minimum_lane_width": 54
+          }
+        },
+        "typed_consensus": {
+          "exact": 8,
+          "refused": 0
+        },
+        "selected_cells": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "pdf_glyph_reference": {
+          "status": "available",
+          "checked": 515,
+          "agree": 515,
+          "disagree": 0
+        }
+      }
+    ]
+  }
+}

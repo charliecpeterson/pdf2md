@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked fixed-font disagreement calibration on two Slater scan tables.",
+  "documents": [
+    {
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "source": "slater-quantum_theory_of_atomic_structure-vol1.pdf",
+      "version": "v1",
+      "cells": [
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 1, "column": 1, "expected": "658.4"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 1, "column": 2, "expected": "662.0"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 2, "column": 1, "expected": "82.30", "label": "calculated 2s; Tesseract reads 32.30"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 2, "column": 2, "expected": "81.3"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 3, "column": 1, "expected": "71.83"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 3, "column": 2, "expected": "69.6"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 4, "column": 1, "expected": "10.651"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 4, "column": 2, "expected": "9.6"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 5, "column": 1, "expected": "7.279"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 5, "column": 2, "expected": "6.1"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 6, "column": 1, "expected": "1.613"},
+        {"page": 235, "block_id": "#/mineru/235/table/1814", "row": 6, "column": 2, "expected": "0.79", "label": "observed 3d; Tesseract adds a leading quote"},
+        {"page": 339, "block_id": "#/mineru/339/table/2559", "row": 2, "column": 1, "expected": "4"},
+        {"page": 339, "block_id": "#/mineru/339/table/2559", "row": 3, "column": 1, "expected": "-2"},
+        {"page": 339, "block_id": "#/mineru/339/table/2559", "row": 4, "column": 5, "expected": "63", "label": "E(2,0) final column; Tesseract reads 83"},
+        {"page": 339, "block_id": "#/mineru/339/table/2559", "row": 8, "column": 5, "expected": "63", "label": "E(1,0) final column; Tesseract reads 83"}
+      ]
+    }
+  ]
+}

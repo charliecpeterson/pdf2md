@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "selection": "Data cells visually source-checked in the five held-out row-alignment panels before auxiliary-reader evaluation",
+  "panels": [
+    {
+      "id": "grasp-nixiv-41",
+      "structured_row_offset": 1,
+      "column_bounds": {
+        "4": [340, 690],
+        "5": [690, 970],
+        "6": [970, 1220]
+      },
+      "cells": [
+        {"row_position": 0, "column": 4, "expected": "-1443.2223116", "class": "negative_long_decimal"},
+        {"row_position": 0, "column": 6, "expected": "0.00", "class": "exact_zero"},
+        {"row_position": 1, "column": 5, "expected": "47590.12", "class": "large_value"},
+        {"row_position": 2, "column": 6, "expected": "7815.74", "class": "large_value"},
+        {"row_position": 5, "column": 5, "expected": "316155.75", "class": "large_value"},
+        {"row_position": 9, "column": 6, "expected": "3564.72", "class": "large_value"},
+        {"row_position": 19, "column": 6, "expected": "29.91", "class": "short_decimal"},
+        {"row_position": 28, "column": 6, "expected": "519.07", "class": "short_decimal"},
+        {"row_position": 38, "column": 5, "expected": "672328.00", "class": "trailing_zeros"},
+        {"row_position": 40, "column": 6, "expected": "1102.41", "class": "table_boundary"}
+      ]
+    },
+    {
+      "id": "grasp-mgiii-26",
+      "structured_row_offset": 1,
+      "column_bounds": {
+        "4": [340, 690],
+        "5": [690, 1060],
+        "6": [1060, 1340]
+      },
+      "cells": [
+        {"row_position": 0, "column": 4, "expected": "-1182.4117318", "class": "negative_long_decimal"},
+        {"row_position": 0, "column": 5, "expected": "0.00000", "class": "exact_zero"},
+        {"row_position": 1, "column": 5, "expected": "29.00286", "class": "fixed_precision"},
+        {"row_position": 2, "column": 6, "expected": "0.72507", "class": "leading_zero"},
+        {"row_position": 5, "column": 6, "expected": "25.02683", "class": "fixed_precision"},
+        {"row_position": 11, "column": 6, "expected": "0.12689", "class": "leading_zero"},
+        {"row_position": 19, "column": 6, "expected": "0.07863", "class": "leading_zero"},
+        {"row_position": 22, "column": 6, "expected": "0.03607", "class": "leading_zero"},
+        {"row_position": 23, "column": 6, "expected": "0.03596", "class": "neighboring_values"},
+        {"row_position": 25, "column": 5, "expected": "134.09898", "class": "table_boundary"}
+      ]
+    },
+    {
+      "id": "fischer-stability-table-ii",
+      "structured_row_offset": 2,
+      "column_bounds": {
+        "1": [300, 560],
+        "2": [560, 850],
+        "3": [850, 1150],
+        "4": [1150, 1505]
+      },
+      "cells": [
+        {"row_position": 0, "column": 1, "expected": "0.06086", "class": "leading_zero"},
+        {"row_position": 0, "column": 4, "expected": "-0.02146", "class": "negative_leading_zero"},
+        {"row_position": 1, "column": 4, "expected": "0.30904", "class": "leading_zero"},
+        {"row_position": 4, "column": 1, "expected": "0.10860", "class": "superscript_footnote"},
+        {"row_position": 4, "column": 3, "expected": "0.10839", "class": "fixed_precision"},
+        {"row_position": 5, "column": 3, "expected": "0.10865", "class": "superscript_footnote"},
+        {"row_position": 5, "column": 4, "expected": "0.10872", "class": "superscript_footnote"},
+        {"row_position": 7, "column": 4, "expected": "0.10869", "class": "neighboring_values"},
+        {"row_position": 8, "column": 1, "expected": "0.10868", "class": "superscript_footnote"},
+        {"row_position": 8, "column": 3, "expected": "vertical_ellipsis", "expected_kind": "placeholder", "class": "semantic_placeholder"},
+        {"row_position": 8, "column": 4, "expected": "vertical_ellipsis", "expected_kind": "placeholder", "class": "semantic_placeholder"},
+        {"row_position": 9, "column": 4, "expected": "0.10868", "class": "sparse_row"}
+      ]
+    },
+    {
+      "id": "fischer-stability-table-iii",
+      "structured_row_offset": 1,
+      "column_bounds": {
+        "1": [300, 750],
+        "2": [750, 1130],
+        "3": [1130, 1505]
+      },
+      "cells": [
+        {"row_position": 0, "column": 1, "expected": "0.14901", "class": "leading_zero"},
+        {"row_position": 0, "column": 3, "expected": "0.20370", "class": "trailing_zero"},
+        {"row_position": 4, "column": 1, "expected": "0.20421", "class": "superscript_footnote"},
+        {"row_position": 4, "column": 2, "expected": "0.21959", "class": "superscript_footnote"},
+        {"row_position": 5, "column": 3, "expected": "0.19879", "class": "superscript_footnote"},
+        {"row_position": 7, "column": 2, "expected": "0.21885", "class": "superscript_footnote"},
+        {"row_position": 8, "column": 3, "expected": "0.22460", "class": "trailing_zero"},
+        {"row_position": 9, "column": 1, "expected": "0.21886", "class": "superscript_footnote"}
+      ]
+    },
+    {
+      "id": "slater-thomas-fermi-right",
+      "structured_row_offset": 1,
+      "column_bounds": {
+        "3": [565, 741]
+      },
+      "cells": [
+        {"row_position": 0, "column": 3, "expected": "0.375", "class": "leading_zero"},
+        {"row_position": 5, "column": 3, "expected": "0.221", "class": "leading_zero"},
+        {"row_position": 8, "column": 3, "expected": "0.170", "class": "trailing_zero"},
+        {"row_position": 12, "column": 3, "expected": "0.0788", "class": "small_value"},
+        {"row_position": 13, "column": 3, "expected": "0.0408", "class": "small_value"},
+        {"row_position": 14, "column": 3, "expected": "0.0244", "class": "small_value"},
+        {"row_position": 17, "column": 3, "expected": "0.0011", "class": "small_value"},
+        {"row_position": 18, "column": 3, "expected": "0.00061", "class": "table_boundary"}
+      ]
+    },
+    {
+      "id": "grasp-scientific-p186",
+      "source_panel": {
+        "id": "grasp-scientific-p186",
+        "source": "GRASP2018-manual.pdf",
+        "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+        "version_dir": "out/agent-full-books/bf0e2756389dfaa7/v1",
+        "provenance_sha256": "dc32c390690956b074a02d58af9414e1da3c9d300aaf1dc5abe8290046786cac",
+        "page": 186,
+        "block_id": "#/mineru/186/table/1206",
+        "source_crop_sha256": "c5e17699f108afb7bd743e2b63a440271c86b66dd99a002a97da7dc0418d3c5f",
+        "projection_stripe_fraction": 0.15
+      },
+      "row_count": 8,
+      "key_bounds": [0, 260],
+      "projection_top": 95,
+      "structured_row_offset": 1,
+      "column_bounds": {
+        "5": [1080, 1340],
+        "6": [1335, 1570]
+      },
+      "cells": [
+        {"row_position": 0, "column": 5, "expected": "1.717E+08", "class": "scientific_positive_exponent"},
+        {"row_position": 0, "column": 6, "expected": "6.602E-04", "class": "scientific_negative_exponent"},
+        {"row_position": 1, "column": 5, "expected": "6.158E+04", "class": "scientific_positive_exponent"},
+        {"row_position": 1, "column": 6, "expected": "2.782E-07", "class": "scientific_negative_exponent"},
+        {"row_position": 2, "column": 5, "expected": "3.634E+08", "class": "scientific_positive_exponent"},
+        {"row_position": 2, "column": 6, "expected": "9.826E-03", "class": "scientific_negative_exponent"},
+        {"row_position": 5, "column": 5, "expected": "6.170E+07", "class": "scientific_positive_exponent"},
+        {"row_position": 5, "column": 6, "expected": "1.040E-03", "class": "scientific_negative_exponent"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "purpose": "Paired agent benchmark for deterministic arithmetic over pinned numeric evidence.",
+  "questions": [
+    {
+      "id": "fischer-derived-ratio",
+      "document_id": "fischer-1972",
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_provenance_sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea",
+      "bundle_pages": [6],
+      "pdf_pages": [6],
+      "question": "For helium 1S, divide the A best_value by the E best_value and round to six decimal places. Return only the ratio in the answer field.",
+      "answer": {"kind": "number", "value": 2.589085, "tolerance": 0.000001},
+      "required_evidence_fields": ["best_value"],
+      "required_citation_paths": ["data/tables/page_006_panels.csv"],
+      "numeric_context": {
+        "queries": [
+          {
+            "path": "data/tables/page_006_panels.csv",
+            "sha256": "5d6c4184e4e0ea7aaf40471d0af6a6aabb9f668f6bee556b9cb68886c6387e00",
+            "page": 6,
+            "filters": {"symbol": "HE", "row_key": "1S", "column": "A"},
+            "fields": ["symbol", "row_key", "column", "best_value", "confidence", "verification_status"]
+          },
+          {
+            "path": "data/tables/page_006_panels.csv",
+            "sha256": "5d6c4184e4e0ea7aaf40471d0af6a6aabb9f668f6bee556b9cb68886c6387e00",
+            "page": 6,
+            "filters": {"symbol": "HE", "row_key": "1S", "column": "E"},
+            "fields": ["symbol", "row_key", "column", "best_value", "confidence", "verification_status"]
+          }
+        ]
+      },
+      "calculation": {
+        "operation": "divide",
+        "operands": [
+          {"query_index": 0, "field": "best_value", "expected": "4.753337"},
+          {"query_index": 1, "field": "best_value", "expected": "1.835914"}
+        ],
+        "round_decimal_places": 6
+      },
+      "ground_truth": "Decimal division of source-confirmed Fischer values 4.753337 / 1.835914"
+    }
+  ]
+}

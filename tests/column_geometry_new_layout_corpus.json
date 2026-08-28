@@ -1,0 +1,1552 @@
+{
+  "schema_version": 1,
+  "purpose": "Frozen new-layout column geometry gate for weak separators, proportional long labels, narrow numeric lanes, and combined degradation.",
+  "artifacts": {
+    "sources": {
+      "path": "tests/column_geometry_new_layout_sources.json",
+      "sha256": "8d4fd4ed5c893fb0ab795560cd37792d5ba3ec1abccdf8995ebdb0a6b6cb3559"
+    },
+    "report": {
+      "path": "out/reviews/column-geometry-new-layouts-v1/report.json",
+      "sha256": "7f53c42c47fbb7fbb4e3976f1442c01c5c496c97e51bfd7c43c579798a87f928"
+    }
+  },
+  "expected": {
+    "sources_sha256": "8d4fd4ed5c893fb0ab795560cd37792d5ba3ec1abccdf8995ebdb0a6b6cb3559",
+    "panels": 4,
+    "variants": 7,
+    "layout_cases": 28,
+    "rows_checked": 245,
+    "methods": {
+      "header_fixed": {
+        "agree": 245,
+        "disagree": 0,
+        "tool_refused": 0
+      },
+      "consensus": {
+        "agree": 238,
+        "disagree": 0,
+        "tool_refused": 7
+      },
+      "typed_consensus": {
+        "agree": 188,
+        "disagree": 0,
+        "tool_refused": 57
+      }
+    },
+    "by_variant": {
+      "clean": {
+        "header_fixed": {
+          "rows": 35,
+          "agree": 35,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 35,
+          "agree": 34,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 35,
+          "agree": 25,
+          "disagree": 0,
+          "tool_refused": 10
+        }
+      },
+      "dpi_150": {
+        "header_fixed": {
+          "rows": 35,
+          "agree": 35,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 35,
+          "agree": 34,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 35,
+          "agree": 25,
+          "disagree": 0,
+          "tool_refused": 10
+        }
+      },
+      "blur_1_2": {
+        "header_fixed": {
+          "rows": 35,
+          "agree": 35,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 35,
+          "agree": 34,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 35,
+          "agree": 25,
+          "disagree": 0,
+          "tool_refused": 10
+        }
+      },
+      "contrast_65": {
+        "header_fixed": {
+          "rows": 35,
+          "agree": 35,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 35,
+          "agree": 34,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 35,
+          "agree": 25,
+          "disagree": 0,
+          "tool_refused": 10
+        }
+      },
+      "jpeg_25": {
+        "header_fixed": {
+          "rows": 35,
+          "agree": 35,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 35,
+          "agree": 34,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 35,
+          "agree": 30,
+          "disagree": 0,
+          "tool_refused": 5
+        }
+      },
+      "adaptive_binarization": {
+        "header_fixed": {
+          "rows": 35,
+          "agree": 35,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 35,
+          "agree": 34,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 35,
+          "agree": 32,
+          "disagree": 0,
+          "tool_refused": 3
+        }
+      },
+      "combined": {
+        "header_fixed": {
+          "rows": 35,
+          "agree": 35,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 35,
+          "agree": 34,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 35,
+          "agree": 26,
+          "disagree": 0,
+          "tool_refused": 9
+        }
+      }
+    },
+    "by_panel": {
+      "nasa-dot-matrix-mixed-labels": {
+        "header_fixed": {
+          "rows": 21,
+          "agree": 21,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 21,
+          "agree": 21,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "typed_consensus": {
+          "rows": 21,
+          "agree": 21,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      },
+      "ornl-fortran-no-rules": {
+        "header_fixed": {
+          "rows": 42,
+          "agree": 42,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 42,
+          "agree": 42,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "typed_consensus": {
+          "rows": 42,
+          "agree": 29,
+          "disagree": 0,
+          "tool_refused": 13
+        }
+      },
+      "attention-parser-long-labels": {
+        "header_fixed": {
+          "rows": 84,
+          "agree": 84,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 84,
+          "agree": 77,
+          "disagree": 0,
+          "tool_refused": 7
+        },
+        "typed_consensus": {
+          "rows": 84,
+          "agree": 40,
+          "disagree": 0,
+          "tool_refused": 44
+        }
+      },
+      "fischer-nine-narrow-lanes": {
+        "header_fixed": {
+          "rows": 98,
+          "agree": 98,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 98,
+          "agree": 98,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "typed_consensus": {
+          "rows": 98,
+          "agree": 98,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      }
+    },
+    "cases": [
+      {
+        "panel": "nasa-dot-matrix-mixed-labels",
+        "variant": "clean",
+        "rows": 3,
+        "methods": {
+          "header_fixed": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/nasa-dot-matrix-mixed-labels-clean.png",
+        "image_sha256": "1c79d0d8062eb2e8bcf9aa76ca808d726c33f13eb561aa5db5aa960919898e2a",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            275
+          ],
+          [
+            275,
+            541
+          ],
+          [
+            541,
+            857
+          ],
+          [
+            857,
+            1669
+          ]
+        ]
+      },
+      {
+        "panel": "nasa-dot-matrix-mixed-labels",
+        "variant": "dpi_150",
+        "rows": 3,
+        "methods": {
+          "header_fixed": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/nasa-dot-matrix-mixed-labels-dpi_150.png",
+        "image_sha256": "6327ccf317546eed45bb66135f6840d799e381c29658e06d3aeaa05ff1dbf2d6",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            275
+          ],
+          [
+            275,
+            540
+          ],
+          [
+            540,
+            856
+          ],
+          [
+            856,
+            1669
+          ]
+        ]
+      },
+      {
+        "panel": "nasa-dot-matrix-mixed-labels",
+        "variant": "blur_1_2",
+        "rows": 3,
+        "methods": {
+          "header_fixed": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/nasa-dot-matrix-mixed-labels-blur_1_2.png",
+        "image_sha256": "e628a750a2abdefc19c75339358304b4ec01d8748e74da28181bcb1e51567d07",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            275
+          ],
+          [
+            275,
+            540
+          ],
+          [
+            540,
+            856
+          ],
+          [
+            856,
+            1669
+          ]
+        ]
+      },
+      {
+        "panel": "nasa-dot-matrix-mixed-labels",
+        "variant": "contrast_65",
+        "rows": 3,
+        "methods": {
+          "header_fixed": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/nasa-dot-matrix-mixed-labels-contrast_65.png",
+        "image_sha256": "5368ab62e99531f675b4fa9297975ff63d6c4717d8aaa1faf072d764cf117d63",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            275
+          ],
+          [
+            275,
+            541
+          ],
+          [
+            541,
+            857
+          ],
+          [
+            857,
+            1669
+          ]
+        ]
+      },
+      {
+        "panel": "nasa-dot-matrix-mixed-labels",
+        "variant": "jpeg_25",
+        "rows": 3,
+        "methods": {
+          "header_fixed": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/nasa-dot-matrix-mixed-labels-jpeg_25.png",
+        "image_sha256": "e7eb653111a7d714ea508b6141b7dc7d4f5e3f7d4f0be524c0b3b1005a0f7863",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            274
+          ],
+          [
+            274,
+            540
+          ],
+          [
+            540,
+            856
+          ],
+          [
+            856,
+            1669
+          ]
+        ]
+      },
+      {
+        "panel": "nasa-dot-matrix-mixed-labels",
+        "variant": "adaptive_binarization",
+        "rows": 3,
+        "methods": {
+          "header_fixed": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/nasa-dot-matrix-mixed-labels-adaptive_binarization.png",
+        "image_sha256": "c823cb9c8e34889ce99f6bd5a08cb8d2668dddc1b8122568feeb98fc131ceec0",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            275
+          ],
+          [
+            275,
+            540
+          ],
+          [
+            540,
+            857
+          ],
+          [
+            857,
+            1669
+          ]
+        ]
+      },
+      {
+        "panel": "nasa-dot-matrix-mixed-labels",
+        "variant": "combined",
+        "rows": 3,
+        "methods": {
+          "header_fixed": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 3,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/nasa-dot-matrix-mixed-labels-combined.png",
+        "image_sha256": "bc58da86c92ed1b4e5dd15a743b09b1f5367f7aecca98c04b63117dbadbe5517",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            275
+          ],
+          [
+            275,
+            540
+          ],
+          [
+            540,
+            856
+          ],
+          [
+            856,
+            1669
+          ]
+        ]
+      },
+      {
+        "panel": "ornl-fortran-no-rules",
+        "variant": "clean",
+        "rows": 6,
+        "methods": {
+          "header_fixed": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 2
+          }
+        },
+        "image": "images/ornl-fortran-no-rules-clean.png",
+        "image_sha256": "a78fbb511cf156edf772f0395aa50323c84b6ccbf9b811fa01061722d9ff93f3",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            505
+          ],
+          [
+            505,
+            1151
+          ],
+          [
+            1151,
+            1668
+          ]
+        ]
+      },
+      {
+        "panel": "ornl-fortran-no-rules",
+        "variant": "dpi_150",
+        "rows": 6,
+        "methods": {
+          "header_fixed": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 2
+          }
+        },
+        "image": "images/ornl-fortran-no-rules-dpi_150.png",
+        "image_sha256": "6ac1b3296e360a8b02bc237ec376c9a395c95d6f3ef405bf5c437d4e1a0d8793",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            505
+          ],
+          [
+            505,
+            1150
+          ],
+          [
+            1150,
+            1668
+          ]
+        ]
+      },
+      {
+        "panel": "ornl-fortran-no-rules",
+        "variant": "blur_1_2",
+        "rows": 6,
+        "methods": {
+          "header_fixed": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 2
+          }
+        },
+        "image": "images/ornl-fortran-no-rules-blur_1_2.png",
+        "image_sha256": "d7bf986cdf6187f5d8a6aaca679c371c0bf98d39f15eedd1c111df0fb29ee8a8",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            505
+          ],
+          [
+            505,
+            1150
+          ],
+          [
+            1150,
+            1668
+          ]
+        ]
+      },
+      {
+        "panel": "ornl-fortran-no-rules",
+        "variant": "contrast_65",
+        "rows": 6,
+        "methods": {
+          "header_fixed": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 2
+          }
+        },
+        "image": "images/ornl-fortran-no-rules-contrast_65.png",
+        "image_sha256": "4c2b9a40a8335c5d12c9d71e759104620437922054951478dd2c6d3b5819ff21",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            505
+          ],
+          [
+            505,
+            1151
+          ],
+          [
+            1151,
+            1668
+          ]
+        ]
+      },
+      {
+        "panel": "ornl-fortran-no-rules",
+        "variant": "jpeg_25",
+        "rows": 6,
+        "methods": {
+          "header_fixed": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 2
+          }
+        },
+        "image": "images/ornl-fortran-no-rules-jpeg_25.png",
+        "image_sha256": "7e76596d7b749aee6baa75bf50b3f537b9212845806ef6768770861014ffadcf",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            505
+          ],
+          [
+            505,
+            1151
+          ],
+          [
+            1151,
+            1668
+          ]
+        ]
+      },
+      {
+        "panel": "ornl-fortran-no-rules",
+        "variant": "adaptive_binarization",
+        "rows": 6,
+        "methods": {
+          "header_fixed": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 2
+          }
+        },
+        "image": "images/ornl-fortran-no-rules-adaptive_binarization.png",
+        "image_sha256": "cd01dc9c1e5ac3d6f21a892dc6d3e26bcc50d16f07b62af59ddeea175a3684af",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            505
+          ],
+          [
+            505,
+            1151
+          ],
+          [
+            1151,
+            1668
+          ]
+        ]
+      },
+      {
+        "panel": "ornl-fortran-no-rules",
+        "variant": "combined",
+        "rows": 6,
+        "methods": {
+          "header_fixed": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 6,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 5,
+            "disagree": 0,
+            "tool_refused": 1
+          }
+        },
+        "image": "images/ornl-fortran-no-rules-combined.png",
+        "image_sha256": "e89b6ea24c513eac253c966e25fe462b882f4409423578ef89b0ab0a88ef6b79",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            505
+          ],
+          [
+            505,
+            1087
+          ],
+          [
+            1087,
+            1668
+          ]
+        ]
+      },
+      {
+        "panel": "attention-parser-long-labels",
+        "variant": "clean",
+        "rows": 12,
+        "methods": {
+          "header_fixed": {
+            "agree": 12,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 11,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 8
+          }
+        },
+        "image": "images/attention-parser-long-labels-clean.png",
+        "image_sha256": "47a2ae8ed7c8edc96ce61fc801fbaf275040eb306f4437043b7d0a3fef29a94e",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            784
+          ],
+          [
+            784,
+            1338
+          ],
+          [
+            1338,
+            1660
+          ]
+        ]
+      },
+      {
+        "panel": "attention-parser-long-labels",
+        "variant": "dpi_150",
+        "rows": 12,
+        "methods": {
+          "header_fixed": {
+            "agree": 12,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 11,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 8
+          }
+        },
+        "image": "images/attention-parser-long-labels-dpi_150.png",
+        "image_sha256": "275602495cca4e42e74ddfe662508573426a46f72f7ce259e46d6819299dbe7f",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            784
+          ],
+          [
+            784,
+            1338
+          ],
+          [
+            1338,
+            1660
+          ]
+        ]
+      },
+      {
+        "panel": "attention-parser-long-labels",
+        "variant": "blur_1_2",
+        "rows": 12,
+        "methods": {
+          "header_fixed": {
+            "agree": 12,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 11,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 8
+          }
+        },
+        "image": "images/attention-parser-long-labels-blur_1_2.png",
+        "image_sha256": "613ed2112003261aae3e96555f89ca4018dcaf2c9b50e462bd05d97cfea408b2",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            784
+          ],
+          [
+            784,
+            1338
+          ],
+          [
+            1338,
+            1660
+          ]
+        ]
+      },
+      {
+        "panel": "attention-parser-long-labels",
+        "variant": "contrast_65",
+        "rows": 12,
+        "methods": {
+          "header_fixed": {
+            "agree": 12,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 11,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 8
+          }
+        },
+        "image": "images/attention-parser-long-labels-contrast_65.png",
+        "image_sha256": "7697f4f4a2f678f80ecee97a5aee08b232222fa13b0a19440ad2a223d06dc05d",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            784
+          ],
+          [
+            784,
+            1338
+          ],
+          [
+            1338,
+            1660
+          ]
+        ]
+      },
+      {
+        "panel": "attention-parser-long-labels",
+        "variant": "jpeg_25",
+        "rows": 12,
+        "methods": {
+          "header_fixed": {
+            "agree": 12,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 11,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 3
+          }
+        },
+        "image": "images/attention-parser-long-labels-jpeg_25.png",
+        "image_sha256": "4d9ac756dd1c35c57e0f8c1455e6d586e3d841759e2290f93a0e9eb39fee160b",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            784
+          ],
+          [
+            784,
+            1338
+          ],
+          [
+            1338,
+            1660
+          ]
+        ]
+      },
+      {
+        "panel": "attention-parser-long-labels",
+        "variant": "adaptive_binarization",
+        "rows": 12,
+        "methods": {
+          "header_fixed": {
+            "agree": 12,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 11,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 11,
+            "disagree": 0,
+            "tool_refused": 1
+          }
+        },
+        "image": "images/attention-parser-long-labels-adaptive_binarization.png",
+        "image_sha256": "4e772cc4648f2463353c31422d836568fa9d70be18ac903835c8db7f2dc0c408",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            784
+          ],
+          [
+            784,
+            1338
+          ],
+          [
+            1338,
+            1660
+          ]
+        ]
+      },
+      {
+        "panel": "attention-parser-long-labels",
+        "variant": "combined",
+        "rows": 12,
+        "methods": {
+          "header_fixed": {
+            "agree": 12,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 11,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 4,
+            "disagree": 0,
+            "tool_refused": 8
+          }
+        },
+        "image": "images/attention-parser-long-labels-combined.png",
+        "image_sha256": "f471808dfff8bb1848e957b1fcffa6442125c3db2ae8a6e85be5e774cc8107c4",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            784
+          ],
+          [
+            784,
+            1338
+          ],
+          [
+            1338,
+            1660
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-nine-narrow-lanes",
+        "variant": "clean",
+        "rows": 14,
+        "methods": {
+          "header_fixed": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-nine-narrow-lanes-clean.png",
+        "image_sha256": "5c785b6f2b158793f3da59ba4f8fbfe699e2636d6f9934ce12e618cbcbf9ff2d",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            201
+          ],
+          [
+            201,
+            344
+          ],
+          [
+            344,
+            470
+          ],
+          [
+            470,
+            597
+          ],
+          [
+            597,
+            723
+          ],
+          [
+            723,
+            857
+          ],
+          [
+            857,
+            943
+          ],
+          [
+            943,
+            1106
+          ],
+          [
+            1106,
+            1254
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-nine-narrow-lanes",
+        "variant": "dpi_150",
+        "rows": 14,
+        "methods": {
+          "header_fixed": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-nine-narrow-lanes-dpi_150.png",
+        "image_sha256": "701b105cd8bf7e4f02bf0ac5af1fd5d08cf8a1a84f7bb77e0f9b606a427cf802",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            201
+          ],
+          [
+            201,
+            344
+          ],
+          [
+            344,
+            470
+          ],
+          [
+            470,
+            596
+          ],
+          [
+            596,
+            723
+          ],
+          [
+            723,
+            857
+          ],
+          [
+            857,
+            943
+          ],
+          [
+            943,
+            1106
+          ],
+          [
+            1106,
+            1254
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-nine-narrow-lanes",
+        "variant": "blur_1_2",
+        "rows": 14,
+        "methods": {
+          "header_fixed": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-nine-narrow-lanes-blur_1_2.png",
+        "image_sha256": "fcfaac1c4f17a632b5014caa7f04e9805cd56e08dca4336592ea61d51dc7a81f",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            201
+          ],
+          [
+            201,
+            344
+          ],
+          [
+            344,
+            470
+          ],
+          [
+            470,
+            596
+          ],
+          [
+            596,
+            724
+          ],
+          [
+            724,
+            858
+          ],
+          [
+            858,
+            944
+          ],
+          [
+            944,
+            1106
+          ],
+          [
+            1106,
+            1254
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-nine-narrow-lanes",
+        "variant": "contrast_65",
+        "rows": 14,
+        "methods": {
+          "header_fixed": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-nine-narrow-lanes-contrast_65.png",
+        "image_sha256": "6bbda01dd721b668491ad3e3ad1bcef119a6d02e40125d053f21b952ea33f8ea",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            201
+          ],
+          [
+            201,
+            344
+          ],
+          [
+            344,
+            470
+          ],
+          [
+            470,
+            597
+          ],
+          [
+            597,
+            723
+          ],
+          [
+            723,
+            857
+          ],
+          [
+            857,
+            943
+          ],
+          [
+            943,
+            1106
+          ],
+          [
+            1106,
+            1254
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-nine-narrow-lanes",
+        "variant": "jpeg_25",
+        "rows": 14,
+        "methods": {
+          "header_fixed": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-nine-narrow-lanes-jpeg_25.png",
+        "image_sha256": "11c271c0195f847df5080995b79585fac2b02ee7d4ec84e8c023281b6a8806d7",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            201
+          ],
+          [
+            201,
+            344
+          ],
+          [
+            344,
+            470
+          ],
+          [
+            470,
+            596
+          ],
+          [
+            596,
+            723
+          ],
+          [
+            723,
+            857
+          ],
+          [
+            857,
+            943
+          ],
+          [
+            943,
+            1106
+          ],
+          [
+            1106,
+            1254
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-nine-narrow-lanes",
+        "variant": "adaptive_binarization",
+        "rows": 14,
+        "methods": {
+          "header_fixed": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-nine-narrow-lanes-adaptive_binarization.png",
+        "image_sha256": "79049011918cc7015affc2921b8c2bd837d76cee146ce0cc990689c0c14cd90b",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            201
+          ],
+          [
+            201,
+            344
+          ],
+          [
+            344,
+            470
+          ],
+          [
+            470,
+            597
+          ],
+          [
+            597,
+            723
+          ],
+          [
+            723,
+            857
+          ],
+          [
+            857,
+            943
+          ],
+          [
+            943,
+            1106
+          ],
+          [
+            1106,
+            1254
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-nine-narrow-lanes",
+        "variant": "combined",
+        "rows": 14,
+        "methods": {
+          "header_fixed": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 14,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-nine-narrow-lanes-combined.png",
+        "image_sha256": "7eae8b5c8f7eb1fc17352002e5ae2a8963b24111ec9ca5cb234d37ea83464269",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            201
+          ],
+          [
+            201,
+            344
+          ],
+          [
+            344,
+            470
+          ],
+          [
+            470,
+            596
+          ],
+          [
+            596,
+            723
+          ],
+          [
+            723,
+            858
+          ],
+          [
+            858,
+            944
+          ],
+          [
+            944,
+            1106
+          ],
+          [
+            1106,
+            1254
+          ]
+        ]
+      }
+    ]
+  }
+}

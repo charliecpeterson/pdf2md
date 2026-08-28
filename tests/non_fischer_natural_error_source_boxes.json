@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "purpose": "Human-verified source-pixel boxes for third-reader evaluation on natural non-Fischer errors.",
+  "contract": "Boxes were fixed by source-image inspection before PP-OCRv6 recognition and contain one labelled cell without OCR-token-derived geometry.",
+  "documents": [
+    {
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "cells": [
+        {"block_id": "#/mineru/215/table/1680", "row": 27, "column": 5, "source_crop_sha256": "a9968da3c0097e840878225d2c809caa1c54691f47e6773aeb3139406520d785", "source_box": [510, 1058, 590, 1100]}
+      ]
+    },
+    {
+      "source_sha256": "d9f208b5bceff4897affa087efa740152a5692e479b9c02aaf467834a0a78931",
+      "cells": [
+        {"block_id": "#/mineru/1/table/13", "row": 1, "column": 0, "source_crop_sha256": "6c41910b338d35dab391d1c01d372d801760f292f994e16bd77bae1c428aaefb", "source_box": [25, 110, 430, 155]},
+        {"block_id": "#/mineru/1/table/13", "row": 2, "column": 0, "source_crop_sha256": "6c41910b338d35dab391d1c01d372d801760f292f994e16bd77bae1c428aaefb", "source_box": [25, 152, 430, 196]},
+        {"block_id": "#/mineru/2/table/29", "row": 0, "column": 1, "source_crop_sha256": "871affe841479d8ea710894e375fadcf67d9f49944f6aa9baf19a5c8be02e798", "source_box": [680, 40, 910, 85]},
+        {"block_id": "#/mineru/2/table/31", "row": 1, "column": 0, "source_crop_sha256": "c7715c45f1f5a9875a2ebc20bc32ae336179a831f1bd4d6915c9c476fdc82f65", "source_box": [15, 115, 410, 160]},
+        {"block_id": "#/mineru/3/table/37", "row": 1, "column": 1, "source_crop_sha256": "6af365069cfd0f8ebc4268656b7b235e19ced49b2b53d237230e3c87b1f9ac56", "source_box": [640, 108, 1040, 156]},
+        {"block_id": "#/mineru/3/table/43", "row": 2, "column": 2, "source_crop_sha256": "755f345322b8cec1d75c5c8312014c40452d6f240cb92deb0a797682be2b9bf7", "source_box": [1270, 152, 1650, 200]},
+        {"block_id": "#/mineru/3/table/48", "row": 2, "column": 1, "source_crop_sha256": "b76d371e14ce3476980cc89d889a39ed87cd34875f63b2cdd61af89adbcf7156", "source_box": [650, 115, 1030, 175]},
+        {"block_id": "#/mineru/4/table/59", "row": 2, "column": 0, "source_crop_sha256": "d9a761c2e95d8ad3b4a276fd9e45ffcaf54c976325311a28f2e2450775235fbe", "source_box": [40, 170, 430, 218]}
+      ]
+    },
+    {
+      "source_sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7",
+      "cells": [
+        {"block_id": "#/mineru/2/table/19", "row": 1, "column": 3, "source_crop_sha256": "d7e9abd239590a0149aef1f35aea9b105a696b48a258d0798c4baa7b733432d4", "source_box": [955, 155, 1120, 215]},
+        {"block_id": "#/mineru/2/table/23", "row": 1, "column": 0, "source_crop_sha256": "f39db170dd17dc2a7ad2eade287b3e05445adf69706586f468c724a3782e6199", "source_box": [80, 85, 230, 135]},
+        {"block_id": "#/mineru/2/table/25", "row": 3, "column": 7, "source_crop_sha256": "1f3d8c7f61533295989c4b814a8880b733033b73b4ffea52ab39dd8b894b8610", "source_box": [870, 130, 1020, 172]},
+        {"block_id": "#/mineru/2/table/26", "row": 1, "column": 5, "source_crop_sha256": "16581a31d4720aa11c716e3e7dd5569c3ba1c7405659d22f986eed77eb9af44d", "source_box": [1490, 148, 1670, 218]},
+        {"block_id": "#/mineru/2/table/27", "row": 6, "column": 0, "source_crop_sha256": "fee73ccf57346c25624eab9fd5451f8cbd3c13d8e33667c9697e0526d7324486", "source_box": [35, 425, 255, 485]}
+      ]
+    }
+  ]
+}

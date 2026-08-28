@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked primary extraction errors in the Slater atomic-structure scan.",
+  "documents": [
+    {
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "source": "slater-quantum_theory_of_atomic_structure-vol1.pdf",
+      "version": "v1",
+      "cells": [
+        {"page": 215, "block_id": "#/mineru/215/table/1680", "row": 27, "column": 5, "expected": "8.0", "label": "Co 3s term; primary reads 8.9 and Tesseract reads 8.u"}
+      ]
+    }
+  ]
+}

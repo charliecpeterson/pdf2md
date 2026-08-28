@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "source_root": "..",
+  "documents": [
+    {
+      "id": "intro-relativistic-qc",
+      "path": "Intro-to_Relativistic-QC.pdf",
+      "sha256": "8958ff6dd820fee32a7a98a8cbdc97b3b036491ca04fc213b8d14b91ab081b02",
+      "document_class": "technical_textbook",
+      "pages": 545
+    },
+    {
+      "id": "atkins-physical-chemistry-8e",
+      "path": "atkins-physicalchemistry-8th.pdf",
+      "sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+      "document_class": "technical_textbook",
+      "pages": 1085
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "frozen_at": "2026-08-15",
+  "selection": "Ten public arXiv PDFs not used by the existing labelled or QA corpora. URLs, source hashes, and page counts were frozen before conversion output was inspected.",
+  "claims": "This corpus measures conversion success, exact block accounting, artifact presence, and review burden. It does not measure cell, equation, reading-order, or semantic accuracy.",
+  "conversion": "pdf2md convert SOURCE_DIR --out OUT_DIR --no-formula --force",
+  "evaluator_sha256": "2fc5c9e8040e5874d91c68932082121f27d510c759f7c6427f0acffa7bdea081",
+ "expected_summary": {
+  "documents": 10,
+  "sources_valid": 10,
+  "conversions": 10,
+  "accounted_for": 10,
+  "structurally_complete": 10,
+  "content_present": 10,
+  "documents_requiring_review": 5,
+  "total_review_flags": 58
+ },
+ "baseline_history": [
+  {
+   "frozen_at": "2026-08-15",
+   "documents_requiring_review": 4,
+   "total_review_flags": 41
+  },
+  {
+   "updated_at": "2026-08-22",
+   "reason": "Born-digital glyph cell verification introduced (table_rebuild.check_table_cells). Tables whose cells have no embedded-glyph backing — raster tables Docling's TableFormer vision-read on 1911.10683 (15) and 2408.09869 (1) — are now routed to crop-authoritative candidates with review markers instead of riding as verified structured text. Structural claims are unchanged (10/10 accounted_for, structurally_complete, content_present); only the honest review-burden count moved."
+  }
+ ],
+  "documents": [
+    {
+      "id": "1911.10683",
+      "url": "https://arxiv.org/pdf/1911.10683",
+      "sha256": "19dc16b0d5e7ea356953c7338529440ca064663ae5d0b6f90b68c8c23ce33115",
+      "pages": 11
+    },
+    {
+      "id": "2003.08934",
+      "url": "https://arxiv.org/pdf/2003.08934",
+      "sha256": "c7fc70b38f84cb2e42890a69a7c9b9c26ded464b221e0355031004f24fb8e727",
+      "pages": 25
+    },
+    {
+      "id": "2005.12872",
+      "url": "https://arxiv.org/pdf/2005.12872",
+      "sha256": "d4b846bd44896e1d21527f48eddc422c263c9a4f8a3fa4be249750956882698d",
+      "pages": 26
+    },
+    {
+      "id": "2103.15348",
+      "url": "https://arxiv.org/pdf/2103.15348",
+      "sha256": "467dd159f063cf01dc30d6f18bb7108534242f608d329d075a10f2507a025112",
+      "pages": 16
+    },
+    {
+      "id": "2206.01062",
+      "url": "https://arxiv.org/pdf/2206.01062",
+      "sha256": "5dfbd8c115a15fd3396b68409124cfee29fc8efac7b5c846634ff924e635e0dc",
+      "pages": 9
+    },
+    {
+      "id": "2210.03629",
+      "url": "https://arxiv.org/pdf/2210.03629",
+      "sha256": "f285b0971ae4a790e402fb93966bed3adde2cf0a04977d08b2b40d6ab0cace69",
+      "pages": 33
+    },
+    {
+      "id": "2305.03393",
+      "url": "https://arxiv.org/pdf/2305.03393",
+      "sha256": "62f2a2163d768d5b125a207967797aefa6c9cc113de8bb5c725c582595dd0c1d",
+      "pages": 14
+    },
+    {
+      "id": "2308.12950",
+      "url": "https://arxiv.org/pdf/2308.12950",
+      "sha256": "05ed05d2d76c420b6af4a1afe6e1dec99939ccf62c5a0c0a258b09cbe1889346",
+      "pages": 48
+    },
+    {
+      "id": "2310.06825",
+      "url": "https://arxiv.org/pdf/2310.06825",
+      "sha256": "dfbac4e7035344b305c947481f2e7e8a02f7a24a563917eb6e47f6591d14c5ae",
+      "pages": 9
+    },
+    {
+      "id": "2408.09869",
+      "url": "https://arxiv.org/pdf/2408.09869",
+      "sha256": "82dd470712ce8389f19f20eb9330475e2166a281f8c7990a9f1d0763d73b4d22",
+      "pages": 9
+    }
+  ]
+}

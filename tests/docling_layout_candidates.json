@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "resolved_at": "2026-08-25",
+  "source": "https://huggingface.co/api/models/{repo_id}?blobs=true",
+  "candidates": [
+    {
+      "id": "docling-heron",
+      "name": "docling_layout_heron",
+      "repo_id": "docling-project/docling-layout-heron",
+      "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+      "model_path": "",
+      "weight_file": "model.safetensors",
+      "weight_bytes": 171658996,
+      "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+    },
+    {
+      "id": "docling-heron-101",
+      "name": "docling_layout_heron_101",
+      "repo_id": "docling-project/docling-layout-heron-101",
+      "revision": "2e4993cf6bb211112084a2f80938f26138008917",
+      "model_path": "",
+      "weight_file": "model.safetensors",
+      "weight_bytes": 306814140,
+      "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+    },
+    {
+      "id": "docling-egret-medium",
+      "name": "docling_layout_egret_medium",
+      "repo_id": "docling-project/docling-layout-egret-medium",
+      "revision": "77ede7cc7bed96d853c58f319734803d6ea2ea5c",
+      "model_path": "",
+      "weight_file": "model.safetensors",
+      "weight_bytes": 78311396,
+      "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+    },
+    {
+      "id": "docling-egret-large",
+      "name": "docling_layout_egret_large",
+      "repo_id": "docling-project/docling-layout-egret-large",
+      "revision": "fff417c78abd6bab338c87706c95a8d79dc68f1e",
+      "model_path": "",
+      "weight_file": "model.safetensors",
+      "weight_bytes": 125100636,
+      "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+    },
+    {
+      "id": "docling-egret-xlarge",
+      "name": "docling_layout_egret_xlarge",
+      "repo_id": "docling-project/docling-layout-egret-xlarge",
+      "revision": "23857d16596e0106716b3162d132212d733769e7",
+      "model_path": "",
+      "weight_file": "model.safetensors",
+      "weight_bytes": 251101540,
+      "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+    }
+  ]
+}

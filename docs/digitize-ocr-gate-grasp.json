@@ -1,0 +1,92 @@
+{
+  "figures": 11,
+  "seconds": 0.427,
+  "ocr_candidates_without_gate": 3,
+  "labelled_ocr_recoveries": 3,
+  "target_rows": [
+    {
+      "block_id": "#/mineru/188/figure/1218",
+      "page": 188,
+      "target": true,
+      "series_geometry": true,
+      "frames": 1,
+      "polylines": 320,
+      "inside_paths": 319,
+      "wide_nonflat": 2,
+      "max_x_ratio": 1.0,
+      "max_wide_y_ratio": 1.0
+    },
+    {
+      "block_id": "#/mineru/261/figure/1573",
+      "page": 261,
+      "target": true,
+      "series_geometry": true,
+      "frames": 1,
+      "polylines": 328,
+      "inside_paths": 328,
+      "wide_nonflat": 6,
+      "max_x_ratio": 1.0,
+      "max_wide_y_ratio": 1.0
+    },
+    {
+      "block_id": "#/mineru/264/figure/1594",
+      "page": 264,
+      "target": true,
+      "series_geometry": true,
+      "frames": 1,
+      "polylines": 207,
+      "inside_paths": 207,
+      "wide_nonflat": 4,
+      "max_x_ratio": 1.0,
+      "max_wide_y_ratio": 1.0
+    }
+  ],
+  "single_feature_thresholds": [
+    {
+      "field": "inside_paths",
+      "positive_floor": 207,
+      "kept": 3,
+      "targets_kept": 3
+    },
+    {
+      "field": "wide_nonflat",
+      "positive_floor": 2,
+      "kept": 3,
+      "targets_kept": 3
+    },
+    {
+      "field": "max_x_ratio",
+      "positive_floor": 1.0,
+      "kept": 3,
+      "targets_kept": 3
+    },
+    {
+      "field": "max_wide_y_ratio",
+      "positive_floor": 1.0,
+      "kept": 3,
+      "targets_kept": 3
+    }
+  ],
+  "candidate_rules": [
+    {
+      "rule": "series geometry can produce data",
+      "kept": 3,
+      "targets_kept": 3
+    },
+    {
+      "rule": "wide_nonflat >= 2",
+      "kept": 3,
+      "targets_kept": 3
+    },
+    {
+      "rule": "x_span >= 1 and y_span >= 1",
+      "kept": 3,
+      "targets_kept": 3
+    },
+    {
+      "rule": "chart geometry",
+      "kept": 3,
+      "targets_kept": 3
+    }
+  ]
+}

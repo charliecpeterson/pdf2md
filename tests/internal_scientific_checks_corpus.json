@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-pinned exact internal relations that can support extraction or request review but never replace a value.",
+  "documents": [
+    {
+      "id": "attention",
+      "source": "out/qa-current/bdfaa68d8984f0dc/source.pdf",
+      "source_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "artifacts": {
+        "out/qa-current/bdfaa68d8984f0dc/v1/document.md": "11d82cbc9c0ea0ba0f3a9d828fe4588db5df993da9c431259c831999b491c64c",
+        "out/qa-current/bdfaa68d8984f0dc/v1/provenance.json": "6b7318363527a0fdb383daaa8cdb7db4bd64c5e86c381c77544cd70f619ec950"
+      },
+      "values": {
+        "base_d_model": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 1, "column": 2},
+        "base_h": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 1, "column": 4},
+        "base_d_k": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 1, "column": 5},
+        "base_d_v": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 1, "column": 6},
+        "a1_h": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 2, "column": 4},
+        "a1_d_k": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 2, "column": 5},
+        "a1_d_v": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 2, "column": 6},
+        "a4_h": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 3, "column": 4},
+        "a4_d_k": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 3, "column": 5},
+        "a4_d_v": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 3, "column": 6},
+        "a16_h": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 4, "column": 4},
+        "a16_d_k": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 4, "column": 5},
+        "a16_d_v": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 4, "column": 6},
+        "a32_h": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 5, "column": 4},
+        "a32_d_k": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 5, "column": 5},
+        "a32_d_v": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 5, "column": 6},
+        "c256_d_model": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 11, "column": 2},
+        "c256_d_k": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 11, "column": 5},
+        "c256_d_v": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 11, "column": 6},
+        "c1024_d_model": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 12, "column": 2},
+        "c1024_d_k": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 12, "column": 5},
+        "c1024_d_v": {"kind": "html_table", "path": "out/qa-current/bdfaa68d8984f0dc/v1/document.md", "table": 1, "row": 12, "column": 6}
+      }
+    },
+    {
+      "id": "nasa-wates",
+      "source": "out/natural-errors-scanned/2cde66d4e1bc0e6d/source.pdf",
+      "source_sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7",
+      "artifacts": {
+        "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/document.md": "8f41806438a1023c7b3326630b91554f3864e7c7f6d6a5889f7876aa80385c02",
+        "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/provenance.json": "ac435041ec9dd8abe19c29c15d181307000966e4c06d9014b8dac117cf3c57df",
+        "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_19.csv": "468feaaa34cc5430f6c3a18f4af89e62c6d34f28963868100e15cd931c5cd05a",
+        "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_20.csv": "7b07d68fcd08faef6a70178e78b4b5fc38dc1c9ad0d5cac2eda7856c901286ed",
+        "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_21.csv": "3350464913c277764cea74b09501db51acaaa092907552b19b2a1cb6db3b62f4",
+        "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_23.csv": "b2eaac141c3f956c2eed6efdfa5435e3f6c69689b8ff99bcf1a3c7fc619381b5",
+        "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_25.csv": "cc5ca1b0cd136846d5439b2a86973beaf46fb9cb833fd70f93ad9a126640f1b3",
+        "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_27.csv": "4fd93c98099fc3fcd55b85bff628054a64b7788fdf18fd372cd7948b74a2c5cd"
+      },
+      "values": {
+        "ltipmax_clear": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_21.csv", "row": 1, "column": 0},
+        "ltipmax_damaged": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_25.csv", "row": 3, "column": 7},
+        "rpm": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_23.csv", "row": 1, "column": 4},
+        "max_rpm": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_23.csv", "row": 1, "column": 6},
+        "duct_p_total": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_27.csv", "row": 2, "column": 3},
+        "duct_pc": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_27.csv", "row": 4, "column": 3},
+        "upstream_p_total": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_19.csv", "row": 6, "column": 3},
+        "recalc_p_total": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_20.csv", "row": 3, "column": 3},
+        "upstream_area": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_19.csv", "row": 6, "column": 5},
+        "recalc_area": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_20.csv", "row": 3, "column": 5},
+        "upstream_gamma": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_19.csv", "row": 6, "column": 6},
+        "recalc_gamma": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_20.csv", "row": 3, "column": 6},
+        "stage_t_total": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_25.csv", "row": 3, "column": 10},
+        "stage_t_total_repeat": {"kind": "csv", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/data/tables/mineru_2_table_25.csv", "row": 3, "column": 11},
+        "case_weight": {"kind": "regex", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/document.md", "pattern": "CAS WT\\s+INC WT\\s+WTOT\\s+([.0-9]+)\\s+([.0-9]+)\\s+([.0-9]+)", "group": 1},
+        "included_weight": {"kind": "regex", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/document.md", "pattern": "CAS WT\\s+INC WT\\s+WTOT\\s+([.0-9]+)\\s+([.0-9]+)\\s+([.0-9]+)", "group": 2},
+        "total_weight": {"kind": "regex", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/document.md", "pattern": "CAS WT\\s+INC WT\\s+WTOT\\s+([.0-9]+)\\s+([.0-9]+)\\s+([.0-9]+)", "group": 3},
+        "page3_p_total": {"kind": "regex", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/document.md", "pattern": "CLCT\\s+P NO VEL T TOT P TOT P STAT AREA GAM\\s+[.0-9]+\\s+[.0-9]+\\s+[.0-9:]+\\s+([.0-9]+)", "group": 1},
+        "page3_po": {"kind": "regex", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/document.md", "pattern": "FR AD EF PO TO HP\\s+[.0-9]+\\s+[.0-9]+\\s+([.0-9]+)", "group": 1},
+        "page4_rpm": {"kind": "regex", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/document.md", "pattern": "UT RTIP RMUB DEL H RPM MAXRPM TORQ\\s+[.0-9]+\\s+[.0-9]+\\s+[.0-9]+\\s+[.0-9]+\\s+([.0-9C]+)\\s+([.0-9C]+)\\s+([.0-9C]+)", "group": 1},
+        "page4_max_rpm": {"kind": "regex", "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/document.md", "pattern": "UT RTIP RMUB DEL H RPM MAXRPM TORQ\\s+[.0-9]+\\s+[.0-9]+\\s+[.0-9]+\\s+[.0-9]+\\s+([.0-9C]+)\\s+([.0-9C]+)\\s+([.0-9C]+)", "group": 2}
+      }
+    }
+  ],
+  "checks": [
+    {"id": "attention-base-symmetry", "document": "attention", "category": "parameter_symmetry", "kind": "exact_equal", "operands": ["base_d_k", "base_d_v"]},
+    {"id": "attention-base-width", "document": "attention", "category": "attention_width_conservation", "kind": "exact_product", "operands": ["base_h", "base_d_k", "base_d_model"]},
+    {"id": "attention-a1-symmetry", "document": "attention", "category": "parameter_symmetry", "kind": "exact_equal", "operands": ["a1_d_k", "a1_d_v"]},
+    {"id": "attention-a1-width", "document": "attention", "category": "attention_width_conservation", "kind": "exact_product", "operands": ["a1_h", "a1_d_k", "base_d_model"]},
+    {"id": "attention-a4-symmetry", "document": "attention", "category": "parameter_symmetry", "kind": "exact_equal", "operands": ["a4_d_k", "a4_d_v"]},
+    {"id": "attention-a4-width", "document": "attention", "category": "attention_width_conservation", "kind": "exact_product", "operands": ["a4_h", "a4_d_k", "base_d_model"]},
+    {"id": "attention-a16-symmetry", "document": "attention", "category": "parameter_symmetry", "kind": "exact_equal", "operands": ["a16_d_k", "a16_d_v"]},
+    {"id": "attention-a16-width", "document": "attention", "category": "attention_width_conservation", "kind": "exact_product", "operands": ["a16_h", "a16_d_k", "base_d_model"]},
+    {"id": "attention-a32-symmetry", "document": "attention", "category": "parameter_symmetry", "kind": "exact_equal", "operands": ["a32_d_k", "a32_d_v"]},
+    {"id": "attention-a32-width", "document": "attention", "category": "attention_width_conservation", "kind": "exact_product", "operands": ["a32_h", "a32_d_k", "base_d_model"]},
+    {"id": "attention-c256-symmetry", "document": "attention", "category": "parameter_symmetry", "kind": "exact_equal", "operands": ["c256_d_k", "c256_d_v"]},
+    {"id": "attention-c256-width", "document": "attention", "category": "attention_width_conservation", "kind": "exact_product", "operands": ["base_h", "c256_d_k", "c256_d_model"]},
+    {"id": "attention-c1024-symmetry", "document": "attention", "category": "parameter_symmetry", "kind": "exact_equal", "operands": ["c1024_d_k", "c1024_d_v"]},
+    {"id": "attention-c1024-width", "document": "attention", "category": "attention_width_conservation", "kind": "exact_product", "operands": ["base_h", "c1024_d_k", "c1024_d_model"]},
+    {"id": "nasa-repeated-ltipmax", "document": "nasa-wates", "category": "repeated_value", "kind": "exact_equal", "operands": ["ltipmax_clear", "ltipmax_damaged"]},
+    {"id": "nasa-rpm-max-rpm", "document": "nasa-wates", "category": "repeated_value", "kind": "exact_equal", "operands": ["rpm", "max_rpm"]},
+    {"id": "nasa-duct-pressure-repeat", "document": "nasa-wates", "category": "repeated_value", "kind": "exact_equal", "operands": ["duct_p_total", "duct_pc"]},
+    {"id": "nasa-upstream-pressure-repeat", "document": "nasa-wates", "category": "repeated_value", "kind": "exact_equal", "operands": ["upstream_p_total", "recalc_p_total"]},
+    {"id": "nasa-upstream-area-repeat", "document": "nasa-wates", "category": "repeated_value", "kind": "exact_equal", "operands": ["upstream_area", "recalc_area"]},
+    {"id": "nasa-upstream-gamma-repeat", "document": "nasa-wates", "category": "repeated_value", "kind": "exact_equal", "operands": ["upstream_gamma", "recalc_gamma"]},
+    {"id": "nasa-stage-temperature-repeat", "document": "nasa-wates", "category": "repeated_value", "kind": "exact_equal", "operands": ["stage_t_total", "stage_t_total_repeat"]},
+    {"id": "nasa-page3-pressure-repeat", "document": "nasa-wates", "category": "repeated_value", "kind": "exact_equal", "operands": ["page3_p_total", "page3_po"]},
+    {"id": "nasa-page4-rpm-repeat", "document": "nasa-wates", "category": "repeated_value", "kind": "exact_equal", "operands": ["page4_rpm", "page4_max_rpm"]},
+    {"id": "nasa-component-weight-sum", "document": "nasa-wates", "category": "table_total", "kind": "exact_sum", "operands": ["case_weight", "included_weight", "total_weight"]}
+  ],
+  "expected": {
+    "documents": 2,
+    "checks": 24,
+    "categories": [
+      "attention_width_conservation",
+      "parameter_symmetry",
+      "repeated_value",
+      "table_total"
+    ],
+    "outcomes": {
+      "agree": 21,
+      "disagree": 2,
+      "tool_refused": 1
+    },
+    "by_category": {
+      "attention_width_conservation": {"agree": 7},
+      "parameter_symmetry": {"agree": 7},
+      "repeated_value": {"disagree": 1, "agree": 7, "tool_refused": 1},
+      "table_total": {"disagree": 1}
+    },
+    "records_sha256": "72ccbc2a9e43b0418b1cb75a4fa172571bed9659ac4b761495774946bbcd251d"
+  }
+}

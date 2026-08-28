@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "grasp-table-3-1",
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "64120ce879cad8162b355f25b37b9bc5022f4054a54fd3133fce5764e0fa721a",
+      "reading_order": [
+        "3.3 File naming convention, program and data flow",
+        "Passing information between different programs is done through files.",
+        "Most programs produce a file that keeps a record of the input data.",
+        "Table 3.1: Table of common extensions.",
+        "Extension",
+        "To perform a calculation a number of programs needs to be run"
+      ],
+      "tables": [
+        {
+          "rows": [
+            ["Extension", "Type of file"],
+            ["c", "List of CSFs."],
+            ["w", "Binary file of radial wave functions."],
+            ["m", "Binary file of expansion or mixing coefficients produced by rmcdhf."],
+            ["sum", "File containing information from an rmcdhf run."],
+            ["cm", "Binary file of mixing coefficients produced by rci."],
+            ["bw", "A .w file after biorthonormal transformation using rbiotransform."],
+            ["csum", "File containing information from an rci run."],
+            ["bm", "A .m file after biorthonormal transformation using rbiotransform."],
+            ["cbm", "A .cm file after biorthonormal transformation using rbiotransform."],
+            ["lsj.lbl", "File containing composition of wave functions in LSJ-coupling."],
+            ["uni.lsj.lbl", "File containing composition of wave functions in LSJ-coupling but arranged to give unique labels of all states."],
+            ["t", "Transition probability data from rmcdhf mixing coefficients."],
+            ["t.lsj", "Transition probability data from rmcdhf mixing coefficients. Labels in in LSJ-coupling."],
+            ["ct", "Transition probability data from rci mixing coefficients."],
+            ["ct.lsj", "Transition probability data from rci mixing coefficients. Labels in in LSJ-coupling."],
+            ["h", "Hyperfine structure data and Landé gJ-factors from rmcdhf mixing coefficients."],
+            ["ch", "Hyperfine structure data and Landé gJ-factors from rci mixing coefficients."],
+            ["hoffd", "Off-diagonal hyperfine structure data from rmcdhf mixing coefficients."],
+            ["choffd", "Off-diagonal hyperfine structure data from rci mixing coefficients."],
+            ["i", "Isotope shift data from rmcdhf mixing coefficients."],
+            ["ci", "Isotope shift data from rci mixing coefficients."],
+            ["log", "Log-file that keeps a record of program input."]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "raster-scientific-figure",
+      "source_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "figures": [
+        {
+          "page": 1,
+          "page_size": [612, 792],
+          "min_page_area_fraction": 0.75,
+          "forbid_unverified_structured_data": true,
+          "required_text": [
+            "Comparison of u-velocity along vertical lines through geometric center and primary vortex center",
+            "PROFILES THROUGH GEOMETRIC CENTER",
+            "PROFILES THROUGH PRIMARY-VORTEX CENTER",
+            "Listed in Table 5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "grasp-equation-4-1",
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "0bab154b639b64a512f4ad15e760f4bb6b5100c5199acdd40070a1cc73c1a38c",
+      "equations": [
+        {
+          "page": 1,
+          "label": "4.1",
+          "latex": "H _ { \\mathrm { T } } = - \\sum _ { i < j } ^ { N } [ \\boldsymbol { \\alpha } _ { i } \\cdot \\boldsymbol { \\alpha } _ { j } \\frac { \\cos ( \\omega _ { i j } r _ { i j } / c ) } { r _ { i j } } + ( \\boldsymbol { \\alpha } _ { i } \\cdot \\boldsymbol { \\nabla } _ { i } ) ( \\boldsymbol { \\alpha } _ { j } \\cdot \\boldsymbol { \\nabla } _ { j } ) \\frac { \\cos ( \\omega _ { i j } r _ { i j } / c ) - 1 } { \\omega _ { i j } ^ { 2 } r _ { i j } / c ^ { 2 } } ]"
+        }
+      ]
+    },
+    {
+      "id": "slater-page-37",
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "input_sha256": "57035b087ebc9854513e23f8c5166a98dc3edb4e84bbca9c2e5fd569337eeec7",
+      "reading_order": [
+        "which it had in the development of the quantum theory",
+        "Let us carry through this case.",
+        "The classical equation of motion is",
+        "We now wish to apply the quantum condition",
+        "FIG. 1-2.",
+        "Such a space, in which momentum is plotted against coordinate"
+      ],
+      "figures": [
+        {
+          "page": 1,
+          "page_size": [410.52, 602.88],
+          "min_page_area_fraction": 0.04,
+          "forbid_unverified_structured_data": true,
+          "required_text": [
+            "Phase space for linear oscillator",
+            "line of constant energy E"
+          ]
+        }
+      ],
+      "equations": [
+        {
+          "page": 1,
+          "label": "1-25",
+          "latex": "m \\frac{d^2 q}{dt^2} = -kq"
+        },
+        {
+          "page": 1,
+          "label": "1-26",
+          "latex": "\\nu = \\frac{1}{2\\pi} \\sqrt{\\frac{k}{m}}"
+        },
+        {
+          "page": 1,
+          "label": "1-27",
+          "latex": "E = \\frac{1}{2}mv^2 + \\frac{1}{2}kq^2 = \\frac{p^2}{2m} + \\frac{1}{2}kq^2"
+        },
+        {
+          "page": 1,
+          "label": "1-28",
+          "latex": "\\frac{p^2}{2mE} + \\frac{kq^2}{2E} = 1"
+        }
+      ]
+    },
+    {
+      "id": "vector-plot",
+      "source_sha256": "44b593a83d61a0ad10b0699aae744b9dc6f04126039e88985dec95db5e49d303",
+      "charts": [
+        {
+          "x_tolerance": 0.05,
+          "y_tolerance": 0.05,
+          "series": [
+            [[0, 0], [1, 1], [2, 4], [3, 9], [4, 16], [5, 25]]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "scatter-plot",
+      "source_sha256": "59d827290f1716d0178103f084ed609899d6f5f4d5c2f6c098a8d618271cf51b",
+      "charts": [
+        {
+          "x_tolerance": 0.05,
+          "y_tolerance": 0.1,
+          "series": [
+            [[0, 0], [1, 0.1], [2, 0.4], [3, 0.9], [4, 1.6], [5, 2.5], [6, 3.6], [7, 4.9], [8, 6.4], [9, 8.1], [10, 10]]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "scatter-two-series",
+      "source_sha256": "081eda2289d17ed17a6c5bfdc75d518418d0ddfb02cf7798e78dce1fa724992d",
+      "charts": [
+        {
+          "x_tolerance": 0.05,
+          "y_tolerance": 0.1,
+          "series": [
+            [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8]],
+            [[0, 8], [1, 7], [2, 6], [3, 5], [4, 4], [5, 3], [6, 2], [7, 1], [8, 0]]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "subplots",
+      "source_sha256": "bbec2471321dac6746ccae94b90ef9e8c9bb2b81556c0eec019a50971aa732cb",
+      "charts": [
+        {
+          "x_tolerance": 0.05,
+          "y_tolerance": 0.5,
+          "series": [
+            [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]],
+            [[0, 100], [1, 90], [2, 80], [3, 70], [4, 60], [5, 50], [6, 40], [7, 30], [8, 20], [9, 10], [10, 0]]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bar-plot",
+      "source_sha256": "239828db40cd7179a70484f3a2d44011ace5fba05689d3ca59e43311d074df91",
+      "charts": [
+        {
+          "x_tolerance": 0.05,
+          "y_tolerance": 0.05,
+          "series": [
+            [[1, 3], [2, 7], [3, 5], [4, 9], [5, 4]]
+          ]
+        }
+      ]
+    }
+  ]
+}

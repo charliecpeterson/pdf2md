@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked controls surrounding natural primary errors in poor-quality NASA dot-matrix engineering output.",
+  "documents": [
+    {
+      "source_sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7",
+      "source": "out/natural-errors-scanned/2cde66d4e1bc0e6d/source.pdf",
+      "version": "v1",
+      "cells": [
+        {"page": 2, "block_id": "#/mineru/2/table/16", "row": 1, "column": 3, "expected": ".75", "label": "NASA PDF page 120; leading-dot length control"},
+        {"page": 2, "block_id": "#/mineru/2/table/16", "row": 4, "column": 1, "expected": ".16", "label": "NASA PDF page 120; leading-dot component-weight control"},
+        {"page": 2, "block_id": "#/mineru/2/table/16", "row": 4, "column": 2, "expected": ".13", "label": "NASA PDF page 120; adjacent leading-dot component-weight control"},
+        {"page": 2, "block_id": "#/mineru/2/table/16", "row": 4, "column": 3, "expected": ".28", "label": "NASA PDF page 120; leading-dot total-weight control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 2, "column": 3, "expected": "739.8", "label": "NASA PDF page 120; dot-matrix temperature control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 3, "column": 3, "expected": "3.6", "label": "NASA PDF page 120; short decimal control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 6, "column": 0, "expected": ".430", "label": "NASA PDF page 120; leading-dot station-number control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 6, "column": 1, "expected": "562", "label": "NASA PDF page 120; integer velocity control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 6, "column": 3, "expected": "6268", "label": "NASA PDF page 120; four-digit pressure control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 6, "column": 4, "expected": "5523", "label": "NASA PDF page 120; adjacent four-digit pressure control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 6, "column": 5, "expected": ".110", "label": "NASA PDF page 120; leading-dot area control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 6, "column": 6, "expected": "1.395", "label": "NASA PDF page 120; fixed-precision ratio control"},
+        {"page": 2, "block_id": "#/mineru/2/table/21", "row": 1, "column": 0, "expected": "1135.4", "label": "NASA PDF page 120; clear LTIPMAX value that disambiguates its later damaged repeat"},
+        {"page": 2, "block_id": "#/mineru/2/table/21", "row": 1, "column": 1, "expected": "12001", "label": "NASA PDF page 120; five-digit stress control"},
+        {"page": 2, "block_id": "#/mineru/2/table/21", "row": 1, "column": 4, "expected": "1.20", "label": "NASA PDF page 120; trailing-zero ratio control"},
+        {"page": 2, "block_id": "#/mineru/2/table/23", "row": 1, "column": 1, "expected": "1.0", "label": "NASA PDF page 120; decimal stage-count control"},
+        {"page": 2, "block_id": "#/mineru/2/table/23", "row": 1, "column": 2, "expected": "7.47", "label": "NASA PDF page 120; diameter control"},
+        {"page": 2, "block_id": "#/mineru/2/table/23", "row": 1, "column": 3, "expected": "950.7", "label": "NASA PDF page 120; tip-speed control"},
+        {"page": 2, "block_id": "#/mineru/2/table/23", "row": 1, "column": 4, "expected": "34841", "label": "NASA PDF page 120; five-digit RPM control"},
+        {"page": 2, "block_id": "#/mineru/2/table/27", "row": 6, "column": 1, "expected": "196.10", "label": "NASA PDF page 120; fixed-precision control adjacent to a zero-to-C error"}
+      ]
+    }
+  ]
+}

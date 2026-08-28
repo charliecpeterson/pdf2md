@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "purpose": "Rendering-instability prediction on 14 natural primary errors plus the frozen 56-cell clean-control frame.",
+  "artifacts": {
+    "manifest": {
+      "path": "out/reviews/rendering-stability-natural-errors-v1/manifest.json",
+      "sha256": "b4d4d80c91900090d6b25b1891957d71ae2db835375bf176e9d9ff55579b985c"
+    },
+    "inputs": {
+      "path": "out/reviews/rendering-stability-natural-errors-v1/inputs.json",
+      "sha256": "836c43d637a1be17bb56f31a2710b29a5c22bb6ab1df2ab81df910b589127906"
+    },
+    "run": {
+      "path": "out/reviews/rendering-stability-natural-errors-v1/run.json",
+      "sha256": "651ba6d89bd0831cd172b49a6d6e38e00e7d93ec5239bd2ad034a671edee3b61"
+    },
+    "clean_control_report": {
+      "path": "out/reviews/rendering-stability-v1/report.json",
+      "sha256": "9791ad6407cea7670dacc8568106ca32afb1eab8da995adaccfe6df2bf3efcfd"
+    },
+    "natural_crops": {
+      "path": "out/reviews/non-fischer-third-reader-v1/crops.json",
+      "sha256": "fee5bac7fc796c168b768422de2cb5def28e8097ff4c94777de2ecc376b57842"
+    },
+    "source_boxes": {
+      "path": "tests/non_fischer_natural_error_source_boxes.json",
+      "sha256": "add9b4394badd8497cf9696b3d7b5d0cced482e07e515a65bf3f6386759a1e8d"
+    },
+    "labels": {
+      "path": "tests/non_fischer_natural_error_labels.json",
+      "sha256": "b7fe4015ba6e6b97fb23ac621099940e93170b3c7e8d4d0bb05f82f3c0b0ddcb"
+    },
+    "numeric_confidence": {
+      "path": "out/reviews/numeric-confidence-v1/report.json",
+      "sha256": "4170cea038737cba82b3ec28e997a0b9c2b06e58322dd3aaab2b76466bd58404"
+    },
+    "reader_runner": {
+      "path": "scripts/run_paddle_line_reader.py",
+      "sha256": "999d0d9e485a96f806e5d7cac85af9d4c84bd8f4c06b5d118e9cfd09ae239be6"
+    },
+    "stability_evaluator": {
+      "path": "scripts/eval_rendering_stability.py",
+      "sha256": "a5d3bfcb26ddf6062d8af629ea5c71a8a7274a1f16534f84082ca0fb0d752b5d"
+    },
+    "semantic_scorer": {
+      "path": "scripts/eval_heldout_data_reader.py",
+      "sha256": "67b90e56f1234fd7ccfcd43d4fe54ba60fb12b561112d69324c03313b0645ea5"
+    }
+  },
+  "expected": {
+    "natural_manifest_sha256": "b4d4d80c91900090d6b25b1891957d71ae2db835375bf176e9d9ff55579b985c",
+    "natural_run_sha256": "651ba6d89bd0831cd172b49a6d6e38e00e7d93ec5239bd2ad034a671edee3b61",
+    "clean_control_report_sha256": "9791ad6407cea7670dacc8568106ca32afb1eab8da995adaccfe6df2bf3efcfd",
+    "reader": {
+      "model_name": "PP-OCRv6_medium_rec",
+      "model_sha256": "00a024b1a2165b852c2b9dab611e0a68fd23f9a28c441c600a04f078a106b5b2",
+      "device": "gpu:0",
+      "paddleocr_version": "3.7.0",
+      "paddlex_version": "3.7.2",
+      "paddlepaddle_gpu_version": "3.2.1+fc"
+    },
+    "natural_cells": 14,
+    "variants": 24,
+    "natural_variant_results_sha256": "0a9285affdef39049ee09339f98a7a6d95c5fcb861a0dbfb67ff5a9f9a996d42",
+    "natural_instability_prediction": {
+      "baseline_variant": "dpi300-grayscale-original-padded",
+      "instability_uses_baseline": false,
+      "unstable_cells": 13,
+      "unstable_baseline_adverse": 11,
+      "stable_cells": 1,
+      "stable_baseline_adverse": 1,
+      "baseline_adverse_sensitivity": 0.91666667,
+      "baseline_adverse_specificity": 0.0,
+      "baseline_adverse_positive_predictive_value": 0.84615385,
+      "baseline_adverse_negative_predictive_value": 0.0,
+      "unstable_primary_errors": 12,
+      "stable_primary_errors": 1,
+      "primary_error_prediction_available": true
+    },
+    "combined_instability_prediction": {
+      "cells": 70,
+      "natural_primary_errors": 14,
+      "clean_primary_controls": 56,
+      "unstable_cells": 28,
+      "stable_cells": 42,
+      "unstable_primary_errors": 13,
+      "stable_primary_errors": 1,
+      "unstable_clean_primary": 15,
+      "stable_clean_primary": 41,
+      "primary_error_sensitivity": 0.92857143,
+      "primary_error_specificity": 0.73214286,
+      "primary_error_positive_predictive_value": 0.46428571,
+      "primary_error_negative_predictive_value": 0.97619048,
+      "by_natural_error_document": {
+        "nasa-wates-page-120": {"errors": 5, "unstable_errors": 5},
+        "ornl-mastersjob-pages-54-57": {"errors": 8, "unstable_errors": 7},
+        "slater-atomic-structure-vol1": {"errors": 1, "unstable_errors": 1}
+      }
+    }
+  }
+}

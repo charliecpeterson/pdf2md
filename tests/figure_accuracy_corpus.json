@@ -1,0 +1,383 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "attention",
+      "publisher": "arXiv",
+      "source": {
+        "path": "1706.03762v7.pdf",
+        "sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+      },
+      "conversion": {
+        "provenance_path": "out/qa-current/bdfaa68d8984f0dc/v1/provenance.json",
+        "provenance_sha256": "6b7318363527a0fdb383daaa8cdb7db4bd64c5e86c381c77544cd70f619ec950"
+      },
+      "furniture_ids": [],
+      "fragment_groups": [
+        {
+          "logical_figure": "Figure 2",
+          "subsumed_ids": ["#/pictures/1"]
+        }
+      ],
+      "scientific_figures": [
+        {
+          "block_id": "#/pictures/0",
+          "caption_prefix": "Figure 1:",
+          "bbox": [195.40087890625, 719.1854400634766, 416.57781982421875, 398.1727294921875]
+        },
+        {
+          "block_id": "#/pictures/2",
+          "caption_prefix": "Figure 2:",
+          "bbox": [147.783, 721.2881698608398, 467.1417541503906, 553.8800964355469]
+        },
+        {
+          "block_id": "#/pictures/3",
+          "caption_prefix": "Figure 3:",
+          "bbox": [118.7168197631836, 693.2145080566406, 503.2491760253906, 490.0791015625]
+        },
+        {
+          "block_id": "#/pictures/4",
+          "caption_prefix": "Figure 4:",
+          "bbox": [121.04426574707031, 621.1326904296875, 501.9765319824219, 186.84747314453125]
+        },
+        {
+          "block_id": "#/pictures/5",
+          "caption_prefix": "Figure 5:",
+          "bbox": [120.37586212158203, 607.4120483398438, 498.2363586425781, 202.776611328125]
+        }
+      ]
+    },
+    {
+      "id": "dolg-publisher-export",
+      "publisher": "AIP Publishing",
+      "source": {
+        "path": "dolg-ecp.pdf",
+        "sha256": "24f433c4edfb3f419016b2a90b4aecd989394925685ade3fe3efa66c3665011a"
+      },
+      "conversion": {
+        "provenance_path": "out/natural-errors/24f433c4edfb3f41/v1/provenance.json",
+        "provenance_sha256": "a54ffa2b0c05c5371d7fd3e24bf182444e755c3c2d24a742c45a70cb78a5eefc"
+      },
+      "furniture_ids": [
+        "#/pictures/0",
+        "#/pictures/1",
+        "#/pictures/2",
+        "#/pictures/3",
+        "#/pictures/4"
+      ],
+      "fragment_groups": [],
+      "scientific_figures": [
+        {
+          "block_id": "#/pictures/5",
+          "caption_prefix": "FIG. 1.",
+          "bbox": [50.62474822998047, 744.0721664428711, 296.28802490234375, 395.9496154785156]
+        },
+        {
+          "block_id": "#/pictures/6",
+          "caption_prefix": "FIG. 2.",
+          "bbox": [52.048255920410156, 743.8130493164062, 294.76312255859375, 560.3356475830078]
+        }
+      ]
+    },
+    {
+      "id": "orbitals-author-layout",
+      "publisher": "arXiv",
+      "source": {
+        "path": "2207.10841v3.pdf",
+        "sha256": "416d651377c4cce7ec6c91680afba2764f1d4e549525bc657d147faf6c5e0ef0"
+      },
+      "conversion": {
+        "provenance_path": "out/qa-current/416d651377c4cce7/v1/provenance.json",
+        "provenance_sha256": "01709b7217778ca34fc66600be7162392fc419b2613b7863c81b34560e69ddb9"
+      },
+      "furniture_ids": [],
+      "furniture_exclusions": [
+        {"page": 14, "label": "page number 14", "bbox": [300, 70, 325, 45]},
+        {"page": 17, "label": "page number 17", "bbox": [300, 70, 325, 45]},
+        {"page": 19, "label": "page number 19", "bbox": [300, 70, 325, 45]}
+      ],
+      "fragment_groups": [],
+      "scientific_figures": [
+        {
+          "block_id": "#/pictures/0",
+          "caption_prefix": "Figure 1:",
+          "bbox": [78.90667724609375, 704.1909103393555, 552.270263671875, 200.79876708984375],
+          "features": ["dense_multipanel", "cross_column_caption", "inset_plot", "panel_titles"]
+        },
+        {
+          "block_id": "#/pictures/1",
+          "caption_prefix": "Figure 2:",
+          "bbox": [147.94400024414062, 692.6404724121094, 438.9843444824219, 191.57342529296875],
+          "features": ["multipanel", "cross_column_caption", "panel_titles"]
+        },
+        {
+          "block_id": "#/pictures/2",
+          "caption_prefix": "Figure 3:",
+          "bbox": [130.7073516845703, 419.9402160644531, 500.2928161621094, 162.14337158203125],
+          "features": ["multipanel", "cross_column_caption", "panel_titles"]
+        },
+        {
+          "block_id": "#/pictures/3",
+          "bbox": [105.66666666666667, 712.8760528564453, 550.6661987304688, 476.64410400390625],
+          "features": ["graphical_abstract", "mixed_text_equation_figure"]
+        }
+      ]
+    },
+    {
+      "id": "fischer-academic-press-plots",
+      "publisher": "Academic Press",
+      "source": {
+        "path": "1-s2.0-S0092640X72800081-main.pdf",
+        "sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47"
+      },
+      "conversion": {
+        "provenance_path": "out/0685e8d85e2237d8/v6/provenance.json",
+        "provenance_sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea"
+      },
+      "furniture_ids": [],
+      "furniture_exclusions": [
+        {"page": 88, "label": "running author header", "bbox": [210, 786, 405, 752]},
+        {"page": 88, "label": "printed page number 388", "bbox": [285, 84, 330, 45]},
+        {"page": 89, "label": "running article header", "bbox": [180, 786, 430, 762]},
+        {"page": 89, "label": "printed page number 389", "bbox": [285, 84, 330, 45]}
+      ],
+      "fragment_groups": [],
+      "scientific_figures": [
+        {"block_id": "#/mineru/88/figure/295", "bbox": [111.0, 748.0, 496.0, 86.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/89/figure/296", "bbox": [105.0, 757.0, 500.0, 86.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/90/figure/297", "bbox": [109.0, 756.0, 501.0, 86.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/91/figure/298", "bbox": [108.0, 748.0, 496.0, 86.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/92/figure/299", "bbox": [109.0, 758.0, 504.0, 87.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/93/figure/300", "bbox": [113.0, 756.0, 499.0, 85.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/94/figure/301", "bbox": [109.0, 748.0, 499.0, 87.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/95/figure/302", "bbox": [109.0, 756.0, 495.0, 86.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/96/figure/303", "bbox": [109.0, 757.0, 499.0, 87.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/97/figure/304", "bbox": [104.0, 756.0, 500.0, 84.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/98/figure/305", "bbox": [109.0, 758.0, 496.0, 87.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]},
+        {"block_id": "#/mineru/99/figure/306", "bbox": [113.0, 748.0, 496.0, 86.0], "features": ["dense_multipanel", "inset_plot", "panel_titles", "scanned_figure"]}
+      ]
+    },
+    {
+      "id": "nasa-wates-scan",
+      "publisher": "NASA",
+      "source": {
+        "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/source.pdf",
+        "sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7"
+      },
+      "conversion": {
+        "provenance_path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/provenance.json",
+        "provenance_sha256": "ac435041ec9dd8abe19c29c15d181307000966e4c06d9014b8dac117cf3c57df"
+      },
+      "furniture_ids": [],
+      "furniture_exclusions": [
+        {"page": 4, "label": "printed page number 119", "bbox": [470, 85, 535, 40]},
+        {"page": 5, "label": "printed page number 120", "bbox": [70, 85, 135, 40]}
+      ],
+      "fragment_groups": [
+        {
+          "logical_figure": "Figure 28 continuation, page 116",
+          "subsumed_ids": [
+            "#/mineru/1/figure/2", "#/mineru/1/figure/3", "#/mineru/1/figure/4",
+            "#/mineru/1/figure/5", "#/mineru/1/figure/7", "#/mineru/1/figure/8",
+            "#/mineru/1/figure/9", "#/mineru/1/figure/10", "#/mineru/1/figure/11",
+            "#/mineru/1/figure/12", "#/mineru/1/figure/13", "#/mineru/1/figure/14"
+          ]
+        },
+        {
+          "logical_figure": "Figure 28 continuation, page 118",
+          "subsumed_ids": [
+            "#/mineru/3/figure/31", "#/mineru/3/figure/32", "#/mineru/3/figure/33",
+            "#/mineru/3/figure/34", "#/mineru/3/figure/35", "#/mineru/3/figure/36",
+            "#/mineru/3/figure/37"
+          ]
+        }
+      ],
+      "scientific_figures": [
+        {
+          "block_id": "#/mineru/1/figure/15",
+          "caption_prefix": "Figure 28.",
+          "bbox": [84.0, 693.0, 541.0, 87.0],
+          "features": ["continued_figure", "cross_column_caption", "low_quality_scan", "scanned_figure"]
+        },
+        {
+          "block_id": "#/mineru/3/figure/38",
+          "caption_prefix": "Figure 28.",
+          "bbox": [89.0, 707.0, 512.0, 113.0],
+          "features": ["continued_figure", "cross_column_caption", "low_quality_scan", "scanned_figure"]
+        },
+        {
+          "block_id": "#/mineru/4/figure/39",
+          "caption_prefix": "Figure 28.",
+          "bbox": [74.0, 738.0, 525.0, 142.0],
+          "features": ["cross_column_caption", "low_quality_scan", "scanned_figure"]
+        },
+        {
+          "block_id": "#/mineru/5/figure/42",
+          "caption_prefix": "Figure 28.",
+          "bbox": [99.0, 703.0, 545.0, 106.0],
+          "features": ["cross_column_caption", "low_quality_scan", "scanned_figure"]
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "summary": {
+      "documents": 5,
+      "publisher_families": 4,
+      "publishers": ["AIP Publishing", "Academic Press", "NASA", "arXiv"],
+      "labelled_scientific_figures": 27,
+      "documents_with_complete_dispositions": 5,
+      "scientific_figures_retained": 27,
+      "exact_content_bboxes": 27,
+      "labelled_caption_associations": 14,
+      "correct_caption_associations": 14,
+      "feature_coverage": {
+        "continued_figure": 2,
+        "cross_column_caption": 7,
+        "dense_multipanel": 13,
+        "graphical_abstract": 1,
+        "inset_plot": 13,
+        "low_quality_scan": 4,
+        "mixed_text_equation_figure": 1,
+        "multipanel": 2,
+        "panel_titles": 15,
+        "scanned_figure": 16
+      },
+      "journal_furniture_labelled": 5,
+      "journal_furniture_removed": 5,
+      "labelled_furniture_exclusions": 9,
+      "furniture_regions_excluded": 9,
+      "fragmented_figures_before": 3,
+      "fragmented_figures_after": 0
+    },
+    "documents": [
+      {
+        "id": "attention",
+        "publisher": "arXiv",
+        "unlabelled_initial_ids": [],
+        "labelled_dispositions_complete": true,
+        "furniture_removed": 0,
+        "panels_merged": 1,
+        "fragments_merged": 0,
+        "graphic_components_included": 0,
+        "panel_headings_absorbed": 1,
+        "retained_ids": [
+          "#/pictures/0",
+          "#/pictures/2",
+          "#/pictures/3",
+          "#/pictures/4",
+          "#/pictures/5"
+        ],
+        "removed_ids": ["#/pictures/1"],
+        "removals_exact": true,
+        "fragments": [
+          {"logical_figure": "Figure 2", "remaining_ids": [], "resolved": true}
+        ],
+        "furniture_exclusions": []
+      },
+      {
+        "id": "dolg-publisher-export",
+        "publisher": "AIP Publishing",
+        "unlabelled_initial_ids": [],
+        "labelled_dispositions_complete": true,
+        "furniture_removed": 5,
+        "panels_merged": 0,
+        "fragments_merged": 0,
+        "graphic_components_included": 0,
+        "panel_headings_absorbed": 0,
+        "retained_ids": ["#/pictures/5", "#/pictures/6"],
+        "removed_ids": [
+          "#/pictures/0",
+          "#/pictures/1",
+          "#/pictures/2",
+          "#/pictures/3",
+          "#/pictures/4"
+        ],
+        "removals_exact": true,
+        "fragments": [],
+        "furniture_exclusions": []
+      },
+      {
+        "id": "orbitals-author-layout",
+        "publisher": "arXiv",
+        "unlabelled_initial_ids": [],
+        "labelled_dispositions_complete": true,
+        "furniture_removed": 0,
+        "panels_merged": 0,
+        "fragments_merged": 0,
+        "graphic_components_included": 3,
+        "panel_headings_absorbed": 0,
+        "retained_ids": ["#/pictures/0", "#/pictures/1", "#/pictures/2", "#/pictures/3"],
+        "removed_ids": [],
+        "removals_exact": true,
+        "fragments": [],
+        "furniture_exclusions": [
+          {"label": "page number 14", "page": 14, "overlapping_figure_ids": [], "excluded": true},
+          {"label": "page number 17", "page": 17, "overlapping_figure_ids": [], "excluded": true},
+          {"label": "page number 19", "page": 19, "overlapping_figure_ids": [], "excluded": true}
+        ]
+      },
+      {
+        "id": "fischer-academic-press-plots",
+        "publisher": "Academic Press",
+        "unlabelled_initial_ids": [],
+        "labelled_dispositions_complete": true,
+        "furniture_removed": 0,
+        "panels_merged": 0,
+        "fragments_merged": 0,
+        "graphic_components_included": 0,
+        "panel_headings_absorbed": 0,
+        "retained_ids": [
+          "#/mineru/88/figure/295", "#/mineru/89/figure/296",
+          "#/mineru/90/figure/297", "#/mineru/91/figure/298",
+          "#/mineru/92/figure/299", "#/mineru/93/figure/300",
+          "#/mineru/94/figure/301", "#/mineru/95/figure/302",
+          "#/mineru/96/figure/303", "#/mineru/97/figure/304",
+          "#/mineru/98/figure/305", "#/mineru/99/figure/306"
+        ],
+        "removed_ids": [],
+        "removals_exact": true,
+        "fragments": [],
+        "furniture_exclusions": [
+          {"label": "running author header", "page": 88, "overlapping_figure_ids": [], "excluded": true},
+          {"label": "printed page number 388", "page": 88, "overlapping_figure_ids": [], "excluded": true},
+          {"label": "running article header", "page": 89, "overlapping_figure_ids": [], "excluded": true},
+          {"label": "printed page number 389", "page": 89, "overlapping_figure_ids": [], "excluded": true}
+        ]
+      },
+      {
+        "id": "nasa-wates-scan",
+        "publisher": "NASA",
+        "unlabelled_initial_ids": [],
+        "labelled_dispositions_complete": true,
+        "furniture_removed": 0,
+        "panels_merged": 0,
+        "fragments_merged": 19,
+        "graphic_components_included": 0,
+        "panel_headings_absorbed": 0,
+        "retained_ids": [
+          "#/mineru/1/figure/15", "#/mineru/3/figure/38",
+          "#/mineru/4/figure/39", "#/mineru/5/figure/42"
+        ],
+        "removed_ids": [
+          "#/mineru/1/figure/10", "#/mineru/1/figure/11", "#/mineru/1/figure/12",
+          "#/mineru/1/figure/13", "#/mineru/1/figure/14", "#/mineru/1/figure/2",
+          "#/mineru/1/figure/3", "#/mineru/1/figure/4", "#/mineru/1/figure/5",
+          "#/mineru/1/figure/7", "#/mineru/1/figure/8", "#/mineru/1/figure/9",
+          "#/mineru/3/figure/31", "#/mineru/3/figure/32", "#/mineru/3/figure/33",
+          "#/mineru/3/figure/34", "#/mineru/3/figure/35", "#/mineru/3/figure/36",
+          "#/mineru/3/figure/37"
+        ],
+        "removals_exact": true,
+        "fragments": [
+          {"logical_figure": "Figure 28 continuation, page 116", "remaining_ids": [], "resolved": true},
+          {"logical_figure": "Figure 28 continuation, page 118", "remaining_ids": [], "resolved": true}
+        ],
+        "furniture_exclusions": [
+          {"label": "printed page number 119", "page": 4, "overlapping_figure_ids": [], "excluded": true},
+          {"label": "printed page number 120", "page": 5, "overlapping_figure_ids": [], "excluded": true}
+        ]
+      }
+    ]
+  }
+}

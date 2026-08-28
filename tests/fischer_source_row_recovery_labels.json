@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+  "selection": "24 lowest-score v1 candidates plus all 17 newly accepted page-28 panel-1 recovery values, source-crop reviewed after the frozen 0.99 gate",
+  "records": [
+    {
+      "id": "mineru_28_table_115:p0:r60:c1",
+      "expected": "0.0002",
+      "crop_sha256": "dffcd5883b018ad2d81060134e65c5114fc4b4efdb8c19899e47732bbc6e1647"
+    },
+    {
+      "id": "mineru_26_table_110:p1:r60:c15",
+      "expected": "0.6532",
+      "crop_sha256": "aeebb4c85491ad704d16fe1b8807cf653255ebf6f03d5e240f24e548ab825e0a"
+    },
+    {
+      "id": "mineru_28_table_115:p0:r61:c7",
+      "expected": "0.8876",
+      "crop_sha256": "cb6ef9bbaee2f815b0e75c3d0c4a46653a232d25b1c88f1faf1cd992ce041d06"
+    },
+    {
+      "id": "mineru_28_table_115:p0:r53:c5",
+      "expected": "0.1719",
+      "crop_sha256": "6cc001df815e546644de5dde39289016ee569251c0d4510443713e2ea645482d"
+    },
+    {
+      "id": "mineru_26_table_110:p1:r64:c13",
+      "expected": "-1.0325",
+      "crop_sha256": "419cc6700a78dd54d10fa4001a7167bc69233ab095e3f161acf27d1a75183c67"
+    },
+    {
+      "id": "mineru_26_table_110:p0:r58:c7",
+      "expected": "0.4660",
+      "crop_sha256": "109254a04e6b588a5e9dd2c45dbf241d0d6a4dcc2d8480f8450721edd056fc0d"
+    },
+    {
+      "id": "mineru_26_table_110:p1:r85:c15",
+      "expected": "0.0140",
+      "crop_sha256": "ae55afb41873f32b27c674c03d6942434615a37b59cad2ed89d7dde0cd0f89f3"
+    },
+    {
+      "id": "mineru_26_table_110:p0:r70:c7",
+      "expected": "0.6766",
+      "crop_sha256": "4cd866a6dde1b4dd9aa84990d84d6a992f60de6adabb3ca98eb6cb1d8ea5e2b0"
+    },
+    {
+      "id": "mineru_26_table_110:p0:r76:c5",
+      "expected": "-0.1324",
+      "crop_sha256": "914a86cf9f380fca0a40688d61f563b2d10761bb68b0eb345d9112a034c94c96"
+    },
+    {
+      "id": "mineru_26_table_110:p0:r84:c7",
+      "expected": "0.0331",
+      "crop_sha256": "d288df05f0908a0d4f495cfcb5a115ae0403603d182dc2270e850310e873a9aa"
+    },
+    {
+      "id": "mineru_28_table_115:p0:r63:c6",
+      "expected": "0.1873",
+      "crop_sha256": "9fc794a0d603cff6b64e07c583b4f538c8d1abc54060a281965136466e96f6f0"
+    },
+    {
+      "id": "mineru_26_table_110:p0:r68:c4",
+      "expected": "0.8486",
+      "crop_sha256": "92935d8b2e5a46ddf52837a508e89625d0d851339cde0427931a9db4d3d9dc4f"
+    },
+    {
+      "id": "mineru_28_table_115:p0:r52:c5",
+      "expected": "0.2666",
+      "crop_sha256": "bfd93f4782a69141350367f338aa2a22135dab46371370ab76482c8a7fc341f3"
+    },
+    {
+      "id": "mineru_26_table_110:p0:r76:c2",
+      "expected": "-0.0001",
+      "crop_sha256": "469e2c1a86bdfb362abc75a1c9d077824a0f193be0730248447d15a562448c4d"
+    },
+    {
+      "id": "mineru_28_table_115:p0:r59:c7",
+      "expected": "0.8279",
+      "crop_sha256": "fba731aaf9893d1a97142777b9307e5c21ae9fac1c9ab136ea7e656e42936011"
+    },
+    {
+      "id": "mineru_28_table_115:p0:r52:c1",
+      "expected": "0.1223",
+      "crop_sha256": "e42d7e73b81d1cea55847dc579e18ff8d53e753cfba1ed67901b7acd44622a9a"
+    },
+    {
+      "id": "mineru_28_table_115:p0:r85:c5",
+      "expected": "-0.0001",
+      "crop_sha256": "9f2ebc01f39ff6de37e72d1ac0900d130607c820176eea4443c829d816d5c7dc"
+    },
+    {
+      "id": "mineru_28_table_115:p0:r96:c6",
+      "expected": "-0.0002",
+      "crop_sha256": "b14161260659b4ab41e55af18af232fb63e84c38432e5fe5694b486144d8aff1"
+    },
+    {
+      "id": "mineru_26_table_110:p1:r65:c12",
+      "expected": "1.0684",
+      "crop_sha256": "f7bd35d004af24da3f463fb7f471799ea5fe7fb540808d49c130c8036b138884"
+    },
+    {
+      "id": "mineru_28_table_115:p0:r55:c4",
+      "expected": "0.0240",
+      "crop_sha256": "cd1aa96abf122cd803344a503006a5f999eda6d495a7417f5df9372bd788542b"
+    },
+    {
+      "id": "mineru_19_table_92:p2:r74:c11",
+      "expected": "0.4103",
+      "crop_sha256": "5bfc56b40b6b128d4e0e3361655fa53611aef5b605230e1ce2ded0994d28f3d9"
+    },
+    {
+      "id": "mineru_26_table_110:p0:r58:c2",
+      "expected": "-1.0774",
+      "crop_sha256": "480067f3bc6fb3910b7923101ad0aa01fcf4fd644e22ab9e140c683233908b62"
+    },
+    {
+      "id": "mineru_26_table_110:p0:r76:c7",
+      "expected": "0.3710",
+      "crop_sha256": "e7bf022e2b01afa9254272fc7ce59037976a45b7141c105a797eabeedfbecf4e"
+    },
+    {
+      "id": "mineru_26_table_110:p0:r88:c7",
+      "expected": "0.0028",
+      "crop_sha256": "91b5ac52296931db751c4fd137063a32c939261f117e8dd7ec531656e34cea4b"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r70:c13",
+      "expected": "-0.3745",
+      "crop_sha256": "1ddcd5c751df7252f7375d46066dfd0d0774c488913a5990eac887c66378ab0b"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r70:c14",
+      "expected": "-0.3962",
+      "crop_sha256": "b7a6dab658ac7c66c25884126669732ccb164ac3745a30976a1b78e0519a1dad"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r72:c13",
+      "expected": "-0.1762",
+      "crop_sha256": "185817d5fd9e10fcc49dd0ba11b165e589311950578c3f11fce8e5aad574093f"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r72:c14",
+      "expected": "-0.5382",
+      "crop_sha256": "a772ad7e303626a4b2b71e1c64ae19f0cc4febd28c04e234b24f5982aca12988"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r72:c15",
+      "expected": "0.3829",
+      "crop_sha256": "50c6d22b065cc71a8baef380038df7883938c92a3c2b9765e54b33b1cb597be9"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r77:c12",
+      "expected": "0.0094",
+      "crop_sha256": "193166aa4cd2d7e001da5b910f48800134da6dcc5d88df987966c2a1dd3ebc7d"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r77:c13",
+      "expected": "-0.0246",
+      "crop_sha256": "60fe748b5a54b28ee659120dc3afc7a79db53ea1a1b94fd36c782efa00ea85dd"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r78:c12",
+      "expected": "0.0019",
+      "crop_sha256": "77465fa5b2f592ea26a345bbbcfc2256b2fd767860c9653da4f33f7f895a5460"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r78:c13",
+      "expected": "-0.0087",
+      "crop_sha256": "16328d7d8141c7428fda049e4037ae7ed484dd19068f34d08ea4c466603ea903"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r78:c15",
+      "expected": "0.0917",
+      "crop_sha256": "e33e9897947739d80b6cfb2cab623720440379f4d3d476f86cf7ca25aa307905"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r82:c15",
+      "expected": "0.0132",
+      "crop_sha256": "b85e91e58a2ffd9b5ebbcdbd116356d60bbe46ede466c441b4532c314788f77e"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r84:c15",
+      "expected": "0.0050",
+      "crop_sha256": "00ab37e30d85307b47eb776c87c50f3985e3c25ecac3d9786f2eafc687796c77"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r85:c15",
+      "expected": "0.0031",
+      "crop_sha256": "3727c759ea527fabd65283d4f6a8b06535235b3ae38295de09304cde15e788de"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r87:c15",
+      "expected": "0.0004",
+      "crop_sha256": "db96fafc4b1beb01f72554a29fca4e2c5e6f2b8af3760060c865a3c18d93455c"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r88:c15",
+      "expected": "0.0002",
+      "crop_sha256": "ebb80a5845ad9f75e83daddfb56040b5cc47699c98709b6e8bc9d6853a26e3c2"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r91:c14",
+      "expected": "-0.0038",
+      "crop_sha256": "9474d3fb297c3eda6819e5da2963170cef5d5b5310230b29701507302475924b"
+    },
+    {
+      "id": "mineru_28_table_115:p1:r94:c14",
+      "expected": "-0.0006",
+      "crop_sha256": "72b8af2acc2ae0f4e285e4ba2c432f275f89b713e4a1ebbe67f7b0922de7ab65"
+    }
+  ]
+}

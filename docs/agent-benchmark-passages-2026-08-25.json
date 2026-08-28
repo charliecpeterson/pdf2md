@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "date": "2026-08-25",
+  "purpose": "I2 chunk-to-passage retrieval and citation regression gate",
+  "environment": {
+    "machine": "Apple M2 Ultra",
+    "architecture": "arm64",
+    "ollama_client": "0.32.15",
+    "model": "qwen3.6:35b-mlx"
+  },
+  "settings": {
+    "temperature": 0,
+    "reasoning_effort": "none",
+    "seed": 0,
+    "max_records": 1,
+    "max_assets": 1,
+    "max_output_tokens": 1024
+  },
+  "deterministic_retrieval": {
+    "chunks": {
+      "questions": 11,
+      "labelled_page_hits": 11,
+      "mean_page_precision": 1.0
+    },
+    "passages": {
+      "questions": 11,
+      "labelled_page_hits": 11,
+      "mean_page_precision": 1.0
+    },
+    "passed": true,
+    "raw_sha256": "cfd1199af71f20fd9b8dc86b1343e62527cdf209284886f77e438a1835716aa5"
+  },
+  "model_comparison": {
+    "chunks": {
+      "correct": 11,
+      "valid_page_citations": 11,
+      "release_blockers": 0,
+      "errors": 0,
+      "assets_opened": 3,
+      "input_tokens": 8105,
+      "output_tokens": 531,
+      "raw_sha256": "024aa8e88d025041c630db64850bb39ed20cf20d65ac356fb3c2de12267d683f"
+    },
+    "passages": {
+      "correct": 11,
+      "valid_page_citations": 11,
+      "release_blockers": 0,
+      "errors": 0,
+      "assets_opened": 1,
+      "input_tokens": 4720,
+      "output_tokens": 508,
+      "raw_sha256": "c55077f68c42718f8a1a712d38b5ba515ce9702311593cec21cd2b17fb5df827"
+    },
+    "passage_input_token_reduction": 0.4176,
+    "accuracy_delta": 0.0,
+    "citation_validity_delta": 0.0,
+    "passed": true
+  },
+  "question_ids": [
+    "grasp2018-radial-wave-extension",
+    "grasp-table-radial-wave-extension",
+    "grasp-equation-number",
+    "slater-volume-phase-space-shape",
+    "slater-page-phase-space-shape",
+    "raster-figure-data-table",
+    "vector-line-value",
+    "scatter-value",
+    "scatter-intersection",
+    "subplots-values",
+    "bar-maximum"
+  ]
+}

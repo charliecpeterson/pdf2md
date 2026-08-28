@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "purpose": "Term-specific numerical Hartree-Fock cross-checks for unambiguous first-row configurations in Fischer's 1972 tables.",
+  "source_document_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+  "cases": [
+    {
+      "id": "he-1s2-1s",
+      "atomic_number": 2,
+      "symbol": "He",
+      "term": "1S",
+      "closed_shells": [],
+      "open_configuration": "1s(2)"
+    },
+    {
+      "id": "li-1s2-2s1-2s",
+      "atomic_number": 3,
+      "symbol": "Li",
+      "term": "2S",
+      "closed_shells": ["1s"],
+      "open_configuration": "2s(1)"
+    },
+    {
+      "id": "be-1s2-2s2-1s",
+      "atomic_number": 4,
+      "symbol": "Be",
+      "term": "1S",
+      "closed_shells": ["1s"],
+      "open_configuration": "2s(2)"
+    },
+    {
+      "id": "b-1s2-2s2-2p1-2p",
+      "atomic_number": 5,
+      "symbol": "B",
+      "term": "2P",
+      "closed_shells": ["1s", "2s"],
+      "open_configuration": "2p(1)"
+    },
+    {
+      "id": "c-1s2-2s2-2p2-3p",
+      "atomic_number": 6,
+      "symbol": "C",
+      "term": "3P",
+      "closed_shells": ["1s", "2s"],
+      "open_configuration": "2p(2)"
+    },
+    {
+      "id": "n-1s2-2s2-2p3-4s",
+      "atomic_number": 7,
+      "symbol": "N",
+      "term": "4S",
+      "closed_shells": ["1s", "2s"],
+      "open_configuration": "2p(3)"
+    },
+    {
+      "id": "o-1s2-2s2-2p4-3p",
+      "atomic_number": 8,
+      "symbol": "O",
+      "term": "3P",
+      "closed_shells": ["1s", "2s"],
+      "open_configuration": "2p(4)"
+    },
+    {
+      "id": "f-1s2-2s2-2p5-2p",
+      "atomic_number": 9,
+      "symbol": "F",
+      "term": "2P",
+      "closed_shells": ["1s", "2s"],
+      "open_configuration": "2p(5)"
+    },
+    {
+      "id": "ne-1s2-2s2-2p6-1s",
+      "atomic_number": 10,
+      "symbol": "Ne",
+      "term": "1S",
+      "closed_shells": ["1s", "2s"],
+      "open_configuration": "2p(6)"
+    }
+  ]
+}

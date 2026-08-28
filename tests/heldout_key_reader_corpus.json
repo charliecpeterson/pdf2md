@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "artifacts": {
+    "source_alignment_corpus": {
+      "path": "tests/source_row_alignment_corpus.json",
+      "sha256": "9d6e1fcecaf9bb9561e443e86dae588823b73ca2ecb62936992914c17186d7e6"
+    },
+    "manifest": {
+      "path": "out/reviews/heldout-key-reader-v1/manifest.json",
+      "sha256": "632cb270e0fd0fdd7656d0d8d18f8fe2618448ced950d0a67fe4d8b7cd2a8f07"
+    },
+    "reference_run": {
+      "path": "out/reviews/heldout-key-reader-v1/run-reference.json",
+      "sha256": "d8f94d969a5c09221df0b5970b942c601f2f4ac6db0089909dfd30c2c5dfae07"
+    },
+    "projection_run": {
+      "path": "out/reviews/heldout-key-reader-v1/run-projection.json",
+      "sha256": "3f4375e0453c88628732a14787da377d9ac8558c686d55c25fed88a2cf94d9bb"
+    }
+  },
+  "expected": {
+    "manifest_sha256": "632cb270e0fd0fdd7656d0d8d18f8fe2618448ced950d0a67fe4d8b7cd2a8f07",
+    "reference_run_sha256": "d8f94d969a5c09221df0b5970b942c601f2f4ac6db0089909dfd30c2c5dfae07",
+    "projection_run_sha256": "3f4375e0453c88628732a14787da377d9ac8558c686d55c25fed88a2cf94d9bb",
+    "reader": {
+      "model_name": "PP-OCRv6_medium_rec",
+      "model_sha256": "00a024b1a2165b852c2b9dab611e0a68fd23f9a28c441c600a04f078a106b5b2",
+      "device": "gpu:0",
+      "paddleocr_version": "3.7.0",
+      "paddlex_version": "3.7.2",
+      "paddlepaddle_gpu_version": "3.2.1+fc"
+    },
+    "documents": 3,
+    "panels": 5,
+    "keys": 106,
+    "reference": {
+      "checked": 106,
+      "agree": 103,
+      "disagree": 1,
+      "tool_refused": 2
+    },
+    "projection": {
+      "checked": 106,
+      "agree": 106,
+      "disagree": 0,
+      "tool_refused": 0
+    },
+    "fallback": {
+      "checked": 106,
+      "agree": 106,
+      "disagree": 0,
+      "tool_refused": 0
+    },
+    "fallback_readers": {
+      "projection": 3,
+      "reference": 103
+    },
+    "panel_results": {
+      "fischer-stability-table-ii": {
+        "reference": {"checked": 10, "agree": 10, "disagree": 0, "tool_refused": 0},
+        "projection": {"checked": 10, "agree": 10, "disagree": 0, "tool_refused": 0},
+        "fallback": {"checked": 10, "agree": 10, "disagree": 0, "tool_refused": 0}
+      },
+      "fischer-stability-table-iii": {
+        "reference": {"checked": 10, "agree": 10, "disagree": 0, "tool_refused": 0},
+        "projection": {"checked": 10, "agree": 10, "disagree": 0, "tool_refused": 0},
+        "fallback": {"checked": 10, "agree": 10, "disagree": 0, "tool_refused": 0}
+      },
+      "grasp-mgiii-26": {
+        "reference": {"checked": 26, "agree": 24, "disagree": 1, "tool_refused": 1},
+        "projection": {"checked": 26, "agree": 26, "disagree": 0, "tool_refused": 0},
+        "fallback": {"checked": 26, "agree": 26, "disagree": 0, "tool_refused": 0}
+      },
+      "grasp-nixiv-41": {
+        "reference": {"checked": 41, "agree": 41, "disagree": 0, "tool_refused": 0},
+        "projection": {"checked": 41, "agree": 41, "disagree": 0, "tool_refused": 0},
+        "fallback": {"checked": 41, "agree": 41, "disagree": 0, "tool_refused": 0}
+      },
+      "slater-thomas-fermi-right": {
+        "reference": {"checked": 19, "agree": 18, "disagree": 0, "tool_refused": 1},
+        "projection": {"checked": 19, "agree": 19, "disagree": 0, "tool_refused": 0},
+        "fallback": {"checked": 19, "agree": 19, "disagree": 0, "tool_refused": 0}
+      }
+    },
+    "findings": [
+      {
+        "id": "grasp-mgiii-26:r1",
+        "expected": "2",
+        "reference_text": "2 1",
+        "reference_score": 0.8423026204109192,
+        "reference_refusal": "reader_score_below_threshold",
+        "projection_text": "2",
+        "projection_score": 0.9999489784240723,
+        "projection_refusal": null,
+        "fallback_reader": "projection"
+      },
+      {
+        "id": "grasp-mgiii-26:r3",
+        "expected": "4",
+        "reference_text": "41",
+        "reference_score": 0.9997633099555969,
+        "reference_refusal": null,
+        "projection_text": "4",
+        "projection_score": 0.9999204874038696,
+        "projection_refusal": null,
+        "fallback_reader": "projection"
+      },
+      {
+        "id": "slater-thomas-fermi-right:r5",
+        "expected": "2.2",
+        "reference_text": "2.2",
+        "reference_score": 0.8458511233329773,
+        "reference_refusal": "reader_score_below_threshold",
+        "projection_text": "2.2",
+        "projection_score": 0.9999642372131348,
+        "projection_refusal": null,
+        "fallback_reader": "projection"
+      }
+    ]
+  }
+}

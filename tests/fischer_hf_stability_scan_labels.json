@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked numeric controls from Fischer's scanned Hartree-Fock stability paper.",
+  "documents": [
+    {
+      "source_sha256": "0a112f04176e228beaa434ceb9672ac75d8af1eb867921db1f617ca0709111e1",
+      "source": "1-s2.0-0021999172900617-main.pdf",
+      "version": "v1",
+      "cells": [
+        {"page": 10, "block_id": "#/mineru/10/table/110", "row": 7, "column": 1, "expected": "-36.4809561", "label": "Tesseract dropped the minus sign"},
+        {"page": 10, "block_id": "#/mineru/10/table/110", "row": 7, "column": 2, "expected": "-36.4809562", "label": "Tesseract dropped the minus sign"},
+        {"page": 10, "block_id": "#/mineru/10/table/112", "row": 5, "column": 1, "expected": "-2.0000001", "label": "Tesseract dropped the minus sign"},
+        {"page": 10, "block_id": "#/mineru/10/table/112", "row": 6, "column": 1, "expected": "-2.1742508", "label": "Tesseract malformed the minus sign"},
+        {"page": 10, "block_id": "#/mineru/10/table/114", "row": 3, "column": 2, "expected": "5", "label": "Tesseract read 5 as 3"},
+        {"page": 10, "block_id": "#/mineru/10/table/114", "row": 6, "column": 1, "expected": "-1.9997487", "label": "Tesseract added a sign artifact"},
+        {"page": 10, "block_id": "#/mineru/10/table/114", "row": 7, "column": 2, "expected": "-2.1698544", "label": "Tesseract added a sign artifact"},
+        {"page": 10, "block_id": "#/mineru/10/table/116", "row": 7, "column": 1, "expected": "-161.7864055", "label": "Tesseract dropped the minus sign"},
+        {"page": 10, "block_id": "#/mineru/10/table/116", "row": 7, "column": 2, "expected": "-161.7864085", "label": "Tesseract dropped the minus sign"},
+        {"page": 10, "block_id": "#/mineru/10/table/110", "row": 1, "column": 1, "expected": "34", "label": "primary and Tesseract agreement control"},
+        {"page": 10, "block_id": "#/mineru/10/table/110", "row": 1, "column": 2, "expected": "33", "label": "primary and Tesseract agreement control"},
+        {"page": 10, "block_id": "#/mineru/10/table/112", "row": 1, "column": 1, "expected": "20", "label": "primary and Tesseract agreement control"},
+        {"page": 10, "block_id": "#/mineru/10/table/112", "row": 1, "column": 2, "expected": "22", "label": "primary and Tesseract agreement control"},
+        {"page": 10, "block_id": "#/mineru/10/table/114", "row": 1, "column": 1, "expected": "94", "label": "primary and Tesseract agreement control"},
+        {"page": 10, "block_id": "#/mineru/10/table/114", "row": 1, "column": 2, "expected": "38", "label": "primary and Tesseract agreement control"},
+        {"page": 10, "block_id": "#/mineru/10/table/116", "row": 1, "column": 1, "expected": "57", "label": "primary and Tesseract agreement control"},
+        {"page": 10, "block_id": "#/mineru/10/table/116", "row": 1, "column": 2, "expected": "56", "label": "primary and Tesseract agreement control"},
+        {"page": 11, "block_id": "#/mineru/11/table/118", "row": 2, "column": 1, "expected": "0.06086", "label": "Tesseract reader-refusal control"},
+        {"page": 11, "block_id": "#/mineru/11/table/118", "row": 2, "column": 4, "expected": "-0.02146", "label": "Tesseract reader-refusal control"},
+        {"page": 11, "block_id": "#/mineru/11/table/120", "row": 1, "column": 1, "expected": "0.14901", "label": "Tesseract reader-refusal control"},
+        {"page": 11, "block_id": "#/mineru/11/table/120", "row": 10, "column": 3, "expected": "0.21196", "label": "Tesseract reader-refusal control"}
+      ]
+    }
+  ]
+}

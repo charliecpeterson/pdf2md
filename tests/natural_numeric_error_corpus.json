@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "purpose": "Separate natural numeric-value errors, auxiliary-reader failures, and structural omissions across non-Fischer documents.",
+  "artifacts": {
+    "pdf_parse_ground_truth": {"path": "out/reviews/reader-disagreements/pdf-parse-bench-cell-report-v4.json", "sha256": "29ae288050401832a0e2256883c631210a913e9ac4d2b67f76c6afe48305e3c6"},
+    "pdf_parse_evidence": {"path": "out/reviews/reader-disagreements/pdf-parse-bench-cell-evidence-report-v4.json", "sha256": "77dd236edc427850784d4bf41bd2d2578a548ef207ca62b55b93ecdbc4fb5cd5"},
+    "attention_report": {"path": "out/reviews/natural-errors-v1/attention.json", "sha256": "fc25c7d9c688774781f5a43258c95fbfe8da6c262e6a5497d17b58c269d4422e"},
+    "attention_source": {"path": "1706.03762v7.pdf", "sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"},
+    "attention_crop": {"path": "out/bdfaa68d8984f0dc/v3/assets/tables_3_p10.png", "sha256": "40118d7a8334a2012808c8cb23ce9c463a15533e1d9f079be6944d5188c00fc2"},
+    "orbitals_report": {"path": "out/reviews/natural-errors-v1/orbitals.json", "sha256": "1a39abe682129fb79b56e86b95c3010473b037cebbebf815cc315c6b081c4c21"},
+    "orbitals_source": {"path": "2207.10841v3.pdf", "sha256": "416d651377c4cce7ec6c91680afba2764f1d4e549525bc657d147faf6c5e0ef0"},
+    "orbitals_crop_0": {"path": "out/416d651377c4cce7/v3/assets/tables_0_p13.png", "sha256": "dea5ccb8898c627208e6496149e0dc16263a58278f0fed5f6a853a7b482192cf"},
+    "orbitals_crop_1": {"path": "out/416d651377c4cce7/v3/assets/tables_1_p15.png", "sha256": "e3c1ba55fdd5779fce3a4e39018ecbcb4b63acc7b976d182c13c8ff7cef31fed"},
+    "orbitals_crop_2": {"path": "out/416d651377c4cce7/v3/assets/tables_2_p15.png", "sha256": "d70b897fdf5512fa580272dd6cb1f88746b1b70322491bfa8112cfcee44aa0fe"},
+    "orbitals_crop_3": {"path": "out/416d651377c4cce7/v3/assets/tables_3_p19.png", "sha256": "c405cb30189307c12ec3b1c4d57b7d20a53f430f0ea80e08721b09f1cab36422"},
+    "orbitals_crop_4": {"path": "out/416d651377c4cce7/v3/assets/tables_4_p21.png", "sha256": "6b7bb25178967355de7cc352cfa1b2b1a53f3b0add3c66d0bbd9a5a7132a9b34"},
+    "dolg_report": {"path": "out/reviews/natural-errors-v1/dolg.json", "sha256": "f57f8d8d6755e9592ba96c885c782cc03b55c45c0cc3b28c8db26d28202a14c9"},
+    "dolg_source": {"path": "dolg-ecp.pdf", "sha256": "24f433c4edfb3f419016b2a90b4aecd989394925685ade3fe3efa66c3665011a"},
+    "dolg_crop_0": {"path": "out/natural-errors/24f433c4edfb3f41/v1/assets/tables_0_p4.png", "sha256": "0ad83f715ec2623d6e2415b1a699664180ff55a7ac7c309d0a36ce50c3b4acd5"},
+    "dolg_crop_1": {"path": "out/natural-errors/24f433c4edfb3f41/v1/assets/tables_1_p4.png", "sha256": "cb77856a681e876778a3b3c4d87b955e1452be4537973ecb4977a17f3fa6e637"},
+    "grasp_report": {"path": "out/reviews/heldout-data-reader-v1/report.json", "sha256": "5639cf888c36c13ae65b6d0d3f4821def6f09848d48ad46c7c00b1f43e86a88e"},
+    "grasp_manifest": {"path": "out/reviews/heldout-data-reader-v1/manifest.json", "sha256": "fbe58f350fe68f77a4418bcbf52634d7c74077f9f8621666cf4c6aca3137df8c"},
+    "grasp_labels": {"path": "tests/heldout_data_cell_labels.json", "sha256": "09d19d6c466f1c6fc21b8ba61592b4414288a066c76bb145ebe68448730fc8ce"},
+    "grasp_source": {"path": "GRASP2018-manual.pdf", "sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687"},
+    "slater_report": {"path": "out/reviews/natural-errors-v1/slater.json", "sha256": "d4617324f7bb0b3ae7f42288cfda6e8402552da9db82b32e279d710c9db97021"},
+    "slater_controls": {"path": "tests/glyph_slater_disagreement_labels.json", "sha256": "72d23764aee158c359717bf6d17d2d9d3cd2264dbd1977984079a3e76728822c"},
+    "slater_natural_controls": {"path": "tests/slater_natural_disagreement_labels.json", "sha256": "365a62c65b8ac159032de5cda96afbe4ee53accab45b79bb1632ad033f44908e"},
+    "slater_errors": {"path": "tests/slater_primary_error_labels.json", "sha256": "6ac65bfbffb9b0b5e0cc12297e65be26eff467e959fe880cedcd04a0e385e3af"},
+    "slater_source": {"path": "slater-quantum_theory_of_atomic_structure-vol1.pdf", "sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6"},
+    "slater_crop_215": {"path": "out/agent-full-books/cc30d2877cfb32b4/v1/assets/mineru_215_table_1680_p215.png", "sha256": "a9968da3c0097e840878225d2c809caa1c54691f47e6773aeb3139406520d785"},
+    "slater_crop_235": {"path": "out/agent-full-books/cc30d2877cfb32b4/v1/assets/mineru_235_table_1814_p235.png", "sha256": "fd7d883eeb22b484d6135ca64b2af66ac7674476050c209fe0fba6b5bf315129"},
+    "slater_crop_339": {"path": "out/agent-full-books/cc30d2877cfb32b4/v1/assets/mineru_339_table_2559_p339.png", "sha256": "d02bf850afe6fd3fbca1ea28805d093bb964ec9cb36f3c7e35a31a0788d35ee2"},
+    "ornl_errors": {"path": "tests/ornl_natural_error_labels.json", "sha256": "812024f1055205c7160b14eeb2283ae56b26d618c1df7f32d91bb12c28f24e80"},
+    "ornl_controls": {"path": "tests/ornl_natural_control_labels.json", "sha256": "931e1694af96acf05599a8f4bb580dc4dbcb8eed7b277fbd29f463689b39f30a"},
+    "ornl_error_report": {"path": "out/reviews/natural-errors-v2/ornl-errors.json", "sha256": "8b4910b2c203f539d04caa4b2adf12dc69e293a8de6f8f181e836a7f3f52520c"},
+    "ornl_control_report": {"path": "out/reviews/natural-errors-v2/ornl-controls.json", "sha256": "f49dff88fb6ee70af05a336e505b5901987f60fb57369179b3077e5ae1c9800a"},
+    "ornl_source": {"path": "out/natural-errors-scanned/d9f208b5bceff489/source.pdf", "sha256": "d9f208b5bceff4897affa087efa740152a5692e479b9c02aaf467834a0a78931"},
+    "nasa_errors": {"path": "tests/nasa_wates_natural_error_labels.json", "sha256": "aa7e51c823fd00adbc0a6def5a5b15da7faf9e510febac932a579b2806473c1e"},
+    "nasa_controls": {"path": "tests/nasa_wates_natural_control_labels.json", "sha256": "5a088ef38e9208ad165909fc43a515a5f272559e9f8d4b2e81bdd85ecca7e4f9"},
+    "nasa_error_report": {"path": "out/reviews/natural-errors-v2/nasa-errors.json", "sha256": "a1fcc9ae611c54c812229446e8975060b6070a644895e4fb77c6060dddb743d0"},
+    "nasa_control_report": {"path": "out/reviews/natural-errors-v2/nasa-controls.json", "sha256": "8f047840d35324e29ea8de70bcde5e5c90b8d5a8fc466cbb7711cd9bcfbfa474"},
+    "nasa_source": {"path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/source.pdf", "sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7"},
+    "nist_controls": {"path": "tests/nist_nitrogen_natural_control_labels.json", "sha256": "3e5df62ff5542f743a428be0027978329f6bad2523a5db44566b3e9b1981e340"},
+    "nist_report": {"path": "out/reviews/natural-errors-v2-nist.json", "sha256": "ec4ad6ea9ddf6d503d0222357222afb1c680415452bfce293d7281ce35650c21"},
+    "nist_source": {"path": "out/natural-errors-scanned/2f03bfb0f006acc0/source.pdf", "sha256": "2f03bfb0f006acc0ebbfcebc597a5c8fdfe577f5903636dae673db83bb06e05a"},
+    "nist_crop": {"path": "out/natural-errors-scanned/2f03bfb0f006acc0/v1/assets/mineru_1_table_2_p1.png", "sha256": "2ff5454076f3462c8ed169c42733e3d05391536ab825e48287323a4e14033a47"}
+  },
+  "manual_reviews": {
+    "attention": {
+      "report": "attention_report",
+      "role": "whole_extracted_table_review",
+      "table_family": "born_digital_simple_rules",
+      "typography": "proportional_serif_decimal",
+      "documents_examined": 1,
+      "documents_with_reviewed_cells": 1,
+      "primary": {"checked": 12, "agree": 12, "disagree": 0, "tool_refused": 0},
+      "structure": {"missing_numeric_cells": 0, "structured_table_refusals": 0}
+    },
+    "orbitals": {
+      "report": "orbitals_report",
+      "role": "whole_extracted_table_review",
+      "table_family": "born_digital_multilevel_scientific",
+      "typography": "proportional_serif_grouped_digits_exponents",
+      "documents_examined": 1,
+      "documents_with_reviewed_cells": 1,
+      "primary": {"checked": 80, "agree": 80, "disagree": 0, "tool_refused": 0},
+      "structure": {"missing_numeric_cells": 6, "structured_table_refusals": 0},
+      "note": "Six gamma values remain embedded in the row-key field instead of occupying their own scientific-notation column."
+    },
+    "dolg": {
+      "report": "dolg_report",
+      "role": "whole_extracted_table_review",
+      "table_family": "born_digital_multilevel_chemistry",
+      "typography": "proportional_serif_signed_fixed_precision",
+      "documents_examined": 1,
+      "documents_with_reviewed_cells": 1,
+      "primary": {"checked": 84, "agree": 84, "disagree": 0, "tool_refused": 0},
+      "structure": {"missing_numeric_cells": 0, "structured_table_refusals": 2},
+      "note": "Two additional complex-header tables remain source-linked HTML rather than guessed rectangular data."
+    }
+  },
+  "labelled_scans": {
+    "ornl_iterative_output": {
+      "document_id": "ornl-mastersjob-pages-54-57",
+      "role": "error_enriched_source_pixel_review",
+      "table_family": "scanned_monospaced_iterative_numeric",
+      "typography": "degraded_dot_matrix_fortran_exponents",
+      "out_dir": "out/natural-errors-scanned",
+      "label_sets": [
+        {"labels": "ornl_errors", "report": "ornl_error_report"},
+        {"labels": "ornl_controls", "report": "ornl_control_report"}
+      ],
+      "structure": {"row_mapping_refusals": 0, "missing_numeric_cells": 0, "structured_table_refusals": 0, "auxiliary_geometry_refusals": 0}
+    },
+    "nasa_wates_output": {
+      "document_id": "nasa-wates-page-120",
+      "role": "error_enriched_source_pixel_review",
+      "table_family": "scanned_dot_matrix_engineering_output",
+      "typography": "poor_quality_dot_matrix_mixed_precision",
+      "out_dir": "out/natural-errors-scanned",
+      "label_sets": [
+        {"labels": "nasa_errors", "report": "nasa_error_report"},
+        {"labels": "nasa_controls", "report": "nasa_control_report"}
+      ],
+      "structure": {"row_mapping_refusals": 0, "missing_numeric_cells": 0, "structured_table_refusals": 0, "auxiliary_geometry_refusals": 0}
+    }
+  },
+  "nist_geometry_review": {
+    "document_id": "nist-nitrogen-spectra-pages-10-13",
+    "role": "targeted_geometry_failure_review",
+    "table_family": "scanned_two_lane_spectroscopy",
+    "typography": "dense_serif_levels_and_intervals",
+    "out_dir": "out/natural-errors-scanned",
+    "labels": "nist_controls",
+    "report": "nist_report",
+    "raw_reader": {"checked": 431, "agree": 0, "disagree": 62, "tool_refused": 369},
+    "structure": {"row_mapping_refusals": 0, "missing_numeric_cells": 0, "structured_table_refusals": 0, "auxiliary_geometry_refusals": 431},
+    "geometry_audit": "All 62 raw disagreements are lane or row shifts. Treat the full 431-cell auxiliary run as geometry-refused; the 12 source-labelled controls retain only explicit tool-refused reader records."
+  },
+  "expected": {
+    "documents_examined": 33,
+    "documents_with_reviewed_cells": 31,
+    "cells": 2113,
+    "primary": {"checked": 2113, "agree": 2099, "disagree": 14, "tool_refused": 0},
+    "reader": {"checked": 2113, "agree": 1078, "disagree": 182, "tool_refused": 853},
+    "structure": {"row_mapping_refusals": 238, "missing_numeric_cells": 6, "structured_table_refusals": 2, "auxiliary_geometry_refusals": 431}
+  }
+}

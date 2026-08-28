@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "purpose": "Numeric-ingestion agent benchmark over the source-pinned Fischer v6 bundle.",
+  "questions": [
+    {
+      "id": "fischer-exact-cell",
+      "document_id": "fischer-1972",
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_provenance_sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea",
+      "bundle_pages": [6],
+      "pdf_pages": [6],
+      "question": "What is the best_value for helium 1S in column E? Return only the number in the answer field.",
+      "answer": {"kind": "number", "value": 1.835914, "tolerance": 0},
+      "required_evidence_fields": ["best_value"],
+      "required_citation_paths": ["data/tables/page_006_panels.csv"],
+      "numeric_context": {
+        "queries": [
+          {
+            "path": "data/tables/page_006_panels.csv",
+            "sha256": "5d6c4184e4e0ea7aaf40471d0af6a6aabb9f668f6bee556b9cb68886c6387e00",
+            "page": 6,
+            "filters": {"atomic_number": "2", "symbol": "HE", "row_key": "1S", "column": "E"},
+            "fields": ["atomic_number", "symbol", "row_key", "column", "best_value", "confidence", "verification_status", "source_block_id", "source_row", "source_column"]
+          }
+        ]
+      },
+      "ground_truth": "Fischer source crop mineru_6_table_63_p6.png and ATSP reference corpus"
+    },
+    {
+      "id": "fischer-continuation-join",
+      "document_id": "fischer-1972",
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_provenance_sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea",
+      "bundle_pages": [15],
+      "pdf_pages": [15],
+      "question": "The page-15 normalized table combines two continuation blocks. What are the 1S E best_values for IR and TL, in that order?",
+      "answer": {"kind": "numbers", "values": [5132.856, 5703.116], "tolerance": 0},
+      "required_evidence_fields": ["symbol", "best_value"],
+      "required_citation_paths": ["data/tables/page_015_panels.csv"],
+      "numeric_context": {
+        "queries": [
+          {
+            "path": "data/tables/page_015_panels.csv",
+            "sha256": "7897beaf240be64fdf0f7ad96233e161f9c5477c6e9f6b06b40e3b475756ba31",
+            "page": 15,
+            "filters": {"symbol": "IR", "row_key": "1S", "column": "E"},
+            "fields": ["symbol", "row_key", "column", "best_value", "confidence", "verification_status", "source_block_id"]
+          },
+          {
+            "path": "data/tables/page_015_panels.csv",
+            "sha256": "7897beaf240be64fdf0f7ad96233e161f9c5477c6e9f6b06b40e3b475756ba31",
+            "page": 15,
+            "filters": {"symbol": "TL", "row_key": "1S", "column": "E"},
+            "fields": ["symbol", "row_key", "column", "best_value", "confidence", "verification_status", "source_block_id"]
+          }
+        ]
+      },
+      "ground_truth": "Fischer source crops mineru_15_table_81_p15.png and mineru_15_table_82_p15.png"
+    },
+    {
+      "id": "fischer-derived-ratio",
+      "document_id": "fischer-1972",
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_provenance_sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea",
+      "bundle_pages": [6],
+      "pdf_pages": [6],
+      "question": "For helium 1S, divide the A best_value by the E best_value and round to six decimal places. Return only the ratio in the answer field.",
+      "answer": {"kind": "number", "value": 2.589085, "tolerance": 0.000001},
+      "required_evidence_fields": ["best_value"],
+      "required_citation_paths": ["data/tables/page_006_panels.csv"],
+      "numeric_context": {
+        "queries": [
+          {
+            "path": "data/tables/page_006_panels.csv",
+            "sha256": "5d6c4184e4e0ea7aaf40471d0af6a6aabb9f668f6bee556b9cb68886c6387e00",
+            "page": 6,
+            "filters": {"symbol": "HE", "row_key": "1S", "column": "A"},
+            "fields": ["symbol", "row_key", "column", "best_value", "confidence", "verification_status"]
+          },
+          {
+            "path": "data/tables/page_006_panels.csv",
+            "sha256": "5d6c4184e4e0ea7aaf40471d0af6a6aabb9f668f6bee556b9cb68886c6387e00",
+            "page": 6,
+            "filters": {"symbol": "HE", "row_key": "1S", "column": "E"},
+            "fields": ["symbol", "row_key", "column", "best_value", "confidence", "verification_status"]
+          }
+        ]
+      },
+      "ground_truth": "Decimal division of source-confirmed Fischer values 4.753337 / 1.835914"
+    },
+    {
+      "id": "fischer-metadata-lookup",
+      "document_id": "fischer-1972",
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_provenance_sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea",
+      "bundle_pages": [15],
+      "pdf_pages": [15],
+      "question": "Using atomic_number 77, term 4F, and configuration (5D)7 as the lookup key, what is the 1S E best_value?",
+      "answer": {"kind": "number", "value": 5132.856, "tolerance": 0},
+      "required_evidence_fields": ["atomic_number", "term", "configuration", "best_value"],
+      "required_citation_paths": ["data/tables/page_015_panels.csv"],
+      "numeric_context": {
+        "queries": [
+          {
+            "path": "data/tables/page_015_panels.csv",
+            "sha256": "7897beaf240be64fdf0f7ad96233e161f9c5477c6e9f6b06b40e3b475756ba31",
+            "page": 15,
+            "filters": {"atomic_number": "77", "term": "4F", "configuration": "(5D)7", "row_key": "1S", "column": "E"},
+            "fields": ["atomic_number", "symbol", "term", "configuration", "row_key", "column", "best_value", "confidence", "verification_status"]
+          }
+        ]
+      },
+      "ground_truth": "Fischer source crop mineru_15_table_82_p15.png"
+    },
+    {
+      "id": "fischer-unverified-refusal",
+      "document_id": "fischer-1972",
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_provenance_sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea",
+      "bundle_pages": [6],
+      "pdf_pages": [6],
+      "question": "May the B 1S E value be ingested as verified without opening the source crop? If confidence is low or verification_status is reader_refused, answer exactly 'insufficient evidence'.",
+      "answer": {"kind": "refusal"},
+      "required_evidence_fields": ["verification_status"],
+      "required_citation_paths": ["data/tables/page_006_panels.csv"],
+      "numeric_context": {
+        "queries": [
+          {
+            "path": "data/tables/page_006_panels.csv",
+            "sha256": "5d6c4184e4e0ea7aaf40471d0af6a6aabb9f668f6bee556b9cb68886c6387e00",
+            "page": 6,
+            "filters": {"symbol": "B", "row_key": "1S", "column": "E"},
+            "fields": ["symbol", "row_key", "column", "best_value", "confidence", "verification_status", "reader_refusal_reason", "source_block_id", "source_row", "source_column"]
+          }
+        ]
+      },
+      "ground_truth": "The normalized record is low confidence with reader_refused and cell_alignment_missing"
+    },
+    {
+      "id": "fischer-source-crop-provenance",
+      "document_id": "fischer-1972",
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "bundle_provenance_sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea",
+      "bundle_pages": [15],
+      "pdf_pages": [15],
+      "question": "Confirm the AU 1S E best_value against the attached source crop. Return only the confirmed number and cite the crop path.",
+      "answer": {"kind": "number", "value": 5414.032, "tolerance": 0},
+      "required_evidence_fields": ["best_value"],
+      "required_citation_paths": ["assets/mineru_15_table_82_p15.png"],
+      "required_asset_paths": ["assets/mineru_15_table_82_p15.png"],
+      "numeric_context": {
+        "queries": [
+          {
+            "path": "data/tables/page_015_panels.csv",
+            "sha256": "7897beaf240be64fdf0f7ad96233e161f9c5477c6e9f6b06b40e3b475756ba31",
+            "page": 15,
+            "filters": {"symbol": "AU", "row_key": "1S", "column": "E"},
+            "fields": ["symbol", "row_key", "column", "best_value", "confidence", "verification_status", "source_block_id", "source_row", "source_column"]
+          }
+        ],
+        "assets": [
+          {
+            "path": "assets/mineru_15_table_82_p15.png",
+            "sha256": "ee7f64bc5b43ba06a6c7b19859cceaf2734332009974d055a1ac48b385490c9e",
+            "page": 15
+          }
+        ]
+      },
+      "ground_truth": "Visual inspection of Fischer source crop mineru_15_table_82_p15.png"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+  "recovery_manifest_sha256": "dafa1ec3d78a0de0a81f65704b7d9edc7e73fea275756675c587395c1295ee66",
+  "projection_manifest_sha256": "97fed819c5ed4e2c48452243385bf305b60788249a1968de261d1008eef308c1",
+  "projection_run_sha256": "04baf333e3090004be6c54be1dcfb252281bd8a61f585e4e04889923801aa797",
+  "source_labels_sha256": "b5804ecba23b9221c4ada82ddca943bbfbe6c5a5581b09843dd9ba90837e32a5",
+  "projection_adjudications_sha256": "a774cc2c6de1d772361ab51e49d96d99881e4ba16a11eec7766521997435bd65",
+  "expected": {
+    "reader_parity": {
+      "checked": 1088,
+      "agree": 1016,
+      "disagree": 72,
+      "tool_refused": 0,
+      "no_reference": 1
+    },
+    "score_gate_transitions": {
+      "accepted_to_accepted": 837,
+      "accepted_to_refused": 67,
+      "refused_to_accepted": 88,
+      "refused_to_refused": 97
+    },
+    "source_labels": {
+      "old_raw": {"checked": 41, "agree": 41, "disagree": 0, "tool_refused": 0},
+      "projection_raw": {"checked": 41, "agree": 41, "disagree": 0, "tool_refused": 0},
+      "old_at_threshold": {"checked": 41, "agree": 41, "disagree": 0, "tool_refused": 0},
+      "projection_at_threshold": {"checked": 41, "agree": 37, "disagree": 0, "tool_refused": 4},
+      "fallback_at_threshold": {"checked": 41, "agree": 41, "disagree": 0, "tool_refused": 0}
+    },
+    "projection_adjudications": {
+      "reference_at_threshold": {"checked": 2, "agree": 2, "disagree": 0, "tool_refused": 0},
+      "projection_at_threshold": {"checked": 2, "agree": 2, "disagree": 0, "tool_refused": 0},
+      "fallback_at_threshold": {"checked": 2, "agree": 2, "disagree": 0, "tool_refused": 0}
+    },
+    "overlay": {
+      "reference_only": {
+        "confirmed_rows": {"alignment": 1, "control": 38, "recovery": 146},
+        "cell_counts": {
+          "alignment_accepted": 1,
+          "alignment_refused": 1,
+          "control_accepted": 168,
+          "control_refused": 108,
+          "recovery_accepted": 441,
+          "recovery_refused": 370
+        },
+        "controls": {"checked": 276, "agree": 168, "disagree": 0, "tool_refused": 108},
+        "control_divergences": []
+      },
+      "projection_fallback": {
+        "confirmed_rows": {"alignment": 1, "control": 43, "recovery": 162},
+        "cell_counts": {
+          "alignment_accepted": 1,
+          "alignment_refused": 1,
+          "control_accepted": 205,
+          "control_refused": 71,
+          "recovery_accepted": 541,
+          "recovery_refused": 270
+        },
+        "controls": {"checked": 276, "agree": 203, "disagree": 2, "tool_refused": 71},
+        "control_divergences": [
+          {
+            "id": "mineru_20_table_94:p2:r76:c10",
+            "structured_value": "0.1408",
+            "source_candidate": "-0.0653"
+          },
+          {
+            "id": "mineru_20_table_94:p2:r76:c11",
+            "structured_value": "",
+            "source_candidate": "0.1408"
+          }
+        ]
+      }
+    }
+  }
+}

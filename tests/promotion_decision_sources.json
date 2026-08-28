@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "purpose": "Hash-pinned experiment reports used to revisit numeric value promotion after Phase 7 experiments 12 through 19.",
+  "artifacts": {
+    "numeric_confidence": {
+      "path": "out/reviews/numeric-confidence-v1/report.json",
+      "sha256": "4170cea038737cba82b3ec28e997a0b9c2b06e58322dd3aaab2b76466bd58404"
+    },
+    "active_review": {
+      "path": "out/reviews/active-review-heldout-v1.json",
+      "sha256": "b2762d953bc7c3132d97e1db85517443128af853e0f699589103469f67cfd22a"
+    },
+    "rendering_stability": {
+      "path": "out/reviews/rendering-stability-natural-errors-v1/combined-report.json",
+      "sha256": "b938f47b100a98cc1808e7a9ab03eddd2dda01e31d7fa0922439d6242e0cf6d4"
+    },
+    "internal_checks": {
+      "path": "out/reviews/internal-scientific-checks-v1.json",
+      "sha256": "f0e626d49b74d4bb97f18b42a39d2500f32336dd3fe83de95879f1b3227e83fe"
+    },
+    "column_geometry": {
+      "path": "out/reviews/column-geometry-new-layouts-v1/report.json",
+      "sha256": "7f53c42c47fbb7fbb4e3976f1442c01c5c496c97e51bfd7c43c579798a87f928"
+    },
+    "external_reference_audit": {
+      "path": "tests/external_reference_audit.json",
+      "sha256": "03ea910e98a3d1ca4146f878b1cef868777efe1322520f13526293e52849d751"
+    }
+  }
+}

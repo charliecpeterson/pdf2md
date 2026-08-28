@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-pinned inputs for selective numeric confidence and correction calibration.",
+  "artifacts": {
+    "natural_report": {"path": "out/reviews/natural-errors-v1/report.json", "sha256": "06d8c7be4d1e0ef9afc64acfb15d655b709c936e565f99e554f602c43c9a797f"},
+    "natural_corpus": {"path": "tests/natural_numeric_error_corpus.json", "sha256": "7c00f33459167c6f512287502fe2f5e08107544f68e2c35c0f2b8b82a71d3ffe"},
+    "heldout_manifest": {"path": "out/reviews/heldout-data-reader-v1/manifest.json", "sha256": "fbe58f350fe68f77a4418bcbf52634d7c74077f9f8621666cf4c6aca3137df8c"},
+    "heldout_reference_run": {"path": "out/reviews/heldout-data-reader-v1/run-reference.json", "sha256": "a9b000677ce85d6fe487e41a292aaf99ca4c7f349432094731bc613a6683171b"},
+    "heldout_projection_run": {"path": "out/reviews/heldout-data-reader-v1/run-projection.json", "sha256": "fc43df079c2a21da70a0b311bdc1f24289c0356125bc9cd7c1a231394f41927f"},
+    "heldout_corpus": {"path": "tests/heldout_data_reader_corpus.json", "sha256": "ec814bd2546121b1a3349f22d72bc803596ed480ea3d41a9d3094fdc3b28db88"},
+    "third_reader_report": {"path": "out/reviews/non-fischer-third-reader-v1/report.json", "sha256": "f48e3ef23993cbbb7a9459a79b70b9feff3dba10064af2d90b40695f63c52e9f"},
+    "third_reader_corpus": {"path": "tests/non_fischer_third_reader_corpus.json", "sha256": "18f7a1f5e2970614d26f5c977598afc03cbd5999be669549c24738444988fc99"},
+    "fischer_glyph_report": {"path": "out/reviews/reader-disagreements/fischer-tesseract-glyph-report.json", "sha256": "6bd72cbfd927b3cdd57177fc15ff2d338a95544a2d345ef7f49f219371e1bd24"},
+    "slater_glyph_report": {"path": "out/reviews/reader-disagreements/slater-glyph-report.json", "sha256": "c1608f84b3f57df62bc8a2f8de370c159d1a34cea01bfd9cc7fe64a5def02900"},
+    "pdf059_glyph_report": {"path": "out/reviews/reader-disagreements/pdf059-glyph-report.json", "sha256": "cb8f7ed64099e197140fa89c00c3c230545581d54a65ac5fe6d751ffeeb3bfb9"}
+  }
+}

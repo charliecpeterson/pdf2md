@@ -1,0 +1,313 @@
+"""The enrichment layer is engine-agnostic, so it's testable with a fake glyph
+source — no Docling, no real PDF. These pin the orchestration (which block gets
+what) that used to live untested inside the Docling adapter."""
+
+from __future__ import annotations
+
+from pdf2md.enrich import enrich_blocks, enrich_figures, enrich_tables
+from pdf2md.schema import BBox, Block, BlockType, FigureRef, RawCell, RawTable, TableData
+
+_BB = BBox(x0=0, y0=10, x1=10, y1=0)
+
+
+class _FakePC:
+    empty = False
+
+    def __init__(self, text: str = "", scored=None, disorder: float = 0.0, lines: str = "") -> None:
+        self._text, self._scored, self._disorder, self._lines = text, scored or [], disorder, lines
+
+    def region_chars(self, bbox) -> list:
+        # These fixtures carry no glyph geometry; cell verification sees none.
+        return []
+
+    def text_region(self, bbox) -> str:
+        return self._text
+
+    def text_lines(self, bbox) -> str:
+        return self._lines
+
+    def scored_region(self, bbox):
+        return self._scored
+
+    def reading_disorder(self, bbox) -> float:
+        return self._disorder
+
+
+class _FakeGlyphs:
+    def __init__(self, pages: dict, vocab: set | None = None) -> None:
+        self._pages, self._vocab = pages, vocab or set()
+
+    def page_chars(self, page):
+        return self._pages.get(page)
+
+    def vocab(self):
+        return self._vocab
+
+
+def _eq(text, page=1):
+    return Block(id="#/eq", type=BlockType.EQUATION, text=text, page=page, bbox=_BB)
+
+
+def test_scanned_page_image_backs_equations():
+    # No text layer on the page (page_chars -> None) means OCR scan: flag it and
+    # force confidence to 0 so the pipeline image-backs the (OCR) LaTeX.
+    eq = _eq(r"\rho = 8\pi\nu^2/c^5")
+    enrich_blocks([eq], _FakeGlyphs({1: None}))
+    assert eq.extra["ocr"] is True and eq.confidence == 0.0
+
+
+def test_garbled_equation_flagged_and_recovered():
+    # Born-digital page: LaTeX disagrees with the clean text layer -> low
+    # confidence, the reading captured as a hint, no OCR flag.
+    eq = _eq(r"E ( \text {MR-AQC/CC} )")
+    glyphs = _FakeGlyphs({1: _FakePC(text="E(MR-AQCC) − E(CASPT2) (4)")})
+    enrich_blocks([eq], glyphs)
+    assert eq.confidence is not None and eq.confidence < 0.9
+    assert "ocr" not in eq.extra and eq.extra.get("text_layer")
+
+
+def test_faithful_equation_trusted():
+    eq = _eq(r"E ( M R - c c C A ) = E _ { 0 } ( M R - c c C A )")
+    enrich_blocks([eq], _FakeGlyphs({1: _FakePC(text="E(MR-ccCA) = E0(MR-ccCA)")}))
+    assert eq.confidence == 1.0 and "text_layer" not in eq.extra
+
+
+def test_prose_religatured_against_vocab():
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="a di ff erent result", page=1, bbox=_BB)
+    glyphs = _FakeGlyphs({1: _FakePC(scored=[])}, vocab={"different", "result"})
+    enrich_blocks([p], glyphs)
+    assert p.text == "a different result"  # ligature rejoined, no scripts to overlay
+
+
+def test_garbage_prose_refilled_from_pdfium():
+    # Engine text is symbol-font garbage (broken ToUnicode); the pdfium glyph layer
+    # decodes the same bbox cleanly, so the block is refilled and stamped.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH,
+              text="❆ ♣/a114❛❝/a116✐❝❛❧ ❣✉✐❞❡", page=1, bbox=_BB)
+    glyphs = _FakeGlyphs({1: _FakePC(text="A practical guide\r\n")})
+    enrich_blocks([p], glyphs)
+    assert p.text == "A practical guide"
+    assert p.extra["text_source"] == "pdfium"
+
+
+def test_garbage_prose_kept_when_pdfium_also_garbage():
+    # Both readings are garbage (a truly undecodable block): no swap, so the block
+    # stays flagged illegible downstream rather than swapped for different garbage.
+    garbage = "❆ ♣/a114❛❝/a116✐❝❛❧"
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text=garbage, page=1, bbox=_BB)
+    enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="/a80/a114❡❢❛❝❡")}))
+    assert p.text == garbage and "text_source" not in p.extra
+
+
+def test_table_rebuilt_when_scripts_recovered():
+    # A cell whose glyphs carry a superscript -> rebuild from cells, not the flat
+    # engine markup. This is the table path that used to live inside the adapter.
+    t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="| n2 |", has_spanning_cells=False)
+    raw = RawTable(
+        cells=[RawCell(text="n2", bbox=_BB, row=0, col=0, row_span=1, col_span=1, header=False)],
+        num_rows=1, num_cols=1,
+    )
+    glyphs = _FakeGlyphs({1: _FakePC(scored=[("n", None), ("2", "sup")])})
+    enrich_tables([t], {"#/t": raw}, glyphs)
+    assert "<sup>2</sup>" in t.gfm
+
+
+def test_code_block_refilled_from_pdfium():
+    # Docling labels a console transcript as code but its text is symbol-font garbage;
+    # enrich re-reads it from pdfium with line breaks preserved.
+    console = "\n".join([">>rnucleus", "Enter the atomic number:", ">>26"])
+    b = Block(id="#/c", type=BlockType.CODE, text="❆/a114❝ ❣❛/a114❜❛❣❡", page=1, bbox=_BB)
+    enrich_blocks([b], _FakeGlyphs({1: _FakePC(lines=console)}))
+    assert b.text == console and "\n" in b.text
+
+
+def test_console_prose_block_marked_preformatted():
+    # A console transcript Docling mislabels as a paragraph: its banner lines mark it
+    # preformatted, so enrich keeps the line structure for code-fence emission.
+    console = "\n".join([
+        "*****************************",
+        "* RUN RNUCLEUS *",
+        "*****************************",
+        ">>rnucleus",
+        "Enter the atomic number:",
+    ])
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="flattened garbage", page=1, bbox=_BB)
+    enrich_blocks([p], _FakeGlyphs({1: _FakePC(lines=console)}))
+    assert p.extra.get("preformatted") is True and "\n" in p.text
+
+
+def test_prose_with_pipes_not_preformatted():
+    # A prose block must not be flagged just for containing '|' (bra-ket, abs value);
+    # the pipe signal is table-only. No banner lines here -> stays prose.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="x", page=1, bbox=_BB)
+    pc = _FakePC(lines="the state |a| and |b| and |c|\nare normalized\nsee eq 3")
+    enrich_blocks([p], _FakeGlyphs({1: pc}, vocab=set()))
+    assert "preformatted" not in p.extra
+
+
+def test_ascii_table_emitted_as_preformatted():
+    # An ASCII-art "table" (literal pipe columns) Docling can't grid: keep it as
+    # line-preserved text for a code fence, not a mangled GFM grid.
+    ascii_tbl = "\n".join([
+        "Configuration | Term | J | Level",
+        "--------------|------|---|------",
+        "2p6.3s2       | 1S   | 0 | 0",
+        "3s.3p         | 3P*  | 0 | 233842",
+    ])
+    t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="| mangled |", has_spanning_cells=False)
+    enrich_tables([t], {}, _FakeGlyphs({1: _FakePC(lines=ascii_tbl)}))
+    assert t.preformatted is not None and "Configuration | Term" in t.preformatted
+
+
+def test_garbage_table_cell_refilled_from_pdfium():
+    # A cell carrying the same broken font as the prose: refill from the pdfium
+    # glyph layer and rebuild, even with no scripts to recover (the divergence the
+    # rebuild needs is triggered by the garbage, not only by sub/superscripts).
+    t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="| ❆ ♣/a114❛❝/a116✐❝❛❧ |",
+                  has_spanning_cells=False)
+    raw = RawTable(
+        cells=[RawCell(text="❆ ♣/a114❛❝/a116✐❝❛❧", bbox=_BB, row=0, col=0,
+                       row_span=1, col_span=1, header=False)],
+        num_rows=1, num_cols=1,
+    )
+    glyphs = _FakeGlyphs({1: _FakePC(text="A practical guide")})
+    enrich_tables([t], {"#/t": raw}, glyphs)
+    assert "A practical guide" in t.gfm and "❆" not in t.gfm
+
+
+def test_refilled_cell_strips_column_rule_pipes():
+    # This PDF draws table column rules as literal '|' glyphs the refill reads in;
+    # strip those (else cells become \|-soup) but keep a content pipe like bra-ket.
+    from pdf2md.enrich import _RULE_PIPE
+    assert _RULE_PIPE.sub(" ", "| 3F* | 2 | 559600 |").split() == ["3F*", "2", "559600"]
+    assert "|" in _RULE_PIPE.sub(" ", "|psi>")  # no surrounding space -> content, kept
+
+    raw = RawTable(
+        cells=[RawCell(text="❆/a114❝", bbox=_BB, row=0, col=0,
+                       row_span=1, col_span=1, header=False)],
+        num_rows=1, num_cols=1,
+    )
+    t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="garbage", has_spanning_cells=False)
+    enrich_tables([t], {"#/t": raw}, _FakeGlyphs({1: _FakePC(text="| 3F* |")}))
+    assert "3F*" in t.gfm and "\\|" not in t.gfm
+
+
+def test_table_falls_back_to_religatured_markup():
+    # No structured cells -> keep the engine's rendering, ligature-repaired.
+    t = TableData(block_id="#/t", page=1, bbox=_BB, gfm="a di ff erent cell")
+    enrich_tables([t], {}, _FakeGlyphs({1: _FakePC(scored=[])}, vocab={"different"}))
+    assert t.gfm == "a different cell"
+
+
+def test_figure_caption_refilled_from_pdfium():
+    # A caption in the broken font is dingbats; refill it from the glyph layer using
+    # the caption's own bbox (not the picture's).
+    f = FigureRef(block_id="#/f", page=1, bbox=_BB, caption="❋✐❣✉/a114❡ ✸✳✶", caption_bbox=_BB)
+    enrich_figures([f], _FakeGlyphs({1: _FakePC(text="Figure 3.1: sequence")}))
+    assert f.caption == "Figure 3.1: sequence"
+
+
+def test_figure_caption_religatured():
+    f = FigureRef(block_id="#/f", page=1, bbox=_BB, caption="a di ff erent fig")
+    enrich_figures([f], _FakeGlyphs({1: _FakePC()}, vocab={"different"}))
+    assert f.caption == "a different fig"
+
+
+def test_prose_word_recall_recorded_when_complete():
+    # Born-digital prose is compared against the glyph layer of its own region;
+    # a faithful block matches every source word (case/order-insensitive).
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was 92 percent",
+              page=1, bbox=_BB)
+    enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="overall, The yield was 92 percent.")}))
+    assert p.extra["glyph_word_recall"] == {"matched": 5, "total": 6}
+
+
+def test_prose_word_recall_detects_lost_words():
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was", page=1, bbox=_BB)
+    enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="The yield was 92 percent")}))
+    assert p.extra["glyph_word_recall"] == {"matched": 3, "total": 5}
+
+
+def test_prose_word_recall_strips_script_tags_and_skips_empty_regions():
+    from pdf2md.enrich import record_block_recall
+
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the <sup>2</sup>nd point",
+              page=1, bbox=_BB)
+    record_block_recall(p, _FakePC(text="The 2nd point."))
+    assert p.extra["glyph_word_recall"]["matched"] == 3
+
+    empty = Block(id="#/q", type=BlockType.PARAGRAPH, text="orphan text", page=1, bbox=_BB)
+    record_block_recall(empty, _FakePC(text=""))
+    assert "glyph_word_recall" not in empty.extra
+
+
+def test_recall_summary_aggregates_and_counts_low_blocks():
+    from pdf2md.enrich import recall_summary
+
+    def block(recall):
+        return Block(id="#/b", type=BlockType.PARAGRAPH, text="x", page=1,
+                     extra={"glyph_word_recall": recall} if recall else {})
+
+    blocks = [
+        block({"matched": 98, "total": 100}),   # healthy
+        block({"matched": 4, "total": 10}),     # below the 0.90 floor
+        block(None),                            # OCR page / empty region: not measured
+    ]
+    assert recall_summary(blocks) == {
+        "blocks_measured": 2, "words_total": 110, "words_matched": 102,
+        "low_recall_blocks": 1,
+    }
+
+
+def test_numeric_accounting_canonicalizes_and_finds_missing():
+    from pdf2md.enrich import numeric_accounting
+
+    source = ("Table 3: −1,234.50 and 92; repeated 1,234 and 1,234; "
+              "trailing dot 12.; ligature ﬁne x²")
+    output = "-1234.50 ... 1234 ... 1234 ... 2"
+    report = numeric_accounting(source, output)
+    assert report["source_values"] == 7       # 3, -1234.50, 92, 1234, 1234, 12, 2
+    assert report["distinct_source_values"] == 6
+    assert report["conserved_values"] == 4    # minus sign, commas, trailing dot unified
+    assert report["missing_values"] == 3      # 92, the table number 3, and 12
+    assert {"value": "92", "count": 1} in report["missing_examples"]
+    assert {"value": "12", "count": 1} in report["missing_examples"]
+
+
+def test_numeric_accounting_survives_typeset_spacing_and_exponents():
+    # The two real-world artifact families: rendered mantissas space out their
+    # decimal point ("2 . 3"), and exponents ride as separate groups ("10 19"
+    # once text_scriptsplit has split the glued layer form "1019"). Both sides
+    # must tokenize to the same values.
+    from pdf2md.enrich import numeric_accounting
+
+    source = "cost 2.3 · 10 19 and rate d −0.5"
+    output = "2 . 3 · 10 <sup>19</sup> and d^{ -0.5 }"
+    report = numeric_accounting(source, output)
+    assert report["source_values"] == 4       # 2.3, 10, 19, -0.5
+    assert report["conserved_values"] == 4
+    assert report["missing_values"] == 0
+
+    # Dash style drift between the layer (en dash) and the markdown (hyphen)
+    # must not turn a page range into a phantom negative.
+    ranged = numeric_accounting("pages 152–159", "pages 152-159")
+    assert ranged["missing_values"] == 0 and ranged["conserved_values"] == 2
+
+
+def test_scriptsplit_separates_scripted_groups():
+    from pdf2md.scripts import _scriptsplit_text
+
+    def ch(text, l, b, r, t):
+        return (text, float(l), float(b), float(r), float(t))
+
+    # '10' on the baseline, a raised smaller '19' group after it.
+    chars = [
+        ch("1", 0, 0, 5, 10), ch("0", 5, 0, 10, 10),
+        ch("1", 11, 6.2, 14, 9), ch("9", 15, 6.2, 18, 9),
+        ch("x", 20, 0, 25, 10),
+    ]
+    assert _scriptsplit_text(chars).split() == ["10", "19", "x"]
+
+    # A real space already separates base from script: no extra separator.
+    spaced = [ch("1", 0, 0, 5, 10), ch(" ", 5, 0, 7, 10), ch("2", 8, 6.2, 11, 9)]
+    assert _scriptsplit_text(spaced) == "1 2\n"

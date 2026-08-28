@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "source_root": "..",
+  "documents": [
+    {
+      "id": "attention",
+      "path": "1706.03762v7.pdf",
+      "sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+    },
+    {
+      "id": "slater-50page",
+      "path": "slater-50page.pdf",
+      "sha256": "1694f97480e14a318ca88fa3350634d797cb9248b9bc367582a6d03ca9a2c5bd"
+    },
+    {
+      "id": "orbitals",
+      "path": "2207.10841v3.pdf",
+      "sha256": "416d651377c4cce7ec6c91680afba2764f1d4e549525bc657d147faf6c5e0ef0"
+    },
+    {
+      "id": "dolg-ecp",
+      "path": "dolg-ecp.pdf",
+      "sha256": "24f433c4edfb3f419016b2a90b4aecd989394925685ade3fe3efa66c3665011a"
+    }
+  ]
+}

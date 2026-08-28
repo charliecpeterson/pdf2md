@@ -1,0 +1,3730 @@
+{
+  "schema_version": 2,
+  "settings": {
+    "passage_budgets": [
+      1,
+      3,
+      5
+    ]
+  },
+  "documents": {
+    "intro-relativistic-qc": {
+      "source_sha256": "8958ff6dd820fee32a7a98a8cbdc97b3b036491ca04fc213b8d14b91ab081b02",
+      "provenance_sha256": "80077243680683486d707b4a6f3f2fba49d306d52f6792c95886a9448d14a084",
+      "page_count": 545,
+      "conversion_duration_s": 173.288
+    },
+    "atkins-physical-chemistry-8e": {
+      "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+      "provenance_sha256": "209f30e291fa331bde90851030adcfeac88e788b2640595c570080f5bfdcb8a3",
+      "page_count": 1085,
+      "conversion_duration_s": 1007.967
+    }
+  },
+  "results": [
+    {
+      "question_id": "relqc-kramers-theorem-degeneracy",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000111"
+      ],
+      "selected_pages": [
+        112
+      ],
+      "expected_pages": [
+        112
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.036908,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kramers-theorem-degeneracy",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000111",
+        "chunk-000110",
+        "chunk-000150"
+      ],
+      "selected_pages": [
+        111,
+        112,
+        151
+      ],
+      "expected_pages": [
+        112
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.037614,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kramers-theorem-degeneracy",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000111",
+        "chunk-000110",
+        "chunk-000150",
+        "chunk-000203",
+        "chunk-000306"
+      ],
+      "selected_pages": [
+        111,
+        112,
+        151,
+        204,
+        307
+      ],
+      "expected_pages": [
+        112
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.037346,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kramers-theorem-degeneracy",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-e013b5f7a7fecca08311"
+      ],
+      "selected_pages": [
+        112
+      ],
+      "expected_pages": [
+        112
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.088284,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kramers-theorem-degeneracy",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-e013b5f7a7fecca08311",
+        "passage-ecd6ddcb79d564eeab8e",
+        "passage-6c2c15fbd17f7071c134"
+      ],
+      "selected_pages": [
+        112,
+        230,
+        454
+      ],
+      "expected_pages": [
+        112
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.087628,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kramers-theorem-degeneracy",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-e013b5f7a7fecca08311",
+        "passage-ecd6ddcb79d564eeab8e",
+        "passage-6c2c15fbd17f7071c134",
+        "passage-80d8841673e4d30b3116",
+        "passage-f42ee324225fec94e1f5"
+      ],
+      "selected_pages": [
+        91,
+        112,
+        230,
+        454,
+        482
+      ],
+      "expected_pages": [
+        112
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.086829,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-fine-structure-constant",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000336"
+      ],
+      "selected_pages": [
+        337
+      ],
+      "expected_pages": [
+        337
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.035425,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-fine-structure-constant",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000336",
+        "chunk-000132",
+        "chunk-000376"
+      ],
+      "selected_pages": [
+        133,
+        337,
+        377
+      ],
+      "expected_pages": [
+        337
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.035276,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-fine-structure-constant",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000336",
+        "chunk-000132",
+        "chunk-000376",
+        "chunk-000248",
+        "chunk-000406"
+      ],
+      "selected_pages": [
+        133,
+        249,
+        337,
+        377,
+        407
+      ],
+      "expected_pages": [
+        337
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.035674,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-fine-structure-constant",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-9c8e16f60b1dbc587d36"
+      ],
+      "selected_pages": [
+        337
+      ],
+      "expected_pages": [
+        337
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.086265,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-fine-structure-constant",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-9c8e16f60b1dbc587d36",
+        "passage-1f6f1e67ba19f013d995",
+        "passage-0326df98ff9d77c823f6"
+      ],
+      "selected_pages": [
+        252,
+        337,
+        377
+      ],
+      "expected_pages": [
+        337
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.084448,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-fine-structure-constant",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-9c8e16f60b1dbc587d36",
+        "passage-1f6f1e67ba19f013d995",
+        "passage-0326df98ff9d77c823f6",
+        "passage-aa5e2cdf61443f1e685a",
+        "passage-a012d6265837b0285e38"
+      ],
+      "selected_pages": [
+        252,
+        337,
+        342,
+        377
+      ],
+      "expected_pages": [
+        337
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.25,
+      "retrieval_duration_s": 0.084684,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-c2star-character-b",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000164"
+      ],
+      "selected_pages": [
+        165
+      ],
+      "expected_pages": [
+        165
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.029746,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-c2star-character-b",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000164",
+        "chunk-000087",
+        "chunk-000166"
+      ],
+      "selected_pages": [
+        88,
+        165,
+        167
+      ],
+      "expected_pages": [
+        165
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.029743,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-c2star-character-b",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000164",
+        "chunk-000087",
+        "chunk-000166",
+        "chunk-000242",
+        "chunk-000411"
+      ],
+      "selected_pages": [
+        88,
+        165,
+        167,
+        243,
+        412
+      ],
+      "expected_pages": [
+        165
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.029938,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-c2star-character-b",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-dec8f7ed5582fa0d5ba9"
+      ],
+      "selected_pages": [
+        165
+      ],
+      "expected_pages": [
+        165
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.0704,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-c2star-character-b",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-dec8f7ed5582fa0d5ba9",
+        "passage-3719e688d310d833c3b4",
+        "passage-0f2415d24191a0d2137a"
+      ],
+      "selected_pages": [
+        165,
+        176
+      ],
+      "expected_pages": [
+        165
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.5,
+      "retrieval_duration_s": 0.069527,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-c2star-character-b",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-dec8f7ed5582fa0d5ba9",
+        "passage-3719e688d310d833c3b4",
+        "passage-0f2415d24191a0d2137a",
+        "passage-e03d7e3ec631c42837b8",
+        "passage-8af1f1ee7ad4c3a97f86"
+      ],
+      "selected_pages": [
+        90,
+        165,
+        176
+      ],
+      "expected_pages": [
+        165
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.070652,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-figure-1-1-panels",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000020"
+      ],
+      "selected_pages": [
+        20
+      ],
+      "expected_pages": [
+        20
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.031913,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-figure-1-1-panels",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000020",
+        "chunk-000019",
+        "chunk-000468"
+      ],
+      "selected_pages": [
+        19,
+        20,
+        469
+      ],
+      "expected_pages": [
+        20
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.031906,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-figure-1-1-panels",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000020",
+        "chunk-000019",
+        "chunk-000468",
+        "chunk-000185",
+        "chunk-000119"
+      ],
+      "selected_pages": [
+        19,
+        20,
+        120,
+        186,
+        469
+      ],
+      "expected_pages": [
+        20
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.032161,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-figure-1-1-panels",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-2b6bee9da624b4847aaf"
+      ],
+      "selected_pages": [
+        19,
+        20
+      ],
+      "expected_pages": [
+        20
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.5,
+      "retrieval_duration_s": 0.07562,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-figure-1-1-panels",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-2b6bee9da624b4847aaf",
+        "passage-c175ffdc400fe34afe23",
+        "passage-58fdb32dc6d88fff509a"
+      ],
+      "selected_pages": [
+        19,
+        20
+      ],
+      "expected_pages": [
+        20
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.5,
+      "retrieval_duration_s": 0.07649,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-figure-1-1-panels",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-2b6bee9da624b4847aaf",
+        "passage-c175ffdc400fe34afe23",
+        "passage-58fdb32dc6d88fff509a",
+        "passage-f6ee174a66753a54c2d1",
+        "passage-4059867e07fd41bb5089"
+      ],
+      "selected_pages": [
+        19,
+        20,
+        120
+      ],
+      "expected_pages": [
+        20
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.076252,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-purpose",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000217"
+      ],
+      "selected_pages": [
+        218
+      ],
+      "expected_pages": [
+        193,
+        196
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.034413,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-purpose",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000217",
+        "chunk-000398",
+        "chunk-000372"
+      ],
+      "selected_pages": [
+        218,
+        373,
+        399
+      ],
+      "expected_pages": [
+        193,
+        196
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.034488,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-purpose",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000217",
+        "chunk-000398",
+        "chunk-000372",
+        "chunk-000192",
+        "chunk-000399"
+      ],
+      "selected_pages": [
+        193,
+        218,
+        373,
+        399,
+        400
+      ],
+      "expected_pages": [
+        193,
+        196
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 0.5,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.034925,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-purpose",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-4b38719da1bb5cda4b4b"
+      ],
+      "selected_pages": [
+        67
+      ],
+      "expected_pages": [
+        193,
+        196
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.081854,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-purpose",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-4b38719da1bb5cda4b4b",
+        "passage-0ac5ee0704746f8e794e",
+        "passage-e395f2e0d55ece3f9a46"
+      ],
+      "selected_pages": [
+        64,
+        67,
+        399
+      ],
+      "expected_pages": [
+        193,
+        196
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.082083,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-purpose",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-4b38719da1bb5cda4b4b",
+        "passage-0ac5ee0704746f8e794e",
+        "passage-e395f2e0d55ece3f9a46",
+        "passage-8266cb5bfaa6166a4e83",
+        "passage-df78f620307d50dcce85"
+      ],
+      "selected_pages": [
+        64,
+        67,
+        214,
+        399,
+        400
+      ],
+      "expected_pages": [
+        193,
+        196
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.08124,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-reference",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000306"
+      ],
+      "selected_pages": [
+        307
+      ],
+      "expected_pages": [
+        193
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.032349,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-reference",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000306",
+        "chunk-000279",
+        "chunk-000083"
+      ],
+      "selected_pages": [
+        83,
+        280,
+        307
+      ],
+      "expected_pages": [
+        193
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.03276,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-reference",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000306",
+        "chunk-000279",
+        "chunk-000083",
+        "chunk-000190",
+        "chunk-000265"
+      ],
+      "selected_pages": [
+        83,
+        191,
+        266,
+        280,
+        307
+      ],
+      "expected_pages": [
+        193
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.032557,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-reference",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-3cb258b8b7d1fda65f16"
+      ],
+      "selected_pages": [
+        191
+      ],
+      "expected_pages": [
+        193
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.076066,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-reference",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-3cb258b8b7d1fda65f16",
+        "passage-db9b00372aff1a6edbfc",
+        "passage-736d0d889d49aab724f9"
+      ],
+      "selected_pages": [
+        191,
+        215
+      ],
+      "expected_pages": [
+        193
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.077407,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "relqc-kinetic-balance-reference",
+      "document_id": "intro-relativistic-qc",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-3cb258b8b7d1fda65f16",
+        "passage-db9b00372aff1a6edbfc",
+        "passage-736d0d889d49aab724f9",
+        "passage-1574968c34391b507dc7",
+        "passage-29c93cfcef9dde365469"
+      ],
+      "selected_pages": [
+        191,
+        215,
+        341,
+        516
+      ],
+      "expected_pages": [
+        193
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.076002,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-definition",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000166"
+      ],
+      "selected_pages": [
+        154
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.123962,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-definition",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000166",
+        "chunk-000182",
+        "chunk-000184"
+      ],
+      "selected_pages": [
+        154,
+        168,
+        170
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.124635,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-definition",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000166",
+        "chunk-000182",
+        "chunk-000184",
+        "chunk-000186",
+        "chunk-000189"
+      ],
+      "selected_pages": [
+        154,
+        168,
+        170,
+        172,
+        175
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.123779,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-definition",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-a08e2c206aaf91bb2a37"
+      ],
+      "selected_pages": [
+        154
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.235723,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-definition",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-a08e2c206aaf91bb2a37",
+        "passage-e2c0ee74a775db5a3e00",
+        "passage-2f2a37be4eb80d0e52b5"
+      ],
+      "selected_pages": [
+        154,
+        170,
+        172
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.235657,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-definition",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "prose_fact",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-a08e2c206aaf91bb2a37",
+        "passage-e2c0ee74a775db5a3e00",
+        "passage-2f2a37be4eb80d0e52b5",
+        "passage-183f12692470d5dfc281",
+        "passage-0850a917f14b4d27768f"
+      ],
+      "selected_pages": [
+        154,
+        170,
+        172,
+        251,
+        899
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.23667,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-clapeyron-equation",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "equation_definition",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000170"
+      ],
+      "selected_pages": [
+        158
+      ],
+      "expected_pages": [
+        158
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.118143,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-clapeyron-equation",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "equation_definition",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000170",
+        "chunk-000173",
+        "chunk-000179"
+      ],
+      "selected_pages": [
+        158,
+        161,
+        166
+      ],
+      "expected_pages": [
+        158
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.11679,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-clapeyron-equation",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "equation_definition",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000170",
+        "chunk-000173",
+        "chunk-000179",
+        "chunk-000172",
+        "chunk-000171"
+      ],
+      "selected_pages": [
+        158,
+        159,
+        160,
+        161,
+        166
+      ],
+      "expected_pages": [
+        158
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.116754,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-clapeyron-equation",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "equation_definition",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-35547d9a1e49018df1bc"
+      ],
+      "selected_pages": [
+        158
+      ],
+      "expected_pages": [
+        158
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.218868,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-clapeyron-equation",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "equation_definition",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-35547d9a1e49018df1bc",
+        "passage-f21ec3cc725841d0c71b",
+        "passage-98c4d3ef21e88971b3e3"
+      ],
+      "selected_pages": [
+        158,
+        161
+      ],
+      "expected_pages": [
+        158
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.5,
+      "retrieval_duration_s": 0.220541,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-clapeyron-equation",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "equation_definition",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-35547d9a1e49018df1bc",
+        "passage-f21ec3cc725841d0c71b",
+        "passage-98c4d3ef21e88971b3e3",
+        "passage-5e3ee3538154b7245485",
+        "passage-34a73448282d98755382"
+      ],
+      "selected_pages": [
+        158,
+        159,
+        161
+      ],
+      "expected_pages": [
+        158
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.219008,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-symbol",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000166"
+      ],
+      "selected_pages": [
+        154
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.109533,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-symbol",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000166",
+        "chunk-001158",
+        "chunk-000161"
+      ],
+      "selected_pages": [
+        149,
+        154,
+        1072
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.108915,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-symbol",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000166",
+        "chunk-001158",
+        "chunk-000161",
+        "chunk-000176",
+        "chunk-000174"
+      ],
+      "selected_pages": [
+        149,
+        154,
+        162,
+        164,
+        1072
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.109161,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-symbol",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-a08e2c206aaf91bb2a37"
+      ],
+      "selected_pages": [
+        154
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.207933,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-symbol",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-a08e2c206aaf91bb2a37",
+        "passage-0115665682e72fd856cc",
+        "passage-cb80c9c15e6aa6f0bca0"
+      ],
+      "selected_pages": [
+        154
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.206105,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-chemical-potential-symbol",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "symbol_meaning",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-a08e2c206aaf91bb2a37",
+        "passage-0115665682e72fd856cc",
+        "passage-cb80c9c15e6aa6f0bca0",
+        "passage-b9c39c8b7a76caa08b8b",
+        "passage-49559522a858da42f1c4"
+      ],
+      "selected_pages": [
+        154,
+        155
+      ],
+      "expected_pages": [
+        154
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.5,
+      "retrieval_duration_s": 0.204599,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-si-temperature-unit",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-001075"
+      ],
+      "selected_pages": [
+        992
+      ],
+      "expected_pages": [
+        992
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.131358,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-si-temperature-unit",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-001075",
+        "chunk-001077",
+        "chunk-000035"
+      ],
+      "selected_pages": [
+        36,
+        992,
+        994
+      ],
+      "expected_pages": [
+        992
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.131232,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-si-temperature-unit",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-001075",
+        "chunk-001077",
+        "chunk-000035",
+        "chunk-001076",
+        "chunk-001104"
+      ],
+      "selected_pages": [
+        36,
+        992,
+        993,
+        994,
+        1021
+      ],
+      "expected_pages": [
+        992
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.131545,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-si-temperature-unit",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-7401709d17a2c70c1671"
+      ],
+      "selected_pages": [
+        992
+      ],
+      "expected_pages": [
+        992
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.246867,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-si-temperature-unit",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-7401709d17a2c70c1671",
+        "passage-14f1ca4028daa60e5475",
+        "passage-f9e095de48c211a636ea"
+      ],
+      "selected_pages": [
+        992
+      ],
+      "expected_pages": [
+        992
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.256551,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-si-temperature-unit",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "table_cell",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-7401709d17a2c70c1671",
+        "passage-14f1ca4028daa60e5475",
+        "passage-f9e095de48c211a636ea",
+        "passage-e88c625a062c453ea6e2",
+        "passage-97bd2b48183da2a0ad08"
+      ],
+      "selected_pages": [
+        992,
+        993
+      ],
+      "expected_pages": [
+        992
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.5,
+      "retrieval_duration_s": 0.253522,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-co2-liquid-pressure",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000164"
+      ],
+      "selected_pages": [
+        152
+      ],
+      "expected_pages": [
+        152
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.124161,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-co2-liquid-pressure",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000164",
+        "chunk-000163",
+        "chunk-000106"
+      ],
+      "selected_pages": [
+        103,
+        151,
+        152
+      ],
+      "expected_pages": [
+        152
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.123655,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-co2-liquid-pressure",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000164",
+        "chunk-000163",
+        "chunk-000106",
+        "chunk-000180",
+        "chunk-000162"
+      ],
+      "selected_pages": [
+        103,
+        150,
+        151,
+        152,
+        166
+      ],
+      "expected_pages": [
+        152
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.124021,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-co2-liquid-pressure",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-88fb88bb43328c72272a"
+      ],
+      "selected_pages": [
+        152
+      ],
+      "expected_pages": [
+        152
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.237541,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-co2-liquid-pressure",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-88fb88bb43328c72272a",
+        "passage-b109bc663db1c0fdd8d2",
+        "passage-bf067a12294861eab08f"
+      ],
+      "selected_pages": [
+        152
+      ],
+      "expected_pages": [
+        152
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.238615,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-co2-liquid-pressure",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "figure",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-88fb88bb43328c72272a",
+        "passage-b109bc663db1c0fdd8d2",
+        "passage-bf067a12294861eab08f",
+        "passage-92f8483571e29bc1e32c",
+        "passage-9a90c135f217901c3786"
+      ],
+      "selected_pages": [
+        152,
+        166
+      ],
+      "expected_pages": [
+        152
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.5,
+      "retrieval_duration_s": 0.239584,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-gas-chemical-potential-slope",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000166"
+      ],
+      "selected_pages": [
+        154
+      ],
+      "expected_pages": [
+        154,
+        155
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 0.5,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.140666,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-gas-chemical-potential-slope",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000166",
+        "chunk-000167",
+        "chunk-000146"
+      ],
+      "selected_pages": [
+        138,
+        154,
+        155
+      ],
+      "expected_pages": [
+        154,
+        155
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.6666666666666666,
+      "retrieval_duration_s": 0.139885,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-gas-chemical-potential-slope",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000166",
+        "chunk-000167",
+        "chunk-000146",
+        "chunk-000175",
+        "chunk-000173"
+      ],
+      "selected_pages": [
+        138,
+        154,
+        155,
+        161,
+        163
+      ],
+      "expected_pages": [
+        154,
+        155
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.4,
+      "retrieval_duration_s": 0.139004,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-gas-chemical-potential-slope",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-665ce6b751f67922d284"
+      ],
+      "selected_pages": [
+        138
+      ],
+      "expected_pages": [
+        154,
+        155
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.265746,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-gas-chemical-potential-slope",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-665ce6b751f67922d284",
+        "passage-cb80c9c15e6aa6f0bca0",
+        "passage-21eb07e60889b7e95b0d"
+      ],
+      "selected_pages": [
+        138,
+        154,
+        155
+      ],
+      "expected_pages": [
+        154,
+        155
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.6666666666666666,
+      "retrieval_duration_s": 0.271213,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-gas-chemical-potential-slope",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "cross_page_explanation",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-665ce6b751f67922d284",
+        "passage-cb80c9c15e6aa6f0bca0",
+        "passage-21eb07e60889b7e95b0d",
+        "passage-b9c39c8b7a76caa08b8b",
+        "passage-92f8483571e29bc1e32c"
+      ],
+      "selected_pages": [
+        138,
+        152,
+        154,
+        155
+      ],
+      "expected_pages": [
+        154,
+        155
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.5,
+      "retrieval_duration_s": 0.269303,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-phase-data-reference",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000162"
+      ],
+      "selected_pages": [
+        150
+      ],
+      "expected_pages": [
+        150
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.129594,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-phase-data-reference",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000162",
+        "chunk-000772",
+        "chunk-000400"
+      ],
+      "selected_pages": [
+        150,
+        374,
+        718
+      ],
+      "expected_pages": [
+        150
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.129463,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-phase-data-reference",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000162",
+        "chunk-000772",
+        "chunk-000400",
+        "chunk-000243",
+        "chunk-000527"
+      ],
+      "selected_pages": [
+        150,
+        226,
+        374,
+        494,
+        718
+      ],
+      "expected_pages": [
+        150
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.129507,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-phase-data-reference",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-58ac88812ae4f61ecbc8"
+      ],
+      "selected_pages": [
+        150
+      ],
+      "expected_pages": [
+        150
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.247126,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-phase-data-reference",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-58ac88812ae4f61ecbc8",
+        "passage-35547d9a1e49018df1bc",
+        "passage-17307a30f5ad7c580501"
+      ],
+      "selected_pages": [
+        150,
+        153,
+        158
+      ],
+      "expected_pages": [
+        150
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.247988,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-phase-data-reference",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "reference",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-58ac88812ae4f61ecbc8",
+        "passage-35547d9a1e49018df1bc",
+        "passage-17307a30f5ad7c580501",
+        "passage-e108eaa6070a49428f26",
+        "passage-183f12692470d5dfc281"
+      ],
+      "selected_pages": [
+        150,
+        153,
+        158,
+        224,
+        225,
+        899
+      ],
+      "expected_pages": [
+        150
+      ],
+      "answerable": true,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.16666666666666666,
+      "retrieval_duration_s": 0.245345,
+      "review_queue_scored": true,
+      "expected_action_required": false,
+      "queue_flagged": false,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-rrk-corrupted-quanta-diagram",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "unanswerable",
+      "retrieval": "chunks",
+      "budget": 1,
+      "selected_ids": [
+        "chunk-000923"
+      ],
+      "selected_pages": [
+        856
+      ],
+      "expected_pages": [
+        856
+      ],
+      "answerable": false,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 1.0,
+      "retrieval_duration_s": 0.143287,
+      "review_queue_scored": true,
+      "expected_action_required": true,
+      "queue_flagged": true,
+      "review_flagged": true
+    },
+    {
+      "question_id": "atkins-rrk-corrupted-quanta-diagram",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "unanswerable",
+      "retrieval": "chunks",
+      "budget": 3,
+      "selected_ids": [
+        "chunk-000923",
+        "chunk-000842",
+        "chunk-000236"
+      ],
+      "selected_pages": [
+        219,
+        780,
+        856
+      ],
+      "expected_pages": [
+        856
+      ],
+      "answerable": false,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.3333333333333333,
+      "retrieval_duration_s": 0.142561,
+      "review_queue_scored": true,
+      "expected_action_required": true,
+      "queue_flagged": true,
+      "review_flagged": true
+    },
+    {
+      "question_id": "atkins-rrk-corrupted-quanta-diagram",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "unanswerable",
+      "retrieval": "chunks",
+      "budget": 5,
+      "selected_ids": [
+        "chunk-000923",
+        "chunk-000842",
+        "chunk-000236",
+        "chunk-000373",
+        "chunk-000040"
+      ],
+      "selected_pages": [
+        41,
+        219,
+        349,
+        780,
+        856
+      ],
+      "expected_pages": [
+        856
+      ],
+      "answerable": false,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.2,
+      "retrieval_duration_s": 0.142629,
+      "review_queue_scored": true,
+      "expected_action_required": true,
+      "queue_flagged": true,
+      "review_flagged": true
+    },
+    {
+      "question_id": "atkins-rrk-corrupted-quanta-diagram",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "unanswerable",
+      "retrieval": "passages",
+      "budget": 1,
+      "selected_ids": [
+        "passage-7ce38ad23915fa6cce74"
+      ],
+      "selected_pages": [
+        865
+      ],
+      "expected_pages": [
+        856
+      ],
+      "answerable": false,
+      "has_expected_pages": true,
+      "page_hit": false,
+      "page_recall": 0.0,
+      "page_precision": 0.0,
+      "retrieval_duration_s": 0.270648,
+      "review_queue_scored": true,
+      "expected_action_required": true,
+      "queue_flagged": true,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-rrk-corrupted-quanta-diagram",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "unanswerable",
+      "retrieval": "passages",
+      "budget": 3,
+      "selected_ids": [
+        "passage-7ce38ad23915fa6cce74",
+        "passage-c6dcc324b00f1e3fc21e",
+        "passage-03748a79115aab618bec"
+      ],
+      "selected_pages": [
+        97,
+        98,
+        856,
+        865
+      ],
+      "expected_pages": [
+        856
+      ],
+      "answerable": false,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.25,
+      "retrieval_duration_s": 0.278153,
+      "review_queue_scored": true,
+      "expected_action_required": true,
+      "queue_flagged": true,
+      "review_flagged": false
+    },
+    {
+      "question_id": "atkins-rrk-corrupted-quanta-diagram",
+      "document_id": "atkins-physical-chemistry-8e",
+      "document_class": "technical_textbook",
+      "representation": "unanswerable",
+      "retrieval": "passages",
+      "budget": 5,
+      "selected_ids": [
+        "passage-7ce38ad23915fa6cce74",
+        "passage-c6dcc324b00f1e3fc21e",
+        "passage-03748a79115aab618bec",
+        "passage-1359428ff68bb1bd7971",
+        "passage-333ee3fe522e3e308dee"
+      ],
+      "selected_pages": [
+        97,
+        98,
+        566,
+        593,
+        856,
+        865
+      ],
+      "expected_pages": [
+        856
+      ],
+      "answerable": false,
+      "has_expected_pages": true,
+      "page_hit": true,
+      "page_recall": 1.0,
+      "page_precision": 0.16666666666666666,
+      "retrieval_duration_s": 0.274472,
+      "review_queue_scored": true,
+      "expected_action_required": true,
+      "queue_flagged": true,
+      "review_flagged": false
+    }
+  ],
+  "summary": {
+    "chunks": {
+      "1": {
+        "questions": 14,
+        "answerable_questions": 13,
+        "page_evaluable_questions": 14,
+        "page_hits": 12,
+        "mean_page_recall": 0.8214,
+        "mean_page_precision": 0.8571,
+        "retrieval_duration_s": 1.221458,
+        "review_queue": {
+          "questions": 14,
+          "true_positives": 1,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "3": {
+        "questions": 14,
+        "answerable_questions": 13,
+        "page_evaluable_questions": 14,
+        "page_hits": 12,
+        "mean_page_recall": 0.8571,
+        "mean_page_precision": 0.3095,
+        "retrieval_duration_s": 1.218923,
+        "review_queue": {
+          "questions": 14,
+          "true_positives": 1,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "5": {
+        "questions": 14,
+        "answerable_questions": 13,
+        "page_evaluable_questions": 14,
+        "page_hits": 13,
+        "mean_page_recall": 0.8929,
+        "mean_page_precision": 0.2,
+        "retrieval_duration_s": 1.219001,
+        "review_queue": {
+          "questions": 14,
+          "true_positives": 1,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      }
+    },
+    "passages": {
+      "1": {
+        "questions": 14,
+        "answerable_questions": 13,
+        "page_evaluable_questions": 14,
+        "page_hits": 10,
+        "mean_page_recall": 0.7143,
+        "mean_page_precision": 0.6786,
+        "retrieval_duration_s": 2.408941,
+        "review_queue": {
+          "questions": 14,
+          "true_positives": 1,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "3": {
+        "questions": 14,
+        "answerable_questions": 13,
+        "page_evaluable_questions": 14,
+        "page_hits": 12,
+        "mean_page_recall": 0.8571,
+        "mean_page_precision": 0.4821,
+        "retrieval_duration_s": 2.432406,
+        "review_queue": {
+          "questions": 14,
+          "true_positives": 1,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      },
+      "5": {
+        "questions": 14,
+        "answerable_questions": 13,
+        "page_evaluable_questions": 14,
+        "page_hits": 12,
+        "mean_page_recall": 0.8571,
+        "mean_page_precision": 0.2845,
+        "retrieval_duration_s": 2.418162,
+        "review_queue": {
+          "questions": 14,
+          "true_positives": 1,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      }
+    }
+  },
+  "by_representation": {
+    "cross_page_explanation": {
+      "chunks": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.25,
+          "mean_page_precision": 0.5,
+          "retrieval_duration_s": 0.175079,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.5,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.174373,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 0.75,
+          "mean_page_precision": 0.3,
+          "retrieval_duration_s": 0.173929,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      },
+      "passages": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 0,
+          "mean_page_recall": 0.0,
+          "mean_page_precision": 0.0,
+          "retrieval_duration_s": 0.3476,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.5,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.353296,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.5,
+          "mean_page_precision": 0.25,
+          "retrieval_duration_s": 0.350543,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      }
+    },
+    "equation_definition": {
+      "chunks": {
+        "1": {
+          "questions": 1,
+          "answerable_questions": 1,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.118143,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 1,
+          "answerable_questions": 1,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.11679,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 1,
+          "answerable_questions": 1,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.2,
+          "retrieval_duration_s": 0.116754,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      },
+      "passages": {
+        "1": {
+          "questions": 1,
+          "answerable_questions": 1,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.218868,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 1,
+          "answerable_questions": 1,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.5,
+          "retrieval_duration_s": 0.220541,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 1,
+          "answerable_questions": 1,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.219008,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      }
+    },
+    "figure": {
+      "chunks": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.156074,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.155561,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.2,
+          "retrieval_duration_s": 0.156182,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      },
+      "passages": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.75,
+          "retrieval_duration_s": 0.313161,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.75,
+          "retrieval_duration_s": 0.315105,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.4167,
+          "retrieval_duration_s": 0.315836,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      }
+    },
+    "prose_fact": {
+      "chunks": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.16087,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.162249,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.2,
+          "retrieval_duration_s": 0.161125,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      },
+      "passages": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.324007,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.323285,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.2,
+          "retrieval_duration_s": 0.323499,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      }
+    },
+    "reference": {
+      "chunks": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.5,
+          "mean_page_precision": 0.5,
+          "retrieval_duration_s": 0.161943,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.5,
+          "mean_page_precision": 0.1667,
+          "retrieval_duration_s": 0.162223,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.5,
+          "mean_page_precision": 0.1,
+          "retrieval_duration_s": 0.162064,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      },
+      "passages": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.5,
+          "mean_page_precision": 0.5,
+          "retrieval_duration_s": 0.323192,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.5,
+          "mean_page_precision": 0.1667,
+          "retrieval_duration_s": 0.325395,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 1,
+          "mean_page_recall": 0.5,
+          "mean_page_precision": 0.0833,
+          "retrieval_duration_s": 0.321347,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      }
+    },
+    "symbol_meaning": {
+      "chunks": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.144958,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.144191,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.2,
+          "retrieval_duration_s": 0.144835,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      },
+      "passages": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.294198,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.6667,
+          "retrieval_duration_s": 0.290553,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.375,
+          "retrieval_duration_s": 0.289283,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      }
+    },
+    "table_cell": {
+      "chunks": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.161104,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.160975,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.2,
+          "retrieval_duration_s": 0.161483,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      },
+      "passages": {
+        "1": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.317267,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "3": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.75,
+          "retrieval_duration_s": 0.326078,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        },
+        "5": {
+          "questions": 2,
+          "answerable_questions": 2,
+          "page_evaluable_questions": 2,
+          "page_hits": 2,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.4167,
+          "retrieval_duration_s": 0.324174,
+          "review_queue": {
+            "questions": 2,
+            "true_positives": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": null,
+            "recall": null
+          }
+        }
+      }
+    },
+    "unanswerable": {
+      "chunks": {
+        "1": {
+          "questions": 1,
+          "answerable_questions": 0,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 1.0,
+          "retrieval_duration_s": 0.143287,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "3": {
+          "questions": 1,
+          "answerable_questions": 0,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.3333,
+          "retrieval_duration_s": 0.142561,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "5": {
+          "questions": 1,
+          "answerable_questions": 0,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.2,
+          "retrieval_duration_s": 0.142629,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        }
+      },
+      "passages": {
+        "1": {
+          "questions": 1,
+          "answerable_questions": 0,
+          "page_evaluable_questions": 1,
+          "page_hits": 0,
+          "mean_page_recall": 0.0,
+          "mean_page_precision": 0.0,
+          "retrieval_duration_s": 0.270648,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "3": {
+          "questions": 1,
+          "answerable_questions": 0,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.25,
+          "retrieval_duration_s": 0.278153,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "5": {
+          "questions": 1,
+          "answerable_questions": 0,
+          "page_evaluable_questions": 1,
+          "page_hits": 1,
+          "mean_page_recall": 1.0,
+          "mean_page_precision": 0.1667,
+          "retrieval_duration_s": 0.274472,
+          "review_queue": {
+            "questions": 1,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        }
+      }
+    }
+  },
+  "by_document_class": {
+    "technical_textbook": {
+      "chunks": {
+        "1": {
+          "questions": 14,
+          "answerable_questions": 13,
+          "page_evaluable_questions": 14,
+          "page_hits": 12,
+          "mean_page_recall": 0.8214,
+          "mean_page_precision": 0.8571,
+          "retrieval_duration_s": 1.221458,
+          "review_queue": {
+            "questions": 14,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "3": {
+          "questions": 14,
+          "answerable_questions": 13,
+          "page_evaluable_questions": 14,
+          "page_hits": 12,
+          "mean_page_recall": 0.8571,
+          "mean_page_precision": 0.3095,
+          "retrieval_duration_s": 1.218923,
+          "review_queue": {
+            "questions": 14,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "5": {
+          "questions": 14,
+          "answerable_questions": 13,
+          "page_evaluable_questions": 14,
+          "page_hits": 13,
+          "mean_page_recall": 0.8929,
+          "mean_page_precision": 0.2,
+          "retrieval_duration_s": 1.219001,
+          "review_queue": {
+            "questions": 14,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        }
+      },
+      "passages": {
+        "1": {
+          "questions": 14,
+          "answerable_questions": 13,
+          "page_evaluable_questions": 14,
+          "page_hits": 10,
+          "mean_page_recall": 0.7143,
+          "mean_page_precision": 0.6786,
+          "retrieval_duration_s": 2.408941,
+          "review_queue": {
+            "questions": 14,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "3": {
+          "questions": 14,
+          "answerable_questions": 13,
+          "page_evaluable_questions": 14,
+          "page_hits": 12,
+          "mean_page_recall": 0.8571,
+          "mean_page_precision": 0.4821,
+          "retrieval_duration_s": 2.432406,
+          "review_queue": {
+            "questions": 14,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        },
+        "5": {
+          "questions": 14,
+          "answerable_questions": 13,
+          "page_evaluable_questions": 14,
+          "page_hits": 12,
+          "mean_page_recall": 0.8571,
+          "mean_page_precision": 0.2845,
+          "retrieval_duration_s": 2.418162,
+          "review_queue": {
+            "questions": 14,
+            "true_positives": 1,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        }
+      }
+    }
+  },
+  "comparison": {
+    "budgets": {
+      "1": {
+        "page_hit_delta": -2,
+        "mean_page_recall_delta": -0.1071,
+        "mean_page_precision_delta": -0.1785,
+        "passed": false
+      },
+      "3": {
+        "page_hit_delta": 0,
+        "mean_page_recall_delta": 0.0,
+        "mean_page_precision_delta": 0.1726,
+        "passed": true
+      },
+      "5": {
+        "page_hit_delta": -1,
+        "mean_page_recall_delta": -0.0358,
+        "mean_page_precision_delta": 0.0845,
+        "passed": false
+      }
+    },
+    "passed": false
+  },
+  "calibration": {
+    "status": "not_applicable",
+    "reason": "The benchmark emits categorical outcomes, not confidence-like probabilities."
+  },
+  "questions_sha256": "c574ad28d8d3070389c32bb6c4d7274bc108f9fead2ab6080c121231b58dc679"
+}

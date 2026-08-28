@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-08-15",
+  "purpose": "Record whether current corpus documents have an independent machine-readable source with semantic fields that overlap extracted values.",
+  "contract": {
+    "independence": "Paper source text and OCR-derived identifiers do not qualify as an independent reference.",
+    "mapping": "An adapter is eligible only when stable semantic keys can be authored without borrowing the uncertain OCR key or value under test.",
+    "override": "Only an exact independent reference may supply a replacement value; scientific and internal consistency checks remain support or review evidence."
+  },
+  "candidates": [
+    {
+      "id": "basis-set-exchange",
+      "source_type": "trusted_database",
+      "url": "https://molssi-bse.github.io/basis_set_exchange-apidoc/reference.html",
+      "observed_url": "https://www.basissetexchange.org/api/metadata",
+      "observed_sha256": "c669ec3bb362894183b07955a699dc711dc8bf59a3934e147a26caaff36ed83f",
+      "available_fields": [
+        "basis_set_metadata",
+        "basis_functions",
+        "effective_core_potentials"
+      ],
+      "matching_extracted_fields": [],
+      "decision": "no_adapter",
+      "reason": "The current metadata contains no BFD family, and its other ECP families do not identify the tabulated energies, molecular errors, or timings extracted from the BFD paper."
+    },
+    {
+      "id": "pyscf-bfd-data",
+      "source_type": "maintained_software_dataset",
+      "url": "https://pyscf.org/_modules/pyscf/gto/basis.html",
+      "available_fields": [
+        "bfd_basis_parameters",
+        "bfd_pseudopotential_parameters"
+      ],
+      "matching_extracted_fields": [],
+      "decision": "no_adapter",
+      "reason": "PySCF ships machine-readable BFD basis and pseudopotential parameters, while the extracted paper tables contain energy errors, molecular properties, and timings rather than those parameters."
+    },
+    {
+      "id": "bfd-author-supplement",
+      "source_type": "author_supplement",
+      "url": "https://burkatzki.com/pseudos/index.2.html",
+      "available_fields": [],
+      "matching_extracted_fields": [],
+      "decision": "unavailable",
+      "reason": "The current QMCPACK documentation still points to this historical BFD source, but the target now returns 404 and cannot back a reproducible adapter."
+    },
+    {
+      "id": "arxiv-2207.10841-source",
+      "source_type": "publisher_source_bundle",
+      "url": "https://export.arxiv.org/e-print/2207.10841v3",
+      "observed_sha256": "bc3d7505d090d75588a61f7122da59e3e1d34ad5328f3eb5b706aa96a530690d",
+      "available_fields": [
+        "latex_manuscript",
+        "figure_pdfs"
+      ],
+      "matching_extracted_fields": [],
+      "decision": "no_independent_reference",
+      "reason": "The bundle contains manuscript source and figure PDFs but no independent CSV, JSON, or tabular supplement. Re-reading the same manuscript source would not independently verify extracted values."
+    }
+  ],
+  "implemented_nonexternal_checks": [
+    "exact_table_totals",
+    "values_repeated_elsewhere_in_paper",
+    "exact_parameter_symmetry",
+    "exact_dimension_conservation"
+  ],
+  "summary": {
+    "candidates_checked": 4,
+    "candidates_with_matching_extracted_fields": 0,
+    "eligible_new_adapters": 0,
+    "decision": "wait_for_semantically_overlapping_source"
+  }
+}

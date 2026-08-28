@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "purpose": "Frozen post-experiment decision about numeric replacement authority and review defaults.",
+  "artifacts": {
+    "sources": {
+      "path": "tests/promotion_decision_sources.json",
+      "sha256": "401c303cf133bb1e63033a4288b4ca3735fa298411483e9f892e0290ae52e657"
+    },
+    "report": {
+      "path": "out/reviews/promotion-decision-v1.json",
+      "sha256": "4942f8e0a242f83709e395793100887277b91e5a12659a0234870aef4d18b2fb"
+    }
+  },
+  "expected": {
+    "sources_sha256": "401c303cf133bb1e63033a4288b4ca3735fa298411483e9f892e0290ae52e657",
+    "evidence": {
+      "fixed_reader_score_0_99": {
+        "accepted": 54,
+        "correct": 54,
+        "wrong": 0,
+        "proposals": 2,
+        "corrections": 2,
+        "regressions": 0,
+        "wrong_replacement_rate_upper_95": 0.65761977
+      },
+      "learned_threshold_heldout_wrong": 1,
+      "natural_external_reference_cells": 0,
+      "external_reference_audit": {
+        "candidates_checked": 4,
+        "candidates_with_matching_extracted_fields": 0,
+        "eligible_new_adapters": 0,
+        "decision": "wait_for_semantically_overlapping_source"
+      },
+      "internal_exact_checks": {
+        "checks": 24,
+        "outcomes": {
+          "agree": 21,
+          "disagree": 2,
+          "tool_refused": 1
+        },
+        "replacement_values_emitted": false
+      },
+      "rendering_instability": {
+        "cells": 70,
+        "unstable_primary_errors": 13,
+        "unstable_clean_primary": 15,
+        "primary_error_sensitivity": 0.92857143,
+        "primary_error_specificity": 0.73214286,
+        "primary_error_positive_predictive_value": 0.46428571
+      },
+      "new_layout_consensus": {
+        "agree": 238,
+        "disagree": 0,
+        "tool_refused": 7
+      },
+      "heldout_review": {
+        "active_beats_confidence_stratified_on_every_document_and_budget": false,
+        "promotion": "retain_confidence_stratified_default"
+      }
+    },
+    "decision": {
+      "automatic_ocr_value_promotion": "not_defined",
+      "exact_external_reference_override": "eligible_when_supplied_and_semantically_mapped",
+      "new_external_adapter": "wait_for_semantically_overlapping_source",
+      "review_default": "retain_confidence_stratified_default",
+      "rendering_instability": "review_ranking_only",
+      "internal_scientific_checks": "support_or_review_only",
+      "experimental_column_locators": "evaluation_only",
+      "next_required_evidence": "more held-out proposed corrections or an independent source with overlapping semantic fields"
+    }
+  }
+}

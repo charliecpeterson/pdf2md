@@ -1,0 +1,153 @@
+{
+  "schema": "pdf2md.equation_figure_agent_benchmark_snapshot.v1",
+  "recorded_at": "2026-08-15",
+  "source_artifact": "out/agent-benchmark/qwen3-vl-4b-equation-figure-v1.json",
+  "source_artifact_sha256": "a3704a0f42586230cb356e4bf53f107e2d1e54d08cf55c496f1eab888496addd",
+  "questions": "tests/equation_figure_agent_questions.json",
+  "questions_sha256": "64cf0cfbd578e9b18ba38fe3e392e33e6b36fb9497b5ea5ae55bb555b48ea4c6",
+  "manifest": "tests/equation_figure_agent_manifest.json",
+  "manifest_sha256": "e2242524088aac2c777b12a3098987b6ab997178eb46c0fa3f9c849e516d60a8",
+  "evaluator_sha256": "047f03873e73cadc4740f2a621024fa42c93379556d7d3be2a86413713d96557",
+  "model": "mlx-community/Qwen3-VL-4B-Instruct-4bit",
+  "api_mode": "responses",
+  "reasoning_effort": "none",
+  "seed": 0,
+  "settings": {
+    "max_chunks": 1,
+    "max_assets": 1,
+    "max_tokens": 256,
+    "temperature": 0
+  },
+  "summary": {
+    "bundle": {
+      "correct": 5,
+      "runs": 6,
+      "valid_page_citations": 6,
+      "required_assets_opened": 6,
+      "input_tokens": 13215,
+      "release_blockers": 1
+    },
+    "pdf": {
+      "correct": 5,
+      "runs": 6,
+      "valid_page_citations": 6,
+      "required_assets_opened": 6,
+      "input_tokens": 17206,
+      "release_blockers": 0
+    },
+    "bundle_input_token_reduction": 0.232,
+    "bundle_accuracy_minus_pdf": 0.0,
+    "paired_exit_criteria_passed": true,
+    "all_task_gates_passed": false
+  },
+  "results": [
+    {
+      "question_id": "attention-equation-denominator",
+      "mode": "bundle",
+      "answer": "sqrt(d_k)",
+      "outcome": "correct",
+      "asset": "texts_88_p4.png",
+      "input_tokens": 1232
+    },
+    {
+      "question_id": "attention-equation-denominator",
+      "mode": "pdf",
+      "answer": "sqrt(d_k)",
+      "outcome": "correct",
+      "asset": "attention-equation-denominator-page-4.png",
+      "input_tokens": 3105
+    },
+    {
+      "question_id": "slater-planck-rho-subscript",
+      "mode": "bundle",
+      "answer": "rho_0",
+      "expected": "nu",
+      "outcome": "incorrect",
+      "asset": "page_023.png",
+      "input_tokens": 2362,
+      "release_blocker": true
+    },
+    {
+      "question_id": "slater-planck-rho-subscript",
+      "mode": "pdf",
+      "answer": "rho",
+      "expected": "nu",
+      "outcome": "incorrect",
+      "asset": "slater-planck-rho-subscript-page-23.png",
+      "input_tokens": 1700
+    },
+    {
+      "question_id": "orbitals-equation-two-particle-coefficient",
+      "mode": "bundle",
+      "answer": "1/2",
+      "expected": "0.5",
+      "outcome": "correct",
+      "asset": "texts_31_p6.png",
+      "input_tokens": 1079
+    },
+    {
+      "question_id": "orbitals-equation-two-particle-coefficient",
+      "mode": "pdf",
+      "answer": "1/2",
+      "expected": "0.5",
+      "outcome": "correct",
+      "asset": "orbitals-equation-two-particle-coefficient-page-6.png",
+      "input_tokens": 3104
+    },
+    {
+      "question_id": "attention-figure-two-panel-titles",
+      "mode": "bundle",
+      "answer": "Scaled Dot-Product Attention, Multi-Head Attention",
+      "outcome": "correct",
+      "asset": "pictures_2_p4.png",
+      "input_tokens": 2322
+    },
+    {
+      "question_id": "attention-figure-two-panel-titles",
+      "mode": "pdf",
+      "answer": "Scaled Dot-Product Attention, Multi-Head Attention",
+      "outcome": "correct",
+      "asset": "attention-figure-two-panel-titles-page-4.png",
+      "input_tokens": 3103
+    },
+    {
+      "question_id": "dolg-figure-one-atoms",
+      "mode": "bundle",
+      "answer": "Carbon and Silicon",
+      "outcome": "correct",
+      "asset": "pictures_5_p5.png",
+      "input_tokens": 2679
+    },
+    {
+      "question_id": "dolg-figure-one-atoms",
+      "mode": "pdf",
+      "answer": "Carbon and Silicon",
+      "outcome": "correct",
+      "asset": "dolg-figure-one-atoms-page-5.png",
+      "input_tokens": 3098
+    },
+    {
+      "question_id": "dolg-figure-two-legend",
+      "mode": "bundle",
+      "answer": "Our carbon, TN carbon, Our silicon, TN silicon",
+      "outcome": "correct",
+      "asset": "pictures_6_p8.png",
+      "input_tokens": 3541
+    },
+    {
+      "question_id": "dolg-figure-two-legend",
+      "mode": "pdf",
+      "answer": "Our carbon, TN carbon, Our silicon, TN silicon",
+      "outcome": "correct",
+      "asset": "dolg-figure-two-legend-page-8.png",
+      "input_tokens": 3096
+    }
+  ],
+  "runtime_observation": {
+    "mlx_vlm_version": "0.3.9",
+    "transformers_version": "5.15.0",
+    "required_extra": "torch",
+    "working_endpoint": "/responses",
+    "chat_endpoint_failure": "The server passes multimodal content, including base64 image URLs, into its text prompt formatter and stalls in MLX evaluation."
+  }
+}

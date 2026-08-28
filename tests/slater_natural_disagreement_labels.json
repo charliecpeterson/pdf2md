@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked high-risk Tesseract disagreements mined across additional Slater tables.",
+  "documents": [
+    {
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "source": "slater-quantum_theory_of_atomic_structure-vol1.pdf",
+      "version": "v1",
+      "cells": [
+        {"page": 219, "block_id": "#/mineru/219/table/1691", "row": 21, "column": 5, "expected": "0.54", "label": "Sc 3p; Tesseract invents a leading 9"},
+        {"page": 219, "block_id": "#/mineru/219/table/1691", "row": 31, "column": 8, "expected": "1.13", "label": "Ga 4p; Tesseract changes the final digit"},
+        {"page": 350, "block_id": "#/mineru/350/table/2611", "row": 5, "column": 5, "expected": "0.54610", "label": "N+ F2; reader geometry selects another row"},
+        {"page": 350, "block_id": "#/mineru/350/table/2611", "row": 5, "column": 6, "expected": "0.73810", "label": "N+ G1; reader geometry selects a neighboring value"},
+        {"page": 351, "block_id": "#/mineru/351/table/2615", "row": 1, "column": 5, "expected": "0.61463", "label": "O+ experimental F2"},
+        {"page": 351, "block_id": "#/mineru/351/table/2615", "row": 6, "column": 5, "expected": "0.81504", "label": "O3+ experimental F2"},
+        {"page": 372, "block_id": "#/mineru/372/table/2740", "row": 2, "column": 2, "expected": "0.67208", "label": "O calculated F2 column b"},
+        {"page": 372, "block_id": "#/mineru/372/table/2740", "row": 4, "column": 3, "expected": "0.64613", "label": "O+ experimental F2 continuation"},
+        {"page": 378, "block_id": "#/mineru/378/table/2777", "row": 3, "column": 3, "expected": "3.60", "label": "effective-charge table grouped value"},
+        {"page": 378, "block_id": "#/mineru/378/table/2777", "row": 10, "column": 4, "expected": "5.14", "label": "O3+ 2mu; Tesseract reads 44"},
+        {"page": 387, "block_id": "#/mineru/387/table/2852", "row": 6, "column": 1, "expected": "0.30762", "label": "calculated multiplet value; Tesseract invents a sign and digit"},
+        {"page": 387, "block_id": "#/mineru/387/table/2852", "row": 13, "column": 1, "expected": "0.35115", "label": "calculated multiplet value; Tesseract drops decimal context"},
+        {"page": 400, "block_id": "#/mineru/400/table/2905", "row": 2, "column": 5, "expected": "610.46", "label": "Ni calculated 1s value"},
+        {"page": 400, "block_id": "#/mineru/400/table/2905", "row": 5, "column": 2, "expected": "47.23", "label": "V calculated 2s value; Tesseract drops leading digits"},
+        {"page": 401, "block_id": "#/mineru/401/table/2911", "row": 2, "column": 2, "expected": "406.09", "label": "V corrected one-electron energy"},
+        {"page": 491, "block_id": "#/mineru/491/table/3868", "row": 10, "column": 1, "expected": "0.835", "label": "phi at x 0.150; Tesseract invents a leading 90"},
+        {"page": 491, "block_id": "#/mineru/491/table/3868", "row": 17, "column": 3, "expected": "0.0022", "label": "phi at x 30.0; Tesseract invents a leading 96"}
+      ]
+    }
+  ]
+}

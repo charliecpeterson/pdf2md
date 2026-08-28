@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked natural primary extraction errors in degraded ORNL monospaced scientific output.",
+  "documents": [
+    {
+      "source_sha256": "d9f208b5bceff4897affa087efa740152a5692e479b9c02aaf467834a0a78931",
+      "source": "out/natural-errors-scanned/d9f208b5bceff489/source.pdf",
+      "version": "v1",
+      "cells": [
+        {"page": 1, "block_id": "#/mineru/1/table/13", "row": 1, "column": 0, "expected": "-0.28567D-02", "label": "ORNL report page 54; primary substitutes zero for the Fortran D exponent marker"},
+        {"page": 1, "block_id": "#/mineru/1/table/13", "row": 2, "column": 0, "expected": "-0.22132D-01", "label": "ORNL report page 54; primary substitutes zero for the Fortran D exponent marker"},
+        {"page": 2, "block_id": "#/mineru/2/table/29", "row": 0, "column": 1, "expected": "467.18", "label": "ORNL report page 55; damaged final 8 is disambiguated by the next iteration's repeated old value"},
+        {"page": 2, "block_id": "#/mineru/2/table/31", "row": 1, "column": 0, "expected": "-0.22924D-01", "label": "ORNL report page 55; primary drops the sign and substitutes zero for D"},
+        {"page": 3, "block_id": "#/mineru/3/table/37", "row": 1, "column": 1, "expected": "-0.19608E-02", "label": "ORNL report page 56; primary reads the leading zero as C and an internal zero as 6"},
+        {"page": 3, "block_id": "#/mineru/3/table/43", "row": 2, "column": 2, "expected": "0.63565D-03", "label": "ORNL report page 56; primary reads the final mantissa digit 5 as S"},
+        {"page": 3, "block_id": "#/mineru/3/table/48", "row": 2, "column": 1, "expected": "0.53979E-02", "label": "ORNL report page 56; primary changes the leading mantissa digit from 5 to 9"},
+        {"page": 4, "block_id": "#/mineru/4/table/59", "row": 2, "column": 0, "expected": "0.52080E-01", "label": "ORNL report page 57; primary reads the final mantissa zero as C"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,720 @@
+{
+  "schema_version": 1,
+  "purpose": "Pinned multi-family controlled degradation evaluation with exact values, wrong values, and structural refusals reported separately.",
+  "artifacts": {
+    "sources": {
+      "path": "tests/multifamily_degradation_sources.json",
+      "sha256": "1d539414c2b7b8bde60ff84df1258199155254a3822425bb68dd8518192a9e5f"
+    },
+    "runtime": {
+      "path": "tests/multifamily_degradation_runtime.json",
+      "sha256": "49aa9934236eb5851cd52b3dcea2ae0d4fab35da4ff1c005e41b338dd71e3b47"
+    },
+    "corpus_pdf": {
+      "path": "output/pdf/multifamily-table-degradation.pdf",
+      "sha256": "263f2589e86a0d5364270088666ce786f32988dd12896c85c1e0ca8fd4446247"
+    },
+    "corpus_manifest": {
+      "path": "output/pdf/multifamily-table-degradation.manifest.json",
+      "sha256": "671eaf0aaf74ea8594f1d99f7fbf696ea3b80fe60a33b95454f1e7d43b91dacc"
+    },
+    "output_provenance": {
+      "path": "out/multifamily-degradation/263f2589e86a0d53/v1/provenance.json",
+      "sha256": "22adbf925519ae36fa7384ad6ce860da81aed7380c1bf3bab260dddb6c028810"
+    },
+    "report": {
+      "path": "out/multifamily-degradation/final-report.json",
+      "sha256": "77c5e97b0a9ff5988c3dabca0965c6a6b47b21ec23f3191fa892c547f42f5798"
+    }
+  },
+  "expected": {
+    "provenance_sha256": "22adbf925519ae36fa7384ad6ce860da81aed7380c1bf3bab260dddb6c028810",
+    "sources_sha256": "1d539414c2b7b8bde60ff84df1258199155254a3822425bb68dd8518192a9e5f",
+    "corpus_manifest_sha256": "671eaf0aaf74ea8594f1d99f7fbf696ea3b80fe60a33b95454f1e7d43b91dacc",
+    "corpus_sha256": "263f2589e86a0d5364270088666ce786f32988dd12896c85c1e0ca8fd4446247",
+    "runtime_sha256": "49aa9934236eb5851cd52b3dcea2ae0d4fab35da4ff1c005e41b338dd71e3b47",
+    "families": 5,
+    "variants": 11,
+    "labelled_cells_per_variant": 42,
+    "primary": {
+      "checked": 462,
+      "agree": 398,
+      "disagree": 1,
+      "tool_refused": 63
+    },
+    "reader": {
+      "checked": 462,
+      "agree": 127,
+      "disagree": 31,
+      "tool_refused": 304
+    },
+    "best": {
+      "checked": 462,
+      "agree": 398,
+      "disagree": 1,
+      "tool_refused": 63
+    },
+    "by_family": {
+      "fischer-serif-superscripts": {
+        "primary": {
+          "checked": 132,
+          "agree": 130,
+          "disagree": 0,
+          "tool_refused": 2
+        },
+        "reader": {
+          "checked": 132,
+          "agree": 0,
+          "disagree": 0,
+          "tool_refused": 132
+        },
+        "best": {
+          "checked": 132,
+          "agree": 130,
+          "disagree": 0,
+          "tool_refused": 2
+        }
+      },
+      "grasp-fixed-width": {
+        "primary": {
+          "checked": 110,
+          "agree": 100,
+          "disagree": 1,
+          "tool_refused": 9
+        },
+        "reader": {
+          "checked": 110,
+          "agree": 0,
+          "disagree": 0,
+          "tool_refused": 110
+        },
+        "best": {
+          "checked": 110,
+          "agree": 100,
+          "disagree": 1,
+          "tool_refused": 9
+        }
+      },
+      "grasp-scientific-notation": {
+        "primary": {
+          "checked": 88,
+          "agree": 88,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "reader": {
+          "checked": 88,
+          "agree": 48,
+          "disagree": 30,
+          "tool_refused": 10
+        },
+        "best": {
+          "checked": 88,
+          "agree": 88,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      },
+      "nasa-leading-dot": {
+        "primary": {
+          "checked": 44,
+          "agree": 0,
+          "disagree": 0,
+          "tool_refused": 44
+        },
+        "reader": {
+          "checked": 44,
+          "agree": 0,
+          "disagree": 0,
+          "tool_refused": 44
+        },
+        "best": {
+          "checked": 44,
+          "agree": 0,
+          "disagree": 0,
+          "tool_refused": 44
+        }
+      },
+      "slater-curved-two-panel": {
+        "primary": {
+          "checked": 88,
+          "agree": 80,
+          "disagree": 0,
+          "tool_refused": 8
+        },
+        "reader": {
+          "checked": 88,
+          "agree": 79,
+          "disagree": 1,
+          "tool_refused": 8
+        },
+        "best": {
+          "checked": 88,
+          "agree": 80,
+          "disagree": 0,
+          "tool_refused": 8
+        }
+      }
+    },
+    "by_variant": {
+      "adaptive_binarization": {
+        "primary": {
+          "checked": 42,
+          "agree": 18,
+          "disagree": 1,
+          "tool_refused": 23
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 0,
+          "disagree": 0,
+          "tool_refused": 42
+        },
+        "best": {
+          "checked": 42,
+          "agree": 18,
+          "disagree": 1,
+          "tool_refused": 23
+        }
+      },
+      "blur_1_2": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 16,
+          "disagree": 0,
+          "tool_refused": 26
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "clean": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 15,
+          "disagree": 1,
+          "tool_refused": 26
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "combined_hard": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 8,
+          "disagree": 8,
+          "tool_refused": 26
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "contrast_minus_35": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 16,
+          "disagree": 0,
+          "tool_refused": 26
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "dpi_100": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 8,
+          "disagree": 7,
+          "tool_refused": 27
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "dpi_100_contrast": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 8,
+          "disagree": 8,
+          "tool_refused": 26
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "dpi_150": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 16,
+          "disagree": 0,
+          "tool_refused": 26
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "jpeg_25": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 16,
+          "disagree": 0,
+          "tool_refused": 26
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "skew_1_5": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 16,
+          "disagree": 0,
+          "tool_refused": 26
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "skew_blur": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 8,
+          "disagree": 7,
+          "tool_refused": 27
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      }
+    },
+    "by_factor": {
+      "binarization": {
+        "primary": {
+          "checked": 42,
+          "agree": 18,
+          "disagree": 1,
+          "tool_refused": 23
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 0,
+          "disagree": 0,
+          "tool_refused": 42
+        },
+        "best": {
+          "checked": 42,
+          "agree": 18,
+          "disagree": 1,
+          "tool_refused": 23
+        }
+      },
+      "blur": {
+        "primary": {
+          "checked": 126,
+          "agree": 114,
+          "disagree": 0,
+          "tool_refused": 12
+        },
+        "reader": {
+          "checked": 126,
+          "agree": 32,
+          "disagree": 15,
+          "tool_refused": 79
+        },
+        "best": {
+          "checked": 126,
+          "agree": 114,
+          "disagree": 0,
+          "tool_refused": 12
+        }
+      },
+      "contrast": {
+        "primary": {
+          "checked": 126,
+          "agree": 114,
+          "disagree": 0,
+          "tool_refused": 12
+        },
+        "reader": {
+          "checked": 126,
+          "agree": 32,
+          "disagree": 16,
+          "tool_refused": 78
+        },
+        "best": {
+          "checked": 126,
+          "agree": 114,
+          "disagree": 0,
+          "tool_refused": 12
+        }
+      },
+      "jpeg": {
+        "primary": {
+          "checked": 84,
+          "agree": 76,
+          "disagree": 0,
+          "tool_refused": 8
+        },
+        "reader": {
+          "checked": 84,
+          "agree": 24,
+          "disagree": 8,
+          "tool_refused": 52
+        },
+        "best": {
+          "checked": 84,
+          "agree": 76,
+          "disagree": 0,
+          "tool_refused": 8
+        }
+      },
+      "resolution": {
+        "primary": {
+          "checked": 168,
+          "agree": 152,
+          "disagree": 0,
+          "tool_refused": 16
+        },
+        "reader": {
+          "checked": 168,
+          "agree": 40,
+          "disagree": 23,
+          "tool_refused": 105
+        },
+        "best": {
+          "checked": 168,
+          "agree": 152,
+          "disagree": 0,
+          "tool_refused": 16
+        }
+      },
+      "skew": {
+        "primary": {
+          "checked": 126,
+          "agree": 114,
+          "disagree": 0,
+          "tool_refused": 12
+        },
+        "reader": {
+          "checked": 126,
+          "agree": 32,
+          "disagree": 15,
+          "tool_refused": 79
+        },
+        "best": {
+          "checked": 126,
+          "agree": 114,
+          "disagree": 0,
+          "tool_refused": 12
+        }
+      }
+    },
+    "by_role": {
+      "control": {
+        "primary": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "reader": {
+          "checked": 42,
+          "agree": 15,
+          "disagree": 1,
+          "tool_refused": 26
+        },
+        "best": {
+          "checked": 42,
+          "agree": 38,
+          "disagree": 0,
+          "tool_refused": 4
+        }
+      },
+      "interaction": {
+        "primary": {
+          "checked": 126,
+          "agree": 114,
+          "disagree": 0,
+          "tool_refused": 12
+        },
+        "reader": {
+          "checked": 126,
+          "agree": 24,
+          "disagree": 23,
+          "tool_refused": 79
+        },
+        "best": {
+          "checked": 126,
+          "agree": 114,
+          "disagree": 0,
+          "tool_refused": 12
+        }
+      },
+      "isolated": {
+        "primary": {
+          "checked": 294,
+          "agree": 246,
+          "disagree": 1,
+          "tool_refused": 47
+        },
+        "reader": {
+          "checked": 294,
+          "agree": 88,
+          "disagree": 7,
+          "tool_refused": 199
+        },
+        "best": {
+          "checked": 294,
+          "agree": 246,
+          "disagree": 1,
+          "tool_refused": 47
+        }
+      }
+    },
+    "clean_transitions": {
+      "fischer-serif-superscripts:adaptive_binarization": {
+        "agree_to_agree": 10,
+        "agree_to_tool_refused": 2
+      },
+      "fischer-serif-superscripts:blur_1_2": {
+        "agree_to_agree": 12
+      },
+      "fischer-serif-superscripts:combined_hard": {
+        "agree_to_agree": 12
+      },
+      "fischer-serif-superscripts:contrast_minus_35": {
+        "agree_to_agree": 12
+      },
+      "fischer-serif-superscripts:dpi_100": {
+        "agree_to_agree": 12
+      },
+      "fischer-serif-superscripts:dpi_100_contrast": {
+        "agree_to_agree": 12
+      },
+      "fischer-serif-superscripts:dpi_150": {
+        "agree_to_agree": 12
+      },
+      "fischer-serif-superscripts:jpeg_25": {
+        "agree_to_agree": 12
+      },
+      "fischer-serif-superscripts:skew_1_5": {
+        "agree_to_agree": 12
+      },
+      "fischer-serif-superscripts:skew_blur": {
+        "agree_to_agree": 12
+      },
+      "grasp-fixed-width:adaptive_binarization": {
+        "agree_to_disagree": 1,
+        "agree_to_tool_refused": 9
+      },
+      "grasp-fixed-width:blur_1_2": {
+        "agree_to_agree": 10
+      },
+      "grasp-fixed-width:combined_hard": {
+        "agree_to_agree": 10
+      },
+      "grasp-fixed-width:contrast_minus_35": {
+        "agree_to_agree": 10
+      },
+      "grasp-fixed-width:dpi_100": {
+        "agree_to_agree": 10
+      },
+      "grasp-fixed-width:dpi_100_contrast": {
+        "agree_to_agree": 10
+      },
+      "grasp-fixed-width:dpi_150": {
+        "agree_to_agree": 10
+      },
+      "grasp-fixed-width:jpeg_25": {
+        "agree_to_agree": 10
+      },
+      "grasp-fixed-width:skew_1_5": {
+        "agree_to_agree": 10
+      },
+      "grasp-fixed-width:skew_blur": {
+        "agree_to_agree": 10
+      },
+      "grasp-scientific-notation:adaptive_binarization": {
+        "agree_to_agree": 8
+      },
+      "grasp-scientific-notation:blur_1_2": {
+        "agree_to_agree": 8
+      },
+      "grasp-scientific-notation:combined_hard": {
+        "agree_to_agree": 8
+      },
+      "grasp-scientific-notation:contrast_minus_35": {
+        "agree_to_agree": 8
+      },
+      "grasp-scientific-notation:dpi_100": {
+        "agree_to_agree": 8
+      },
+      "grasp-scientific-notation:dpi_100_contrast": {
+        "agree_to_agree": 8
+      },
+      "grasp-scientific-notation:dpi_150": {
+        "agree_to_agree": 8
+      },
+      "grasp-scientific-notation:jpeg_25": {
+        "agree_to_agree": 8
+      },
+      "grasp-scientific-notation:skew_1_5": {
+        "agree_to_agree": 8
+      },
+      "grasp-scientific-notation:skew_blur": {
+        "agree_to_agree": 8
+      },
+      "nasa-leading-dot:adaptive_binarization": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "nasa-leading-dot:blur_1_2": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "nasa-leading-dot:combined_hard": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "nasa-leading-dot:contrast_minus_35": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "nasa-leading-dot:dpi_100": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "nasa-leading-dot:dpi_100_contrast": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "nasa-leading-dot:dpi_150": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "nasa-leading-dot:jpeg_25": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "nasa-leading-dot:skew_1_5": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "nasa-leading-dot:skew_blur": {
+        "tool_refused_to_tool_refused": 4
+      },
+      "slater-curved-two-panel:adaptive_binarization": {
+        "agree_to_tool_refused": 8
+      },
+      "slater-curved-two-panel:blur_1_2": {
+        "agree_to_agree": 8
+      },
+      "slater-curved-two-panel:combined_hard": {
+        "agree_to_agree": 8
+      },
+      "slater-curved-two-panel:contrast_minus_35": {
+        "agree_to_agree": 8
+      },
+      "slater-curved-two-panel:dpi_100": {
+        "agree_to_agree": 8
+      },
+      "slater-curved-two-panel:dpi_100_contrast": {
+        "agree_to_agree": 8
+      },
+      "slater-curved-two-panel:dpi_150": {
+        "agree_to_agree": 8
+      },
+      "slater-curved-two-panel:jpeg_25": {
+        "agree_to_agree": 8
+      },
+      "slater-curved-two-panel:skew_1_5": {
+        "agree_to_agree": 8
+      },
+      "slater-curved-two-panel:skew_blur": {
+        "agree_to_agree": 8
+      }
+    }
+  }
+}

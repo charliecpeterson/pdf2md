@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "purpose": "Pinned PP-OCRv6 evaluation on independently boxed natural non-Fischer primary errors.",
+  "artifacts": {
+    "labels": {"path": "tests/non_fischer_natural_error_labels.json", "sha256": "b7fe4015ba6e6b97fb23ac621099940e93170b3c7e8d4d0bb05f82f3c0b0ddcb"},
+    "source_boxes": {"path": "tests/non_fischer_natural_error_source_boxes.json", "sha256": "add9b4394badd8497cf9696b3d7b5d0cced482e07e515a65bf3f6386759a1e8d"},
+    "crop_manifest": {"path": "out/reviews/non-fischer-third-reader-v1/crops.json", "sha256": "fee5bac7fc796c168b768422de2cb5def28e8097ff4c94777de2ecc376b57842"},
+    "reader_inputs": {"path": "out/reviews/non-fischer-third-reader-v1/inputs.json", "sha256": "c893fbc958c65e3b6a258b58c13821401094520cbb13c0d2974bb9eee8be1120"},
+    "reader_run": {"path": "out/reviews/non-fischer-third-reader-v1/run.json", "sha256": "a3b085f58acceea992986feaa574c29ddb9dedb74a3fb708077ca3602556d05c"},
+    "slater_report": {"path": "out/reviews/natural-errors-v1/slater.json", "sha256": "d4617324f7bb0b3ae7f42288cfda6e8402552da9db82b32e279d710c9db97021"},
+    "ornl_report": {"path": "out/reviews/natural-errors-v2/ornl-errors.json", "sha256": "8b4910b2c203f539d04caa4b2adf12dc69e293a8de6f8f181e836a7f3f52520c"},
+    "nasa_report": {"path": "out/reviews/natural-errors-v2/nasa-errors.json", "sha256": "a1fcc9ae611c54c812229446e8975060b6070a644895e4fb77c6060dddb743d0"},
+    "slater_source": {"path": "slater-quantum_theory_of_atomic_structure-vol1.pdf", "sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6"},
+    "ornl_source": {"path": "out/natural-errors-scanned/d9f208b5bceff489/source.pdf", "sha256": "d9f208b5bceff4897affa087efa740152a5692e479b9c02aaf467834a0a78931"},
+    "nasa_source": {"path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/source.pdf", "sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7"}
+  },
+  "source_reports": {
+    "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6": "slater_report",
+    "d9f208b5bceff4897affa087efa740152a5692e479b9c02aaf467834a0a78931": "ornl_report",
+    "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7": "nasa_report"
+  },
+  "expected": {
+    "documents": 3,
+    "cells": 14,
+    "geometry": {"prepared": 14, "refused": 0, "method": "human_verified_source_pixel_boxes"},
+    "raw_numeric_reader": {"checked": 14, "agree": 3, "disagree": 3, "tool_refused": 8},
+    "fixed_threshold_reader": {"checked": 14, "agree": 2, "disagree": 0, "tool_refused": 12},
+    "preserved_cascade": {
+      "checked": 14,
+      "agree": 0,
+      "disagree": 14,
+      "tool_refused": 0,
+      "triggered": 2,
+      "corrections": 0,
+      "regressions": 0,
+      "statuses": {"adjudicator_refused": 2, "reader_refused": 12}
+    },
+    "accepted_correct_after_first_reader_refusal": 2,
+    "per_document": [
+      {
+        "document": "slater-atomic-structure-vol1",
+        "raw_numeric_reader": {"checked": 1, "agree": 1, "disagree": 0, "tool_refused": 0},
+        "fixed_threshold_reader": {"checked": 1, "agree": 0, "disagree": 0, "tool_refused": 1},
+        "preserved_cascade": {"checked": 1, "agree": 0, "disagree": 1, "tool_refused": 0}
+      },
+      {
+        "document": "ornl-mastersjob-pages-54-57",
+        "raw_numeric_reader": {"checked": 8, "agree": 2, "disagree": 1, "tool_refused": 5},
+        "fixed_threshold_reader": {"checked": 8, "agree": 2, "disagree": 0, "tool_refused": 6},
+        "preserved_cascade": {"checked": 8, "agree": 0, "disagree": 8, "tool_refused": 0}
+      },
+      {
+        "document": "nasa-wates-page-120",
+        "raw_numeric_reader": {"checked": 5, "agree": 0, "disagree": 2, "tool_refused": 3},
+        "fixed_threshold_reader": {"checked": 5, "agree": 0, "disagree": 0, "tool_refused": 5},
+        "preserved_cascade": {"checked": 5, "agree": 0, "disagree": 5, "tool_refused": 0}
+      }
+    ]
+  }
+}

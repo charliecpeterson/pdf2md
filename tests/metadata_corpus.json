@@ -1,0 +1,56 @@
+[
+  {
+    "name": "generic section heading is not a document title",
+    "embedded": {},
+    "blocks": [
+      {"type": "heading", "text": "Abstract", "page": 1},
+      {"type": "paragraph", "text": "The study begins here.", "page": 1}
+    ],
+    "expected_title": null,
+    "expected_authors": null
+  },
+  {
+    "name": "generic heading is skipped before a real title",
+    "embedded": {},
+    "blocks": [
+      {"type": "heading", "text": "Abstract", "page": 1},
+      {"type": "heading", "text": "Periodic Lanthanide Solids with Extended Tight Binding", "page": 1}
+    ],
+    "expected_title": "Periodic Lanthanide Solids with Extended Tight Binding",
+    "expected_authors": null
+  },
+  {
+    "name": "word processor title yields to the page title",
+    "embedded": {"Title": "Microsoft Word - manuscript.docx"},
+    "blocks": [
+      {"type": "heading", "text": "Reliable Scientific Document Conversion", "page": 1}
+    ],
+    "expected_title": "Reliable Scientific Document Conversion",
+    "expected_authors": null
+  },
+  {
+    "name": "workstation account is not an author",
+    "embedded": {"Author": "DELL", "Creator": "WPS Writer"},
+    "blocks": [
+      {"type": "paragraph", "text": "Yu Cheng and Xin-Yu Dai", "page": 1}
+    ],
+    "expected_title": null,
+    "expected_authors": null
+  },
+  {
+    "name": "multiple named authors are preserved",
+    "embedded": {"Author": "Ada Lovelace; Grace Hopper"},
+    "blocks": [],
+    "expected_title": null,
+    "expected_authors": ["Ada Lovelace", "Grace Hopper"]
+  },
+  {
+    "name": "single surname is preserved when printed on page one",
+    "embedded": {"Author": "Einstein"},
+    "blocks": [
+      {"type": "paragraph", "text": "Albert Einstein", "page": 1}
+    ],
+    "expected_title": null,
+    "expected_authors": ["Einstein"]
+  }
+]

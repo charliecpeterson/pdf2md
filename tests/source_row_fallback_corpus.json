@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+  "old_dir": "out/reviews/fischer-source-row-recovery-v2",
+  "new_dir": "out/reviews/fischer-source-row-recovery-v3",
+  "artifacts": {
+    "old_manifest": {
+      "path": "out/reviews/fischer-source-row-recovery-v2/manifest.json",
+      "sha256": "dafa1ec3d78a0de0a81f65704b7d9edc7e73fea275756675c587395c1295ee66"
+    },
+    "old_run": {
+      "path": "out/reviews/fischer-source-row-recovery-v2/run.json",
+      "sha256": "b6bef34b86e5e5c3a8a9eed7c618fc0497dc89f11f8eba9d66ab9868089dad3a"
+    },
+    "old_rows": {
+      "path": "out/reviews/fischer-source-row-recovery-v2/rows.jsonl",
+      "sha256": "2890e15bb25e7b6a4fad26ae102dfdc85e211b056c29d40c09e7c17ec6f76a6b"
+    },
+    "new_manifest": {
+      "path": "out/reviews/fischer-source-row-recovery-v3/manifest.json",
+      "sha256": "6ba856bfcc31a76ab27f77ec3d1ff9f1fe2d3f98add6f12d27319846670b1cdf"
+    },
+    "new_report": {
+      "path": "out/reviews/fischer-source-row-recovery-v3/report.json",
+      "sha256": "33d375cdf6afdf6994002cb5af1d53a6e7b3aa144db8641696a14994d823cd23"
+    },
+    "new_rows": {
+      "path": "out/reviews/fischer-source-row-recovery-v3/rows.jsonl",
+      "sha256": "da4675f1c68dc8654f901980e873264fa565746d3992a3e620abc232d77c08a4"
+    },
+    "projection_run": {
+      "path": "out/reviews/fischer-projection-crops-v1/run.json",
+      "sha256": "04baf333e3090004be6c54be1dcfb252281bd8a61f585e4e04889923801aa797"
+    },
+    "source_labels": {
+      "path": "tests/fischer_source_row_recovery_labels.json",
+      "sha256": "b5804ecba23b9221c4ada82ddca943bbfbe6c5a5581b09843dd9ba90837e32a5"
+    },
+    "adjudications": {
+      "path": "tests/fischer_projection_crop_labels.json",
+      "sha256": "a774cc2c6de1d772361ab51e49d96d99881e4ba16a11eec7766521997435bd65"
+    }
+  },
+  "expected": {
+    "old_candidates": 610,
+    "new_candidates": 747,
+    "prior_candidates": {
+      "checked": 610,
+      "agree": 610,
+      "disagree": 0,
+      "tool_refused": 0
+    },
+    "added_candidates": 137,
+    "added_candidate_readers": {
+      "projection": 84,
+      "reference": 53
+    },
+    "integrated_report": {
+      "recovery_rows_key_confirmed": 162,
+      "control_rows_key_confirmed": 43,
+      "alignment_rows_key_confirmed": 1,
+      "cell_statuses": {
+        "row_key_refused": 210,
+        "template_reader_candidate": 185,
+        "two_reader_candidate": 478,
+        "reader_refused": 131,
+        "projection_fallback_candidate": 63,
+        "template_projection_fallback_candidate": 21,
+        "alignment_key_refused": 1
+      },
+      "accepted_readers": {
+        "reference": 663,
+        "projection": 84
+      },
+      "control": {
+        "agree": 203,
+        "disagree": 2,
+        "tool_refused": 71
+      },
+      "source_labels": {
+        "checked": 41,
+        "agree": 41,
+        "disagree": 0,
+        "tool_refused": 0
+      }
+    },
+    "source_adjudications": {
+      "checked": 2,
+      "agree": 2,
+      "disagree": 0,
+      "tool_refused": 0
+    }
+  }
+}

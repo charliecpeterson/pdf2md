@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "source_root": "..",
+  "documents": [
+    {
+      "id": "grasp2018",
+      "path": "GRASP2018-manual.pdf",
+      "sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "archetypes": ["broken-font", "long-document", "tables", "equations"]
+    },
+    {
+      "id": "grasp-table-3-1",
+      "path": "GRASP2018-manual.pdf",
+      "sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "page": 26,
+      "archetypes": ["broken-font", "long-document-sample", "table", "reading-order"]
+    },
+    {
+      "id": "grasp-equation-4-1",
+      "path": "GRASP2018-manual.pdf",
+      "sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "page": 34,
+      "archetypes": ["broken-font", "long-document-sample", "equation"]
+    },
+    {
+      "id": "slater-volume-1",
+      "path": "slater-quantum_theory_of_atomic_structure-vol1.pdf",
+      "sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "archetypes": ["scan", "long-document", "equations"]
+    },
+    {
+      "id": "slater-page-37",
+      "path": "slater-quantum_theory_of_atomic_structure-vol1.pdf",
+      "sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "page": 37,
+      "archetypes": ["scan", "mixed-layout", "equations", "scientific-diagram"]
+    },
+    {
+      "id": "raster-scientific-figure",
+      "path": "image.pdf",
+      "sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "archetypes": ["scan", "raster-chart", "multipanel"]
+    },
+    {
+      "id": "vector-plot",
+      "path": "tests/fixtures/vector_plot.pdf",
+      "sha256": "44b593a83d61a0ad10b0699aae744b9dc6f04126039e88985dec95db5e49d303",
+      "archetypes": ["vector-chart", "line-chart"]
+    },
+    {
+      "id": "scatter-plot",
+      "path": "tests/fixtures/scatter_plot.pdf",
+      "sha256": "59d827290f1716d0178103f084ed609899d6f5f4d5c2f6c098a8d618271cf51b",
+      "archetypes": ["vector-chart", "scatter-chart"]
+    },
+    {
+      "id": "scatter-two-series",
+      "path": "tests/fixtures/scatter_two_series.pdf",
+      "sha256": "081eda2289d17ed17a6c5bfdc75d518418d0ddfb02cf7798e78dce1fa724992d",
+      "archetypes": ["vector-chart", "multi-series"]
+    },
+    {
+      "id": "subplots",
+      "path": "tests/fixtures/subplots.pdf",
+      "sha256": "bbec2471321dac6746ccae94b90ef9e8c9bb2b81556c0eec019a50971aa732cb",
+      "archetypes": ["vector-chart", "multipanel"]
+    },
+    {
+      "id": "bar-plot",
+      "path": "tests/fixtures/bar_plot.pdf",
+      "sha256": "239828db40cd7179a70484f3a2d44011ace5fba05689d3ca59e43311d074df91",
+      "archetypes": ["vector-chart", "bar-chart"]
+    }
+  ]
+}

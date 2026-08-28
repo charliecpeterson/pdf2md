@@ -1,0 +1,50 @@
+{
+  "schema": "pdf2md.calculator_agent_benchmark_snapshot.v1",
+  "recorded_at": "2026-08-15",
+  "questions": "tests/numeric_calculator_questions.json",
+  "questions_sha256": "be716953fbec4797d888077f50c7239bb83ed6cb7b80c615298d17b9c52f1d37",
+  "evaluator_sha256": "448c37e8909eb6ce0c8cdd33cede9b2bcff26d4a6210050e93b90213fce327f1",
+  "model": "mlx-community/Qwen3-VL-4B-Instruct-4bit",
+  "api_mode": "responses",
+  "reasoning_effort": "none",
+  "seed": 0,
+  "settings": {
+    "max_tokens": 256,
+    "temperature": 0
+  },
+  "control": {
+    "source_artifact": "out/agent-benchmark/qwen3-vl-4b-calculator-control-v1.json",
+    "source_artifact_sha256": "b42ed1202ad75345308de1337ff3e8b804c4dfbeb1614c975ea21a355a243b0c",
+    "calculator": false,
+    "answer": "2.587225",
+    "expected": "2.589085",
+    "answer_correct": false,
+    "artifact_citation_valid": true,
+    "required_evidence_fields_valid": true,
+    "input_tokens": 391,
+    "output_tokens": 68,
+    "release_blockers": 1
+  },
+  "assisted": {
+    "source_artifact": "out/agent-benchmark/qwen3-vl-4b-calculator-assisted-v1.json",
+    "source_artifact_sha256": "aab32c887133941d027d3ec2e848b26ce5ade2377be6eb300712a427018f5e9d",
+    "calculator": true,
+    "operands": ["4.753337", "1.835914"],
+    "calculator_result": "2.589085",
+    "operand_selection_valid": true,
+    "arithmetic_valid": true,
+    "answer": "2.589085",
+    "answer_correct": true,
+    "artifact_citation_valid": true,
+    "required_evidence_fields_valid": true,
+    "input_tokens": 470,
+    "output_tokens": 68,
+    "release_blockers": 0
+  },
+  "comparison": {
+    "correct_answers_gained": 1,
+    "release_blockers_removed": 1,
+    "additional_input_tokens": 79,
+    "input_token_increase": 0.202
+  }
+}

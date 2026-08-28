@@ -1,0 +1,735 @@
+{
+  "totals": {
+    "exact": 4127,
+    "spacing_only": 375,
+    "mismatch": 571,
+    "engine_without_glyphs": 688
+  },
+  "documents": [
+    {
+      "doc": "2308.12950",
+      "pages": 48,
+      "verdicts": {
+        "exact": 2298,
+        "spacing_only": 106,
+        "mismatch": 369
+      },
+      "flags": [
+        {
+          "table": "#/tables/1",
+          "page": 6,
+          "uncovered": 5,
+          "sample": [
+            "lEn",
+            "av"
+          ]
+        },
+        {
+          "table": "#/tables/1",
+          "page": 6,
+          "engine": "HumanEval",
+          "glyphs": "Size Huma"
+        },
+        {
+          "table": "#/tables/2",
+          "page": 8,
+          "uncovered": 28,
+          "sample": [
+            "1",
+            "%425",
+            "0."
+          ]
+        },
+        {
+          "table": "#/tables/2",
+          "page": 8,
+          "engine": "17.7%14.4%18.2%20.4%",
+          "glyphs": "17.7%14.4%18.2%%"
+        },
+        {
+          "table": "#/tables/2",
+          "page": 8,
+          "engine": "5.2%5.6%8.2%9.7%",
+          "glyphs": "5.2%5.6%8.2%97%"
+        },
+        {
+          "table": "#/tables/2",
+          "page": 8,
+          "engine": "7.1%4.6%6.7%7.8%",
+          "glyphs": "7.1%4.6%6.7%78%"
+        },
+        {
+          "table": "#/tables/2",
+          "page": 8,
+          "engine": "101005",
+          "glyphs": "10100510"
+        },
+        {
+          "table": "#/tables/2",
+          "page": 8,
+          "engine": "15.6%33.5%23.7%30.2%",
+          "glyphs": "15.6%33.5%23.7%30.2%490%"
+        },
+        {
+          "table": "#/tables/2",
+          "page": 8,
+          "engine": "1.4%7.1%2.1%3.4%",
+          "glyphs": "1.4%7.1%2.1%3.4%120%"
+        },
+        {
+          "table": "#/tables/3",
+          "page": 9,
+          "uncovered": 4,
+          "sample": [
+            "laug"
+          ]
+        },
+        {
+          "table": "#/tables/3",
+          "page": 9,
+          "engine": "Multi-lingual",
+          "glyphs": "Size Multi-ling"
+        },
+        {
+          "table": "#/tables/7",
+          "page": 14,
+          "engine": "MBPP zero-shot",
+          "glyphs": "MBPP ot zero-shot"
+        },
+        {
+          "table": "#/tables/9",
+          "page": 28,
+          "engine": "FIM",
+          "glyphs": "e FIM"
+        },
+        {
+          "table": "#/tables/9",
+          "page": 28,
+          "engine": "LCFT",
+          "glyphs": "ze FIM LCFT"
+        },
+        {
+          "table": "#/tables/9",
+          "page": 28,
+          "engine": "38.4%",
+          "glyphs": ".38.4%"
+        },
+        {
+          "table": "#/tables/9",
+          "page": 28,
+          "engine": "45.7%",
+          "glyphs": ".45.7%"
+        },
+        {
+          "table": "#/tables/9",
+          "page": 28,
+          "engine": "80.0%",
+          "glyphs": ".80.0%"
+        },
+        {
+          "table": "#/tables/9",
+          "page": 28,
+          "engine": "92.7%",
+          "glyphs": ".92.7%"
+        },
+        {
+          "table": "#/tables/10",
+          "page": 29,
+          "engine": "33.5%",
+          "glyphs": ".33.5%"
+        },
+        {
+          "table": "#/tables/24",
+          "page": 39,
+          "engine": "Healthcare",
+          "glyphs": "Healthcare C"
+        },
+        {
+          "table": "#/tables/24",
+          "page": 39,
+          "engine": "Computer",
+          "glyphs": "Computer tF"
+        },
+        {
+          "table": "#/tables/24",
+          "page": 39,
+          "engine": "Dance",
+          "glyphs": "Dance Nur spe"
+        },
+        {
+          "table": "#/tables/24",
+          "page": 39,
+          "engine": "Engineering branches",
+          "glyphs": "l s Engineering branches"
+        },
+        {
+          "table": "#/tables/24",
+          "page": 39,
+          "engine": "Mental health",
+          "glyphs": "ng Mental health"
+        },
+        {
+          "table": "#/tables/24",
+          "page": 39,
+          "engine": "Theatre personnel",
+          "glyphs": "l Theatre personnel"
+        },
+        {
+          "table": "#/tables/25",
+          "page": 42,
+          "uncovered": 4,
+          "sample": [
+            "H",
+            "g",
+            ".E"
+          ]
+        },
+        {
+          "table": "#/tables/25",
+          "page": 42,
+          "engine": "A custom commercial license is available at: ai.meta.com/res",
+          "glyphs": "p y y . A custom commercial license is available at : ai . m"
+        },
+        {
+          "table": "#/tables/25",
+          "page": 42,
+          "engine": "Where to send com- ments",
+          "glyphs": "Where to send com\u0002 ments"
+        },
+        {
+          "table": "#/tables/25",
+          "page": 42,
+          "engine": "Use in any manner that violates applicable laws or regulatio",
+          "glyphs": ". Use in any manner that violates applicable laws or regulat"
+        },
+        {
+          "table": "#/tables/25",
+          "page": 42,
+          "engine": "Hardware and Software",
+          "glyphs": "ardware and Software"
+        },
+        {
+          "table": "#/tables/25",
+          "page": 42,
+          "engine": "We used custom training libraries. The training and fine-tun",
+          "glyphs": "We used custom training libraries . The training and fine-tu"
+        },
+        {
+          "table": "#/tables/25",
+          "page": 42,
+          "engine": "In aggregate, training all 12 Code Llama models required 140",
+          "glyphs": "In aggregate , training all 12 C ode Llama models required 1"
+        }
+      ]
+    },
+    {
+      "doc": "1911.10683",
+      "pages": 11,
+      "verdicts": {
+        "exact": 87,
+        "mismatch": 64,
+        "spacing_only": 10,
+        "engine_without_glyphs": 613
+      },
+      "flags": [
+        {
+          "table": "#/tables/0",
+          "page": 2,
+          "engine": "333",
+          "glyphs": "\u2713 \u2713 \u2713"
+        },
+        {
+          "table": "#/tables/0",
+          "page": 2,
+          "engine": "777",
+          "glyphs": "\u2717 \u2717 \u2717"
+        },
+        {
+          "table": "#/tables/0",
+          "page": 2,
+          "engine": "7",
+          "glyphs": "\u2717"
+        },
+        {
+          "table": "#/tables/0",
+          "page": 2,
+          "engine": "7",
+          "glyphs": "\u2717"
+        },
+        {
+          "table": "#/tables/0",
+          "page": 2,
+          "engine": "DeepFigures [8]",
+          "glyphs": "y DeepFigures [8]"
+        },
+        {
+          "table": "#/tables/0",
+          "page": 2,
+          "engine": "7",
+          "glyphs": "\u2717"
+        },
+        {
+          "table": "#/tables/4",
+          "page": 6,
+          "uncovered": 5,
+          "sample": [
+            "Imaeg"
+          ]
+        },
+        {
+          "table": "#/tables/4",
+          "page": 6,
+          "engine": "Average TEDS (%)",
+          "glyphs": "Average TEDS (%) 1314"
+        },
+        {
+          "table": "#/tables/4",
+          "page": 6,
+          "engine": "Simple 13",
+          "glyphs": "v Simple13"
+        },
+        {
+          "table": "#/tables/4",
+          "page": 6,
+          "engine": "Complex 14",
+          "glyphs": "g Complex14"
+        },
+        {
+          "table": "#/tables/4",
+          "page": 6,
+          "engine": "60.8",
+          "glyphs": ".60.8"
+        },
+        {
+          "table": "#/tables/4",
+          "page": 6,
+          "engine": "49.9",
+          "glyphs": ".49.9"
+        },
+        {
+          "table": "#/tables/4",
+          "page": 6,
+          "engine": "55.4",
+          "glyphs": ".55.4"
+        },
+        {
+          "table": "#/tables/5",
+          "page": 7,
+          "engine": "No. of MII oocytes (%)",
+          "glyphs": "No. of MII oocytes ( % ) \u2217"
+        },
+        {
+          "table": "#/tables/19",
+          "page": 9,
+          "engine": "C2",
+          "glyphs": "g C2"
+        },
+        {
+          "table": "#/tables/19",
+          "page": 9,
+          "engine": "99.7",
+          "glyphs": ".99.7"
+        },
+        {
+          "table": "#/tables/19",
+          "page": 9,
+          "engine": "99.9",
+          "glyphs": ".99.9"
+        },
+        {
+          "table": "#/tables/19",
+          "page": 9,
+          "engine": "97.2",
+          "glyphs": ".97.2"
+        },
+        {
+          "table": "#/tables/19",
+          "page": 9,
+          "engine": "98.0",
+          "glyphs": ".98.0"
+        }
+      ]
+    },
+    {
+      "doc": "2103.15348",
+      "pages": 16,
+      "verdicts": {
+        "exact": 28,
+        "spacing_only": 15,
+        "mismatch": 1
+      },
+      "flags": [
+        {
+          "table": "#/tables/1",
+          "page": 8,
+          "engine": "Calculate the absolute coordinates of block1 given the canva",
+          "glyphs": "C alculate the absolute coordinates of block 1 given the can"
+        }
+      ]
+    },
+    {
+      "doc": "2206.01062",
+      "pages": 9,
+      "verdicts": {
+        "exact": 418,
+        "spacing_only": 1
+      },
+      "flags": []
+    },
+    {
+      "doc": "2305.03393",
+      "pages": 14,
+      "verdicts": {
+        "exact": 69,
+        "spacing_only": 1
+      },
+      "flags": []
+    },
+    {
+      "doc": "2408.09869",
+      "pages": 9,
+      "verdicts": {
+        "exact": 28,
+        "spacing_only": 1,
+        "mismatch": 6,
+        "engine_without_glyphs": 75
+      },
+      "flags": [
+        {
+          "table": "#/tables/1",
+          "page": 8,
+          "engine": "MRCNN R50 R101",
+          "glyphs": "MRCNN R50 R101684715"
+        },
+        {
+          "table": "#/tables/1",
+          "page": 8,
+          "engine": "FRCNN R101",
+          "glyphs": "FRCNN R101701"
+        },
+        {
+          "table": "#/tables/1",
+          "page": 8,
+          "engine": "YOLO v5x6",
+          "glyphs": "YOLO v5x6777"
+        },
+        {
+          "table": "#/tables/1",
+          "page": 8,
+          "engine": "68.471.570.971.860.163.481.280.861.659.371.970.071.772.767.6",
+          "glyphs": "R50 R10168.471.570.971.860.163.481.280.861.659.371.970.071.7"
+        },
+        {
+          "table": "#/tables/1",
+          "page": 8,
+          "engine": "70.173.763.581.058.972.072.068.482.285.479.973.4",
+          "glyphs": "R10170.173.763.581.058.972.072.068.482.285.479.973.4"
+        },
+        {
+          "table": "#/tables/1",
+          "page": 8,
+          "engine": "77.777.266.286.261.167.977.174.686.388.182.776.8",
+          "glyphs": "v5x677.777.266.286.261.167.977.174.686.388.182.776.8"
+        }
+      ]
+    },
+    {
+      "doc": "2003.08934",
+      "pages": 25,
+      "verdicts": {
+        "spacing_only": 30,
+        "exact": 651,
+        "mismatch": 69
+      },
+      "flags": [
+        {
+          "table": "#/tables/5",
+          "page": 25,
+          "uncovered": 4,
+          "sample": [
+            "SIM\u2191"
+          ]
+        },
+        {
+          "table": "#/tables/5",
+          "page": 25,
+          "engine": "No Pos. Encoding",
+          "glyphs": ",, No Pos . Encoding"
+        },
+        {
+          "table": "#/tables/5",
+          "page": 25,
+          "engine": "30.33",
+          "glyphs": ".30.33"
+        },
+        {
+          "table": "#/tables/5",
+          "page": 25,
+          "engine": "24.54",
+          "glyphs": ".24.54"
+        },
+        {
+          "table": "#/tables/5",
+          "page": 25,
+          "engine": "29.32",
+          "glyphs": ".29.32"
+        },
+        {
+          "table": "#/tables/5",
+          "page": 25,
+          "engine": "33.16",
+          "glyphs": ".33.16"
+        },
+        {
+          "table": "#/tables/5",
+          "page": 25,
+          "engine": "27.75",
+          "glyphs": ".27.75"
+        }
+      ]
+    },
+    {
+      "doc": "2005.12872",
+      "pages": 26,
+      "verdicts": {
+        "exact": 278,
+        "spacing_only": 31,
+        "mismatch": 8
+      },
+      "flags": [
+        {
+          "table": "#/tables/3",
+          "page": 13,
+          "engine": "l 1",
+          "glyphs": "`1"
+        },
+        {
+          "table": "#/tables/3",
+          "page": 13,
+          "engine": "\u2713",
+          "glyphs": "X"
+        },
+        {
+          "table": "#/tables/3",
+          "page": 13,
+          "engine": "\u2713",
+          "glyphs": "X"
+        },
+        {
+          "table": "#/tables/3",
+          "page": 13,
+          "engine": "\u2713",
+          "glyphs": "X"
+        },
+        {
+          "table": "#/tables/3",
+          "page": 13,
+          "engine": "\u2713",
+          "glyphs": "X"
+        },
+        {
+          "table": "#/tables/3",
+          "page": 13,
+          "engine": "\u2713",
+          "glyphs": "X"
+        }
+      ]
+    },
+    {
+      "doc": "2310.06825",
+      "pages": 9,
+      "verdicts": {
+        "exact": 116,
+        "spacing_only": 10,
+        "mismatch": 2
+      },
+      "flags": [
+        {
+          "table": "#/tables/4",
+          "page": 6,
+          "engine": "To kill a Linux process, you can use the ` kill ` command fo",
+          "glyphs": "To kill a Linux process, you can use the ` kill ` command fo"
+        },
+        {
+          "table": "#/tables/4",
+          "page": 6,
+          "engine": "As a helpful and respectful assistant, I cannot provide info",
+          "glyphs": "As a helpful and respectful assistant, I cannot provide info"
+        }
+      ]
+    },
+    {
+      "doc": "2210.03629",
+      "pages": 33,
+      "verdicts": {
+        "spacing_only": 170,
+        "exact": 154,
+        "mismatch": 52
+      },
+      "flags": [
+        {
+          "table": "#/tables/4",
+          "page": 18,
+          "uncovered": 3,
+          "sample": [
+            "r",
+            "de"
+          ]
+        },
+        {
+          "table": "#/tables/4",
+          "page": 18,
+          "engine": "High Plains rise in elevation from around 1,800 to 7,000 ft,",
+          "glyphs": "m ) . [ 3 ] H i gh P l a i n s r i s e i n e l e v a t i o n"
+        },
+        {
+          "table": "#/tables/4",
+          "page": 18,
+          "engine": "The question simplifies to \"The Simpsons\" character Milhouse",
+          "glyphs": "c h a r a c t e r M i l h o u s e , wh o Ma t t G r o e n i "
+        },
+        {
+          "table": "#/tables/4",
+          "page": 18,
+          "engine": "Search[Milhouse] Milhouse Mussolini Van Houten is a recurrin",
+          "glyphs": ". y . S e a r ch [ Mi l h o u s e ] M i l h o u s e Mu s s o"
+        },
+        {
+          "table": "#/tables/4",
+          "page": 18,
+          "engine": "The paragraph does not tell who Milhouse is named after, may",
+          "glyphs": "G r o e n i n g . T h e p a r a g r ap h do e s n o t t e l "
+        },
+        {
+          "table": "#/tables/4",
+          "page": 18,
+          "engine": "Lookup[named after] (Result 1 / 1) Milhouse was named after ",
+          "glyphs": ". L o o k up [ n ame d a f t e r ] ( Re s u l t 1 / 1 ) M i "
+        },
+        {
+          "table": "#/tables/4",
+          "page": 18,
+          "engine": "middle name was Milhous. Milhouse was named after U.S. presi",
+          "glyphs": "m i dd l e n ame w a s M i l h o u s . M i l h o u s e w a s"
+        },
+        {
+          "table": "#/tables/5",
+          "page": 19,
+          "uncovered": 2,
+          "sample": [
+            "1",
+            "2"
+          ]
+        },
+        {
+          "table": "#/tables/6",
+          "page": 21,
+          "uncovered": 23,
+          "sample": [
+            "f",
+            "t",
+            "i"
+          ]
+        },
+        {
+          "table": "#/tables/6",
+          "page": 21,
+          "engine": "Beautiful reached number two on the Billboard Hot 100 in 200",
+          "glyphs": "Be aut i fu l re a che d numbe r t wo o n t he B i l lb o a "
+        },
+        {
+          "table": "#/tables/6",
+          "page": 21,
+          "engine": "Claim Thought 11",
+          "glyphs": "C l a im Thought 1 Act i o n 1 Ob s e rv a t i o n 1"
+        },
+        {
+          "table": "#/tables/6",
+          "page": 21,
+          "engine": "Nikolaj Coster-Waldau worked with the Fox Broadcasting Compa",
+          "glyphs": "N i k o l a j C o s t e r -Wa l da u w o r k e d w i t h t h"
+        },
+        {
+          "table": "#/tables/6",
+          "page": 21,
+          "engine": "Nikolaj William Coster-Waldau (born 27 July 1970) is a Danis",
+          "glyphs": "S e a r ch [ N i k o l a j C o s t e r -Wa l dau ] N i k o l"
+        },
+        {
+          "table": "#/tables/6",
+          "page": 21,
+          "engine": "Because he \"appeared in the 2009 Fox television film Virtual",
+          "glyphs": "a p i l ot . B e c a u s e h e \" app e a r e d i n t h e 200"
+        },
+        {
+          "table": "#/tables/6",
+          "page": 21,
+          "engine": "Finish[SUPPORTS]",
+          "glyphs": "h ave w o r k e d w i t h t h e F o x B r F i n i s h [ S UP"
+        },
+        {
+          "table": "#/tables/7",
+          "page": 27,
+          "engine": "Let's think step by step. First, is Reign Over Me an America",
+          "glyphs": "L e t \u2019 s t h i n k s t e p b y s t e p . F i r s t , i s Re"
+        },
+        {
+          "table": "#/tables/8",
+          "page": 32,
+          "engine": "Let's think step by step. The name of the team that represen",
+          "glyphs": "L e t \u2019 s t h i n k s t e p b y s t e p . T h e n ame o f t "
+        },
+        {
+          "table": "#/tables/9",
+          "page": 32,
+          "uncovered": 3,
+          "sample": [
+            "TCo"
+          ]
+        },
+        {
+          "table": "#/tables/9",
+          "page": 32,
+          "engine": "Let's think step by step. Vanderbilt University was founded ",
+          "glyphs": "Let \u2019 s t h i nk s t ep by s t ep . Vande rb i l t Un ive r "
+        },
+        {
+          "table": "#/tables/10",
+          "page": 32,
+          "uncovered": 22,
+          "sample": [
+            "ih",
+            "dL",
+            "H"
+          ]
+        },
+        {
+          "table": "#/tables/10",
+          "page": 32,
+          "engine": "Who is older Danny Green or James Worthy? Let's think step b",
+          "glyphs": "Wh o i s o l de r D a n n y G r e e n o r Jame s Wo r t h y "
+        },
+        {
+          "table": "#/tables/11",
+          "page": 33,
+          "uncovered": 3,
+          "sample": [
+            "TCo"
+          ]
+        },
+        {
+          "table": "#/tables/11",
+          "page": 33,
+          "engine": "Finish[Israeli] Israel-American)",
+          "glyphs": "F i n i s h [ I s r a e l i ] ( l ab e l : I s r a e l -Ame "
+        },
+        {
+          "table": "#/tables/11",
+          "page": 33,
+          "engine": "Let's think step by step. Kurt Fuller from Stockton, CA appe",
+          "glyphs": "L e t \u2019 s t h i n k s t ep by s t ep . Ku rt F u l l e r f r"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "method": "controlled_table_scan_degradation",
+  "source": "dolg-ecp.pdf",
+  "source_sha256": "24f433c4edfb3f419016b2a90b4aecd989394925685ade3fe3efa66c3665011a",
+  "source_page": 7,
+  "source_crop_300dpi": "2050x1900+250+60",
+  "corpus_pdf": "dolg-table-iii-scan-degradation.pdf",
+  "corpus_sha256": "736ba067f0432a7977b42cae03a72660f07b342a41e10f8fc0d96a8a6a22c3b3",
+  "tools": {
+    "pdftoppm": "pdftoppm version 25.07.0",
+    "imagemagick": "Version: ImageMagick 7.1.1-47 Q16-HDRI aarch64 22763 https://imagemagick.org",
+    "pillow": "10.4.0"
+  },
+  "variants": [
+    {
+      "page": 1,
+      "id": "clean_300dpi",
+      "operations": [],
+      "image": "01-clean_300dpi.png",
+      "image_sha256": "75319fd215e1c74ac60725c4779dccb8147552edaf2c84f8453cf54790a8730c",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 2,
+      "id": "resolution_150dpi",
+      "operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "1025x950!",
+        "-resize",
+        "2050x1900!"
+      ],
+      "image": "02-resolution_150dpi.png",
+      "image_sha256": "1486fa37918dbd8ada8597100b2c3a4db622a296b0b8535c7b8922b34baf8fb2",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 3,
+      "id": "resolution_100dpi",
+      "operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "683x633!",
+        "-resize",
+        "2050x1900!"
+      ],
+      "image": "03-resolution_100dpi.png",
+      "image_sha256": "e0a0f3af1a41a2e3b21049c925a4bbf5e0453a10cd11e91fc5354a30dd656398",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 4,
+      "id": "blur_sigma_1_2",
+      "operations": [
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "04-blur_sigma_1_2.png",
+      "image_sha256": "c52e13d40f27c9daa09ce5ce5cd98188a8935d2b999c8a355d666caf4d4d9037",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 5,
+      "id": "blur_sigma_2_0",
+      "operations": [
+        "-blur",
+        "0x2.0"
+      ],
+      "image": "05-blur_sigma_2_0.png",
+      "image_sha256": "3cdda52e2f26ef2359e92bf21370295ae4533285aeea40d60d4e45a4f1b7eaab",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 6,
+      "id": "skew_1_degree",
+      "operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.0",
+        "-gravity",
+        "center",
+        "-crop",
+        "2050x1900+0+0",
+        "+repage"
+      ],
+      "image": "06-skew_1_degree.png",
+      "image_sha256": "c10f4109eb11f7c0040c1247f5861e2fa9dc312dedc263bc490c89adc9140967",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 7,
+      "id": "skew_2_degrees",
+      "operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "2.0",
+        "-gravity",
+        "center",
+        "-crop",
+        "2050x1900+0+0",
+        "+repage"
+      ],
+      "image": "07-skew_2_degrees.png",
+      "image_sha256": "7c903d30a7522d8bf2c9040c779e92d83d41234d8e9b99c1ac97eaab16db5fe6",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 8,
+      "id": "contrast_minus_35",
+      "operations": [
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "08-contrast_minus_35.png",
+      "image_sha256": "d0681b0cfac396ee835be09afe5928b2dd404a0d2d6db6fd63bbb74041e94df3",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 9,
+      "id": "contrast_minus_55",
+      "operations": [
+        "-brightness-contrast",
+        "0x-55"
+      ],
+      "image": "09-contrast_minus_55.png",
+      "image_sha256": "5ccd2c5487dec319cf68aa80f64ca20b00c65a13ab8974b1b17965cd92d1fd0f",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 10,
+      "id": "jpeg_quality_25",
+      "operations": [
+        "jpeg_roundtrip:25"
+      ],
+      "image": "10-jpeg_quality_25.png",
+      "image_sha256": "29700ee6d09157539403c6a3428cc5db922563366f50ef942c7819fe93a5f1e0",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 11,
+      "id": "jpeg_quality_10",
+      "operations": [
+        "jpeg_roundtrip:10"
+      ],
+      "image": "11-jpeg_quality_10.png",
+      "image_sha256": "80651659f0addd8a4d3fe88a10a96010443d68d1566a8d05c3ce522d3a925a12",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    },
+    {
+      "page": 12,
+      "id": "combined_hard",
+      "operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "683x633!",
+        "-resize",
+        "2050x1900!",
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "2050x1900+0+0",
+        "+repage",
+        "jpeg_roundtrip:40"
+      ],
+      "image": "12-combined_hard.png",
+      "image_sha256": "790e2fcfcc7de01dd4dfd4d3d8e9a62bcb7a984bf6fda47f552cf2691278d02b",
+      "pixel_size": [
+        2050,
+        1900
+      ]
+    }
+  ]
+}

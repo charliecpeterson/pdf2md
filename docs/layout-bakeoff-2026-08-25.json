@@ -1,0 +1,3465 @@
+{
+  "schema_version": 1,
+  "labels": {
+    "path": "tests/bakeoff_labels.json",
+    "sha256": "e0fc74fa02781bbb1d30f674975e05a09eb2e02bfcfbd654438596d09ff6f2d2"
+  },
+  "results": [
+    {
+      "document": "grasp-table-3-1",
+      "engine": "docling-heron",
+      "run_id": "20260825T141730.293285Z",
+      "passed": false,
+      "duration_seconds": 5.961,
+      "resources": {
+        "peak_rss_bytes": 1662304256,
+        "user_cpu_seconds": 6.274,
+        "system_cpu_seconds": 0.955
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "64120ce879cad8162b355f25b37b9bc5022f4054a54fd3133fce5764e0fa721a",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-heron",
+          "name": "docling_layout_heron",
+          "repo_id": "docling-project/docling-layout-heron",
+          "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-heron",
+          "name": "docling_layout_heron",
+          "repo_id": "docling-project/docling-layout-heron",
+          "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "table count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row count == 23 (got 23)"
+        },
+        {
+          "passed": true,
+          "description": "table 1 column count == 2 (got 2)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 1 == ['Extension', 'Type of file'] (got ['\u274a\u2460a116\u2761\u2665a115\u2710\u2666\u2665', '\u275a\u2461\u2663\u2761 \u2666\u2762 \u271c\u2767\u2761'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 2 == ['c', 'List of CSFs.'] (got ['\u275d', '\u25b2\u2710a115a116 \u2666\u2762 \u2748\u2759\u274ba115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 3 == ['w', 'Binary file of radial wave functions.'] (got ['\u2707', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 a114\u275b\u275e\u2710\u275b\u2767 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 4 == ['m', 'Binary file of expansion or mixing coefficients produced by rmcdhf.'] (got ['\u2660', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 \u2761\u2460\u2663\u275b\u2665a115\u2710\u2666\u2665 \u2666a114 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115 \u2663a114\u2666\u275e\u2709\u275d\u2761\u275e \u275c\u2461 a114\u2660\u275d\u275e\u2764\u2762 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 5 == ['sum', 'File containing information from an rmcdhf run.'] (got ['a115\u2709\u2660', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u2710\u2665\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2762a114\u2666\u2660 \u275b\u2665 a114\u2660\u275d\u275e\u2764\u2762 a114\u2709\u2665\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 6 == ['cm', 'Binary file of mixing coefficients produced by rci.'] (got ['\u275d\u2660', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115 \u2663a114\u2666\u275e\u2709\u275d\u2761\u275e \u275c\u2461 a114\u275d\u2710 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 7 == ['bw', 'A .w file after biorthonormal transformation using rbiotransform.'] (got ['\u275c\u2707', '\u2746 \u2733\u2707 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 8 == ['csum', 'File containing information from an rci run.'] (got ['\u275da115\u2709\u2660', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u2710\u2665\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2762a114\u2666\u2660 \u275b\u2665 a114\u275d\u2710 a114\u2709\u2665\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 9 == ['bm', 'A .m file after biorthonormal transformation using rbiotransform.'] (got ['\u275c\u2660', '\u2746 \u2733\u2660 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 10 == ['cbm', 'A .cm file after biorthonormal transformation using rbiotransform.'] (got ['\u275d\u275c\u2660', '\u2746 \u2733\u275d\u2660 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 11 == ['lsj.lbl', 'File containing composition of wave functions in LSJ-coupling.'] (got ['\u2767a115\u2765\u2733\u2767\u275c\u2767', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u275d\u2666\u2660\u2663\u2666a115\u2710a116\u2710\u2666\u2665 \u2666\u2762 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 12 == ['uni.lsj.lbl', 'File containing composition of wave functions in LSJ-coupling but arranged to give unique labels of all states.'] (got ['', 'a116\u2666 \u2763\u2710\u2708\u2761 \u2709\u2665\u2710a113\u2709\u2761 \u2767\u275b\u275c\u2761\u2767a115 \u2666\u2762 \u275b\u2767\u2767 a115a116\u275ba116\u2761a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 13 == ['t', 'Transition probability data from rmcdhf mixing coefficients.'] (got ['a116', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 14 == ['t.lsj', 'Transition probability data from rmcdhf mixing coefficients. Labels in in LSJ-coupling.'] (got ['a116\u2733\u2767a115\u2765', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733 \u25b2\u275b\u275c\u2761\u2767a115 \u2710\u2665 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 15 == ['ct', 'Transition probability data from rci mixing coefficients.'] (got ['\u275da116', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 16 == ['ct.lsj', 'Transition probability data from rci mixing coefficients. Labels in in LSJ-coupling.'] (got ['\u275da116\u2733\u2767a115\u2765', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733 \u25b2\u275b\u275c\u2761\u2767a115 \u2710\u2665 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 17 == ['h', 'Hyperfine structure data and Land\u00e9 gJ-factors from rmcdhf mixing coefficients.'] (got ['\u2764', '\u274d\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u275b\u2665\u275e \u25b2\u275b\u2665\u275ea233 g J \u2732\u2762\u275b\u275da116\u2666a114a115 \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 18 == ['ch', 'Hyperfine structure data and Land\u00e9 gJ-factors from rci mixing coefficients.'] (got ['\u275d\u2764', '\u274d\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u275b\u2665\u275e \u25b2\u275b\u2665\u275ea233 g J \u2732\u2762\u275b\u275da116\u2666a114a115 \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 19 == ['hoffd', 'Off-diagonal hyperfine structure data from rmcdhf mixing coefficients.'] (got ['\u2764\u2666\u2762\u2762\u275e', '\u2756\u271b\u2732\u275e\u2710\u275b\u2763\u2666\u2665\u275b\u2767 \u2764\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 20 == ['choffd', 'Off-diagonal hyperfine structure data from rci mixing coefficients.'] (got ['\u275d\u2764\u2666\u2762\u2762\u275e', '\u2756\u271b\u2732\u275e\u2710\u275b\u2763\u2666\u2665\u275b\u2767 \u2764\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 21 == ['i', 'Isotope shift data from rmcdhf mixing coefficients.'] (got ['\u2710', '\u25a0a115\u2666a116\u2666\u2663\u2761 a115\u2764\u2710\u2762a116 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 22 == ['ci', 'Isotope shift data from rci mixing coefficients.'] (got ['\u275d\u2710', '\u25a0a115\u2666a116\u2666\u2663\u2761 a115\u2764\u2710\u2762a116 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 23 == ['log', 'Log-file that keeps a record of program input.'] (got ['\u2767\u2666\u2763', '\u25b2\u2666\u2763\u2732\u271c\u2767\u2761 a116\u2764\u275ba116 \u2766\u2761\u2761\u2663a115 \u275b a114\u2761\u275d\u2666a114\u275e \u2666\u2762 \u2663a114\u2666\u2763a114\u275b\u2660 \u2710\u2665\u2663\u2709a116\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains '3.3 File naming convention, program and data flow'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Passing information between different programs is done through files.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Most programs produce a file that keeps a record of the input data.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Table 3.1: Table of common extensions.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Extension'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'To perform a calculation a number of programs needs to be run'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        }
+      ]
+    },
+    {
+      "document": "grasp-table-3-1",
+      "engine": "docling-heron-101",
+      "run_id": "20260825T141736.273926Z",
+      "passed": false,
+      "duration_seconds": 6.122,
+      "resources": {
+        "peak_rss_bytes": 1829470208,
+        "user_cpu_seconds": 6.606,
+        "system_cpu_seconds": 0.984
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "64120ce879cad8162b355f25b37b9bc5022f4054a54fd3133fce5764e0fa721a",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-heron-101",
+          "name": "docling_layout_heron_101",
+          "repo_id": "docling-project/docling-layout-heron-101",
+          "revision": "2e4993cf6bb211112084a2f80938f26138008917",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-heron-101",
+          "name": "docling_layout_heron_101",
+          "repo_id": "docling-project/docling-layout-heron-101",
+          "revision": "2e4993cf6bb211112084a2f80938f26138008917",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "table count == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row count == 23 (got 22)"
+        },
+        {
+          "passed": true,
+          "description": "table 1 column count == 2 (got 2)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 1 == ['Extension', 'Type of file'] (got ['\u274a\u2460a116\u2761\u2665a115\u2710\u2666\u2665', '\u275a\u2461\u2663\u2761 \u2666\u2762 \u271c\u2767\u2761'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 2 == ['c', 'List of CSFs.'] (got ['\u275d', '\u25b2\u2710a115a116 \u2666\u2762 \u2748\u2759\u274ba115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 3 == ['w', 'Binary file of radial wave functions.'] (got ['\u2707', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 a114\u275b\u275e\u2710\u275b\u2767 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 4 == ['m', 'Binary file of expansion or mixing coefficients produced by rmcdhf.'] (got ['\u2660', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 \u2761\u2460\u2663\u275b\u2665a115\u2710\u2666\u2665 \u2666a114 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115 \u2663a114\u2666\u275e\u2709\u275d\u2761\u275e \u275c\u2461 a114\u2660\u275d\u275e\u2764\u2762 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 5 == ['sum', 'File containing information from an rmcdhf run.'] (got ['a115\u2709\u2660', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u2710\u2665\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2762a114\u2666\u2660 \u275b\u2665 a114\u2660\u275d\u275e\u2764\u2762 a114\u2709\u2665\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 6 == ['cm', 'Binary file of mixing coefficients produced by rci.'] (got ['\u275d\u2660', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115 \u2663a114\u2666\u275e\u2709\u275d\u2761\u275e \u275c\u2461 a114\u275d\u2710 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 7 == ['bw', 'A .w file after biorthonormal transformation using rbiotransform.'] (got ['\u275c\u2707', '\u2746 \u2733\u2707 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 8 == ['csum', 'File containing information from an rci run.'] (got ['\u275da115\u2709\u2660', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u2710\u2665\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2762a114\u2666\u2660 \u275b\u2665 a114\u275d\u2710 a114\u2709\u2665\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 9 == ['bm', 'A .m file after biorthonormal transformation using rbiotransform.'] (got ['\u275c\u2660', '\u2746 \u2733\u2660 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 10 == ['cbm', 'A .cm file after biorthonormal transformation using rbiotransform.'] (got ['\u275d\u275c\u2660', '\u2746 \u2733\u275d\u2660 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 11 == ['lsj.lbl', 'File containing composition of wave functions in LSJ-coupling.'] (got ['\u2767a115\u2765\u2733\u2767\u275c\u2767', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u275d\u2666\u2660\u2663\u2666a115\u2710a116\u2710\u2666\u2665 \u2666\u2762 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 12 == ['uni.lsj.lbl', 'File containing composition of wave functions in LSJ-coupling but arranged to give unique labels of all states.'] (got ['a116', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 13 == ['t', 'Transition probability data from rmcdhf mixing coefficients.'] (got ['a116\u2733\u2767a115\u2765', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733 \u25b2\u275b\u275c\u2761\u2767a115 \u2710\u2665 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 14 == ['t.lsj', 'Transition probability data from rmcdhf mixing coefficients. Labels in in LSJ-coupling.'] (got ['\u275da116', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 15 == ['ct', 'Transition probability data from rci mixing coefficients.'] (got ['\u275da116\u2733\u2767a115\u2765', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733 \u25b2\u275b\u275c\u2761\u2767a115 \u2710\u2665 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 16 == ['ct.lsj', 'Transition probability data from rci mixing coefficients. Labels in in LSJ-coupling.'] (got ['\u2764', '\u274d\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u275b\u2665\u275e \u25b2\u275b\u2665\u275ea233 g J \u2732\u2762\u275b\u275da116\u2666a114a115 \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 17 == ['h', 'Hyperfine structure data and Land\u00e9 gJ-factors from rmcdhf mixing coefficients.'] (got ['\u275d\u2764', '\u274d\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u275b\u2665\u275e \u25b2\u275b\u2665\u275ea233 g J \u2732\u2762\u275b\u275da116\u2666a114a115 \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 18 == ['ch', 'Hyperfine structure data and Land\u00e9 gJ-factors from rci mixing coefficients.'] (got ['\u2764\u2666\u2762\u2762\u275e', '\u2756\u271b\u2732\u275e\u2710\u275b\u2763\u2666\u2665\u275b\u2767 \u2764\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 19 == ['hoffd', 'Off-diagonal hyperfine structure data from rmcdhf mixing coefficients.'] (got ['\u275d\u2764\u2666\u2762\u2762\u275e', '\u2756\u271b\u2732\u275e\u2710\u275b\u2763\u2666\u2665\u275b\u2767 \u2764\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 20 == ['choffd', 'Off-diagonal hyperfine structure data from rci mixing coefficients.'] (got ['\u2710', '\u25a0a115\u2666a116\u2666\u2663\u2761 a115\u2764\u2710\u2762a116 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 21 == ['i', 'Isotope shift data from rmcdhf mixing coefficients.'] (got ['\u275d\u2710', '\u25a0a115\u2666a116\u2666\u2663\u2761 a115\u2764\u2710\u2762a116 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 22 == ['ci', 'Isotope shift data from rci mixing coefficients.'] (got ['\u2767\u2666\u2763', '\u25b2\u2666\u2763\u2732\u271c\u2767\u2761 a116\u2764\u275ba116 \u2766\u2761\u2761\u2663a115 \u275b a114\u2761\u275d\u2666a114\u275e \u2666\u2762 \u2663a114\u2666\u2763a114\u275b\u2660 \u2710\u2665\u2663\u2709a116\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 23 == ['log', 'Log-file that keeps a record of program input.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains '3.3 File naming convention, program and data flow'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Passing information between different programs is done through files.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Most programs produce a file that keeps a record of the input data.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Table 3.1: Table of common extensions.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Extension'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'To perform a calculation a number of programs needs to be run'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        }
+      ]
+    },
+    {
+      "document": "grasp-table-3-1",
+      "engine": "docling-egret-medium",
+      "run_id": "20260825T141742.405902Z",
+      "passed": false,
+      "duration_seconds": 6.006,
+      "resources": {
+        "peak_rss_bytes": 1353007104,
+        "user_cpu_seconds": 6.198,
+        "system_cpu_seconds": 0.965
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "64120ce879cad8162b355f25b37b9bc5022f4054a54fd3133fce5764e0fa721a",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-medium",
+          "name": "docling_layout_egret_medium",
+          "repo_id": "docling-project/docling-layout-egret-medium",
+          "revision": "77ede7cc7bed96d853c58f319734803d6ea2ea5c",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-medium",
+          "name": "docling_layout_egret_medium",
+          "repo_id": "docling-project/docling-layout-egret-medium",
+          "revision": "77ede7cc7bed96d853c58f319734803d6ea2ea5c",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "table count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row count == 23 (got 23)"
+        },
+        {
+          "passed": true,
+          "description": "table 1 column count == 2 (got 2)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 1 == ['Extension', 'Type of file'] (got ['\u274a\u2460a116\u2761\u2665a115\u2710\u2666\u2665', '\u275a\u2461\u2663\u2761 \u2666\u2762 \u271c\u2767\u2761'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 2 == ['c', 'List of CSFs.'] (got ['\u275d', '\u25b2\u2710a115a116 \u2666\u2762 \u2748\u2759\u274ba115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 3 == ['w', 'Binary file of radial wave functions.'] (got ['\u2707', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 a114\u275b\u275e\u2710\u275b\u2767 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 4 == ['m', 'Binary file of expansion or mixing coefficients produced by rmcdhf.'] (got ['\u2660', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 \u2761\u2460\u2663\u275b\u2665a115\u2710\u2666\u2665 \u2666a114 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115 \u2663a114\u2666\u275e\u2709\u275d\u2761\u275e \u275c\u2461 a114\u2660\u275d\u275e\u2764\u2762 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 5 == ['sum', 'File containing information from an rmcdhf run.'] (got ['a115\u2709\u2660', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u2710\u2665\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2762a114\u2666\u2660 \u275b\u2665 a114\u2660\u275d\u275e\u2764\u2762 a114\u2709\u2665\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 6 == ['cm', 'Binary file of mixing coefficients produced by rci.'] (got ['\u275d\u2660', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115 \u2663a114\u2666\u275e\u2709\u275d\u2761\u275e \u275c\u2461 a114\u275d\u2710 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 7 == ['bw', 'A .w file after biorthonormal transformation using rbiotransform.'] (got ['\u275c\u2707', '\u2746 \u2733\u2707 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 8 == ['csum', 'File containing information from an rci run.'] (got ['\u275da115\u2709\u2660', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u2710\u2665\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2762a114\u2666\u2660 \u275b\u2665 a114\u275d\u2710 a114\u2709\u2665\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 9 == ['bm', 'A .m file after biorthonormal transformation using rbiotransform.'] (got ['\u275c\u2660', '\u2746 \u2733\u2660 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 10 == ['cbm', 'A .cm file after biorthonormal transformation using rbiotransform.'] (got ['\u275d\u275c\u2660', '\u2746 \u2733\u275d\u2660 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 11 == ['lsj.lbl', 'File containing composition of wave functions in LSJ-coupling.'] (got ['\u2767a115\u2765\u2733\u2767\u275c\u2767', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u275d\u2666\u2660\u2663\u2666a115\u2710a116\u2710\u2666\u2665 \u2666\u2762 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 12 == ['uni.lsj.lbl', 'File containing composition of wave functions in LSJ-coupling but arranged to give unique labels of all states.'] (got ['\u2709\u2665\u2710\u2733\u2767a115\u2765\u2733\u2767\u275c\u2767', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u275d\u2666\u2660\u2663\u2666a115\u2710a116\u2710\u2666\u2665 \u2666\u2762 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763 \u275c\u2709a116 \u275ba114a114\u275b\u2665\u2763\u2761\u275e a116\u2666 \u2763\u2710\u2708\u2761 \u2709\u2665\u2710a113\u2709\u2761 \u2767\u275b\u275c\u2761\u2767a115 \u2666\u2762 \u275b\u2767\u2767 a115a116\u275ba116\u2761a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 13 == ['t', 'Transition probability data from rmcdhf mixing coefficients.'] (got ['a116', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 14 == ['t.lsj', 'Transition probability data from rmcdhf mixing coefficients. Labels in in LSJ-coupling.'] (got ['a116\u2733\u2767a115\u2765', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733 \u25b2\u275b\u275c\u2761\u2767a115 \u2710\u2665 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 15 == ['ct', 'Transition probability data from rci mixing coefficients.'] (got ['\u275da116', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 16 == ['ct.lsj', 'Transition probability data from rci mixing coefficients. Labels in in LSJ-coupling.'] (got ['\u275da116\u2733\u2767a115\u2765', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733 \u25b2\u275b\u275c\u2761\u2767a115 \u2710\u2665 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 17 == ['h', 'Hyperfine structure data and Land\u00e9 gJ-factors from rmcdhf mixing coefficients.'] (got ['\u2764', '\u274d\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u275b\u2665\u275e \u25b2\u275b\u2665\u275ea233 g J \u2732\u2762\u275b\u275da116\u2666a114a115 \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 18 == ['ch', 'Hyperfine structure data and Land\u00e9 gJ-factors from rci mixing coefficients.'] (got ['\u275d\u2764', '\u274d\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u275b\u2665\u275e \u25b2\u275b\u2665\u275ea233 g J \u2732\u2762\u275b\u275da116\u2666a114a115 \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 19 == ['hoffd', 'Off-diagonal hyperfine structure data from rmcdhf mixing coefficients.'] (got ['\u2764\u2666\u2762\u2762\u275e', '\u2756\u271b\u2732\u275e\u2710\u275b\u2763\u2666\u2665\u275b\u2767 \u2764\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 20 == ['choffd', 'Off-diagonal hyperfine structure data from rci mixing coefficients.'] (got ['\u275d\u2764\u2666\u2762\u2762\u275e', '\u2756\u271b\u2732\u275e\u2710\u275b\u2763\u2666\u2665\u275b\u2767 \u2764\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 21 == ['i', 'Isotope shift data from rmcdhf mixing coefficients.'] (got ['\u2710', '\u25a0a115\u2666a116\u2666\u2663\u2761 a115\u2764\u2710\u2762a116 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 22 == ['ci', 'Isotope shift data from rci mixing coefficients.'] (got ['\u275d\u2710', '\u25a0a115\u2666a116\u2666\u2663\u2761 a115\u2764\u2710\u2762a116 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 23 == ['log', 'Log-file that keeps a record of program input.'] (got ['\u2767\u2666\u2763', '\u25b2\u2666\u2763\u2732\u271c\u2767\u2761 a116\u2764\u275ba116 \u2766\u2761\u2761\u2663a115 \u275b a114\u2761\u275d\u2666a114\u275e \u2666\u2762 \u2663a114\u2666\u2763a114\u275b\u2660 \u2710\u2665\u2663\u2709a116\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains '3.3 File naming convention, program and data flow'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Passing information between different programs is done through files.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Most programs produce a file that keeps a record of the input data.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Table 3.1: Table of common extensions.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Extension'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'To perform a calculation a number of programs needs to be run'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        }
+      ]
+    },
+    {
+      "document": "grasp-table-3-1",
+      "engine": "docling-egret-large",
+      "run_id": "20260825T141748.421652Z",
+      "passed": false,
+      "duration_seconds": 5.625,
+      "resources": {
+        "peak_rss_bytes": 1418919936,
+        "user_cpu_seconds": 5.103,
+        "system_cpu_seconds": 0.978
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "64120ce879cad8162b355f25b37b9bc5022f4054a54fd3133fce5764e0fa721a",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-large",
+          "name": "docling_layout_egret_large",
+          "repo_id": "docling-project/docling-layout-egret-large",
+          "revision": "fff417c78abd6bab338c87706c95a8d79dc68f1e",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-large",
+          "name": "docling_layout_egret_large",
+          "repo_id": "docling-project/docling-layout-egret-large",
+          "revision": "fff417c78abd6bab338c87706c95a8d79dc68f1e",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": false,
+          "description": "table count == 1 (got 0)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row count == 23 (got 0)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 column count == 2 (got 0)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 1 == ['Extension', 'Type of file'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 2 == ['c', 'List of CSFs.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 3 == ['w', 'Binary file of radial wave functions.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 4 == ['m', 'Binary file of expansion or mixing coefficients produced by rmcdhf.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 5 == ['sum', 'File containing information from an rmcdhf run.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 6 == ['cm', 'Binary file of mixing coefficients produced by rci.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 7 == ['bw', 'A .w file after biorthonormal transformation using rbiotransform.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 8 == ['csum', 'File containing information from an rci run.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 9 == ['bm', 'A .m file after biorthonormal transformation using rbiotransform.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 10 == ['cbm', 'A .cm file after biorthonormal transformation using rbiotransform.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 11 == ['lsj.lbl', 'File containing composition of wave functions in LSJ-coupling.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 12 == ['uni.lsj.lbl', 'File containing composition of wave functions in LSJ-coupling but arranged to give unique labels of all states.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 13 == ['t', 'Transition probability data from rmcdhf mixing coefficients.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 14 == ['t.lsj', 'Transition probability data from rmcdhf mixing coefficients. Labels in in LSJ-coupling.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 15 == ['ct', 'Transition probability data from rci mixing coefficients.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 16 == ['ct.lsj', 'Transition probability data from rci mixing coefficients. Labels in in LSJ-coupling.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 17 == ['h', 'Hyperfine structure data and Land\u00e9 gJ-factors from rmcdhf mixing coefficients.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 18 == ['ch', 'Hyperfine structure data and Land\u00e9 gJ-factors from rci mixing coefficients.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 19 == ['hoffd', 'Off-diagonal hyperfine structure data from rmcdhf mixing coefficients.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 20 == ['choffd', 'Off-diagonal hyperfine structure data from rci mixing coefficients.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 21 == ['i', 'Isotope shift data from rmcdhf mixing coefficients.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 22 == ['ci', 'Isotope shift data from rci mixing coefficients.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 23 == ['log', 'Log-file that keeps a record of program input.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains '3.3 File naming convention, program and data flow'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Passing information between different programs is done through files.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Most programs produce a file that keeps a record of the input data.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Table 3.1: Table of common extensions.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Extension'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'To perform a calculation a number of programs needs to be run'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        }
+      ]
+    },
+    {
+      "document": "grasp-table-3-1",
+      "engine": "docling-egret-xlarge",
+      "run_id": "20260825T141754.055997Z",
+      "passed": false,
+      "duration_seconds": 6.967,
+      "resources": {
+        "peak_rss_bytes": 1775845376,
+        "user_cpu_seconds": 7.025,
+        "system_cpu_seconds": 1.483
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "64120ce879cad8162b355f25b37b9bc5022f4054a54fd3133fce5764e0fa721a",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-xlarge",
+          "name": "docling_layout_egret_xlarge",
+          "repo_id": "docling-project/docling-layout-egret-xlarge",
+          "revision": "23857d16596e0106716b3162d132212d733769e7",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-xlarge",
+          "name": "docling_layout_egret_xlarge",
+          "repo_id": "docling-project/docling-layout-egret-xlarge",
+          "revision": "23857d16596e0106716b3162d132212d733769e7",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "table count == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row count == 23 (got 22)"
+        },
+        {
+          "passed": true,
+          "description": "table 1 column count == 2 (got 2)"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 1 == ['Extension', 'Type of file'] (got ['\u274a\u2460a116\u2761\u2665a115\u2710\u2666\u2665', '\u275a\u2461\u2663\u2761 \u2666\u2762 \u271c\u2767\u2761'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 2 == ['c', 'List of CSFs.'] (got ['\u275d', '\u25b2\u2710a115a116 \u2666\u2762 \u2748\u2759\u274ba115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 3 == ['w', 'Binary file of radial wave functions.'] (got ['\u2707', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 a114\u275b\u275e\u2710\u275b\u2767 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 4 == ['m', 'Binary file of expansion or mixing coefficients produced by rmcdhf.'] (got ['\u2660', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 \u2761\u2460\u2663\u275b\u2665a115\u2710\u2666\u2665 \u2666a114 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115 \u2663a114\u2666\u275e\u2709\u275d\u2761\u275e \u275c\u2461 a114\u2660\u275d\u275e\u2764\u2762 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 5 == ['sum', 'File containing information from an rmcdhf run.'] (got ['a115\u2709\u2660', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u2710\u2665\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2762a114\u2666\u2660 \u275b\u2665 a114\u2660\u275d\u275e\u2764\u2762 a114\u2709\u2665\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 6 == ['cm', 'Binary file of mixing coefficients produced by rci.'] (got ['\u275d\u2660', '\u2747\u2710\u2665\u275ba114\u2461 \u271c\u2767\u2761 \u2666\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115 \u2663a114\u2666\u275e\u2709\u275d\u2761\u275e \u275c\u2461 a114\u275d\u2710 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 7 == ['bw', 'A .w file after biorthonormal transformation using rbiotransform.'] (got ['\u275c\u2707', '\u2746 \u2733\u2707 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 8 == ['csum', 'File containing information from an rci run.'] (got ['\u275da115\u2709\u2660', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u2710\u2665\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2762a114\u2666\u2660 \u275b\u2665 a114\u275d\u2710 a114\u2709\u2665\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 9 == ['bm', 'A .m file after biorthonormal transformation using rbiotransform.'] (got ['\u275c\u2660', '\u2746 \u2733\u2660 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 10 == ['cbm', 'A .cm file after biorthonormal transformation using rbiotransform.'] (got ['\u275d\u275c\u2660', '\u2746 \u2733\u275d\u2660 \u271c\u2767\u2761 \u275b\u2762a116\u2761a114 \u275c\u2710\u2666a114a116\u2764\u2666\u2665\u2666a114\u2660\u275b\u2767 a116a114\u275b\u2665a115\u2762\u2666a114\u2660\u275ba116\u2710\u2666\u2665 \u2709a115\u2710\u2665\u2763 a114\u275c\u2710\u2666a116a114\u275b\u2665a115\u2762\u2666a114\u2660 \u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 11 == ['lsj.lbl', 'File containing composition of wave functions in LSJ-coupling.'] (got ['\u2767a115\u2765\u2733\u2767\u275c\u2767 \u2709\u2665\u2710\u2733\u2767a115\u2765\u2733\u2767\u275c\u2767', '\u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u275d\u2666\u2660\u2663\u2666a115\u2710a116\u2710\u2666\u2665 \u2666\u2762 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733 \u274b\u2710\u2767\u2761 \u275d\u2666\u2665a116\u275b\u2710\u2665\u2710\u2665\u2763 \u275d\u2666\u2660\u2663\u2666a115\u2710a116\u2710\u2666\u2665 \u2666\u2762 \u2707\u275b\u2708\u2761 \u2762\u2709\u2665\u275da116\u2710\u2666\u2665a115 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763 \u275c\u2709a116 \u275ba114a114\u275b\u2665\u2763\u2761\u275e'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 12 == ['uni.lsj.lbl', 'File containing composition of wave functions in LSJ-coupling but arranged to give unique labels of all states.'] (got ['a116', 'a116\u2666 \u2763\u2710\u2708\u2761 \u2709\u2665\u2710a113\u2709\u2761 \u2767\u275b\u275c\u2761\u2767a115 \u2666\u2762 \u275b\u2767\u2767 a115a116\u275ba116\u2761a115\u2733 \u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 13 == ['t', 'Transition probability data from rmcdhf mixing coefficients.'] (got ['a116\u2733\u2767a115\u2765', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733 \u25b2\u275b\u275c\u2761\u2767a115 \u2710\u2665 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 14 == ['t.lsj', 'Transition probability data from rmcdhf mixing coefficients. Labels in in LSJ-coupling.'] (got ['\u275da116', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 15 == ['ct', 'Transition probability data from rci mixing coefficients.'] (got ['\u275da116\u2733\u2767a115\u2765', '\u275aa114\u275b\u2665a115\u2710a116\u2710\u2666\u2665 \u2663a114\u2666\u275c\u275b\u275c\u2710\u2767\u2710a116\u2461 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733 \u25b2\u275b\u275c\u2761\u2767a115 \u2710\u2665 \u2710\u2665 LSJ \u2732\u275d\u2666\u2709\u2663\u2767\u2710\u2665\u2763\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 16 == ['ct.lsj', 'Transition probability data from rci mixing coefficients. Labels in in LSJ-coupling.'] (got ['\u2764', '\u274d\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u275b\u2665\u275e \u25b2\u275b\u2665\u275ea233 g J \u2732\u2762\u275b\u275da116\u2666a114a115 \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 17 == ['h', 'Hyperfine structure data and Land\u00e9 gJ-factors from rmcdhf mixing coefficients.'] (got ['\u275d\u2764', '\u274d\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u275b\u2665\u275e \u25b2\u275b\u2665\u275ea233 g J \u2732\u2762\u275b\u275da116\u2666a114a115 \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 18 == ['ch', 'Hyperfine structure data and Land\u00e9 gJ-factors from rci mixing coefficients.'] (got ['\u2764\u2666\u2762\u2762\u275e', '\u2756\u271b\u2732\u275e\u2710\u275b\u2763\u2666\u2665\u275b\u2767 \u2764\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 19 == ['hoffd', 'Off-diagonal hyperfine structure data from rmcdhf mixing coefficients.'] (got ['\u275d\u2764\u2666\u2762\u2762\u275e', '\u2756\u271b\u2732\u275e\u2710\u275b\u2763\u2666\u2665\u275b\u2767 \u2764\u2461\u2663\u2761a114\u271c\u2665\u2761 a115a116a114\u2709\u275da116\u2709a114\u2761 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 20 == ['choffd', 'Off-diagonal hyperfine structure data from rci mixing coefficients.'] (got ['\u2710', '\u25a0a115\u2666a116\u2666\u2663\u2761 a115\u2764\u2710\u2762a116 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u2660\u275d\u275e\u2764\u2762 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 21 == ['i', 'Isotope shift data from rmcdhf mixing coefficients.'] (got ['\u275d\u2710', '\u25a0a115\u2666a116\u2666\u2663\u2761 a115\u2764\u2710\u2762a116 \u275e\u275ba116\u275b \u2762a114\u2666\u2660 a114\u275d\u2710 \u2660\u2710\u2460\u2710\u2665\u2763 \u275d\u2666\u2761\u2723\u275d\u2710\u2761\u2665a116a115\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 22 == ['ci', 'Isotope shift data from rci mixing coefficients.'] (got ['\u2767\u2666\u2763', '\u25b2\u2666\u2763\u2732\u271c\u2767\u2761 a116\u2764\u275ba116 \u2766\u2761\u2761\u2663a115 \u275b a114\u2761\u275d\u2666a114\u275e \u2666\u2762 \u2663a114\u2666\u2763a114\u275b\u2660 \u2710\u2665\u2663\u2709a116\u2733'])"
+        },
+        {
+          "passed": false,
+          "description": "table 1 row 23 == ['log', 'Log-file that keeps a record of program input.'] (got None)"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains '3.3 File naming convention, program and data flow'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Passing information between different programs is done through files.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Most programs produce a file that keeps a record of the input data.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Table 3.1: Table of common extensions.'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'Extension'"
+        },
+        {
+          "passed": false,
+          "description": "reading-order text contains 'To perform a calculation a number of programs needs to be run'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        }
+      ]
+    },
+    {
+      "document": "grasp-table-3-1",
+      "engine": "mineru",
+      "run_id": "20260812T051314.834365Z",
+      "passed": true,
+      "duration_seconds": 21.22,
+      "resources": null,
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "64120ce879cad8162b355f25b37b9bc5022f4054a54fd3133fce5764e0fa721a",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "mineru, version 3.4.4\n",
+          "stderr": ""
+        },
+        "layout_candidate": null
+      },
+      "candidate_provenance": null,
+      "declared_engine_pin": {
+        "dependencies": {
+          "mineru": "3.4.4",
+          "mineru-vl-utils": "1.0.5",
+          "torch": "2.13.0",
+          "transformers": "4.57.6",
+          "onnxruntime": "1.28.0",
+          "pypdfium2": "5.10.1"
+        },
+        "model_snapshots": {
+          "pipeline": "opendatalab/PDF-Extract-Kit-1.0@ed6b654c018d742e65a17671e379c5e6ecc87ec9",
+          "vlm": "opendatalab/MinerU2.5-Pro-2605-1.2B@bff20d4ae2bf202df9f45284b4d43681555a97ed"
+        },
+        "configuration_evidence": {
+          "path": "~/mineru.json",
+          "sha256": "aeb9e4aea8be936972353b3bf42c812a5067dcb3afc4daef11a90b2dad70de82",
+          "modified_at": "2026-06-19T23:50:59-07:00",
+          "note": "The configuration predates the 2026-08-11 bake-off runs and names both immutable snapshot directories. The environment distributions were installed at 2026-08-11T21:51:17-07:00, before those runs."
+        }
+      },
+      "facts": [
+        {
+          "passed": true,
+          "description": "table count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row count == 23 (got 23)"
+        },
+        {
+          "passed": true,
+          "description": "table 1 column count == 2 (got 2)"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 1 == ['Extension', 'Type of file'] (got ['Extension', 'Type of file'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 2 == ['c', 'List of CSFs.'] (got ['c', 'List of CSFs.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 3 == ['w', 'Binary file of radial wave functions.'] (got ['w', 'Binary file of radial wave functions.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 4 == ['m', 'Binary file of expansion or mixing coefficients produced by rmcdhf.'] (got ['m', 'Binary file of expansion or mixing coefficients produced by rmcdhf.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 5 == ['sum', 'File containing information from an rmcdhf run.'] (got ['sum', 'File containing information from an rmcdhf run.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 6 == ['cm', 'Binary file of mixing coefficients produced by rci.'] (got ['cm', 'Binary file of mixing coefficients produced by rci.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 7 == ['bw', 'A .w file after biorthonormal transformation using rbiotransform.'] (got ['bw', 'A .w file after biorthonormal transformation using rbiotransform.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 8 == ['csum', 'File containing information from an rci run.'] (got ['csum', 'File containing information from an rci run.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 9 == ['bm', 'A .m file after biorthonormal transformation using rbiotransform.'] (got ['bm', 'A .m file after biorthonormal transformation using rbiotransform.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 10 == ['cbm', 'A .cm file after biorthonormal transformation using rbiotransform.'] (got ['cbm', 'A .cm file after biorthonormal transformation using rbiotransform.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 11 == ['lsj.lbl', 'File containing composition of wave functions in LSJ-coupling.'] (got ['lsj.lbl', 'File containing composition of wave functions in LSJ-coupling.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 12 == ['uni.lsj.lbl', 'File containing composition of wave functions in LSJ-coupling but arranged to give unique labels of all states.'] (got ['uni.lsj.lbl', 'File containing composition of wave functions in LSJ-coupling but arranged to give unique labels of all states.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 13 == ['t', 'Transition probability data from rmcdhf mixing coefficients.'] (got ['t', 'Transition probability data from rmcdhf mixing coefficients.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 14 == ['t.lsj', 'Transition probability data from rmcdhf mixing coefficients. Labels in in LSJ-coupling.'] (got ['t.lsj', 'Transition probability data from rmcdhf mixing coefficients. Labels in in LSJ-coupling.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 15 == ['ct', 'Transition probability data from rci mixing coefficients.'] (got ['ct', 'Transition probability data from rci mixing coefficients.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 16 == ['ct.lsj', 'Transition probability data from rci mixing coefficients. Labels in in LSJ-coupling.'] (got ['ct.lsj', 'Transition probability data from rci mixing coefficients. Labels in in LSJ-coupling.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 17 == ['h', 'Hyperfine structure data and Land\u00e9 gJ-factors from rmcdhf mixing coefficients.'] (got ['h', 'Hyperfine structure data and Land\u00e9 gJ-factors from rmcdhf mixing coefficients.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 18 == ['ch', 'Hyperfine structure data and Land\u00e9 gJ-factors from rci mixing coefficients.'] (got ['ch', 'Hyperfine structure data and Land\u00e9 gJ-factors from rci mixing coefficients.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 19 == ['hoffd', 'Off-diagonal hyperfine structure data from rmcdhf mixing coefficients.'] (got ['hoffd', 'Off-diagonal hyperfine structure data from rmcdhf mixing coefficients.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 20 == ['choffd', 'Off-diagonal hyperfine structure data from rci mixing coefficients.'] (got ['choffd', 'Off-diagonal hyperfine structure data from rci mixing coefficients.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 21 == ['i', 'Isotope shift data from rmcdhf mixing coefficients.'] (got ['i', 'Isotope shift data from rmcdhf mixing coefficients.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 22 == ['ci', 'Isotope shift data from rci mixing coefficients.'] (got ['ci', 'Isotope shift data from rci mixing coefficients.'])"
+        },
+        {
+          "passed": true,
+          "description": "table 1 row 23 == ['log', 'Log-file that keeps a record of program input.'] (got ['log', 'Log-file that keeps a record of program input.'])"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains '3.3 File naming convention, program and data flow'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Passing information between different programs is done through files.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Most programs produce a file that keeps a record of the input data.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Table 3.1: Table of common extensions.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Extension'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'To perform a calculation a number of programs needs to be run'"
+        },
+        {
+          "passed": true,
+          "description": "6 snippets appear in source order"
+        }
+      ]
+    },
+    {
+      "document": "grasp-equation-4-1",
+      "engine": "docling-heron",
+      "run_id": "20260825T141801.032761Z",
+      "passed": false,
+      "duration_seconds": 30.083,
+      "resources": {
+        "peak_rss_bytes": 2083209216,
+        "user_cpu_seconds": 89.57,
+        "system_cpu_seconds": 2.964
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "0bab154b639b64a512f4ad15e760f4bb6b5100c5199acdd40070a1cc73c1a38c",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-heron",
+          "name": "docling_layout_heron",
+          "repo_id": "docling-project/docling-layout-heron",
+          "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-heron",
+          "name": "docling_layout_heron",
+          "repo_id": "docling-project/docling-layout-heron",
+          "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "equation count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '4.1' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "grasp-equation-4-1",
+      "engine": "docling-heron-101",
+      "run_id": "20260825T141831.125817Z",
+      "passed": false,
+      "duration_seconds": 30.486,
+      "resources": {
+        "peak_rss_bytes": 2180890624,
+        "user_cpu_seconds": 90.179,
+        "system_cpu_seconds": 3.058
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "0bab154b639b64a512f4ad15e760f4bb6b5100c5199acdd40070a1cc73c1a38c",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-heron-101",
+          "name": "docling_layout_heron_101",
+          "repo_id": "docling-project/docling-layout-heron-101",
+          "revision": "2e4993cf6bb211112084a2f80938f26138008917",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-heron-101",
+          "name": "docling_layout_heron_101",
+          "repo_id": "docling-project/docling-layout-heron-101",
+          "revision": "2e4993cf6bb211112084a2f80938f26138008917",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "equation count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '4.1' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "grasp-equation-4-1",
+      "engine": "docling-egret-medium",
+      "run_id": "20260825T141901.621948Z",
+      "passed": false,
+      "duration_seconds": 29.496,
+      "resources": {
+        "peak_rss_bytes": 1872543744,
+        "user_cpu_seconds": 88.065,
+        "system_cpu_seconds": 3.022
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "0bab154b639b64a512f4ad15e760f4bb6b5100c5199acdd40070a1cc73c1a38c",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-medium",
+          "name": "docling_layout_egret_medium",
+          "repo_id": "docling-project/docling-layout-egret-medium",
+          "revision": "77ede7cc7bed96d853c58f319734803d6ea2ea5c",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-medium",
+          "name": "docling_layout_egret_medium",
+          "repo_id": "docling-project/docling-layout-egret-medium",
+          "revision": "77ede7cc7bed96d853c58f319734803d6ea2ea5c",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "equation count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '4.1' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "grasp-equation-4-1",
+      "engine": "docling-egret-large",
+      "run_id": "20260825T141931.130649Z",
+      "passed": false,
+      "duration_seconds": 32.206,
+      "resources": {
+        "peak_rss_bytes": 1949728768,
+        "user_cpu_seconds": 92.363,
+        "system_cpu_seconds": 3.951
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "0bab154b639b64a512f4ad15e760f4bb6b5100c5199acdd40070a1cc73c1a38c",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-large",
+          "name": "docling_layout_egret_large",
+          "repo_id": "docling-project/docling-layout-egret-large",
+          "revision": "fff417c78abd6bab338c87706c95a8d79dc68f1e",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-large",
+          "name": "docling_layout_egret_large",
+          "repo_id": "docling-project/docling-layout-egret-large",
+          "revision": "fff417c78abd6bab338c87706c95a8d79dc68f1e",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "equation count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '4.1' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "grasp-equation-4-1",
+      "engine": "docling-egret-xlarge",
+      "run_id": "20260825T142003.346578Z",
+      "passed": false,
+      "duration_seconds": 34.431,
+      "resources": {
+        "peak_rss_bytes": 2229911552,
+        "user_cpu_seconds": 93.108,
+        "system_cpu_seconds": 5.111
+      },
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "0bab154b639b64a512f4ad15e760f4bb6b5100c5199acdd40070a1cc73c1a38c",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-xlarge",
+          "name": "docling_layout_egret_xlarge",
+          "repo_id": "docling-project/docling-layout-egret-xlarge",
+          "revision": "23857d16596e0106716b3162d132212d733769e7",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-xlarge",
+          "name": "docling_layout_egret_xlarge",
+          "repo_id": "docling-project/docling-layout-egret-xlarge",
+          "revision": "23857d16596e0106716b3162d132212d733769e7",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "equation count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '4.1' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "grasp-equation-4-1",
+      "engine": "mineru",
+      "run_id": "20260812T050728.111469Z",
+      "passed": true,
+      "duration_seconds": 30.338,
+      "resources": null,
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "input_sha256": "0bab154b639b64a512f4ad15e760f4bb6b5100c5199acdd40070a1cc73c1a38c",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "mineru, version 3.4.4\n",
+          "stderr": ""
+        },
+        "layout_candidate": null
+      },
+      "candidate_provenance": null,
+      "declared_engine_pin": {
+        "dependencies": {
+          "mineru": "3.4.4",
+          "mineru-vl-utils": "1.0.5",
+          "torch": "2.13.0",
+          "transformers": "4.57.6",
+          "onnxruntime": "1.28.0",
+          "pypdfium2": "5.10.1"
+        },
+        "model_snapshots": {
+          "pipeline": "opendatalab/PDF-Extract-Kit-1.0@ed6b654c018d742e65a17671e379c5e6ecc87ec9",
+          "vlm": "opendatalab/MinerU2.5-Pro-2605-1.2B@bff20d4ae2bf202df9f45284b4d43681555a97ed"
+        },
+        "configuration_evidence": {
+          "path": "~/mineru.json",
+          "sha256": "aeb9e4aea8be936972353b3bf42c812a5067dcb3afc4daef11a90b2dad70de82",
+          "modified_at": "2026-06-19T23:50:59-07:00",
+          "note": "The configuration predates the 2026-08-11 bake-off runs and names both immutable snapshot directories. The environment distributions were installed at 2026-08-11T21:51:17-07:00, before those runs."
+        }
+      },
+      "facts": [
+        {
+          "passed": true,
+          "description": "equation count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 label == '4.1' (got '4.1')"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "slater-page-37",
+      "engine": "docling-heron",
+      "run_id": "20260825T142037.818725Z",
+      "passed": false,
+      "duration_seconds": 108.827,
+      "resources": {
+        "peak_rss_bytes": 2615672832,
+        "user_cpu_seconds": 399.651,
+        "system_cpu_seconds": 4.31
+      },
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "input_sha256": "57035b087ebc9854513e23f8c5166a98dc3edb4e84bbca9c2e5fd569337eeec7",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-heron",
+          "name": "docling_layout_heron",
+          "repo_id": "docling-project/docling-layout-heron",
+          "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-heron",
+          "name": "docling_layout_heron",
+          "repo_id": "docling-project/docling-layout-heron",
+          "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "reading-order text contains 'which it had in the development of the quantum theory'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Let us carry through this case.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'The classical equation of motion is'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'We now wish to apply the quantum condition'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'FIG. 1-2.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Such a space, in which momentum is plotted against coordinate'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        },
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.04 (got 0.053)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 text contains 'Phase space for linear oscillator'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'line of constant energy E'"
+        },
+        {
+          "passed": true,
+          "description": "equation count == 4 (got 4)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '1-25' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 label == '1-26' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 3 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 label == '1-27' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 4 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 label == '1-28' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "slater-page-37",
+      "engine": "docling-heron-101",
+      "run_id": "20260825T142226.656700Z",
+      "passed": false,
+      "duration_seconds": 107.904,
+      "resources": {
+        "peak_rss_bytes": 2694774784,
+        "user_cpu_seconds": 398.049,
+        "system_cpu_seconds": 4.482
+      },
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "input_sha256": "57035b087ebc9854513e23f8c5166a98dc3edb4e84bbca9c2e5fd569337eeec7",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-heron-101",
+          "name": "docling_layout_heron_101",
+          "repo_id": "docling-project/docling-layout-heron-101",
+          "revision": "2e4993cf6bb211112084a2f80938f26138008917",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-heron-101",
+          "name": "docling_layout_heron_101",
+          "repo_id": "docling-project/docling-layout-heron-101",
+          "revision": "2e4993cf6bb211112084a2f80938f26138008917",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "reading-order text contains 'which it had in the development of the quantum theory'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Let us carry through this case.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'The classical equation of motion is'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'We now wish to apply the quantum condition'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'FIG. 1-2.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Such a space, in which momentum is plotted against coordinate'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        },
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.04 (got 0.052)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 text contains 'Phase space for linear oscillator'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'line of constant energy E'"
+        },
+        {
+          "passed": true,
+          "description": "equation count == 4 (got 4)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '1-25' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 label == '1-26' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 3 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 label == '1-27' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 4 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 label == '1-28' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "slater-page-37",
+      "engine": "docling-egret-medium",
+      "run_id": "20260825T142414.571399Z",
+      "passed": false,
+      "duration_seconds": 107.687,
+      "resources": {
+        "peak_rss_bytes": 2483830784,
+        "user_cpu_seconds": 397.166,
+        "system_cpu_seconds": 3.984
+      },
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "input_sha256": "57035b087ebc9854513e23f8c5166a98dc3edb4e84bbca9c2e5fd569337eeec7",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-medium",
+          "name": "docling_layout_egret_medium",
+          "repo_id": "docling-project/docling-layout-egret-medium",
+          "revision": "77ede7cc7bed96d853c58f319734803d6ea2ea5c",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-medium",
+          "name": "docling_layout_egret_medium",
+          "repo_id": "docling-project/docling-layout-egret-medium",
+          "revision": "77ede7cc7bed96d853c58f319734803d6ea2ea5c",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "reading-order text contains 'which it had in the development of the quantum theory'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Let us carry through this case.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'The classical equation of motion is'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'We now wish to apply the quantum condition'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'FIG. 1-2.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Such a space, in which momentum is plotted against coordinate'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        },
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.04 (got 0.055)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 text contains 'Phase space for linear oscillator'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'line of constant energy E'"
+        },
+        {
+          "passed": true,
+          "description": "equation count == 4 (got 4)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '1-25' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 label == '1-26' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 3 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 label == '1-27' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 4 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 label == '1-28' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "slater-page-37",
+      "engine": "docling-egret-large",
+      "run_id": "20260825T142602.268165Z",
+      "passed": false,
+      "duration_seconds": 107.783,
+      "resources": {
+        "peak_rss_bytes": 2464120832,
+        "user_cpu_seconds": 400.017,
+        "system_cpu_seconds": 3.231
+      },
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "input_sha256": "57035b087ebc9854513e23f8c5166a98dc3edb4e84bbca9c2e5fd569337eeec7",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-large",
+          "name": "docling_layout_egret_large",
+          "repo_id": "docling-project/docling-layout-egret-large",
+          "revision": "fff417c78abd6bab338c87706c95a8d79dc68f1e",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-large",
+          "name": "docling_layout_egret_large",
+          "repo_id": "docling-project/docling-layout-egret-large",
+          "revision": "fff417c78abd6bab338c87706c95a8d79dc68f1e",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "reading-order text contains 'which it had in the development of the quantum theory'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Let us carry through this case.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'The classical equation of motion is'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'We now wish to apply the quantum condition'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'FIG. 1-2.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Such a space, in which momentum is plotted against coordinate'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        },
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.04 (got 0.054)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 text contains 'Phase space for linear oscillator'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'line of constant energy E'"
+        },
+        {
+          "passed": true,
+          "description": "equation count == 4 (got 4)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '1-25' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 label == '1-26' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 3 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 label == '1-27' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 4 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 label == '1-28' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "slater-page-37",
+      "engine": "docling-egret-xlarge",
+      "run_id": "20260825T142750.060835Z",
+      "passed": false,
+      "duration_seconds": 106.806,
+      "resources": {
+        "peak_rss_bytes": 2640871424,
+        "user_cpu_seconds": 396.979,
+        "system_cpu_seconds": 3.457
+      },
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "input_sha256": "57035b087ebc9854513e23f8c5166a98dc3edb4e84bbca9c2e5fd569337eeec7",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-xlarge",
+          "name": "docling_layout_egret_xlarge",
+          "repo_id": "docling-project/docling-layout-egret-xlarge",
+          "revision": "23857d16596e0106716b3162d132212d733769e7",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-xlarge",
+          "name": "docling_layout_egret_xlarge",
+          "repo_id": "docling-project/docling-layout-egret-xlarge",
+          "revision": "23857d16596e0106716b3162d132212d733769e7",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "reading-order text contains 'which it had in the development of the quantum theory'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Let us carry through this case.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'The classical equation of motion is'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'We now wish to apply the quantum condition'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'FIG. 1-2.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Such a space, in which momentum is plotted against coordinate'"
+        },
+        {
+          "passed": false,
+          "description": "6 snippets appear in source order"
+        },
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.04 (got 0.054)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 text contains 'Phase space for linear oscillator'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'line of constant energy E'"
+        },
+        {
+          "passed": true,
+          "description": "equation count == 4 (got 4)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 label == '1-25' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 1 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 label == '1-26' (got None)"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 2 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 3 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 label == '1-27' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 3 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 4 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 label == '1-28' (got None)"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 normalized LaTeX is exact"
+        },
+        {
+          "passed": false,
+          "description": "equation 4 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "slater-page-37",
+      "engine": "mineru",
+      "run_id": "20260812T052243.784410Z",
+      "passed": true,
+      "duration_seconds": 24.855,
+      "resources": null,
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "input_sha256": "57035b087ebc9854513e23f8c5166a98dc3edb4e84bbca9c2e5fd569337eeec7",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "mineru, version 3.4.4\n",
+          "stderr": ""
+        },
+        "layout_candidate": null
+      },
+      "candidate_provenance": null,
+      "declared_engine_pin": {
+        "dependencies": {
+          "mineru": "3.4.4",
+          "mineru-vl-utils": "1.0.5",
+          "torch": "2.13.0",
+          "transformers": "4.57.6",
+          "onnxruntime": "1.28.0",
+          "pypdfium2": "5.10.1"
+        },
+        "model_snapshots": {
+          "pipeline": "opendatalab/PDF-Extract-Kit-1.0@ed6b654c018d742e65a17671e379c5e6ecc87ec9",
+          "vlm": "opendatalab/MinerU2.5-Pro-2605-1.2B@bff20d4ae2bf202df9f45284b4d43681555a97ed"
+        },
+        "configuration_evidence": {
+          "path": "~/mineru.json",
+          "sha256": "aeb9e4aea8be936972353b3bf42c812a5067dcb3afc4daef11a90b2dad70de82",
+          "modified_at": "2026-06-19T23:50:59-07:00",
+          "note": "The configuration predates the 2026-08-11 bake-off runs and names both immutable snapshot directories. The environment distributions were installed at 2026-08-11T21:51:17-07:00, before those runs."
+        }
+      },
+      "facts": [
+        {
+          "passed": true,
+          "description": "reading-order text contains 'which it had in the development of the quantum theory'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Let us carry through this case.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'The classical equation of motion is'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'We now wish to apply the quantum condition'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'FIG. 1-2.'"
+        },
+        {
+          "passed": true,
+          "description": "reading-order text contains 'Such a space, in which momentum is plotted against coordinate'"
+        },
+        {
+          "passed": true,
+          "description": "6 snippets appear in source order"
+        },
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.04 (got 0.053)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 text contains 'Phase space for linear oscillator'"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 text contains 'line of constant energy E'"
+        },
+        {
+          "passed": true,
+          "description": "equation count == 4 (got 4)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 label == '1-25' (got '1-25')"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 normalized LaTeX is exact"
+        },
+        {
+          "passed": true,
+          "description": "equation 1 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 label == '1-26' (got '1-26')"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 normalized LaTeX is exact"
+        },
+        {
+          "passed": true,
+          "description": "equation 2 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 3 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 3 label == '1-27' (got '1-27')"
+        },
+        {
+          "passed": true,
+          "description": "equation 3 normalized LaTeX is exact"
+        },
+        {
+          "passed": true,
+          "description": "equation 3 has a saved source crop"
+        },
+        {
+          "passed": true,
+          "description": "equation 4 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "equation 4 label == '1-28' (got '1-28')"
+        },
+        {
+          "passed": true,
+          "description": "equation 4 normalized LaTeX is exact"
+        },
+        {
+          "passed": true,
+          "description": "equation 4 has a saved source crop"
+        }
+      ]
+    },
+    {
+      "document": "raster-scientific-figure",
+      "engine": "docling-heron",
+      "run_id": "20260825T142936.876945Z",
+      "passed": false,
+      "duration_seconds": 6.622,
+      "resources": {
+        "peak_rss_bytes": 2204762112,
+        "user_cpu_seconds": 9.478,
+        "system_cpu_seconds": 0.917
+      },
+      "source_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "input_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-heron",
+          "name": "docling_layout_heron",
+          "repo_id": "docling-project/docling-layout-heron",
+          "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-heron",
+          "name": "docling_layout_heron",
+          "repo_id": "docling-project/docling-layout-heron",
+          "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 171658996,
+          "weight_sha256": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.75 (got 0.840)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Comparison of u-velocity along vertical lines through geometric center and primary vortex center'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH GEOMETRIC CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH PRIMARY-VORTEX CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Listed in Table 5'"
+        }
+      ]
+    },
+    {
+      "document": "raster-scientific-figure",
+      "engine": "docling-heron-101",
+      "run_id": "20260825T142943.508670Z",
+      "passed": false,
+      "duration_seconds": 6.703,
+      "resources": {
+        "peak_rss_bytes": 2346729472,
+        "user_cpu_seconds": 9.656,
+        "system_cpu_seconds": 0.934
+      },
+      "source_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "input_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-heron-101",
+          "name": "docling_layout_heron_101",
+          "repo_id": "docling-project/docling-layout-heron-101",
+          "revision": "2e4993cf6bb211112084a2f80938f26138008917",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-heron-101",
+          "name": "docling_layout_heron_101",
+          "repo_id": "docling-project/docling-layout-heron-101",
+          "revision": "2e4993cf6bb211112084a2f80938f26138008917",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 306814140,
+          "weight_sha256": "c11fe1df2087f29c77359834ac34700a5d9a41516b3387a3df0d7c3d52440c4e"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.75 (got 0.788)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Comparison of u-velocity along vertical lines through geometric center and primary vortex center'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH GEOMETRIC CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH PRIMARY-VORTEX CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Listed in Table 5'"
+        }
+      ]
+    },
+    {
+      "document": "raster-scientific-figure",
+      "engine": "docling-egret-medium",
+      "run_id": "20260825T142950.221680Z",
+      "passed": false,
+      "duration_seconds": 6.559,
+      "resources": {
+        "peak_rss_bytes": 1963900928,
+        "user_cpu_seconds": 9.274,
+        "system_cpu_seconds": 0.929
+      },
+      "source_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "input_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-medium",
+          "name": "docling_layout_egret_medium",
+          "repo_id": "docling-project/docling-layout-egret-medium",
+          "revision": "77ede7cc7bed96d853c58f319734803d6ea2ea5c",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-medium",
+          "name": "docling_layout_egret_medium",
+          "repo_id": "docling-project/docling-layout-egret-medium",
+          "revision": "77ede7cc7bed96d853c58f319734803d6ea2ea5c",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 78311396,
+          "weight_sha256": "e7fc5b9a353826c123c5d03efc230909ac02b93e26293ec7cb4db8978fe9e3af"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 page area >= 0.75 (got 0.743)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Comparison of u-velocity along vertical lines through geometric center and primary vortex center'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH GEOMETRIC CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH PRIMARY-VORTEX CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Listed in Table 5'"
+        }
+      ]
+    },
+    {
+      "document": "raster-scientific-figure",
+      "engine": "docling-egret-large",
+      "run_id": "20260825T142956.790197Z",
+      "passed": false,
+      "duration_seconds": 6.758,
+      "resources": {
+        "peak_rss_bytes": 2030288896,
+        "user_cpu_seconds": 9.363,
+        "system_cpu_seconds": 1.037
+      },
+      "source_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "input_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-large",
+          "name": "docling_layout_egret_large",
+          "repo_id": "docling-project/docling-layout-egret-large",
+          "revision": "fff417c78abd6bab338c87706c95a8d79dc68f1e",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-large",
+          "name": "docling_layout_egret_large",
+          "repo_id": "docling-project/docling-layout-egret-large",
+          "revision": "fff417c78abd6bab338c87706c95a8d79dc68f1e",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 125100636,
+          "weight_sha256": "f79def9d4a0d4e6e62cab25ec7846d1579ef1ef657c39554363813f7d1a14f1b"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.75 (got 0.816)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Comparison of u-velocity along vertical lines through geometric center and primary vortex center'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH GEOMETRIC CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH PRIMARY-VORTEX CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Listed in Table 5'"
+        }
+      ]
+    },
+    {
+      "document": "raster-scientific-figure",
+      "engine": "docling-egret-xlarge",
+      "run_id": "20260825T143003.558494Z",
+      "passed": false,
+      "duration_seconds": 7.133,
+      "resources": {
+        "peak_rss_bytes": 2304360448,
+        "user_cpu_seconds": 9.751,
+        "system_cpu_seconds": 1.359
+      },
+      "source_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "input_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "Python 3.11.15\n",
+          "stderr": ""
+        },
+        "layout_candidate": {
+          "id": "docling-egret-xlarge",
+          "name": "docling_layout_egret_xlarge",
+          "repo_id": "docling-project/docling-layout-egret-xlarge",
+          "revision": "23857d16596e0106716b3162d132212d733769e7",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        }
+      },
+      "candidate_provenance": {
+        "candidate": {
+          "id": "docling-egret-xlarge",
+          "name": "docling_layout_egret_xlarge",
+          "repo_id": "docling-project/docling-layout-egret-xlarge",
+          "revision": "23857d16596e0106716b3162d132212d733769e7",
+          "model_path": "",
+          "weight_file": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        },
+        "dependencies": {
+          "docling": "2.108.0",
+          "docling-core": "2.91.0",
+          "docling-ibm-models": "3.13.2",
+          "docling-parse": "7.13.0",
+          "rapidocr": "3.8.1"
+        },
+        "configuration": {
+          "pipeline": "standard",
+          "ocr": "rapidocr",
+          "table_structure": true,
+          "formula_enrichment": true,
+          "picture_classification": false,
+          "picture_description": false,
+          "chart_extraction": false,
+          "image_export_mode": "referenced",
+          "images_scale": 2,
+          "device": "auto",
+          "num_threads": 4
+        },
+        "model_artifact": {
+          "weight_path": "model.safetensors",
+          "weight_bytes": 251101540,
+          "weight_sha256": "2549a568dc9adb77b2e9283110ad62452382eb6fe3ee3570b70915128415a077"
+        }
+      },
+      "declared_engine_pin": null,
+      "facts": [
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.75 (got 0.792)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Comparison of u-velocity along vertical lines through geometric center and primary vortex center'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH GEOMETRIC CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH PRIMARY-VORTEX CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Listed in Table 5'"
+        }
+      ]
+    },
+    {
+      "document": "raster-scientific-figure",
+      "engine": "mineru",
+      "run_id": "20260812T050651.758923Z",
+      "passed": false,
+      "duration_seconds": 34.562,
+      "resources": null,
+      "source_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "input_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "engine_provenance": {
+        "version_probe": {
+          "exit_code": 0,
+          "stdout": "mineru, version 3.4.4\n",
+          "stderr": ""
+        },
+        "layout_candidate": null
+      },
+      "candidate_provenance": null,
+      "declared_engine_pin": {
+        "dependencies": {
+          "mineru": "3.4.4",
+          "mineru-vl-utils": "1.0.5",
+          "torch": "2.13.0",
+          "transformers": "4.57.6",
+          "onnxruntime": "1.28.0",
+          "pypdfium2": "5.10.1"
+        },
+        "model_snapshots": {
+          "pipeline": "opendatalab/PDF-Extract-Kit-1.0@ed6b654c018d742e65a17671e379c5e6ecc87ec9",
+          "vlm": "opendatalab/MinerU2.5-Pro-2605-1.2B@bff20d4ae2bf202df9f45284b4d43681555a97ed"
+        },
+        "configuration_evidence": {
+          "path": "~/mineru.json",
+          "sha256": "aeb9e4aea8be936972353b3bf42c812a5067dcb3afc4daef11a90b2dad70de82",
+          "modified_at": "2026-06-19T23:50:59-07:00",
+          "note": "The configuration predates the 2026-08-11 bake-off runs and names both immutable snapshot directories. The environment distributions were installed at 2026-08-11T21:51:17-07:00, before those runs."
+        }
+      },
+      "facts": [
+        {
+          "passed": true,
+          "description": "figure count == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page == 1 (got 1)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 page area >= 0.75 (got 0.794)"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 has a saved image asset"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 emits no unverified structured data"
+        },
+        {
+          "passed": true,
+          "description": "figure 1 text contains 'Comparison of u-velocity along vertical lines through geometric center and primary vortex center'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH GEOMETRIC CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'PROFILES THROUGH PRIMARY-VORTEX CENTER'"
+        },
+        {
+          "passed": false,
+          "description": "figure 1 text contains 'Listed in Table 5'"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked column geometry on new weak-separator, long-label, and narrow-lane layouts. Reference lanes and row bands are fixed before deterministic degradation.",
+  "artifacts": {
+    "alignment_report": {
+      "path": "out/reviews/source-row-alignment-heldout-v1/report.json",
+      "sha256": "309ef4a355b87ed2d5f2e8561d705f9758a6f367d169332f96845354406225c2"
+    },
+    "nasa_source": {
+      "path": "out/natural-errors-scanned/2cde66d4e1bc0e6d/source.pdf",
+      "sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7"
+    },
+    "ornl_source": {
+      "path": "out/natural-errors-scanned/d9f208b5bceff489/source.pdf",
+      "sha256": "d9f208b5bceff4897affa087efa740152a5692e479b9c02aaf467834a0a78931"
+    },
+    "attention_source": {
+      "path": "1706.03762v7.pdf",
+      "sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+    },
+    "fischer_source": {
+      "path": "1-s2.0-S0092640X72800081-main.pdf",
+      "sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47"
+    }
+  },
+  "panels": [
+    {
+      "id": "nasa-dot-matrix-mixed-labels",
+      "stress": "weak separators and uneven text/numeric lane widths",
+      "source_artifact": "nasa_source",
+      "page": 2,
+      "pdf_bbox": null,
+      "source_crop": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/assets/mineru_2_table_19_p2.png",
+      "source_crop_sha256": "d7e9abd239590a0149aef1f35aea9b105a696b48a258d0798c4baa7b733432d4",
+      "panel_bound": [0, 1669],
+      "reference_lanes": [[0, 275], [275, 545], [545, 850], [850, 1669]],
+      "column_types": ["text", "numeric", "numeric", "text"],
+      "column_offset": 0,
+      "row_bands": [[145, 190], [205, 250], [265, 300]]
+    },
+    {
+      "id": "ornl-fortran-no-rules",
+      "stress": "no ruling lines, degraded scan, and scientific notation",
+      "source_artifact": "ornl_source",
+      "page": 1,
+      "pdf_bbox": null,
+      "source_crop": "out/natural-errors-scanned/d9f208b5bceff489/v1/assets/mineru_1_table_5_p1.png",
+      "source_crop_sha256": "98cfff3a13ea8ca461be0cade28195a65ea6d35de936198b33cd7772435bec89",
+      "panel_bound": [0, 1668],
+      "reference_lanes": [[0, 525], [525, 1150], [1150, 1668]],
+      "column_types": ["numeric", "numeric", "numeric"],
+      "column_offset": 0,
+      "row_bands": [[48, 79], [125, 157], [205, 236], [281, 312], [359, 391], [435, 468]]
+    },
+    {
+      "id": "attention-parser-long-labels",
+      "stress": "proportional-font labels nearly fill the first two lanes",
+      "source_artifact": "attention_source",
+      "page": 10,
+      "pdf_bbox": null,
+      "source_crop": "out/bdfaa68d8984f0dc/v3/assets/tables_3_p10.png",
+      "source_crop_sha256": "40118d7a8334a2012808c8cb23ce9c463a15533e1d9f079be6944d5188c00fc2",
+      "panel_bound": [0, 1660],
+      "reference_lanes": [[0, 784], [784, 1338], [1338, 1660]],
+      "column_types": ["text", "text", "numeric"],
+      "column_offset": 0,
+      "row_bands": [[96, 139], [145, 193], [199, 247], [253, 298], [311, 352], [365, 410], [416, 464], [470, 518], [524, 568], [581, 622], [635, 680], [686, 734]]
+    },
+    {
+      "id": "fischer-nine-narrow-lanes",
+      "stress": "nine narrow numeric lanes with decimal placeholders",
+      "source_artifact": "fischer_source",
+      "page": 31,
+      "pdf_bbox": null,
+      "source_crop": "out/0685e8d85e2237d8/v6/assets/mineru_31_table_123_p31.png",
+      "source_crop_sha256": "e4b1735e3da2b3e76c356e9b2e28473f9598ea010cd51ed90155ce06b9535155",
+      "panel_bound": [0, 1254],
+      "reference_lanes": [[0, 201], [201, 344], [344, 470], [470, 597], [597, 723], [723, 857], [857, 943], [943, 1106], [1106, 1254]],
+      "column_types": ["numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"],
+      "column_offset": 0,
+      "row_bands": [[177, 196], [203, 222], [256, 276], [283, 303], [310, 330], [337, 357], [391, 410], [417, 439], [443, 465], [472, 492], [498, 518], [526, 547], [554, 573], [580, 600]]
+    }
+  ]
+}

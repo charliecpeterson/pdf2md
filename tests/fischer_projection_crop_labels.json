@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+  "selection": "all structured-control divergences newly exposed by the frozen projection-crop fallback, reviewed against the source pixels after the reader run",
+  "records": [
+    {
+      "id": "mineru_20_table_94:p2:r76:c10",
+      "expected": "-0.0653",
+      "reference_crop_sha256": "3e94dbafdb45c502a0da0c34f79c0d18ac0a22d6b09a23b9f04d3be66ae3fa3f",
+      "projection_crop_sha256": "6e3fa13eb4b82d79d7855eaa4e801853165a8da0f1e9b1e960018a253fa44c80"
+    },
+    {
+      "id": "mineru_20_table_94:p2:r76:c11",
+      "expected": "0.1408",
+      "reference_crop_sha256": "0af82f77f960f6631338b85b992ccfdfbfe9acc9f68ca17d76bbaae8cb3bbba0",
+      "projection_crop_sha256": "74e1da600dd5b33dea7d6db0aa4df482f42cac8a2cddd145fa6cd9c57f353a44"
+    }
+  ]
+}

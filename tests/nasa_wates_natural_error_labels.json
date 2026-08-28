@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked natural primary extraction errors in poor-quality NASA dot-matrix engineering output.",
+  "documents": [
+    {
+      "source_sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7",
+      "source": "out/natural-errors-scanned/2cde66d4e1bc0e6d/source.pdf",
+      "version": "v1",
+      "cells": [
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 1, "column": 3, "expected": "43.3", "label": "NASA PDF page 120; primary changes the final dot-matrix digit from 3 to 5"},
+        {"page": 2, "block_id": "#/mineru/2/table/23", "row": 1, "column": 0, "expected": ".907", "label": "NASA PDF page 120; primary reads the middle zero in a numeric loading field as C"},
+        {"page": 2, "block_id": "#/mineru/2/table/25", "row": 3, "column": 7, "expected": "1135.4", "label": "NASA PDF page 120; primary changes 5 to 9, while the same LTIPMAX value is repeated clearly in the preceding table"},
+        {"page": 2, "block_id": "#/mineru/2/table/26", "row": 1, "column": 5, "expected": "8.8", "label": "NASA PDF page 120; primary changes the final dot-matrix 8 to 9"},
+        {"page": 2, "block_id": "#/mineru/2/table/27", "row": 6, "column": 0, "expected": "177.20", "label": "NASA PDF page 120; primary reads the final zero in a numeric HI field as C"}
+      ]
+    }
+  ]
+}

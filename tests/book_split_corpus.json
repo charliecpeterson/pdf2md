@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "source": {
+    "path": "GRASP2018-manual.pdf",
+    "sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687"
+  },
+  "conversion": {
+    "provenance_path": "out/agent-full-books/bf0e2756389dfaa7/v1/provenance.json",
+    "provenance_sha256": "dc32c390690956b074a02d58af9414e1da3c9d300aaf1dc5abe8290046786cac"
+  },
+  "expected": {
+    "top_level_bookmarks": 4,
+    "split_depth": 2,
+    "part_opener_files": [
+      "I Overview of GRASP2018",
+      "II Generating lists of CSFs",
+      "III Sample runs",
+      "IV Issues of convergence, trouble shooting and non-default options"
+    ],
+    "chapter_files": [
+      "GRASP2018",
+      "Installation",
+      "Program structure and file flow",
+      "Important concepts and aspects of processing",
+      "Lists of CSFs",
+      "Running the CSFs generation programs",
+      "Running the application programs",
+      "Running the tools",
+      "Interpreting the output files",
+      "Case study I: 2s22p, 2s2p2 in Mo XXXVIII using scripts",
+      "Case study II: the Li iso-electronic sequence using scripts",
+      "Case study III: graphical analysis of the Mg iso-electronic sequence",
+      "Methods to ensure convergence",
+      "Managing large expansions",
+      "Learn more about computational atomic structure"
+    ],
+    "file_count": 19,
+    "largest_file_page_span": 108
+  }
+}

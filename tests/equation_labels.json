@@ -1,0 +1,206 @@
+[
+  {
+    "source": "1706.03762v7.pdf",
+    "source_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+    "block_id": "#/texts/88",
+    "page": 4,
+    "latex": "\\text{Attention}(Q,K,V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V",
+    "note": "scaled dot-product attention",
+    "kind": "born-digital",
+    "components": {
+      "symbol": ["\\text{Attention}", "QK^T", "\\text{softmax}", "V"],
+      "sign": ["="],
+      "fraction": ["\\frac{QK^T}{\\sqrt{d_k}}"],
+      "delimiter": ["(Q,K,V)", "\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)"],
+      "subscript": ["d_k"],
+      "superscript": ["K^T"]
+    }
+  },
+  {
+    "source": "1706.03762v7.pdf",
+    "source_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+    "block_id": "#/texts/106",
+    "page": 5,
+    "latex": "\\text{FFN}(x) = \\max(0, xW_1 + b_1)W_2 + b_2",
+    "note": "position-wise feed-forward",
+    "kind": "born-digital",
+    "components": {
+      "symbol": ["\\text{FFN}", "x", "W_1", "b_2"],
+      "sign": ["=", {"latex": "+", "count": 2}],
+      "fraction": [],
+      "delimiter": ["(x)", "(0,xW_1+b_1)"],
+      "subscript": ["W_1", "W_2", "b_1", "b_2"],
+      "superscript": []
+    }
+  },
+  {
+    "source": "1706.03762v7.pdf",
+    "source_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+    "block_id": "#/texts/115",
+    "page": 6,
+    "latex": "PE_{(pos,2i)} = \\sin(pos/10000^{2i/d_{model}}), PE_{(pos,2i+1)} = \\cos(pos/10000^{2i/d_{model}})",
+    "note": "sinusoidal positional encoding",
+    "kind": "born-digital",
+    "components": {
+      "symbol": ["PE", "\\sin", "\\cos", "pos"],
+      "sign": [{"latex": "=", "count": 2}, "+"],
+      "fraction": ["2i/d_{model}"],
+      "delimiter": ["(pos,2i)", "(pos,2i+1)"],
+      "subscript": ["PE_{(pos,2i)}", "PE_{(pos,2i+1)}", "d_{model}"],
+      "superscript": ["10000^{2i/d_{model}}"]
+    }
+  },
+  {
+    "source": "1706.03762v7.pdf",
+    "source_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+    "block_id": "#/texts/134",
+    "page": 7,
+    "latex": "lrate = d_{model}^{-0.5} \\cdot \\min(step\\_num^{-0.5}, step\\_num \\cdot warmup\\_steps^{-1.5})",
+    "note": "learning-rate schedule",
+    "kind": "born-digital",
+    "components": {
+      "symbol": ["lrate", "d_{model}", "\\min", "warmup\\_steps"],
+      "sign": ["=", "\\cdot", "-"],
+      "fraction": [],
+      "delimiter": ["\\min(step\\_num^{-0.5},step\\_num\\cdot warmup\\_steps^{-1.5})"],
+      "subscript": ["d_{model}", "step\\_num", "warmup\\_steps"],
+      "superscript": ["d_{model}^{-0.5}", "step\\_num^{-0.5}", "warmup\\_steps^{-1.5}"]
+    }
+  },
+  {
+    "source": "slater-50page.pdf",
+    "source_sha256": "1694f97480e14a318ca88fa3350634d797cb9248b9bc367582a6d03ca9a2c5bd",
+    "block_id": "#/texts/111",
+    "page": 22,
+    "latex": "\\rho_\\nu = \\frac{8\\pi\\nu^2}{c^3} kT",
+    "note": "Rayleigh-Jeans law, eq 1-1",
+    "kind": "scanned",
+    "components": {
+      "symbol": ["\\rho", "\\nu", "\\pi", "c", "kT"],
+      "sign": ["="],
+      "fraction": ["\\frac{8\\pi\\nu^2}{c^3}"],
+      "delimiter": [],
+      "subscript": ["\\rho_\\nu"],
+      "superscript": ["\\nu^2", "c^3"]
+    }
+  },
+  {
+    "source": "slater-50page.pdf",
+    "source_sha256": "1694f97480e14a318ca88fa3350634d797cb9248b9bc367582a6d03ca9a2c5bd",
+    "block_id": "#/texts/121",
+    "page": 23,
+    "latex": "\\rho_\\nu = \\frac{8\\pi\\nu^2}{c^3}\\frac{h\\nu}{e^{h\\nu/kT}-1}",
+    "note": "Planck law, eq 1-3",
+    "kind": "scanned",
+    "components": {
+      "symbol": ["\\rho", "\\nu", "\\pi", "h", "e", "kT"],
+      "sign": ["=", "-"],
+      "fraction": ["\\frac{8\\pi\\nu^2}{c^3}", "\\frac{h\\nu}{e^{h\\nu/kT}-1}"],
+      "delimiter": [],
+      "subscript": ["\\rho_\\nu"],
+      "superscript": ["\\nu^2", "c^3", "e^{h\\nu/kT}"]
+    }
+  },
+  {
+    "source": "slater-50page.pdf",
+    "source_sha256": "1694f97480e14a318ca88fa3350634d797cb9248b9bc367582a6d03ca9a2c5bd",
+    "block_id": "#/texts/141",
+    "page": 26,
+    "latex": "\\text{Frequency} = R\\left(\\frac{1}{4} - \\frac{1}{n^2}\\right)",
+    "note": "Balmer series, eq 1-4",
+    "kind": "scanned",
+    "components": {
+      "symbol": ["\\text{Frequency}", "R", "n"],
+      "sign": ["=", "-"],
+      "fraction": ["\\frac{1}{4}", "\\frac{1}{n^2}"],
+      "delimiter": ["\\left(\\frac{1}{4}-\\frac{1}{n^2}\\right)"],
+      "subscript": [],
+      "superscript": ["n^2"]
+    }
+  },
+  {
+    "source": "slater-50page.pdf",
+    "source_sha256": "1694f97480e14a318ca88fa3350634d797cb9248b9bc367582a6d03ca9a2c5bd",
+    "block_id": "#/texts/168",
+    "page": 29,
+    "latex": "E_i - E_j = h\\nu",
+    "note": "Bohr frequency condition, eq 1-8",
+    "kind": "scanned",
+    "components": {
+      "symbol": ["E_i", "E_j", "h", "\\nu"],
+      "sign": ["-", "="],
+      "fraction": [],
+      "delimiter": [],
+      "subscript": ["E_i", "E_j"],
+      "superscript": []
+    }
+  },
+  {
+    "source": "2207.10841v3.pdf",
+    "source_sha256": "416d651377c4cce7ec6c91680afba2764f1d4e549525bc657d147faf6c5e0ef0",
+    "block_id": "#/texts/31",
+    "page": 6,
+    "latex": "E(|\\Psi\\rangle) = \\langle\\Psi|\\hat{H}|\\Psi\\rangle = \\gamma_i^j h_j^i + \\frac{1}{2}\\gamma_{ij}^{kl}g_{kl}^{ij},",
+    "note": "orbital energy functional, eq 1",
+    "kind": "born-digital",
+    "components": {
+      "symbol": ["E", "\\Psi", "\\hat{H}", "\\gamma", "g"],
+      "sign": [{"latex": "=", "count": 2}, "+"],
+      "fraction": ["\\frac{1}{2}"],
+      "delimiter": ["E(|\\Psi\\rangle)", "\\langle\\Psi|\\hat{H}|\\Psi\\rangle"],
+      "subscript": ["\\gamma_i", "h_j", "\\gamma_{ij}", "g_{kl}"],
+      "superscript": ["\\gamma_i^j", "h_j^i", "\\gamma_{ij}^{kl}", "g_{kl}^{ij}"]
+    }
+  },
+  {
+    "source": "2207.10841v3.pdf",
+    "source_sha256": "416d651377c4cce7ec6c91680afba2764f1d4e549525bc657d147faf6c5e0ef0",
+    "block_id": "#/texts/36",
+    "page": 6,
+    "latex": "\\left|\\frac{\\partial L}{\\partial\\phi_m^*}\\right\\rangle = 2\\left(\\gamma_i^m\\hat{h} + \\gamma_{ij}^{mk}\\hat{g}_k^j - \\epsilon_i^m\\right)|\\phi_i\\rangle,",
+    "note": "orbital Lagrangian derivative, eq 3",
+    "kind": "born-digital",
+    "components": {
+      "symbol": ["\\partial", "L", "\\phi", "\\gamma", "\\hat{g}", "\\epsilon"],
+      "sign": ["=", "+", "-"],
+      "fraction": ["\\frac{\\partial L}{\\partial\\phi_m^*}"],
+      "delimiter": ["\\left|\\frac{\\partial L}{\\partial\\phi_m^*}\\right\\rangle", "\\left(\\gamma_i^m\\hat{h}+\\gamma_{ij}^{mk}\\hat{g}_k^j-\\epsilon_i^m\\right)"],
+      "subscript": ["\\phi_m", "\\gamma_i", "\\gamma_{ij}", "\\hat{g}_k", "\\epsilon_i", "\\phi_i"],
+      "superscript": ["\\phi_m^*", "\\gamma_i^m", "\\gamma_{ij}^{mk}", "\\hat{g}_k^j", "\\epsilon_i^m"]
+    }
+  },
+  {
+    "source": "GRASP2018-manual.pdf",
+    "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+    "block_id": "#/mineru/34/equation/343",
+    "page": 34,
+    "latex": "H_{\\mathrm{T}} = -\\sum_{i<j}^{N}\\left[\\boldsymbol{\\alpha}_i\\cdot\\boldsymbol{\\alpha}_j\\frac{\\cos(\\omega_{ij}r_{ij}/c)}{r_{ij}}+(\\boldsymbol{\\alpha}_i\\cdot\\boldsymbol{\\nabla}_i)(\\boldsymbol{\\alpha}_j\\cdot\\boldsymbol{\\nabla}_j)\\frac{\\cos(\\omega_{ij}r_{ij}/c)-1}{\\omega_{ij}^2r_{ij}/c^2}\\right],\\tag{4.1}",
+    "note": "transverse photon interaction, eq 4.1",
+    "kind": "born-digital",
+    "components": {
+      "symbol": ["H_{\\mathrm{T}}", "\\boldsymbol{\\alpha}_i", "\\omega_{ij}", "r_{ij}", "\\boldsymbol{\\nabla}_i"],
+      "sign": ["=", {"latex": "-", "count": 2}, "+", "\\boldsymbol{\\alpha}_i\\cdot\\boldsymbol{\\alpha}_j"],
+      "fraction": ["\\frac{\\cos(\\omega_{ij}r_{ij}/c)}{r_{ij}}", "\\frac{\\cos(\\omega_{ij}r_{ij}/c)-1}{\\omega_{ij}^2r_{ij}/c^2}"],
+      "delimiter": ["[", "]", "(\\boldsymbol{\\alpha}_i\\cdot\\boldsymbol{\\nabla}_i)"],
+      "subscript": ["H_{\\mathrm{T}}", "\\boldsymbol{\\alpha}_i", "\\omega_{ij}", "r_{ij}", "\\boldsymbol{\\nabla}_i"],
+      "superscript": ["\\sum_{i<j}^{N}", "\\omega_{ij}^2", "c^2"]
+    }
+  },
+  {
+    "source": "GRASP2018-manual.pdf",
+    "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+    "block_id": "#/mineru/35/equation/348",
+    "page": 35,
+    "latex": "\\langle\\Psi(\\gamma'P'J')\\|\\mathbf{O}^K\\|\\Psi(\\gamma PJ)\\rangle,\\tag{4.2}",
+    "note": "reduced transition matrix element, eq 4.2",
+    "kind": "born-digital",
+    "components": {
+      "symbol": ["\\Psi", "\\gamma", "P", "J", "\\mathbf{O}"],
+      "sign": [],
+      "fraction": [],
+      "delimiter": ["\\langle", "\\rangle", {"latex": "\\|", "count": 2}],
+      "subscript": [],
+      "superscript": ["\\gamma'", "P'", "J'", "\\mathbf{O}^K"]
+    }
+  }
+]

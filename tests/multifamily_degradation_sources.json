@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-labelled table families for controlled full-table degradation experiments.",
+  "artifacts": {
+    "heldout_labels": {"path": "tests/heldout_data_cell_labels.json", "sha256": "09d19d6c466f1c6fc21b8ba61592b4414288a066c76bb145ebe68448730fc8ce"},
+    "source_row_corpus": {"path": "tests/source_row_alignment_corpus.json", "sha256": "9d6e1fcecaf9bb9561e443e86dae588823b73ca2ecb62936992914c17186d7e6"},
+    "nasa_labels": {"path": "tests/nasa_wates_natural_control_labels.json", "sha256": "5a088ef38e9208ad165909fc43a515a5f272559e9f8d4b2e81bdd85ecca7e4f9"}
+  },
+  "families": [
+    {
+      "id": "grasp-fixed-width",
+      "heldout_panel": "grasp-nixiv-41",
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/grasp-nixiv-41.png",
+      "source_crop_sha256": "67e95f38e22a1dda08de6795b9c824b3c2ffeb7e3bd8650c544d76f4e3efb70f",
+      "row_locator": "key",
+      "key_column": 0,
+      "typography": "born_digital_fixed_width",
+      "features": ["negative_signs", "long_decimals", "fixed_width_numerics", "table_rules"]
+    },
+    {
+      "id": "fischer-serif-superscripts",
+      "heldout_panel": "fischer-stability-table-ii",
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/fischer-stability-table-ii.png",
+      "source_crop_sha256": "338e80d5fc8fc3de622c98a9fb2f8d6de8aa0fecb11f9db7f36cc67309b73415",
+      "row_locator": "key",
+      "key_column": 0,
+      "typography": "proportional_serif",
+      "features": ["superscript_footnotes", "negative_signs_near_rules", "semantic_placeholders"]
+    },
+    {
+      "id": "slater-curved-two-panel",
+      "heldout_panel": "slater-thomas-fermi-right",
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/slater-thomas-fermi-right.png",
+      "source_crop_sha256": "235a952572e5a27c421b76ab52ffb318b61204613eb564f2571de02fe9f94631",
+      "row_locator": "key",
+      "key_column": 2,
+      "typography": "scanned_serif_book",
+      "features": ["curved_page", "faint_photocopy", "side_by_side_panels", "small_decimals"]
+    },
+    {
+      "id": "grasp-scientific-notation",
+      "heldout_panel": "grasp-scientific-p186",
+      "source_crop": "out/reviews/heldout-data-reader-v1/source-crops/grasp-scientific-p186.png",
+      "source_crop_sha256": "c5e17699f108afb7bd743e2b63a440271c86b66dd99a002a97da7dc0418d3c5f",
+      "row_locator": "key",
+      "key_column": 3,
+      "typography": "born_digital_fixed_width_scientific",
+      "features": ["positive_exponents", "negative_exponents", "superscripts"]
+    },
+    {
+      "id": "nasa-leading-dot",
+      "label_artifact": "nasa_labels",
+      "label_block": "#/mineru/2/table/16",
+      "version_dir": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1",
+      "provenance_sha256": "ac435041ec9dd8abe19c29c15d181307000966e4c06d9014b8dac117cf3c57df",
+      "source_block": "#/mineru/2/table/16",
+      "source_crop": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/assets/mineru_2_table_16_p2.png",
+      "source_crop_sha256": "58ad61d6505834dd184ee3c3ab3685a7cd4abd2408ee297854881129d97bf65b",
+      "row_locator": "index",
+      "typography": "scanned_dot_matrix",
+      "features": ["leading_dot_decimals", "faint_photocopy", "mixed_text_and_numeric"]
+    }
+  ]
+}

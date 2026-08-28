@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "purpose": "Frozen term-specific ATSP cross-check of Fischer Table I without OCR-derived calculation inputs.",
+  "artifacts": {
+    "source": {
+      "path": "1-s2.0-S0092640X72800081-main.pdf",
+      "sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47"
+    },
+    "cases": {
+      "path": "tests/atsp_fischer_reference_cases.json",
+      "sha256": "c39a6936f3bdf1feb45f39367b237d2f40c13bf1e01104e0d1f70d281ea26ad3"
+    },
+    "conversion_provenance": {
+      "path": "out/0685e8d85e2237d8/v6/provenance.json",
+      "sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea"
+    },
+    "run_manifest": {
+      "path": "out/reviews/atsp-fischer-v1/manifest.json",
+      "sha256": "ecc0368aae5b5ed6698d808cae491974fc7bbf3df74dc151f1190f184bef6c1c"
+    },
+    "report": {
+      "path": "out/reviews/atsp-fischer-v2/report.json",
+      "sha256": "7e576fd4bf9ac9b71841cd7c411c68c7b12573c2c0912e8bf9b4377a35022f9a"
+    }
+  },
+  "expected": {
+    "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+    "cases_sha256": "c39a6936f3bdf1feb45f39367b237d2f40c13bf1e01104e0d1f70d281ea26ad3",
+    "run_manifest_sha256": "ecc0368aae5b5ed6698d808cae491974fc7bbf3df74dc151f1190f184bef6c1c",
+    "atoms": 9,
+    "cells": 153,
+    "scientific_support": {
+      "agree": 152,
+      "disagree": 0,
+      "tool_refused": 1
+    },
+    "exact_numeric_agreement": 40,
+    "maximum_relative_delta": 9.407337723433679e-05,
+    "by_field": {
+      "1/R": {
+        "checked": 23,
+        "scientifically_consistent": 23,
+        "disagree": 0,
+        "tool_refused": 0
+      },
+      "1/R**3": {
+        "checked": 6,
+        "scientifically_consistent": 5,
+        "disagree": 0,
+        "tool_refused": 1
+      },
+      "A": {
+        "checked": 23,
+        "scientifically_consistent": 23,
+        "disagree": 0,
+        "tool_refused": 0
+      },
+      "E": {
+        "checked": 23,
+        "scientifically_consistent": 23,
+        "disagree": 0,
+        "tool_refused": 0
+      },
+      "R": {
+        "checked": 23,
+        "scientifically_consistent": 23,
+        "disagree": 0,
+        "tool_refused": 0
+      },
+      "R**2": {
+        "checked": 23,
+        "scientifically_consistent": 23,
+        "disagree": 0,
+        "tool_refused": 0
+      },
+      "S": {
+        "checked": 23,
+        "scientifically_consistent": 23,
+        "disagree": 0,
+        "tool_refused": 0
+      },
+      "value": {
+        "checked": 9,
+        "scientifically_consistent": 9,
+        "disagree": 0,
+        "tool_refused": 0
+      }
+    }
+  }
+}

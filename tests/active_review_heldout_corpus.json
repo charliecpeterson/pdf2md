@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "purpose": "Leave-one-document-out comparison of active, random, and confidence-stratified numeric review.",
+  "artifacts": {
+    "numeric_confidence_report": {
+      "path": "out/reviews/numeric-confidence-v1/report.json",
+      "sha256": "4170cea038737cba82b3ec28e997a0b9c2b06e58322dd3aaab2b76466bd58404"
+    },
+    "sampling_sources": {
+      "path": "tests/active_review_sampling_sources.json",
+      "sha256": "4ec7de63a7fe70dabb02b11ce80788a5048eb095745f430fb53436493ae64862"
+    },
+    "base_ranking": {
+      "path": "scripts/eval_active_review_sampling.py",
+      "sha256": "4730927a8b916b0714529ebb8c7186d8037d891c140c4c0ce1f8186780502f88"
+    }
+  },
+  "expected": {
+    "sources_sha256": "4ec7de63a7fe70dabb02b11ce80788a5048eb095745f430fb53436493ae64862",
+    "sampling_frame": {
+      "cells": 2113,
+      "documents": 31,
+      "labelled_errors": 14,
+      "heldout_folds": 3,
+      "zero_error_training_controls": 28,
+      "budgets_per_document": [1, 3, 5, 10, 20]
+    },
+    "folds": [
+      {
+        "document": "nasa-wates-page-120",
+        "source_sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7",
+        "heldout_cells": 25,
+        "heldout_errors": 5,
+        "training_documents": 30,
+        "training_cells": 2088,
+        "training_errors": 9,
+        "weights": {
+          "confidence": 2.83760672,
+          "reader_outcome": 3.01851129,
+          "geometry": -0.03487277,
+          "refusal_reason": -1.31408902,
+          "resolver_conflict": 3.81903697,
+          "primary_syntax": 9.43164223,
+          "reader_syntax": 2.08840652
+        },
+        "active_curve": [
+          {"budget": 1, "errors_found": 1, "error_recall": 0.2},
+          {"budget": 3, "errors_found": 2, "error_recall": 0.4},
+          {"budget": 5, "errors_found": 2, "error_recall": 0.4},
+          {"budget": 10, "errors_found": 4, "error_recall": 0.8},
+          {"budget": 20, "errors_found": 4, "error_recall": 0.8}
+        ],
+        "active_ranking_sha256": "4cf20ce662943f0341dab2b5e1b0b0824d51386fa74ae3b2c5b58d1039f96447",
+        "random_curve_sha256": "2a279a4c0fbbefe79681de18ecce2d21d8d4e269040fcd90b7e10424b716741f",
+        "confidence_stratified_curve_sha256": "cd325027442a1b02027959fe4d796a70d9022a6a4ef6c670917a9453f1f47bde"
+      },
+      {
+        "document": "slater-atomic-structure-vol1",
+        "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+        "heldout_cells": 34,
+        "heldout_errors": 1,
+        "training_documents": 30,
+        "training_cells": 2079,
+        "training_errors": 13,
+        "weights": {
+          "confidence": 3.2009423,
+          "reader_outcome": 3.35971925,
+          "geometry": 1.69237312,
+          "refusal_reason": -0.36126505,
+          "resolver_conflict": 3.3964241,
+          "primary_syntax": 9.07397322,
+          "reader_syntax": 1.69633692
+        },
+        "active_curve": [
+          {"budget": 1, "errors_found": 0, "error_recall": 0.0},
+          {"budget": 3, "errors_found": 1, "error_recall": 1.0},
+          {"budget": 5, "errors_found": 1, "error_recall": 1.0},
+          {"budget": 10, "errors_found": 1, "error_recall": 1.0},
+          {"budget": 20, "errors_found": 1, "error_recall": 1.0}
+        ],
+        "active_ranking_sha256": "90a6e163b2056cd3b85c330ce8a1026a149a6b1e28aa80412ee3b49c7e6646b0",
+        "random_curve_sha256": "7c9fb0154447c7c3a283fae36b75af5617648ef566639b5da8b6cf2342483871",
+        "confidence_stratified_curve_sha256": "dd18edcc2cf40277f04f6fae29d382ba70c43ff5a30be9b5c53762a26595d740"
+      },
+      {
+        "document": "ornl-mastersjob-pages-54-57",
+        "source_sha256": "d9f208b5bceff4897affa087efa740152a5692e479b9c02aaf467834a0a78931",
+        "heldout_cells": 26,
+        "heldout_errors": 8,
+        "training_documents": 30,
+        "training_cells": 2087,
+        "training_errors": 6,
+        "weights": {
+          "confidence": 2.45629311,
+          "reader_outcome": 2.63702666,
+          "geometry": 2.90081372,
+          "refusal_reason": 0.42009609,
+          "resolver_conflict": 2.12539834,
+          "primary_syntax": 7.74620458,
+          "reader_syntax": 3.23620299
+        },
+        "active_curve": [
+          {"budget": 1, "errors_found": 1, "error_recall": 0.125},
+          {"budget": 3, "errors_found": 3, "error_recall": 0.375},
+          {"budget": 5, "errors_found": 5, "error_recall": 0.625},
+          {"budget": 10, "errors_found": 7, "error_recall": 0.875},
+          {"budget": 20, "errors_found": 7, "error_recall": 0.875}
+        ],
+        "active_ranking_sha256": "f267b21f4a334fb72a25448256153ab37369d02a2d41eed1cab77634a7c0ad8d",
+        "random_curve_sha256": "f1f02753080172817f2bbbbe155f334c236acc0cf8e2ec1a3983bb74044631d5",
+        "confidence_stratified_curve_sha256": "c1bc6096bfaa9654521b0260b38744e725497f51ba5222a4ce95aa246a554fef"
+      }
+    ],
+    "aggregate": [
+      {"budget_per_document": 1, "total_reviews": 3, "active_errors_found": 2, "active_error_recall": 0.14285714, "random_mean_errors_found": 0.55, "confidence_stratified_mean_errors_found": 0.267},
+      {"budget_per_document": 3, "total_reviews": 9, "active_errors_found": 6, "active_error_recall": 0.42857143, "random_mean_errors_found": 1.604, "confidence_stratified_mean_errors_found": 1.884},
+      {"budget_per_document": 5, "total_reviews": 15, "active_errors_found": 8, "active_error_recall": 0.57142857, "random_mean_errors_found": 2.697, "confidence_stratified_mean_errors_found": 3.74},
+      {"budget_per_document": 10, "total_reviews": 30, "active_errors_found": 12, "active_error_recall": 0.85714286, "random_mean_errors_found": 5.44, "confidence_stratified_mean_errors_found": 6.062},
+      {"budget_per_document": 20, "total_reviews": 60, "active_errors_found": 12, "active_error_recall": 0.85714286, "random_mean_errors_found": 10.705, "confidence_stratified_mean_errors_found": 11.521}
+    ],
+    "conclusion": {
+      "active_beats_confidence_stratified_on_every_document_and_budget": false,
+      "promotion": "retain_confidence_stratified_default",
+      "reason": "leave-one-document-out active ranking improves aggregate small-budget recall but does not dominate confidence-stratified review on every held-out document and budget"
+    }
+  }
+}

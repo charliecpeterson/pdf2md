@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "method": "combined_degradation_leave_one_factor_out",
+  "source": "dolg-ecp.pdf",
+  "source_sha256": "24f433c4edfb3f419016b2a90b4aecd989394925685ade3fe3efa66c3665011a",
+  "source_page": 7,
+  "source_crop_300dpi": "2050x1900+250+60",
+  "corpus_pdf": "dolg-table-iii-combined-ablation.pdf",
+  "corpus_sha256": "bcfa4abd836af43094ee5e89c6098f6969bb1500ce991a44be36d038bb7e83f5",
+  "tools": {
+    "pdftoppm": "pdftoppm version 25.07.0",
+    "imagemagick": "Version: ImageMagick 7.1.1-47 Q16-HDRI aarch64 22763 https://imagemagick.org",
+    "pillow": "10.4.0"
+  },
+  "variants": [
+    {
+      "page": 1,
+      "image": "01-clean_control.png",
+      "image_sha256": "75319fd215e1c74ac60725c4779dccb8147552edaf2c84f8453cf54790a8730c",
+      "pixel_size": [
+        2050,
+        1900
+      ],
+      "id": "clean_control",
+      "operations": [],
+      "factors": [],
+      "role": "control"
+    },
+    {
+      "page": 2,
+      "image": "02-combined_all.png",
+      "image_sha256": "790e2fcfcc7de01dd4dfd4d3d8e9a62bcb7a984bf6fda47f552cf2691278d02b",
+      "pixel_size": [
+        2050,
+        1900
+      ],
+      "id": "combined_all",
+      "operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "683x633!",
+        "-resize",
+        "2050x1900!",
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "2050x1900+0+0",
+        "+repage",
+        "jpeg_roundtrip:40"
+      ],
+      "factors": [
+        "resolution",
+        "blur",
+        "contrast",
+        "rotation",
+        "jpeg"
+      ],
+      "role": "full_combination"
+    },
+    {
+      "page": 3,
+      "image": "03-combined_without_resolution.png",
+      "image_sha256": "d6621cc899a7f41c44f5a815186d65f4f82162325f920a1002d88d0112d477dd",
+      "pixel_size": [
+        2050,
+        1900
+      ],
+      "id": "combined_without_resolution",
+      "operations": [
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "2050x1900+0+0",
+        "+repage",
+        "jpeg_roundtrip:40"
+      ],
+      "factors": [
+        "blur",
+        "contrast",
+        "rotation",
+        "jpeg"
+      ],
+      "removed_factor": "resolution",
+      "role": "leave_one_out"
+    },
+    {
+      "page": 4,
+      "image": "04-combined_without_blur.png",
+      "image_sha256": "a27a9bc8c8fa33c42d608013f66e6dd5f988909704a6204cc3586f94e4cf2ae0",
+      "pixel_size": [
+        2050,
+        1900
+      ],
+      "id": "combined_without_blur",
+      "operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "683x633!",
+        "-resize",
+        "2050x1900!",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "2050x1900+0+0",
+        "+repage",
+        "jpeg_roundtrip:40"
+      ],
+      "factors": [
+        "resolution",
+        "contrast",
+        "rotation",
+        "jpeg"
+      ],
+      "removed_factor": "blur",
+      "role": "leave_one_out"
+    },
+    {
+      "page": 5,
+      "image": "05-combined_without_contrast.png",
+      "image_sha256": "a7be5d09bf5801acb1d875a211f524e0cbeb8440edb7d0fdf59cca14b24ed2f1",
+      "pixel_size": [
+        2050,
+        1900
+      ],
+      "id": "combined_without_contrast",
+      "operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "683x633!",
+        "-resize",
+        "2050x1900!",
+        "-blur",
+        "0x1.2",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "2050x1900+0+0",
+        "+repage",
+        "jpeg_roundtrip:40"
+      ],
+      "factors": [
+        "resolution",
+        "blur",
+        "rotation",
+        "jpeg"
+      ],
+      "removed_factor": "contrast",
+      "role": "leave_one_out"
+    },
+    {
+      "page": 6,
+      "image": "06-combined_without_rotation.png",
+      "image_sha256": "816b810fb40e7b12a6a32c3a212d434b27cef400faaaacd4404bfe52a59abb21",
+      "pixel_size": [
+        2050,
+        1900
+      ],
+      "id": "combined_without_rotation",
+      "operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "683x633!",
+        "-resize",
+        "2050x1900!",
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "jpeg_roundtrip:40"
+      ],
+      "factors": [
+        "resolution",
+        "blur",
+        "contrast",
+        "jpeg"
+      ],
+      "removed_factor": "rotation",
+      "role": "leave_one_out"
+    },
+    {
+      "page": 7,
+      "image": "07-combined_without_jpeg.png",
+      "image_sha256": "90c145e72a043e4105bc351422a5a5cefff034414abb3e40e59c35f4f57d2850",
+      "pixel_size": [
+        2050,
+        1900
+      ],
+      "id": "combined_without_jpeg",
+      "operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "683x633!",
+        "-resize",
+        "2050x1900!",
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "2050x1900+0+0",
+        "+repage"
+      ],
+      "factors": [
+        "resolution",
+        "blur",
+        "contrast",
+        "rotation"
+      ],
+      "removed_factor": "jpeg",
+      "role": "leave_one_out"
+    }
+  ]
+}

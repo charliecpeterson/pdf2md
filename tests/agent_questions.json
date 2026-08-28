@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "questions": [
+    {
+      "id": "grasp2018-radial-wave-extension",
+      "document_id": "grasp2018",
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "bundle_source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "bundle_pages": [26],
+      "pdf_pages": [26],
+      "question": "Which file extension denotes the binary file of radial wave functions?",
+      "answer": {"kind": "contains", "accepted": ["w", ".w"]},
+      "ground_truth": "tests/bakeoff_labels.json: grasp-table-3-1 table row w"
+    },
+    {
+      "id": "grasp-table-radial-wave-extension",
+      "document_id": "grasp-table-3-1",
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "bundle_source_sha256": "64120ce879cad8162b355f25b37b9bc5022f4054a54fd3133fce5764e0fa721a",
+      "bundle_pages": [1],
+      "pdf_pages": [26],
+      "question": "Which file extension denotes the binary file of radial wave functions?",
+      "answer": {"kind": "contains", "accepted": ["w", ".w"]},
+      "ground_truth": "tests/bakeoff_labels.json: grasp-table-3-1 table row w"
+    },
+    {
+      "id": "grasp-equation-number",
+      "document_id": "grasp-equation-4-1",
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "bundle_source_sha256": "0bab154b639b64a512f4ad15e760f4bb6b5100c5199acdd40070a1cc73c1a38c",
+      "bundle_pages": [1],
+      "pdf_pages": [34],
+      "question": "What number labels the displayed transverse-photon interaction equation?",
+      "answer": {"kind": "contains", "accepted": ["4.1", "(4.1)"]},
+      "ground_truth": "tests/bakeoff_labels.json: grasp-equation-4-1 label"
+    },
+    {
+      "id": "slater-volume-phase-space-shape",
+      "document_id": "slater-volume-1",
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "bundle_source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "bundle_pages": [37],
+      "pdf_pages": [37],
+      "question": "In the phase-space discussion around Equation (1-28), what geometric shape represents a line of constant energy?",
+      "answer": {"kind": "contains", "accepted": ["ellipse", "an ellipse"]},
+      "ground_truth": "tests/bakeoff_labels.json: slater-page-37 reading order and figure"
+    },
+    {
+      "id": "slater-page-phase-space-shape",
+      "document_id": "slater-page-37",
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "bundle_source_sha256": "57035b087ebc9854513e23f8c5166a98dc3edb4e84bbca9c2e5fd569337eeec7",
+      "bundle_pages": [1],
+      "pdf_pages": [37],
+      "question": "In the phase-space discussion, what geometric shape represents a line of constant energy?",
+      "answer": {"kind": "contains", "accepted": ["ellipse", "an ellipse"]},
+      "ground_truth": "tests/bakeoff_labels.json: slater-page-37 reading order and figure"
+    },
+    {
+      "id": "raster-figure-data-table",
+      "document_id": "raster-scientific-figure",
+      "source_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "bundle_source_sha256": "ae6c469aa42b8fa6dd04f81f082befd9a0312a9b4e22ded1551a322136d52f41",
+      "bundle_pages": [1],
+      "pdf_pages": [1],
+      "question": "According to the figure text, which table lists the numerical values?",
+      "answer": {"kind": "contains", "accepted": ["Table 5", "table 5"]},
+      "ground_truth": "tests/bakeoff_labels.json: raster-scientific-figure required text"
+    },
+    {
+      "id": "vector-line-value",
+      "document_id": "vector-plot",
+      "source_sha256": "44b593a83d61a0ad10b0699aae744b9dc6f04126039e88985dec95db5e49d303",
+      "bundle_source_sha256": "44b593a83d61a0ad10b0699aae744b9dc6f04126039e88985dec95db5e49d303",
+      "bundle_pages": [1],
+      "pdf_pages": [1],
+      "question": "What is the plotted y value at x = 4?",
+      "answer": {"kind": "number", "value": 16, "tolerance": 0.05},
+      "ground_truth": "tests/bakeoff_labels.json: vector-plot series"
+    },
+    {
+      "id": "scatter-value",
+      "document_id": "scatter-plot",
+      "source_sha256": "59d827290f1716d0178103f084ed609899d6f5f4d5c2f6c098a8d618271cf51b",
+      "bundle_source_sha256": "59d827290f1716d0178103f084ed609899d6f5f4d5c2f6c098a8d618271cf51b",
+      "bundle_pages": [1],
+      "pdf_pages": [1],
+      "question": "What is the scatter point's y value at x = 7?",
+      "answer": {"kind": "number", "value": 4.9, "tolerance": 0.1},
+      "ground_truth": "tests/bakeoff_labels.json: scatter-plot series"
+    },
+    {
+      "id": "scatter-intersection",
+      "document_id": "scatter-two-series",
+      "source_sha256": "081eda2289d17ed17a6c5bfdc75d518418d0ddfb02cf7798e78dce1fa724992d",
+      "bundle_source_sha256": "081eda2289d17ed17a6c5bfdc75d518418d0ddfb02cf7798e78dce1fa724992d",
+      "bundle_pages": [1],
+      "pdf_pages": [1],
+      "question": "At what coordinate do the two scatter series intersect?",
+      "answer": {"kind": "numbers", "values": [4, 4], "tolerance": 0.1},
+      "ground_truth": "tests/bakeoff_labels.json: scatter-two-series series"
+    },
+    {
+      "id": "subplots-values",
+      "document_id": "subplots",
+      "source_sha256": "bbec2471321dac6746ccae94b90ef9e8c9bb2b81556c0eec019a50971aa732cb",
+      "bundle_source_sha256": "bbec2471321dac6746ccae94b90ef9e8c9bb2b81556c0eec019a50971aa732cb",
+      "bundle_pages": [1],
+      "pdf_pages": [1],
+      "question": "At x = 6, what are the y values in the first and second panels?",
+      "answer": {"kind": "numbers", "values": [6, 40], "tolerance": 0.5},
+      "ground_truth": "tests/bakeoff_labels.json: subplots series"
+    },
+    {
+      "id": "bar-maximum",
+      "document_id": "bar-plot",
+      "source_sha256": "239828db40cd7179a70484f3a2d44011ace5fba05689d3ca59e43311d074df91",
+      "bundle_source_sha256": "239828db40cd7179a70484f3a2d44011ace5fba05689d3ca59e43311d074df91",
+      "bundle_pages": [1],
+      "pdf_pages": [1],
+      "question": "Which x position has the tallest bar, and what is its height?",
+      "answer": {"kind": "numbers", "values": [4, 9], "tolerance": 0.05},
+      "ground_truth": "tests/bakeoff_labels.json: bar-plot series"
+    }
+  ]
+}

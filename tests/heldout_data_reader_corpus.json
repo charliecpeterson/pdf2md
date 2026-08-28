@@ -1,0 +1,445 @@
+{
+  "schema_version": 1,
+  "artifacts": {
+    "labels": {
+      "path": "tests/heldout_data_cell_labels.json",
+      "sha256": "09d19d6c466f1c6fc21b8ba61592b4414288a066c76bb145ebe68448730fc8ce"
+    },
+    "source_alignment_corpus": {
+      "path": "tests/source_row_alignment_corpus.json",
+      "sha256": "9d6e1fcecaf9bb9561e443e86dae588823b73ca2ecb62936992914c17186d7e6"
+    },
+    "manifest": {
+      "path": "out/reviews/heldout-data-reader-v1/manifest.json",
+      "sha256": "fbe58f350fe68f77a4418bcbf52634d7c74077f9f8621666cf4c6aca3137df8c"
+    },
+    "reference_run": {
+      "path": "out/reviews/heldout-data-reader-v1/run-reference.json",
+      "sha256": "a9b000677ce85d6fe487e41a292aaf99ca4c7f349432094731bc613a6683171b"
+    },
+    "projection_run": {
+      "path": "out/reviews/heldout-data-reader-v1/run-projection.json",
+      "sha256": "fc43df079c2a21da70a0b311bdc1f24289c0356125bc9cd7c1a231394f41927f"
+    }
+  },
+  "expected": {
+    "manifest_sha256": "fbe58f350fe68f77a4418bcbf52634d7c74077f9f8621666cf4c6aca3137df8c",
+    "reference_run_sha256": "a9b000677ce85d6fe487e41a292aaf99ca4c7f349432094731bc613a6683171b",
+    "projection_run_sha256": "fc43df079c2a21da70a0b311bdc1f24289c0356125bc9cd7c1a231394f41927f",
+    "reader": {
+      "model_name": "PP-OCRv6_medium_rec",
+      "model_sha256": "00a024b1a2165b852c2b9dab611e0a68fd23f9a28c441c600a04f078a106b5b2",
+      "device": "gpu:0",
+      "paddleocr_version": "3.7.0",
+      "paddlex_version": "3.7.2",
+      "paddlepaddle_gpu_version": "3.2.1+fc"
+    },
+    "documents": 3,
+    "panels": 6,
+    "cells": 56,
+    "primary": {
+      "checked": 56,
+      "agree": 56,
+      "disagree": 0,
+      "tool_refused": 0
+    },
+    "tesseract": {
+      "checked": 56,
+      "agree": 51,
+      "disagree": 5,
+      "tool_refused": 0
+    },
+    "reference": {
+      "checked": 56,
+      "agree": 52,
+      "disagree": 0,
+      "tool_refused": 4
+    },
+    "projection": {
+      "checked": 56,
+      "agree": 51,
+      "disagree": 0,
+      "tool_refused": 5
+    },
+    "fallback": {
+      "checked": 56,
+      "agree": 53,
+      "disagree": 0,
+      "tool_refused": 3
+    },
+    "confirmed": {
+      "checked": 56,
+      "agree": 53,
+      "disagree": 0,
+      "tool_refused": 3
+    },
+    "fallback_readers": {
+      "projection": 1,
+      "reference": 52
+    },
+    "panel_results": {
+      "fischer-stability-table-ii": {
+        "primary": {
+          "checked": 12,
+          "agree": 12,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "tesseract": {
+          "checked": 12,
+          "agree": 12,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "reference": {
+          "checked": 12,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 4
+        },
+        "projection": {
+          "checked": 12,
+          "agree": 7,
+          "disagree": 0,
+          "tool_refused": 5
+        },
+        "fallback": {
+          "checked": 12,
+          "agree": 9,
+          "disagree": 0,
+          "tool_refused": 3
+        },
+        "confirmed": {
+          "checked": 12,
+          "agree": 9,
+          "disagree": 0,
+          "tool_refused": 3
+        }
+      },
+      "fischer-stability-table-iii": {
+        "primary": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "tesseract": {
+          "checked": 8,
+          "agree": 3,
+          "disagree": 5,
+          "tool_refused": 0
+        },
+        "reference": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "projection": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "fallback": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "confirmed": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      },
+      "grasp-mgiii-26": {
+        "primary": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "tesseract": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "reference": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "projection": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "fallback": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "confirmed": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      },
+      "grasp-nixiv-41": {
+        "primary": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "tesseract": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "reference": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "projection": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "fallback": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "confirmed": {
+          "checked": 10,
+          "agree": 10,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      },
+      "grasp-scientific-p186": {
+        "primary": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "tesseract": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "reference": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "projection": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "fallback": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "confirmed": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      },
+      "slater-thomas-fermi-right": {
+        "primary": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "tesseract": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "reference": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "projection": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "fallback": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "confirmed": {
+          "checked": 8,
+          "agree": 8,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      }
+    },
+    "findings": [
+      {
+        "id": "fischer-stability-table-ii:r0:c4",
+        "fallback_reader": "projection",
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "agree",
+          "reference": "tool_refused",
+          "projection": "agree",
+          "fallback": "agree",
+          "confirmed": "agree"
+        }
+      },
+      {
+        "id": "fischer-stability-table-ii:r5:c3",
+        "fallback_reader": null,
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "agree",
+          "reference": "tool_refused",
+          "projection": "tool_refused",
+          "fallback": "tool_refused",
+          "confirmed": "tool_refused"
+        }
+      },
+      {
+        "id": "fischer-stability-table-ii:r5:c4",
+        "fallback_reader": "reference",
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "agree",
+          "reference": "agree",
+          "projection": "tool_refused",
+          "fallback": "agree",
+          "confirmed": "agree"
+        }
+      },
+      {
+        "id": "fischer-stability-table-ii:r8:c1",
+        "fallback_reader": "reference",
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "agree",
+          "reference": "agree",
+          "projection": "tool_refused",
+          "fallback": "agree",
+          "confirmed": "agree"
+        }
+      },
+      {
+        "id": "fischer-stability-table-ii:r8:c3",
+        "fallback_reader": null,
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "agree",
+          "reference": "tool_refused",
+          "projection": "tool_refused",
+          "fallback": "tool_refused",
+          "confirmed": "tool_refused"
+        }
+      },
+      {
+        "id": "fischer-stability-table-ii:r8:c4",
+        "fallback_reader": null,
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "agree",
+          "reference": "tool_refused",
+          "projection": "tool_refused",
+          "fallback": "tool_refused",
+          "confirmed": "tool_refused"
+        }
+      },
+      {
+        "id": "fischer-stability-table-iii:r4:c1",
+        "fallback_reader": "reference",
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "disagree",
+          "reference": "agree",
+          "projection": "agree",
+          "fallback": "agree",
+          "confirmed": "agree"
+        }
+      },
+      {
+        "id": "fischer-stability-table-iii:r4:c2",
+        "fallback_reader": "reference",
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "disagree",
+          "reference": "agree",
+          "projection": "agree",
+          "fallback": "agree",
+          "confirmed": "agree"
+        }
+      },
+      {
+        "id": "fischer-stability-table-iii:r5:c3",
+        "fallback_reader": "reference",
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "disagree",
+          "reference": "agree",
+          "projection": "agree",
+          "fallback": "agree",
+          "confirmed": "agree"
+        }
+      },
+      {
+        "id": "fischer-stability-table-iii:r7:c2",
+        "fallback_reader": "reference",
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "disagree",
+          "reference": "agree",
+          "projection": "agree",
+          "fallback": "agree",
+          "confirmed": "agree"
+        }
+      },
+      {
+        "id": "fischer-stability-table-iii:r9:c1",
+        "fallback_reader": "reference",
+        "outcomes": {
+          "primary": "agree",
+          "tesseract": "disagree",
+          "reference": "agree",
+          "projection": "agree",
+          "fallback": "agree",
+          "confirmed": "agree"
+        }
+      }
+    ]
+  }
+}

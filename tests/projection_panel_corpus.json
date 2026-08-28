@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "selection": "All 131 Fischer radial-table blocks with pinned source key-cell geometry",
+  "manifest": "out/reviews/fischer-line-reader-all-radial-v5/manifest.json",
+  "manifest_sha256": "4ede2cc81c597d67fc2d7f99ce49b1abd38f0a585904f5463ab1d89e748c98a0",
+  "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+  "expected": {
+    "tables_checked": 130,
+    "key_cells_checked": 7886,
+    "agree": 130,
+    "disagree": 0,
+    "tool_refused": 0,
+    "no_reference": 1,
+    "mismatched_key_cells": 0,
+    "families": {
+      "repeated_2_panel_continuation": {"tables": 7, "agree": 7, "disagree": 0, "tool_refused": 0, "no_reference": 0},
+      "repeated_2_panel_header": {"tables": 10, "agree": 10, "disagree": 0, "tool_refused": 0, "no_reference": 0},
+      "repeated_3_panel_header": {"tables": 3, "agree": 3, "disagree": 0, "tool_refused": 0, "no_reference": 0},
+      "single_panel": {"tables": 111, "agree": 110, "disagree": 0, "tool_refused": 0, "no_reference": 1}
+    }
+  }
+}

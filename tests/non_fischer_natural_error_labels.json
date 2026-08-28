@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked natural non-Fischer primary errors for independent-geometry third-reader evaluation.",
+  "documents": [
+    {
+      "id": "slater-atomic-structure-vol1",
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "source": "slater-quantum_theory_of_atomic_structure-vol1.pdf",
+      "out_dir": "out/agent-full-books",
+      "version": "v1",
+      "cells": [
+        {"page": 215, "block_id": "#/mineru/215/table/1680", "row": 27, "column": 5, "expected": "8.0", "label": "Slater Table 8-2 cobalt 3s value; primary reads 8.9 and Tesseract reads 8.u"}
+      ]
+    },
+    {
+      "id": "ornl-mastersjob-pages-54-57",
+      "source_sha256": "d9f208b5bceff4897affa087efa740152a5692e479b9c02aaf467834a0a78931",
+      "source": "out/natural-errors-scanned/d9f208b5bceff489/source.pdf",
+      "out_dir": "out/natural-errors-scanned",
+      "version": "v1",
+      "cells": [
+        {"page": 1, "block_id": "#/mineru/1/table/13", "row": 1, "column": 0, "expected": "-0.28567D-02", "label": "ORNL report page 54; primary substitutes zero for the Fortran D exponent marker"},
+        {"page": 1, "block_id": "#/mineru/1/table/13", "row": 2, "column": 0, "expected": "-0.22132D-01", "label": "ORNL report page 54; primary substitutes zero for the Fortran D exponent marker"},
+        {"page": 2, "block_id": "#/mineru/2/table/29", "row": 0, "column": 1, "expected": "467.18", "label": "ORNL report page 55; damaged final 8 is disambiguated by the next iteration's repeated old value"},
+        {"page": 2, "block_id": "#/mineru/2/table/31", "row": 1, "column": 0, "expected": "-0.22924D-01", "label": "ORNL report page 55; primary drops the sign and substitutes zero for D"},
+        {"page": 3, "block_id": "#/mineru/3/table/37", "row": 1, "column": 1, "expected": "-0.19608E-02", "label": "ORNL report page 56; primary reads the leading zero as C and an internal zero as 6"},
+        {"page": 3, "block_id": "#/mineru/3/table/43", "row": 2, "column": 2, "expected": "0.63565D-03", "label": "ORNL report page 56; primary reads the final mantissa digit 5 as S"},
+        {"page": 3, "block_id": "#/mineru/3/table/48", "row": 2, "column": 1, "expected": "0.53979E-02", "label": "ORNL report page 56; primary changes the leading mantissa digit from 5 to 9"},
+        {"page": 4, "block_id": "#/mineru/4/table/59", "row": 2, "column": 0, "expected": "0.52080E-01", "label": "ORNL report page 57; primary reads the final mantissa zero as C"}
+      ]
+    },
+    {
+      "id": "nasa-wates-page-120",
+      "source_sha256": "2cde66d4e1bc0e6d44eafb4f302a49754ea9e4cd482c15671766e495d80c36d7",
+      "source": "out/natural-errors-scanned/2cde66d4e1bc0e6d/source.pdf",
+      "out_dir": "out/natural-errors-scanned",
+      "version": "v1",
+      "cells": [
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 1, "column": 3, "expected": "43.3", "label": "NASA PDF page 120; primary changes the final dot-matrix digit from 3 to 5"},
+        {"page": 2, "block_id": "#/mineru/2/table/23", "row": 1, "column": 0, "expected": ".907", "label": "NASA PDF page 120; primary reads the middle zero in a numeric loading field as C"},
+        {"page": 2, "block_id": "#/mineru/2/table/25", "row": 3, "column": 7, "expected": "1135.4", "label": "NASA PDF page 120; primary changes 5 to 9, while the same LTIPMAX value is repeated clearly in the preceding table"},
+        {"page": 2, "block_id": "#/mineru/2/table/26", "row": 1, "column": 5, "expected": "8.8", "label": "NASA PDF page 120; primary changes the final dot-matrix 8 to 9"},
+        {"page": 2, "block_id": "#/mineru/2/table/27", "row": 6, "column": 0, "expected": "177.20", "label": "NASA PDF page 120; primary reads the final zero in a numeric HI field as C"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "purpose": "Frozen falsification of continuity, decimal-format, and numeric-type rules as detectors and proposed resolvers.",
+  "artifacts": {
+    "cases": {
+      "path": "tests/numeric_validator_adversarial_cases.json",
+      "sha256": "356590254fd59a4d1828b2331d3d3d3372ca0de3c4981f5b89a84ee1bbf84795"
+    },
+    "report": {
+      "path": "out/reviews/numeric-validator-adversarial-v1.json",
+      "sha256": "a889f1da5aa22805341f9862aee3da560cb06cb68827fe2f339ab4d7cd6418c3"
+    }
+  },
+  "expected": {
+    "cases_sha256": "356590254fd59a4d1828b2331d3d3d3372ca0de3c4981f5b89a84ee1bbf84795",
+    "cases": 18,
+    "adversarial_cases": 14,
+    "control_cases": 4,
+    "rules": {
+      "numeric_type": {
+        "checked": 18,
+        "correct_preference": 2,
+        "wrong_preference": 0,
+        "tool_refused": 16,
+        "primary_error_detection": {
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 4,
+          "true_negative": 14
+        },
+        "proposed_rewrite": {
+          "correction": 0,
+          "regression": 0,
+          "retained": 2,
+          "unresolved": 16
+        }
+      },
+      "continuity": {
+        "checked": 18,
+        "correct_preference": 3,
+        "wrong_preference": 6,
+        "tool_refused": 9,
+        "primary_error_detection": {
+          "true_positive": 3,
+          "false_positive": 6,
+          "false_negative": 1,
+          "true_negative": 8
+        },
+        "proposed_rewrite": {
+          "correction": 3,
+          "regression": 6,
+          "retained": 0,
+          "unresolved": 9
+        }
+      },
+      "decimal_format": {
+        "checked": 18,
+        "correct_preference": 2,
+        "wrong_preference": 2,
+        "tool_refused": 14,
+        "primary_error_detection": {
+          "true_positive": 1,
+          "false_positive": 2,
+          "false_negative": 3,
+          "true_negative": 12
+        },
+        "proposed_rewrite": {
+          "correction": 1,
+          "regression": 2,
+          "retained": 1,
+          "unresolved": 14
+        }
+      },
+      "combined": {
+        "checked": 18,
+        "correct_preference": 7,
+        "wrong_preference": 8,
+        "tool_refused": 3,
+        "primary_error_detection": {
+          "true_positive": 4,
+          "false_positive": 8,
+          "false_negative": 0,
+          "true_negative": 6
+        },
+        "proposed_rewrite": {
+          "correction": 4,
+          "regression": 8,
+          "retained": 3,
+          "unresolved": 3
+        }
+      }
+    },
+    "numeric_equivalence_false_agreements": 2,
+    "placeholder_type_checks": {
+      "checked": 1,
+      "correct": 1
+    },
+    "records_sha256": "9eb093a7efe7d89cf702bf87319db2166a7ae1af52851bb207ea970ce61c370f"
+  }
+}

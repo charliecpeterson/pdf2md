@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "purpose": "Multi-document source-checked scanned numeric-table error and control corpus.",
+  "cases": [
+    {
+      "id": "fischer-atomic-structure-primary-errors",
+      "role": "known_primary_errors",
+      "labels": "tests/fischer_primary_error_labels.json",
+      "out_dir": "out",
+      "expected_primary": {"checked": 6, "agree": 0, "disagree": 6, "tool_refused": 0}
+    },
+    {
+      "id": "slater-reader-disagreement-controls",
+      "role": "source_checked_controls",
+      "labels": "tests/glyph_slater_disagreement_labels.json",
+      "out_dir": "out/agent-full-books",
+      "expected_primary": {"checked": 16, "agree": 16, "disagree": 0, "tool_refused": 0}
+    },
+    {
+      "id": "slater-primary-errors",
+      "role": "known_primary_errors",
+      "labels": "tests/slater_primary_error_labels.json",
+      "out_dir": "out/agent-full-books",
+      "expected_primary": {"checked": 1, "agree": 0, "disagree": 1, "tool_refused": 0}
+    },
+    {
+      "id": "slater-natural-disagreement-controls",
+      "role": "source_checked_controls",
+      "labels": "tests/slater_natural_disagreement_labels.json",
+      "out_dir": "out/agent-full-books",
+      "expected_primary": {"checked": 17, "agree": 17, "disagree": 0, "tool_refused": 0}
+    },
+    {
+      "id": "fischer-hf-stability-controls",
+      "role": "source_checked_controls",
+      "labels": "tests/fischer_hf_stability_scan_labels.json",
+      "out_dir": "out/reviews/primary-error-corpus",
+      "expected_primary": {"checked": 21, "agree": 21, "disagree": 0, "tool_refused": 0}
+    },
+    {
+      "id": "ornl-degraded-output-primary-errors",
+      "role": "known_primary_errors",
+      "labels": "tests/ornl_natural_error_labels.json",
+      "out_dir": "out/natural-errors-scanned",
+      "expected_primary": {"checked": 8, "agree": 0, "disagree": 8, "tool_refused": 0}
+    },
+    {
+      "id": "ornl-degraded-output-controls",
+      "role": "source_checked_controls",
+      "labels": "tests/ornl_natural_control_labels.json",
+      "out_dir": "out/natural-errors-scanned",
+      "expected_primary": {"checked": 18, "agree": 18, "disagree": 0, "tool_refused": 0}
+    },
+    {
+      "id": "nasa-wates-primary-errors",
+      "role": "known_primary_errors",
+      "labels": "tests/nasa_wates_natural_error_labels.json",
+      "out_dir": "out/natural-errors-scanned",
+      "expected_primary": {"checked": 5, "agree": 0, "disagree": 5, "tool_refused": 0}
+    },
+    {
+      "id": "nasa-wates-controls",
+      "role": "source_checked_controls",
+      "labels": "tests/nasa_wates_natural_control_labels.json",
+      "out_dir": "out/natural-errors-scanned",
+      "expected_primary": {"checked": 20, "agree": 20, "disagree": 0, "tool_refused": 0}
+    },
+    {
+      "id": "nist-nitrogen-controls",
+      "role": "source_checked_controls",
+      "labels": "tests/nist_nitrogen_natural_control_labels.json",
+      "out_dir": "out/natural-errors-scanned",
+      "expected_primary": {"checked": 12, "agree": 12, "disagree": 0, "tool_refused": 0}
+    }
+  ]
+}

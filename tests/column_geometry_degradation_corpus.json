@@ -1,0 +1,2319 @@
+{
+  "schema_version": 1,
+  "purpose": "Frozen degradation gate for every header-lane and repeated-row column layout.",
+  "artifacts": {
+    "sources": {
+      "path": "tests/column_geometry_methods_sources.json",
+      "sha256": "f2ef5c44d66c58c59feb76867d31fcc2995b4b0bb7836fe5c9de7f5f2ec55924"
+    },
+    "report": {
+      "path": "out/reviews/column-geometry-degradation-v1/report.json",
+      "sha256": "eb61ba3e8d6c8ecfe33f38e123a6cfee7d89b036d215b881b592b75151d7dc5f"
+    }
+  },
+  "expected": {
+    "sources_sha256": "f2ef5c44d66c58c59feb76867d31fcc2995b4b0bb7836fe5c9de7f5f2ec55924",
+    "panels": 6,
+    "variants": 7,
+    "layout_cases": 42,
+    "rows_checked": 798,
+    "methods": {
+      "header_fixed": {
+        "agree": 791,
+        "disagree": 0,
+        "tool_refused": 7
+      },
+      "consensus": {
+        "agree": 655,
+        "disagree": 0,
+        "tool_refused": 143
+      },
+      "typed_consensus": {
+        "agree": 655,
+        "disagree": 0,
+        "tool_refused": 143
+      }
+    },
+    "by_variant": {
+      "clean": {
+        "header_fixed": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "consensus": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        }
+      },
+      "dpi_150": {
+        "header_fixed": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "consensus": {
+          "rows": 114,
+          "agree": 72,
+          "disagree": 0,
+          "tool_refused": 42
+        },
+        "typed_consensus": {
+          "rows": 114,
+          "agree": 72,
+          "disagree": 0,
+          "tool_refused": 42
+        }
+      },
+      "blur_1_2": {
+        "header_fixed": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "consensus": {
+          "rows": 114,
+          "agree": 72,
+          "disagree": 0,
+          "tool_refused": 42
+        },
+        "typed_consensus": {
+          "rows": 114,
+          "agree": 72,
+          "disagree": 0,
+          "tool_refused": 42
+        }
+      },
+      "contrast_65": {
+        "header_fixed": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "consensus": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        }
+      },
+      "jpeg_25": {
+        "header_fixed": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "consensus": {
+          "rows": 114,
+          "agree": 100,
+          "disagree": 0,
+          "tool_refused": 14
+        },
+        "typed_consensus": {
+          "rows": 114,
+          "agree": 100,
+          "disagree": 0,
+          "tool_refused": 14
+        }
+      },
+      "adaptive_binarization": {
+        "header_fixed": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "consensus": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "typed_consensus": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        }
+      },
+      "combined": {
+        "header_fixed": {
+          "rows": 114,
+          "agree": 113,
+          "disagree": 0,
+          "tool_refused": 1
+        },
+        "consensus": {
+          "rows": 114,
+          "agree": 72,
+          "disagree": 0,
+          "tool_refused": 42
+        },
+        "typed_consensus": {
+          "rows": 114,
+          "agree": 72,
+          "disagree": 0,
+          "tool_refused": 42
+        }
+      }
+    },
+    "by_panel": {
+      "grasp-nixiv-41": {
+        "header_fixed": {
+          "rows": 287,
+          "agree": 287,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 287,
+          "agree": 151,
+          "disagree": 0,
+          "tool_refused": 136
+        },
+        "typed_consensus": {
+          "rows": 287,
+          "agree": 151,
+          "disagree": 0,
+          "tool_refused": 136
+        }
+      },
+      "grasp-mgiii-26": {
+        "header_fixed": {
+          "rows": 182,
+          "agree": 182,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 182,
+          "agree": 182,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "typed_consensus": {
+          "rows": 182,
+          "agree": 182,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      },
+      "fischer-stability-table-ii": {
+        "header_fixed": {
+          "rows": 70,
+          "agree": 63,
+          "disagree": 0,
+          "tool_refused": 7
+        },
+        "consensus": {
+          "rows": 70,
+          "agree": 63,
+          "disagree": 0,
+          "tool_refused": 7
+        },
+        "typed_consensus": {
+          "rows": 70,
+          "agree": 63,
+          "disagree": 0,
+          "tool_refused": 7
+        }
+      },
+      "fischer-stability-table-iii": {
+        "header_fixed": {
+          "rows": 70,
+          "agree": 70,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 70,
+          "agree": 70,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "typed_consensus": {
+          "rows": 70,
+          "agree": 70,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      },
+      "slater-thomas-fermi-right": {
+        "header_fixed": {
+          "rows": 133,
+          "agree": 133,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 133,
+          "agree": 133,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "typed_consensus": {
+          "rows": 133,
+          "agree": 133,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      },
+      "grasp-scientific-p186": {
+        "header_fixed": {
+          "rows": 56,
+          "agree": 56,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "consensus": {
+          "rows": 56,
+          "agree": 56,
+          "disagree": 0,
+          "tool_refused": 0
+        },
+        "typed_consensus": {
+          "rows": 56,
+          "agree": 56,
+          "disagree": 0,
+          "tool_refused": 0
+        }
+      }
+    },
+    "cases": [
+      {
+        "panel": "grasp-nixiv-41",
+        "variant": "clean",
+        "rows": 41,
+        "methods": {
+          "header_fixed": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-nixiv-41-clean.png",
+        "image_sha256": "d504adcb9247cf947ee3c145457972ae8938432815a1babb374ca6ee276d43d7",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            185
+          ],
+          [
+            185,
+            283
+          ],
+          [
+            283,
+            350
+          ],
+          [
+            350,
+            697
+          ],
+          [
+            697,
+            980
+          ],
+          [
+            980,
+            1210
+          ],
+          [
+            1210,
+            2028
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-nixiv-41",
+        "variant": "dpi_150",
+        "rows": 41,
+        "methods": {
+          "header_fixed": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 0,
+            "disagree": 0,
+            "tool_refused": 41
+          },
+          "typed_consensus": {
+            "agree": 0,
+            "disagree": 0,
+            "tool_refused": 41
+          }
+        },
+        "image": "images/grasp-nixiv-41-dpi_150.png",
+        "image_sha256": "122f69e860dc9725441706e2d7fc704e150bef5274e369f3a01151688ec6bbb2",
+        "locator_refusal": "stable_separators_unavailable",
+        "lanes": null
+      },
+      {
+        "panel": "grasp-nixiv-41",
+        "variant": "blur_1_2",
+        "rows": 41,
+        "methods": {
+          "header_fixed": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 0,
+            "disagree": 0,
+            "tool_refused": 41
+          },
+          "typed_consensus": {
+            "agree": 0,
+            "disagree": 0,
+            "tool_refused": 41
+          }
+        },
+        "image": "images/grasp-nixiv-41-blur_1_2.png",
+        "image_sha256": "b850a388ad44fb5c3d8f2a7a150b2eeaa4bd0fd484f91acf20b87ba78c7a721d",
+        "locator_refusal": "stable_separators_unavailable",
+        "lanes": null
+      },
+      {
+        "panel": "grasp-nixiv-41",
+        "variant": "contrast_65",
+        "rows": 41,
+        "methods": {
+          "header_fixed": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-nixiv-41-contrast_65.png",
+        "image_sha256": "d7896a80eaffa03cc5933b9a3b790e84e8e4210e61805c7103a21bf1f5eb2126",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            185
+          ],
+          [
+            185,
+            283
+          ],
+          [
+            283,
+            350
+          ],
+          [
+            350,
+            697
+          ],
+          [
+            697,
+            980
+          ],
+          [
+            980,
+            1210
+          ],
+          [
+            1210,
+            2028
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-nixiv-41",
+        "variant": "jpeg_25",
+        "rows": 41,
+        "methods": {
+          "header_fixed": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 28,
+            "disagree": 0,
+            "tool_refused": 13
+          },
+          "typed_consensus": {
+            "agree": 28,
+            "disagree": 0,
+            "tool_refused": 13
+          }
+        },
+        "image": "images/grasp-nixiv-41-jpeg_25.png",
+        "image_sha256": "d7a67698f105049be97e8a16a4c7cf141c7c5a486dd0eaca74797f3a6b94731b",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            185
+          ],
+          [
+            185,
+            283
+          ],
+          [
+            283,
+            350
+          ],
+          [
+            350,
+            697
+          ],
+          [
+            697,
+            980
+          ],
+          [
+            980,
+            1209
+          ],
+          [
+            1209,
+            2028
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-nixiv-41",
+        "variant": "adaptive_binarization",
+        "rows": 41,
+        "methods": {
+          "header_fixed": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-nixiv-41-adaptive_binarization.png",
+        "image_sha256": "409089e30a6e3b9173da73232a91a23737aee4a4d374fba4b0ca4d7466ea9482",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            185
+          ],
+          [
+            185,
+            283
+          ],
+          [
+            283,
+            350
+          ],
+          [
+            350,
+            697
+          ],
+          [
+            697,
+            980
+          ],
+          [
+            980,
+            1210
+          ],
+          [
+            1210,
+            2028
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-nixiv-41",
+        "variant": "combined",
+        "rows": 41,
+        "methods": {
+          "header_fixed": {
+            "agree": 41,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 0,
+            "disagree": 0,
+            "tool_refused": 41
+          },
+          "typed_consensus": {
+            "agree": 0,
+            "disagree": 0,
+            "tool_refused": 41
+          }
+        },
+        "image": "images/grasp-nixiv-41-combined.png",
+        "image_sha256": "3163384399f38ac14781177b844bb51e4166802fff4cd00811087829f993f836",
+        "locator_refusal": "stable_separators_unavailable",
+        "lanes": null
+      },
+      {
+        "panel": "grasp-mgiii-26",
+        "variant": "clean",
+        "rows": 26,
+        "methods": {
+          "header_fixed": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-mgiii-26-clean.png",
+        "image_sha256": "84c32d9dca690d4c0ed2cad3470550f2854d3a32af3d9129d84cbc2956ff0a8f",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            196
+          ],
+          [
+            196,
+            272
+          ],
+          [
+            272,
+            348
+          ],
+          [
+            348,
+            741
+          ],
+          [
+            741,
+            1078
+          ],
+          [
+            1078,
+            1340
+          ],
+          [
+            1340,
+            2020
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-mgiii-26",
+        "variant": "dpi_150",
+        "rows": 26,
+        "methods": {
+          "header_fixed": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-mgiii-26-dpi_150.png",
+        "image_sha256": "9d68064cc73721618d6a99a00e83f7683e2b6faf2dea639a33f8be973afac7b2",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            196
+          ],
+          [
+            196,
+            272
+          ],
+          [
+            272,
+            348
+          ],
+          [
+            348,
+            740
+          ],
+          [
+            740,
+            1078
+          ],
+          [
+            1078,
+            1340
+          ],
+          [
+            1340,
+            2020
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-mgiii-26",
+        "variant": "blur_1_2",
+        "rows": 26,
+        "methods": {
+          "header_fixed": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-mgiii-26-blur_1_2.png",
+        "image_sha256": "f356fc259ddb50679a95e9d4eccdb9e3f52aaa013c2c0bc25c8edcb56170f7e0",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            196
+          ],
+          [
+            196,
+            272
+          ],
+          [
+            272,
+            348
+          ],
+          [
+            348,
+            740
+          ],
+          [
+            740,
+            1078
+          ],
+          [
+            1078,
+            1340
+          ],
+          [
+            1340,
+            2020
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-mgiii-26",
+        "variant": "contrast_65",
+        "rows": 26,
+        "methods": {
+          "header_fixed": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-mgiii-26-contrast_65.png",
+        "image_sha256": "78c3ff623b34fb6c3df18f362df6098565b489bac83e732b89f63470b0ba01c1",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            196
+          ],
+          [
+            196,
+            272
+          ],
+          [
+            272,
+            348
+          ],
+          [
+            348,
+            741
+          ],
+          [
+            741,
+            1078
+          ],
+          [
+            1078,
+            1340
+          ],
+          [
+            1340,
+            2020
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-mgiii-26",
+        "variant": "jpeg_25",
+        "rows": 26,
+        "methods": {
+          "header_fixed": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-mgiii-26-jpeg_25.png",
+        "image_sha256": "491385a64a884e4e7d64ebaff020d5cb76701a123c4a6d147f15f01160a7f0a5",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            196
+          ],
+          [
+            196,
+            272
+          ],
+          [
+            272,
+            348
+          ],
+          [
+            348,
+            740
+          ],
+          [
+            740,
+            1078
+          ],
+          [
+            1078,
+            1340
+          ],
+          [
+            1340,
+            2020
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-mgiii-26",
+        "variant": "adaptive_binarization",
+        "rows": 26,
+        "methods": {
+          "header_fixed": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-mgiii-26-adaptive_binarization.png",
+        "image_sha256": "f0ce14e604ac402d2432af21ed49fcd4111ba7031fc3b0e997d13216663119b0",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            196
+          ],
+          [
+            196,
+            272
+          ],
+          [
+            272,
+            348
+          ],
+          [
+            348,
+            741
+          ],
+          [
+            741,
+            1078
+          ],
+          [
+            1078,
+            1340
+          ],
+          [
+            1340,
+            2020
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-mgiii-26",
+        "variant": "combined",
+        "rows": 26,
+        "methods": {
+          "header_fixed": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 26,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-mgiii-26-combined.png",
+        "image_sha256": "51e5ef8c7b84ea5ac66c15f5b16572c367d1702d063ff6ab2de16e5ccc723645",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            120
+          ],
+          [
+            120,
+            196
+          ],
+          [
+            196,
+            272
+          ],
+          [
+            272,
+            348
+          ],
+          [
+            348,
+            740
+          ],
+          [
+            740,
+            1078
+          ],
+          [
+            1078,
+            1340
+          ],
+          [
+            1340,
+            2020
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-ii",
+        "variant": "clean",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          }
+        },
+        "image": "images/fischer-stability-table-ii-clean.png",
+        "image_sha256": "46ed6159856312d57ab4d09dc28892c880e2ce861a0b087d356103000a77ff95",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            278
+          ],
+          [
+            278,
+            575
+          ],
+          [
+            575,
+            868
+          ],
+          [
+            868,
+            1178
+          ],
+          [
+            1178,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-ii",
+        "variant": "dpi_150",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          }
+        },
+        "image": "images/fischer-stability-table-ii-dpi_150.png",
+        "image_sha256": "651bc8b8969afc12ce083173a1fde16fbd4c3af6708295e75689f89f6191511f",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            278
+          ],
+          [
+            278,
+            575
+          ],
+          [
+            575,
+            868
+          ],
+          [
+            868,
+            1178
+          ],
+          [
+            1178,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-ii",
+        "variant": "blur_1_2",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          }
+        },
+        "image": "images/fischer-stability-table-ii-blur_1_2.png",
+        "image_sha256": "764baa09ac2cd0c56956302c934c58657ef65537212d154680a8315abb41dbf5",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            278
+          ],
+          [
+            278,
+            575
+          ],
+          [
+            575,
+            868
+          ],
+          [
+            868,
+            1178
+          ],
+          [
+            1178,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-ii",
+        "variant": "contrast_65",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          }
+        },
+        "image": "images/fischer-stability-table-ii-contrast_65.png",
+        "image_sha256": "d03f093f3d011d31e2fd68f839ada208bbb762e194d0f1cc7ab594078100ed0c",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            278
+          ],
+          [
+            278,
+            575
+          ],
+          [
+            575,
+            868
+          ],
+          [
+            868,
+            1178
+          ],
+          [
+            1178,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-ii",
+        "variant": "jpeg_25",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          }
+        },
+        "image": "images/fischer-stability-table-ii-jpeg_25.png",
+        "image_sha256": "3a2f3fd446dd477e2cd4add45c68f925baab09171111e253cee1c21aa7c65699",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            278
+          ],
+          [
+            278,
+            575
+          ],
+          [
+            575,
+            868
+          ],
+          [
+            868,
+            1178
+          ],
+          [
+            1178,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-ii",
+        "variant": "adaptive_binarization",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          }
+        },
+        "image": "images/fischer-stability-table-ii-adaptive_binarization.png",
+        "image_sha256": "b9473e05030590610645c6ce18ce70209683dff69c4e46880f443b852d2b738b",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            278
+          ],
+          [
+            278,
+            575
+          ],
+          [
+            575,
+            868
+          ],
+          [
+            868,
+            1178
+          ],
+          [
+            1178,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-ii",
+        "variant": "combined",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          },
+          "typed_consensus": {
+            "agree": 9,
+            "disagree": 0,
+            "tool_refused": 1
+          }
+        },
+        "image": "images/fischer-stability-table-ii-combined.png",
+        "image_sha256": "296cdd77453bb8d197bf6f3e862f9c396dd1632151439c17d70ede9591db8c41",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            278
+          ],
+          [
+            278,
+            575
+          ],
+          [
+            575,
+            868
+          ],
+          [
+            868,
+            1178
+          ],
+          [
+            1178,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-iii",
+        "variant": "clean",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-stability-table-iii-clean.png",
+        "image_sha256": "a09ba541a8811d2dede27cd7b9542c1a1398d41aa23622fd15ec9f11e48b7360",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            335
+          ],
+          [
+            335,
+            762
+          ],
+          [
+            762,
+            1161
+          ],
+          [
+            1161,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-iii",
+        "variant": "dpi_150",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-stability-table-iii-dpi_150.png",
+        "image_sha256": "66b7f473570397c98dbc4543d456f8be8f6b64d3eae8c20dda5f79cc6d6c0a5f",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            335
+          ],
+          [
+            335,
+            762
+          ],
+          [
+            762,
+            1161
+          ],
+          [
+            1161,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-iii",
+        "variant": "blur_1_2",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-stability-table-iii-blur_1_2.png",
+        "image_sha256": "c85853eb75b50fd19d12e48ab22c2c4190a8b936e0b9979fd660ee1fc1eb2535",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            335
+          ],
+          [
+            335,
+            762
+          ],
+          [
+            762,
+            1161
+          ],
+          [
+            1161,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-iii",
+        "variant": "contrast_65",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-stability-table-iii-contrast_65.png",
+        "image_sha256": "0319c37d3fb0d9a7a38c5211abefb1911e697f922056a21232761199b0e33904",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            335
+          ],
+          [
+            335,
+            762
+          ],
+          [
+            762,
+            1161
+          ],
+          [
+            1161,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-iii",
+        "variant": "jpeg_25",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-stability-table-iii-jpeg_25.png",
+        "image_sha256": "53ee4e0f05ce55e87f1e3ee4b2e664e0a575a72bd12cb7605e281c9c9b276aca",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            335
+          ],
+          [
+            335,
+            762
+          ],
+          [
+            762,
+            1161
+          ],
+          [
+            1161,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-iii",
+        "variant": "adaptive_binarization",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-stability-table-iii-adaptive_binarization.png",
+        "image_sha256": "2396066d13ef9d0db14c05d5d58022ffcc8763c6f4167537fa094c1bc59e32da",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            335
+          ],
+          [
+            335,
+            762
+          ],
+          [
+            762,
+            1161
+          ],
+          [
+            1161,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "fischer-stability-table-iii",
+        "variant": "combined",
+        "rows": 10,
+        "methods": {
+          "header_fixed": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 10,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/fischer-stability-table-iii-combined.png",
+        "image_sha256": "cb99ed4f1850ad7d1533d1b2b750006c618208f03e70709ab8d1a129ad111932",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            335
+          ],
+          [
+            335,
+            762
+          ],
+          [
+            762,
+            1160
+          ],
+          [
+            1160,
+            1505
+          ]
+        ]
+      },
+      {
+        "panel": "slater-thomas-fermi-right",
+        "variant": "clean",
+        "rows": 19,
+        "methods": {
+          "header_fixed": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/slater-thomas-fermi-right-clean.png",
+        "image_sha256": "9bf08ce462e48516014a3de7a3c3669643815b12bcb9f9a5ad899e3f7ce60560",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            440,
+            554
+          ],
+          [
+            554,
+            741
+          ]
+        ]
+      },
+      {
+        "panel": "slater-thomas-fermi-right",
+        "variant": "dpi_150",
+        "rows": 19,
+        "methods": {
+          "header_fixed": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/slater-thomas-fermi-right-dpi_150.png",
+        "image_sha256": "8ab6b747bc7364f5eefa447e445cdd753a01d0e0cfecf08faf63d38cbaff2595",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            440,
+            554
+          ],
+          [
+            554,
+            741
+          ]
+        ]
+      },
+      {
+        "panel": "slater-thomas-fermi-right",
+        "variant": "blur_1_2",
+        "rows": 19,
+        "methods": {
+          "header_fixed": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/slater-thomas-fermi-right-blur_1_2.png",
+        "image_sha256": "2954ef8c43e1ebe42a315c7003155e1f058aedbf5b72a300679fb7421d3afbcd",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            440,
+            554
+          ],
+          [
+            554,
+            741
+          ]
+        ]
+      },
+      {
+        "panel": "slater-thomas-fermi-right",
+        "variant": "contrast_65",
+        "rows": 19,
+        "methods": {
+          "header_fixed": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/slater-thomas-fermi-right-contrast_65.png",
+        "image_sha256": "5a963e5bc18af09d37fc984df9d37f540d726e2cd51b3aedc03447b9d91edc4b",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            440,
+            554
+          ],
+          [
+            554,
+            741
+          ]
+        ]
+      },
+      {
+        "panel": "slater-thomas-fermi-right",
+        "variant": "jpeg_25",
+        "rows": 19,
+        "methods": {
+          "header_fixed": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/slater-thomas-fermi-right-jpeg_25.png",
+        "image_sha256": "3b2ab0cea0be5663a0af0df985a92404d0ce4d9b2a464dde3df2d77861079f57",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            440,
+            554
+          ],
+          [
+            554,
+            741
+          ]
+        ]
+      },
+      {
+        "panel": "slater-thomas-fermi-right",
+        "variant": "adaptive_binarization",
+        "rows": 19,
+        "methods": {
+          "header_fixed": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/slater-thomas-fermi-right-adaptive_binarization.png",
+        "image_sha256": "116e89c2d9c0fecf845170210f1589a37247fcbd3a1a4396e3411b17e23b4e7d",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            440,
+            554
+          ],
+          [
+            554,
+            741
+          ]
+        ]
+      },
+      {
+        "panel": "slater-thomas-fermi-right",
+        "variant": "combined",
+        "rows": 19,
+        "methods": {
+          "header_fixed": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 19,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/slater-thomas-fermi-right-combined.png",
+        "image_sha256": "851f7e69fc660c9d4de1152f5c10579cb370d88256460f95c951d93f5ea5a5e6",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            440,
+            554
+          ],
+          [
+            554,
+            741
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-scientific-p186",
+        "variant": "clean",
+        "rows": 8,
+        "methods": {
+          "header_fixed": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-scientific-p186-clean.png",
+        "image_sha256": "8d4aa7c193ef57edcf6e41bb7dd575bb624fbbf31c149304dda4710758b6d5b9",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            252
+          ],
+          [
+            252,
+            494
+          ],
+          [
+            494,
+            686
+          ],
+          [
+            686,
+            914
+          ],
+          [
+            914,
+            1099
+          ],
+          [
+            1099,
+            1345
+          ],
+          [
+            1345,
+            1573
+          ],
+          [
+            1573,
+            1744
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-scientific-p186",
+        "variant": "dpi_150",
+        "rows": 8,
+        "methods": {
+          "header_fixed": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-scientific-p186-dpi_150.png",
+        "image_sha256": "45f0bb101043173da42bce4cb4038441b930df5607e670a39573acfa0ec3dbd2",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            252
+          ],
+          [
+            252,
+            494
+          ],
+          [
+            494,
+            686
+          ],
+          [
+            686,
+            914
+          ],
+          [
+            914,
+            1099
+          ],
+          [
+            1099,
+            1345
+          ],
+          [
+            1345,
+            1573
+          ],
+          [
+            1573,
+            1744
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-scientific-p186",
+        "variant": "blur_1_2",
+        "rows": 8,
+        "methods": {
+          "header_fixed": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-scientific-p186-blur_1_2.png",
+        "image_sha256": "2670b421fc7fff2694dd99a6ac8307eae5b35fee93bbf9f2ab67277f12a63a14",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            252
+          ],
+          [
+            252,
+            494
+          ],
+          [
+            494,
+            686
+          ],
+          [
+            686,
+            914
+          ],
+          [
+            914,
+            1099
+          ],
+          [
+            1099,
+            1345
+          ],
+          [
+            1345,
+            1573
+          ],
+          [
+            1573,
+            1744
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-scientific-p186",
+        "variant": "contrast_65",
+        "rows": 8,
+        "methods": {
+          "header_fixed": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-scientific-p186-contrast_65.png",
+        "image_sha256": "8a8ef708786a082b442d3763d99ed58e9605708f9ffbc418139256b4bc93555a",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            252
+          ],
+          [
+            252,
+            494
+          ],
+          [
+            494,
+            686
+          ],
+          [
+            686,
+            914
+          ],
+          [
+            914,
+            1099
+          ],
+          [
+            1099,
+            1345
+          ],
+          [
+            1345,
+            1573
+          ],
+          [
+            1573,
+            1744
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-scientific-p186",
+        "variant": "jpeg_25",
+        "rows": 8,
+        "methods": {
+          "header_fixed": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-scientific-p186-jpeg_25.png",
+        "image_sha256": "8e8449f7b661f370fd63f6beea6472f391bf16695987d087e5f9894bf797ccd6",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            252
+          ],
+          [
+            252,
+            494
+          ],
+          [
+            494,
+            686
+          ],
+          [
+            686,
+            914
+          ],
+          [
+            914,
+            1099
+          ],
+          [
+            1099,
+            1345
+          ],
+          [
+            1345,
+            1573
+          ],
+          [
+            1573,
+            1744
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-scientific-p186",
+        "variant": "adaptive_binarization",
+        "rows": 8,
+        "methods": {
+          "header_fixed": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-scientific-p186-adaptive_binarization.png",
+        "image_sha256": "cc7b525d47d50296aef495316aa38e8b73e4563256859febe36152b08cad4574",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            252
+          ],
+          [
+            252,
+            494
+          ],
+          [
+            494,
+            686
+          ],
+          [
+            686,
+            914
+          ],
+          [
+            914,
+            1099
+          ],
+          [
+            1099,
+            1345
+          ],
+          [
+            1345,
+            1573
+          ],
+          [
+            1573,
+            1744
+          ]
+        ]
+      },
+      {
+        "panel": "grasp-scientific-p186",
+        "variant": "combined",
+        "rows": 8,
+        "methods": {
+          "header_fixed": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          },
+          "typed_consensus": {
+            "agree": 8,
+            "disagree": 0,
+            "tool_refused": 0
+          }
+        },
+        "image": "images/grasp-scientific-p186-combined.png",
+        "image_sha256": "0b9586f8e1d9e068a2d0c630cc1f2402266e0c83d79e3614c3fa70c34acf1734",
+        "locator_refusal": null,
+        "lanes": [
+          [
+            0,
+            252
+          ],
+          [
+            252,
+            495
+          ],
+          [
+            495,
+            685
+          ],
+          [
+            685,
+            915
+          ],
+          [
+            915,
+            1099
+          ],
+          [
+            1099,
+            1345
+          ],
+          [
+            1345,
+            1573
+          ],
+          [
+            1573,
+            1744
+          ]
+        ]
+      }
+    ]
+  }
+}

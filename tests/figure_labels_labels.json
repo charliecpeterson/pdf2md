@@ -1,0 +1,20 @@
+[
+  {
+    "source": "GRASP2018-manual.pdf",
+    "block_id": "#/pictures/0",
+    "note": "p27 program-call flowchart",
+    "text": "Sequence of program calls to compute expectation values\nrnucleus Generation of nuclear data\nrcsfgenerate Generation of list of CSFs based on rules for excitations\nrcsfinteract Reduction of a list to CSFs interacting with the multireference\nrangular Angular integration\nrwfnestimate Initial estimates of radial orbitals\nrmcdhf Self-consistent field procedure\nrci Relativistic RCI with optional transverse photon (Breit) interaction and vacuum polarization and self-energy (QED) corrections\njj2lsj Transform representation from jj- to LSJ-coupling\nrbiotransform Biorthonormal transf.\nrhfs, rsms Eval. of expect. values\nrtransition Eval. of expect. values"
+  },
+  {
+    "source": "GRASP2018-manual.pdf",
+    "block_id": "#/pictures/4",
+    "note": "p261 E(cm-1) vs Z plot",
+    "text": "E in cm-1 as a function of Z\nE (cm-1)\nZ\n25 30 35 40 45 50 55 60\n0 1e+06 2e+06 3e+06 4e+06 5e+06"
+  },
+  {
+    "source": "image.pdf",
+    "block_id": "#/pictures/0",
+    "note": "u-velocity profiles (rotated)",
+    "text": "a\nu g.c.\nPROFILES THROUGH GEOMETRIC CENTER\nu v.c\nPROFILES THROUGH PRIMARY-VORTEX CENTER (p.v.c)\n(Locations of p.v.c. Listed in Table 5)\ny\na b c d e f g\n1.0 0.8 0.6 0.4 0.2 0.0 -0.2 -0.4 -0.6"
+  }
+]

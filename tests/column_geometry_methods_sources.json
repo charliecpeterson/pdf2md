@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "purpose": "Header-lane, repeated-row separator, lane-typing, and PDF-glyph geometry comparison without recognized data values.",
+  "artifacts": {
+    "alignment_report": {"path": "out/reviews/source-row-alignment-heldout-v1/report.json", "sha256": "309ef4a355b87ed2d5f2e8561d705f9758a6f367d169332f96845354406225c2"},
+    "alignment_corpus": {"path": "tests/source_row_alignment_corpus.json", "sha256": "9d6e1fcecaf9bb9561e443e86dae588823b73ca2ecb62936992914c17186d7e6"},
+    "heldout_manifest": {"path": "out/reviews/heldout-data-reader-v1/manifest.json", "sha256": "fbe58f350fe68f77a4418bcbf52634d7c74077f9f8621666cf4c6aca3137df8c"},
+    "heldout_corpus": {"path": "tests/heldout_data_reader_corpus.json", "sha256": "ec814bd2546121b1a3349f22d72bc803596ed480ea3d41a9d3094fdc3b28db88"},
+    "grasp_source": {"path": "GRASP2018-manual.pdf", "sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687"},
+    "fischer_source": {"path": "1-s2.0-0021999172900617-main.pdf", "sha256": "0a112f04176e228beaa434ceb9672ac75d8af1eb867921db1f617ca0709111e1"},
+    "slater_source": {"path": "slater-quantum_theory_of_atomic_structure-vol1.pdf", "sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6"}
+  },
+  "panels": [
+    {
+      "id": "grasp-nixiv-41",
+      "source_artifact": "grasp_source",
+      "page": 155,
+      "pdf_bbox": [88.0, 87.0, 563.0, 625.0],
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/grasp-nixiv-41.png",
+      "source_crop_sha256": "67e95f38e22a1dda08de6795b9c824b3c2ffeb7e3bd8650c544d76f4e3efb70f",
+      "panel_bound": [0, 2028],
+      "reference_lanes": [[0, 120], [120, 185], [185, 283], [283, 340], [340, 690], [690, 970], [970, 1220], [1220, 2028]],
+      "column_types": ["numeric", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "text"],
+      "column_offset": 0,
+      "row_bands": "alignment_report"
+    },
+    {
+      "id": "grasp-mgiii-26",
+      "source_artifact": "grasp_source",
+      "page": 130,
+      "pdf_bbox": [88.0, 69.0, 561.0, 431.0],
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/grasp-mgiii-26.png",
+      "source_crop_sha256": "93799763cad18956ba0c3a308d82cd7f93447d3a286feb3252b18406f0d92fb7",
+      "panel_bound": [0, 2020],
+      "reference_lanes": [[0, 120], [120, 196], [196, 272], [272, 340], [340, 690], [690, 1060], [1060, 1340], [1340, 2020]],
+      "column_types": ["numeric", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "text"],
+      "column_offset": 0,
+      "row_bands": "alignment_report"
+    },
+    {
+      "id": "fischer-stability-table-ii",
+      "source_artifact": "fischer_source",
+      "page": 11,
+      "pdf_bbox": [41.0, 359.0, 390.0, 531.0],
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/fischer-stability-table-ii.png",
+      "source_crop_sha256": "338e80d5fc8fc3de622c98a9fb2f8d6de8aa0fecb11f9db7f36cc67309b73415",
+      "panel_bound": [0, 1505],
+      "reference_lanes": [[0, 300], [300, 560], [560, 850], [850, 1150], [1150, 1505]],
+      "column_types": ["numeric", "numeric", "numeric", "numeric", "numeric"],
+      "column_offset": 0,
+      "row_bands": "alignment_report"
+    },
+    {
+      "id": "fischer-stability-table-iii",
+      "source_artifact": "fischer_source",
+      "page": 11,
+      "pdf_bbox": [42.0, 94.0, 391.0, 264.0],
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/fischer-stability-table-iii.png",
+      "source_crop_sha256": "7929d684ecce83031ec3024ba572758fb97e0d7bbc4baee03de450cd63bd203f",
+      "panel_bound": [0, 1505],
+      "reference_lanes": [[0, 300], [300, 750], [750, 1130], [1130, 1505]],
+      "column_types": ["numeric", "numeric", "numeric", "numeric"],
+      "column_offset": 0,
+      "row_bands": "alignment_report"
+    },
+    {
+      "id": "slater-thomas-fermi-right",
+      "source_artifact": "slater_source",
+      "page": 491,
+      "pdf_bbox": null,
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/slater-thomas-fermi-right.png",
+      "source_crop_sha256": "235a952572e5a27c421b76ab52ffb318b61204613eb564f2571de02fe9f94631",
+      "panel_bound": [440, 741],
+      "reference_lanes": [[440, 565], [565, 741]],
+      "column_types": ["numeric", "numeric"],
+      "column_offset": 2,
+      "row_bands": "alignment_report"
+    },
+    {
+      "id": "grasp-scientific-p186",
+      "source_artifact": "grasp_source",
+      "page": 186,
+      "pdf_bbox": [97.0, 57.0, 504.0, 168.0],
+      "source_crop": "out/reviews/heldout-data-reader-v1/source-crops/grasp-scientific-p186.png",
+      "source_crop_sha256": "c5e17699f108afb7bd743e2b63a440271c86b66dd99a002a97da7dc0418d3c5f",
+      "panel_bound": [0, 1744],
+      "reference_lanes": [[0, 260], [260, 550], [550, 670], [670, 900], [900, 1080], [1080, 1340], [1340, 1570], [1570, 1744]],
+      "column_types": ["text", "text", "text", "numeric", "numeric", "numeric", "numeric", "numeric"],
+      "column_offset": 0,
+      "row_bands": [[95, 135], [140, 185], [190, 231], [241, 285], [290, 335], [340, 385], [389, 430], [440, 485]]
+    }
+  ]
+}

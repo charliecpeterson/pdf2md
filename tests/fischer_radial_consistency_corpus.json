@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "purpose": "Frozen cross-table normalization and radial-moment check of Fischer Tables I and II.",
+  "artifacts": {
+    "source": {
+      "path": "1-s2.0-S0092640X72800081-main.pdf",
+      "sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47"
+    },
+    "cases": {
+      "path": "tests/atsp_fischer_reference_cases.json",
+      "sha256": "c39a6936f3bdf1feb45f39367b237d2f40c13bf1e01104e0d1f70d281ea26ad3"
+    },
+    "conversion_provenance": {
+      "path": "out/0685e8d85e2237d8/v6/provenance.json",
+      "sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea"
+    },
+    "report": {
+      "path": "out/reviews/fischer-radial-consistency-v2.json",
+      "sha256": "d8544122f6bd89c58003755a4e3c215679a3625cc20f89eed6748a03691041cc"
+    }
+  },
+  "expected": {
+    "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+    "cases_sha256": "c39a6936f3bdf1feb45f39367b237d2f40c13bf1e01104e0d1f70d281ea26ad3",
+    "orbitals": 23,
+    "outcomes": {
+      "scientifically_consistent": 17,
+      "disagree": 0,
+      "tool_refused": 6
+    },
+    "by_atom": {
+      "2": {"scientifically_consistent": 1},
+      "3": {"scientifically_consistent": 2},
+      "4": {"scientifically_consistent": 2},
+      "5": {"scientifically_consistent": 3},
+      "6": {"scientifically_consistent": 3},
+      "7": {"scientifically_consistent": 3},
+      "8": {"scientifically_consistent": 3},
+      "9": {"tool_refused": 3},
+      "10": {"tool_refused": 3}
+    },
+    "maximum_supported_norm_error": 0.011183802678499832,
+    "maximum_supported_moment_relative_delta": 0.05438450918877095
+  }
+}

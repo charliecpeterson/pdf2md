@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "engines": {
+    "mineru": {
+      "dependencies": {
+        "mineru": "3.4.4",
+        "mineru-vl-utils": "1.0.5",
+        "torch": "2.13.0",
+        "transformers": "4.57.6",
+        "onnxruntime": "1.28.0",
+        "pypdfium2": "5.10.1"
+      },
+      "model_snapshots": {
+        "pipeline": "opendatalab/PDF-Extract-Kit-1.0@ed6b654c018d742e65a17671e379c5e6ecc87ec9",
+        "vlm": "opendatalab/MinerU2.5-Pro-2605-1.2B@bff20d4ae2bf202df9f45284b4d43681555a97ed"
+      },
+      "configuration_evidence": {
+        "path": "~/mineru.json",
+        "sha256": "aeb9e4aea8be936972353b3bf42c812a5067dcb3afc4daef11a90b2dad70de82",
+        "modified_at": "2026-06-19T23:50:59-07:00",
+        "note": "The configuration predates the 2026-08-11 bake-off runs and names both immutable snapshot directories. The environment distributions were installed at 2026-08-11T21:51:17-07:00, before those runs."
+      }
+    }
+  }
+}

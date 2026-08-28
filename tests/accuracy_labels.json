@@ -1,0 +1,26 @@
+[
+  {
+    "source": "1706.03762v7.pdf",
+    "source_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+    "archetype": "born-digital paper",
+    "must_contain": ["Attention Is All You Need", "Scaled Dot-Product Attention", "Multi-Head Attention"],
+    "min_encoding_legibility": 0.99,
+    "confidence": "high"
+  },
+  {
+    "source": "GRASP2018-manual.pdf",
+    "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+    "archetype": "broken-font book",
+    "must_contain": ["A practical guide", "General Relativistic Atomic Structure", "Chapter 1"],
+    "must_not_contain": ["/a114", "/a116"],
+    "min_encoding_legibility": 0.95,
+    "confidence": "high"
+  },
+  {
+    "source": "slater-50page.pdf",
+    "source_sha256": "1694f97480e14a318ca88fa3350634d797cb9248b9bc367582a6d03ca9a2c5bd",
+    "archetype": "scan (OCR)",
+    "confidence": "medium",
+    "min_ocr_pages": 1
+  }
+]

@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "purpose": "Clean adversarial and control disagreements for continuity, decimal-format, numeric-type, placeholder, and numeric-identifier decisions.",
+  "cases": [
+    {
+      "id": "legitimate_discontinuity",
+      "class": "legitimate_discontinuity",
+      "rows": [["x", "value"], ["0", "1.00"], ["1", "100.00"], ["2", "3.00"]],
+      "row": 2,
+      "column": 1,
+      "primary": "100.00",
+      "reader": "2.00",
+      "expected": "100.00",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "shell_boundary",
+      "class": "shell_boundary",
+      "rows": [["n", "energy"], ["1", "-10.0"], ["2", "-100.0"], ["3", "-9.0"]],
+      "row": 2,
+      "column": 1,
+      "primary": "-100.0",
+      "reader": "-9.5",
+      "expected": "-100.0",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "phase_boundary",
+      "class": "phase_boundary",
+      "rows": [["pressure", "order"], ["0.9", "0.020"], ["1.0", "1.000"], ["1.1", "0.030"]],
+      "row": 2,
+      "column": 1,
+      "primary": "1.000",
+      "reader": "0.025",
+      "expected": "1.000",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "alternating_sign",
+      "class": "alternating_sign",
+      "rows": [["index", "coefficient"], ["1", "1.000"], ["2", "-1.000"], ["3", "1.000"]],
+      "row": 2,
+      "column": 1,
+      "primary": "-1.000",
+      "reader": "1.000",
+      "expected": "-1.000",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "exponent_change",
+      "class": "exponent_change",
+      "rows": [["step", "rate"], ["0", "1.0E-3"], ["1", "1.0E+3"], ["2", "2.0E-3"]],
+      "row": 2,
+      "column": 1,
+      "primary": "1.0E+3",
+      "reader": "1.5E-3",
+      "expected": "1.0E+3",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "exact_zero_at_node",
+      "class": "exact_zero_beside_nonzero",
+      "rows": [["x", "amplitude"], ["-1", "1.000"], ["0", "0.000"], ["1", "1.000"]],
+      "row": 2,
+      "column": 1,
+      "primary": "0.000",
+      "reader": "1.000",
+      "expected": "0.000",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "intentional_mixed_precision",
+      "class": "intentional_mixed_precision",
+      "rows": [["id", "value"], ["1", "1.2345"], ["2", "2.00"], ["3", "3.00"], ["4", "4.00"], ["5", "5.00"], ["6", "6.00"], ["7", "7.00"], ["8", "8.00"], ["9", "9.00"], ["10", "10.00"]],
+      "row": 1,
+      "column": 1,
+      "primary": "1.2345",
+      "reader": "1.23",
+      "expected": "1.2345",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "high_precision_total",
+      "class": "differently_formatted_total",
+      "rows": [["id", "value"], ["1", "1.00"], ["2", "2.00"], ["3", "3.00"], ["4", "4.00"], ["5", "5.00"], ["6", "6.00"], ["7", "7.00"], ["8", "8.00"], ["9", "9.00"], ["TOTAL", "45.1234"]],
+      "row": 10,
+      "column": 1,
+      "primary": "45.1234",
+      "reader": "45.12",
+      "expected": "45.1234",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "numeric_identifier_leading_zero",
+      "class": "numeric_looking_identifier",
+      "rows": [["sample", "value"], ["0009", "1.0"], ["0010", "2.0"], ["0011", "3.0"]],
+      "row": 2,
+      "column": 0,
+      "primary": "0010",
+      "reader": "10",
+      "expected": "0010",
+      "expected_kind": "identifier"
+    },
+    {
+      "id": "numeric_identifier_letter_substitution",
+      "class": "numeric_looking_identifier",
+      "rows": [["sample", "value"], ["0009", "1.0"], ["0010", "2.0"], ["0011", "3.0"]],
+      "row": 2,
+      "column": 0,
+      "primary": "0010",
+      "reader": "001O",
+      "expected": "0010",
+      "expected_kind": "identifier"
+    },
+    {
+      "id": "zero_beside_placeholder",
+      "class": "zero_and_placeholder",
+      "rows": [["id", "value"], ["1", "0.00"], ["2", "."], ["3", "0.00"]],
+      "row": 1,
+      "column": 1,
+      "primary": "0.00",
+      "reader": ".",
+      "expected": "0.00",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "placeholder_beside_zero",
+      "class": "zero_and_placeholder",
+      "rows": [["id", "value"], ["1", "0.00"], ["2", "."], ["3", "0.00"]],
+      "row": 2,
+      "column": 1,
+      "primary": ".",
+      "reader": "0.00",
+      "expected": ".",
+      "expected_kind": "placeholder"
+    },
+    {
+      "id": "leading_digit_ocr_error",
+      "class": "smooth_decimal_ocr_error",
+      "rows": [["x", "value"], ["0", "0.0006"], ["1", "9.0007"], ["2", "0.0008"]],
+      "row": 2,
+      "column": 1,
+      "primary": "9.0007",
+      "reader": "0.0007",
+      "expected": "0.0007",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "lost_sign_ocr_error",
+      "class": "smooth_sign_ocr_error",
+      "rows": [["x", "value"], ["0", "-4.0"], ["1", "5.0"], ["2", "-6.0"]],
+      "row": 2,
+      "column": 1,
+      "primary": "5.0",
+      "reader": "-5.0",
+      "expected": "-5.0",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "decimal_point_ocr_error",
+      "class": "smooth_decimal_ocr_error",
+      "rows": [["x", "value"], ["0", "12.00"], ["1", "1234"], ["2", "12.68"]],
+      "row": 2,
+      "column": 1,
+      "primary": "1234",
+      "reader": "12.34",
+      "expected": "12.34",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "reader_nonnumeric_control",
+      "class": "numeric_type_control",
+      "rows": [["x", "value"], ["0", "1.0"], ["1", "2.0"], ["2", "3.0"]],
+      "row": 2,
+      "column": 1,
+      "primary": "2.0",
+      "reader": "two",
+      "expected": "2.0",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "decimal_format_ocr_error",
+      "class": "decimal_format_control",
+      "rows": [["id", "value"], ["1", "1.2345"], ["2", "2.00"], ["3", "3.00"], ["4", "4.00"], ["5", "5.00"], ["6", "6.00"], ["7", "7.00"], ["8", "8.00"], ["9", "9.00"], ["10", "10.00"]],
+      "row": 1,
+      "column": 1,
+      "primary": "1.2345",
+      "reader": "1.23",
+      "expected": "1.23",
+      "expected_kind": "numeric"
+    },
+    {
+      "id": "primary_decimal_format_control",
+      "class": "decimal_format_control",
+      "rows": [["id", "value"], ["1", "1.2345"], ["2", "2.0000"], ["3", "3.0000"], ["4", "4.0000"], ["5", "5.0000"], ["6", "6.0000"], ["7", "7.0000"], ["8", "8.0000"], ["9", "9.0000"], ["10", "10.0000"]],
+      "row": 1,
+      "column": 1,
+      "primary": "1.2345",
+      "reader": "1.23",
+      "expected": "1.2345",
+      "expected_kind": "numeric"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "purpose": "Measure MinerU runtime variance after pinning the source, image, embedded model snapshot, preprocessing path, sampling settings, and environment.",
+  "environment": {
+    "host": "charliebox",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+    "container_image_id": "sha256:b1ddeb898393a2cdfeebced56e62ba7bc77364d235eb577fd955bf62d8b9e33d",
+    "model_snapshot": "opendatalab/MinerU2.5-Pro-2605-1.2B@bff20d4ae2bf202df9f45284b4d43681555a97ed",
+    "mineru": "3.4.4",
+    "vllm": "0.21.0",
+    "torch": "2.11.0+cu130",
+    "transformers": "4.57.6",
+    "pillow": "12.2.0",
+    "image_processor": "Qwen2VLImageProcessor use_fast=True",
+    "sampling_temperature": 0,
+    "seed": 0,
+    "pythonhashseed": 0,
+    "cublas_workspace_config": ":4096:8",
+    "network": "none",
+    "command": "mineru -p /work/input/fischer.pdf -o /work/output -b hybrid-engine --effort high --image-analysis true"
+  },
+  "prior_run": {
+    "id": "prior-native",
+    "path": "out/reviews/fischer-v6-native/fischer_middle.json",
+    "sha256": "e4cef11b3efc986d6886d051f8c511f80e3c83565465beade246adf7b70d7574"
+  },
+  "repeats": [
+    {
+      "id": "run-01",
+      "path": "out/reviews/mineru-repeat-stability-v1/run-01/fischer_middle.json",
+      "sha256": "2ca5f187a5238bf95627b4d08020fb22ee7491283359d6d3064d2de1788e65d4"
+    },
+    {
+      "id": "run-02",
+      "path": "out/reviews/mineru-repeat-stability-v1/run-02/fischer_middle.json",
+      "sha256": "7f4e824733a22282857aafed4a12eb9cdf5ecd0d6ee9649da355a54e6a62158f"
+    },
+    {
+      "id": "run-03",
+      "path": "out/reviews/mineru-repeat-stability-v1/run-03/fischer_middle.json",
+      "sha256": "e8409a03e353482332793e73802e7c0f041dcd7df79912b8a4d07a40bf6f879f"
+    }
+  ]
+}

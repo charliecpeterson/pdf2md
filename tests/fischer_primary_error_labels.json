@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked primary extraction errors in the Fischer 1972 atomic-structure scan.",
+  "documents": [
+    {
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "source": "1-s2.0-S0092640X72800081-main.pdf",
+      "version": "v5",
+      "cells": [
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 5, "column": 4, "expected": "0.0209", "label": "Cu 3s at radius 0.0006"},
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 6, "column": 9, "expected": "0.2524", "label": "Zn 1s at radius 0.0008"},
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 20, "column": 13, "expected": "0.0250", "label": "Zn 3p at radius 0.010"},
+        {"page": 30, "block_id": "#/mineru/30/table/121", "row": 0, "column": 2, "expected": "-2.1328", "label": "Cu 2s at radius 0.180"},
+        {"page": 42, "block_id": "#/mineru/42/table/157", "row": 3, "column": 0, "expected": "0.240", "label": "radial grid row misread as a duplicate 0.260"},
+        {"page": 56, "block_id": "#/mineru/56/table/199", "row": 24, "column": 11, "expected": "-0.7795", "label": "radial value at radius 2.000"}
+      ]
+    }
+  ]
+}

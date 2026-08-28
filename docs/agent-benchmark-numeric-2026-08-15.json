@@ -1,0 +1,98 @@
+{
+  "schema": "pdf2md.numeric_agent_benchmark_snapshot.v1",
+  "recorded_at": "2026-08-15",
+  "source_artifact": "out/agent-benchmark/qwen3.6-35b-mlx-numeric-v1.json",
+  "source_artifact_sha256": "8cd08039efcb14beeb58a91e76da5c023cb3a4030e092bbbbfaac4c1fffb9032",
+  "questions": "tests/numeric_agent_questions.json",
+  "questions_sha256": "87702de1c6e878fa3c1a18ba4f1321093484896545c475424fc2af3c2f06aa23",
+  "bundle_provenance_sha256": "f34801c9ec37be792e2c7227aac9c0fc0edae75627e475eb1167725cb80e2eea",
+  "model": "qwen3.6:35b-mlx",
+  "reasoning_effort": "none",
+  "seed": 0,
+  "settings": {
+    "max_tokens": 2048,
+    "temperature": 0
+  },
+  "summary": {
+    "runs": 6,
+    "answer_correct": 5,
+    "passed_all_task_gates": 5,
+    "correct_refusals": 1,
+    "valid_artifact_citations": 6,
+    "valid_required_evidence_fields": 6,
+    "required_assets_opened": 1,
+    "release_blockers": 1,
+    "input_tokens": 4559,
+    "output_tokens": 518
+  },
+  "results": [
+    {
+      "question_id": "fischer-exact-cell",
+      "answer": "1.835914",
+      "answer_correct": true,
+      "passed": true,
+      "citation": "data/tables/page_006_panels.csv",
+      "evidence_fields_used": ["best_value"],
+      "assets_opened": [],
+      "input_tokens": 299
+    },
+    {
+      "question_id": "fischer-continuation-join",
+      "answer": "5132.856, 5703.116",
+      "answer_correct": true,
+      "passed": true,
+      "citation": "data/tables/page_015_panels.csv",
+      "evidence_fields_used": ["best_value", "symbol", "row_key", "column"],
+      "assets_opened": [],
+      "input_tokens": 438
+    },
+    {
+      "question_id": "fischer-derived-ratio",
+      "answer": "2.589076",
+      "expected": "2.589085",
+      "answer_correct": false,
+      "passed": false,
+      "citation": "data/tables/page_006_panels.csv",
+      "evidence_fields_used": ["best_value"],
+      "assets_opened": [],
+      "input_tokens": 402
+    },
+    {
+      "question_id": "fischer-metadata-lookup",
+      "answer": "5132.856",
+      "answer_correct": true,
+      "passed": true,
+      "citation": "data/tables/page_015_panels.csv",
+      "evidence_fields_used": ["atomic_number", "term", "configuration", "row_key", "column", "best_value"],
+      "assets_opened": [],
+      "input_tokens": 299
+    },
+    {
+      "question_id": "fischer-unverified-refusal",
+      "answer": "insufficient evidence",
+      "answer_correct": true,
+      "passed": true,
+      "citation": "data/tables/page_006_panels.csv",
+      "evidence_fields_used": ["verification_status"],
+      "assets_opened": [],
+      "input_tokens": 319
+    },
+    {
+      "question_id": "fischer-source-crop-provenance",
+      "answer": "5414.032",
+      "answer_correct": true,
+      "passed": true,
+      "citation": "assets/mineru_15_table_82_p15.png",
+      "evidence_fields_used": ["best_value"],
+      "assets_opened": ["mineru_15_table_82_p15.png"],
+      "input_tokens": 2802
+    }
+  ],
+  "inference_runtime_observation": {
+    "model": "qwen3-vl:32b",
+    "checkpoint_type": "thinking",
+    "reasoning_effort_none_honored": false,
+    "native_think_false_honored": false,
+    "observed_result_at_2048_and_4096_tokens": "empty content after reasoning exhausted the completion budget"
+  }
+}

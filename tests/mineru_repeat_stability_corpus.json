@@ -1,0 +1,221 @@
+{
+  "schema_version": 1,
+  "artifacts": {
+    "sources": {
+      "path": "tests/mineru_repeat_stability_sources.json",
+      "sha256": "62c3e24101efa29801b730010646dd4e1a20a730e40c0a7d670eb7e4e7741731"
+    },
+    "runner": {
+      "path": "scripts/run_pinned_mineru_repeats.sh",
+      "sha256": "4e2eaf04223eb4c543f28803d35e6c8aca47b21b45bec7587f02dd53faf32227"
+    },
+    "prior_manifest": {
+      "path": "out/reviews/fischer-v6-native/manifest.json",
+      "sha256": "0671bcefef2ee3aabeb609bd97aa525abfc7bde340ffdd0f9519e39d6b16b60d"
+    },
+    "run_01_settings": {
+      "path": "out/reviews/mineru-repeat-stability-v1/run-01/settings.txt",
+      "sha256": "673d5e18a867a332c696315755e4c12f7ec6808962361eea4ed248c468da1a86"
+    },
+    "run_01_log": {
+      "path": "out/reviews/mineru-repeat-stability-v1/run-01/run.log",
+      "sha256": "fb8743cda6ad47bbca736a76da494584fe2193263c0638fe1ca117f4a21b0b58"
+    },
+    "run_02_settings": {
+      "path": "out/reviews/mineru-repeat-stability-v1/run-02/settings.txt",
+      "sha256": "4a0c2631b1593811e0089e9595e04b45342f6714b77551df85a424d9b29ac01f"
+    },
+    "run_02_log": {
+      "path": "out/reviews/mineru-repeat-stability-v1/run-02/run.log",
+      "sha256": "93ee14ec6a8b62bf600a7e4d7528056573f35aa8029ad6d3e0ad460dd17bdbb3"
+    },
+    "run_03_settings": {
+      "path": "out/reviews/mineru-repeat-stability-v1/run-03/settings.txt",
+      "sha256": "0e7896d72965bad70a1e519054d75012c19048f319d30e473e7ac152f580bac8"
+    },
+    "run_03_log": {
+      "path": "out/reviews/mineru-repeat-stability-v1/run-03/run.log",
+      "sha256": "e58431ea342ff60fe04e71c2f71e45f483428eec1f9428da8142e73f0b4f51b8"
+    }
+  },
+  "expected": {
+    "sources_sha256": "62c3e24101efa29801b730010646dd4e1a20a730e40c0a7d670eb7e4e7741731",
+    "environment": {
+      "host": "charliebox",
+      "gpu": "NVIDIA GeForce RTX 4090",
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "container_image_id": "sha256:b1ddeb898393a2cdfeebced56e62ba7bc77364d235eb577fd955bf62d8b9e33d",
+      "model_snapshot": "opendatalab/MinerU2.5-Pro-2605-1.2B@bff20d4ae2bf202df9f45284b4d43681555a97ed",
+      "mineru": "3.4.4",
+      "vllm": "0.21.0",
+      "torch": "2.11.0+cu130",
+      "transformers": "4.57.6",
+      "pillow": "12.2.0",
+      "image_processor": "Qwen2VLImageProcessor use_fast=True",
+      "sampling_temperature": 0,
+      "seed": 0,
+      "pythonhashseed": 0,
+      "cublas_workspace_config": ":4096:8",
+      "network": "none",
+      "command": "mineru -p /work/input/fischer.pdf -o /work/output -b hybrid-engine --effort high --image-analysis true"
+    },
+    "runs": {
+      "prior": {
+        "id": "prior-native",
+        "sha256": "e4cef11b3efc986d6886d051f8c511f80e3c83565465beade246adf7b70d7574",
+        "blocks": 305,
+        "tables": 144,
+        "figures": 12,
+        "by_type": {
+          "caption": 82,
+          "equation": 11,
+          "figure": 12,
+          "heading": 8,
+          "list": 8,
+          "paragraph": 40,
+          "table": 144
+        },
+        "radial_table_gfm_rows": {
+          "18": [99],
+          "19": [74],
+          "20": [77],
+          "21": [72]
+        }
+      },
+      "repeats": [
+        {
+          "id": "run-01",
+          "sha256": "2ca5f187a5238bf95627b4d08020fb22ee7491283359d6d3064d2de1788e65d4",
+          "blocks": 305,
+          "tables": 144,
+          "figures": 12,
+          "by_type": {
+            "caption": 82,
+            "equation": 11,
+            "figure": 12,
+            "heading": 8,
+            "list": 8,
+            "paragraph": 40,
+            "table": 144
+          },
+          "radial_table_gfm_rows": {
+            "18": [99],
+            "19": [74],
+            "20": [77],
+            "21": [72]
+          }
+        },
+        {
+          "id": "run-02",
+          "sha256": "7f4e824733a22282857aafed4a12eb9cdf5ecd0d6ee9649da355a54e6a62158f",
+          "blocks": 305,
+          "tables": 144,
+          "figures": 12,
+          "by_type": {
+            "caption": 82,
+            "equation": 11,
+            "figure": 12,
+            "heading": 8,
+            "list": 8,
+            "paragraph": 40,
+            "table": 144
+          },
+          "radial_table_gfm_rows": {
+            "18": [99],
+            "19": [74],
+            "20": [77],
+            "21": [72]
+          }
+        },
+        {
+          "id": "run-03",
+          "sha256": "e8409a03e353482332793e73802e7c0f041dcd7df79912b8a4d07a40bf6f879f",
+          "blocks": 305,
+          "tables": 144,
+          "figures": 12,
+          "by_type": {
+            "caption": 82,
+            "equation": 11,
+            "figure": 12,
+            "heading": 8,
+            "list": 8,
+            "paragraph": 40,
+            "table": 144
+          },
+          "radial_table_gfm_rows": {
+            "18": [91],
+            "19": [74],
+            "20": [77],
+            "21": [72]
+          }
+        }
+      ]
+    },
+    "repeat_pairs": [
+      {
+        "reference": "run-01",
+        "candidate": "run-02",
+        "exact_json": false,
+        "matched_blocks": 305,
+        "reference_blocks_with_geometry": 305,
+        "candidate_blocks_with_geometry": 305,
+        "block_recall_at_iou_0_9": 1.0,
+        "block_precision_at_iou_0_9": 1.0,
+        "matched_content_identical": 273,
+        "matched_content_identity_rate": 0.89508197,
+        "changed_content_by_type": {"paragraph": 1, "table": 31},
+        "matched_table_blocks": 144,
+        "matched_table_content_identical": 113,
+        "matched_table_content_identity_rate": 0.78472222,
+        "minimum_matched_iou": 0.91268116
+      },
+      {
+        "reference": "run-01",
+        "candidate": "run-03",
+        "exact_json": false,
+        "matched_blocks": 305,
+        "reference_blocks_with_geometry": 305,
+        "candidate_blocks_with_geometry": 305,
+        "block_recall_at_iou_0_9": 1.0,
+        "block_precision_at_iou_0_9": 1.0,
+        "matched_content_identical": 279,
+        "matched_content_identity_rate": 0.9147541,
+        "changed_content_by_type": {"paragraph": 1, "table": 25},
+        "matched_table_blocks": 144,
+        "matched_table_content_identical": 119,
+        "matched_table_content_identity_rate": 0.82638889,
+        "minimum_matched_iou": 0.91666667
+      },
+      {
+        "reference": "run-02",
+        "candidate": "run-03",
+        "exact_json": false,
+        "matched_blocks": 305,
+        "reference_blocks_with_geometry": 305,
+        "candidate_blocks_with_geometry": 305,
+        "block_recall_at_iou_0_9": 1.0,
+        "block_precision_at_iou_0_9": 1.0,
+        "matched_content_identical": 272,
+        "matched_content_identity_rate": 0.89180328,
+        "changed_content_by_type": {"table": 33},
+        "matched_table_blocks": 144,
+        "matched_table_content_identical": 111,
+        "matched_table_content_identity_rate": 0.77083333,
+        "minimum_matched_iou": 0.91268116
+      }
+    ],
+    "conclusion": {
+      "unique_repeat_middle_json_hashes": 3,
+      "bitwise_repeatable": false,
+      "prior_run_reproduced_bitwise": false,
+      "block_count_range": [305, 305],
+      "table_count_range": [144, 144],
+      "minimum_pairwise_block_recall": 1.0,
+      "minimum_pairwise_content_identity": 0.89180328,
+      "minimum_pairwise_table_content_identity": 0.77083333,
+      "radial_row_counts_stable": false,
+      "promotion": "do_not_replace_better_v5_extraction",
+      "interpretation": "repeatability measures runtime stability, not extraction correctness; the repeated parse remains one table short of v5"
+    }
+  }
+}

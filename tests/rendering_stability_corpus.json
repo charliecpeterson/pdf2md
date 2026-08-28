@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "artifacts": {
+    "manifest": {
+      "path": "out/reviews/rendering-stability-v1/manifest.json",
+      "sha256": "cb3a7269f15837e4fce5a2573fdee35fd2420d6da521a366755558eb3c066f5b"
+    },
+    "inputs": {
+      "path": "out/reviews/rendering-stability-v1/inputs.json",
+      "sha256": "fb88ff5c1ffa18c635bb839cc9682d237c3764ad020a3f80eb91ad762787707d"
+    },
+    "run": {
+      "path": "out/reviews/rendering-stability-v1/run.json",
+      "sha256": "70f5c06600d140799652906d6e36ca2e917a60b9ec27f5eb7fdaa86cf2323ef0"
+    },
+    "labels": {
+      "path": "tests/heldout_data_cell_labels.json",
+      "sha256": "09d19d6c466f1c6fc21b8ba61592b4414288a066c76bb145ebe68448730fc8ce"
+    },
+    "source_corpus": {
+      "path": "tests/source_row_alignment_corpus.json",
+      "sha256": "9d6e1fcecaf9bb9561e443e86dae588823b73ca2ecb62936992914c17186d7e6"
+    },
+    "reference_manifest": {
+      "path": "out/reviews/heldout-data-reader-v1/manifest.json",
+      "sha256": "fbe58f350fe68f77a4418bcbf52634d7c74077f9f8621666cf4c6aca3137df8c"
+    },
+    "reader_runner": {
+      "path": "scripts/run_paddle_line_reader.py",
+      "sha256": "999d0d9e485a96f806e5d7cac85af9d4c84bd8f4c06b5d118e9cfd09ae239be6"
+    }
+  },
+  "expected": {
+    "manifest_sha256": "cb3a7269f15837e4fce5a2573fdee35fd2420d6da521a366755558eb3c066f5b",
+    "run_sha256": "70f5c06600d140799652906d6e36ca2e917a60b9ec27f5eb7fdaa86cf2323ef0",
+    "reader": {
+      "model_name": "PP-OCRv6_medium_rec",
+      "model_sha256": "00a024b1a2165b852c2b9dab611e0a68fd23f9a28c441c600a04f078a106b5b2",
+      "device": "gpu:0",
+      "paddleocr_version": "3.7.0",
+      "paddlex_version": "3.7.2",
+      "paddlepaddle_gpu_version": "3.2.1+fc"
+    },
+    "cells": 56,
+    "variants": 24,
+    "crops": 1344,
+    "render_reproducibility": {
+      "checked_300dpi": 6,
+      "exact_300dpi": 6,
+      "deskewed_renders": 0,
+      "unique_crop_hashes": 672
+    },
+    "variant_results": {
+      "dpi300-adaptive-deskewed-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
+      "dpi300-adaptive-deskewed-tight": {"checked": 56, "agree": 45, "disagree": 0, "tool_refused": 11},
+      "dpi300-adaptive-original-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
+      "dpi300-adaptive-original-tight": {"checked": 56, "agree": 45, "disagree": 0, "tool_refused": 11},
+      "dpi300-grayscale-deskewed-padded": {"checked": 56, "agree": 49, "disagree": 0, "tool_refused": 7},
+      "dpi300-grayscale-deskewed-tight": {"checked": 56, "agree": 46, "disagree": 0, "tool_refused": 10},
+      "dpi300-grayscale-original-padded": {"checked": 56, "agree": 49, "disagree": 0, "tool_refused": 7},
+      "dpi300-grayscale-original-tight": {"checked": 56, "agree": 46, "disagree": 0, "tool_refused": 10},
+      "dpi450-adaptive-deskewed-padded": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
+      "dpi450-adaptive-deskewed-tight": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
+      "dpi450-adaptive-original-padded": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
+      "dpi450-adaptive-original-tight": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
+      "dpi450-grayscale-deskewed-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
+      "dpi450-grayscale-deskewed-tight": {"checked": 56, "agree": 47, "disagree": 0, "tool_refused": 9},
+      "dpi450-grayscale-original-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
+      "dpi450-grayscale-original-tight": {"checked": 56, "agree": 47, "disagree": 0, "tool_refused": 9},
+      "dpi600-adaptive-deskewed-padded": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
+      "dpi600-adaptive-deskewed-tight": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
+      "dpi600-adaptive-original-padded": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
+      "dpi600-adaptive-original-tight": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
+      "dpi600-grayscale-deskewed-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
+      "dpi600-grayscale-deskewed-tight": {"checked": 56, "agree": 53, "disagree": 0, "tool_refused": 3},
+      "dpi600-grayscale-original-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
+      "dpi600-grayscale-original-tight": {"checked": 56, "agree": 53, "disagree": 0, "tool_refused": 3}
+    },
+    "best_agreement": 53,
+    "zero_disagreement_variants": 24,
+    "instability_prediction": {
+      "baseline_variant": "dpi300-grayscale-original-padded",
+      "instability_uses_baseline": false,
+      "unstable_cells": 15,
+      "unstable_baseline_adverse": 7,
+      "stable_cells": 41,
+      "stable_baseline_adverse": 0,
+      "baseline_adverse_sensitivity": 1.0,
+      "baseline_adverse_specificity": 0.83673469,
+      "baseline_adverse_positive_predictive_value": 0.46666667,
+      "baseline_adverse_negative_predictive_value": 1.0,
+      "unstable_primary_errors": 0,
+      "stable_primary_errors": 0,
+      "primary_error_prediction_available": false
+    }
+  }
+}

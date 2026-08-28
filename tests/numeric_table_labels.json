@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "source": "1-s2.0-S0092640X72800081-main.pdf",
+      "version": "v5",
+      "cells": [
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 2, "column": 1, "expected": "0.0306", "label": "Cu 1s at radius 0.0001"},
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 2, "column": 10, "expected": "0.0100", "label": "Zn 2s at radius 0.0001"},
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 5, "column": 4, "expected": "0.0209", "label": "Cu 3s at radius 0.0006"},
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 6, "column": 9, "expected": "0.2524", "label": "Zn 1s at radius 0.0008"},
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 20, "column": 13, "expected": "0.0250", "label": "Zn 3p at radius 0.010"},
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 40, "column": 2, "expected": "0.0535", "label": "Cu 2s at radius 0.070"},
+        {"page": 30, "block_id": "#/mineru/30/table/120", "row": 40, "column": 10, "expected": "-0.0308", "label": "Zn 2s at radius 0.070"},
+        {"page": 30, "block_id": "#/mineru/30/table/121", "row": 0, "column": 2, "expected": "-2.1328", "label": "Cu 2s at radius 0.180"},
+        {"page": 30, "block_id": "#/mineru/30/table/121", "row": 0, "column": 15, "expected": "0.3734", "label": "Zn 3d at radius 0.180"},
+        {"page": 30, "block_id": "#/mineru/30/table/121", "row": 4, "column": 13, "expected": "-0.0570", "label": "Zn 3p at radius 0.260"},
+        {"page": 30, "block_id": "#/mineru/30/table/121", "row": 20, "column": 5, "expected": "-0.4834", "label": "Cu 3p at radius 1.300"},
+        {"page": 30, "block_id": "#/mineru/30/table/121", "row": 30, "column": 15, "expected": "0.0500", "label": "Zn 3d at radius 3.500"},
+        {"page": 20, "block_id": "#/mineru/20/table/94", "row": 2, "column": 1, "expected": "0.0043", "label": "O 1s at radius 0.0001"},
+        {"page": 20, "block_id": "#/mineru/20/table/94", "row": 50, "column": 7, "expected": "0.3188", "label": "F 2p at radius 0.180"},
+        {"page": 20, "block_id": "#/mineru/20/table/94", "row": 65, "column": 3, "expected": "0.8520", "label": "O 2p at radius 0.800"},
+        {"page": 20, "block_id": "#/mineru/20/table/94", "row": 65, "column": 10, "expected": "-1.0551", "label": "Ne 2s at radius 0.800"},
+        {"page": 45, "block_id": "#/mineru/45/table/165", "row": 1, "column": 1, "expected": "0.0594", "label": "Rh 1s at radius 0.0001"},
+        {"page": 45, "block_id": "#/mineru/45/table/165", "row": 39, "column": 3, "expected": "2.5088", "label": "Rh 2p at radius 0.070"},
+        {"page": 45, "block_id": "#/mineru/45/table/166", "row": 0, "column": 2, "expected": "-2.1961", "label": "Rh 2s at radius 0.180"},
+        {"page": 45, "block_id": "#/mineru/45/table/166", "row": 15, "column": 8, "expected": "1.0025", "label": "Rh 4p at radius 0.800"},
+        {"page": 60, "block_id": "#/mineru/60/table/210", "row": 1, "column": 1, "expected": "0.0916", "label": "Nd 1s at radius 0.0001"},
+        {"page": 60, "block_id": "#/mineru/60/table/210", "row": 39, "column": 2, "expected": "-2.8463", "label": "Nd 2s at radius 0.070"},
+        {"page": 60, "block_id": "#/mineru/60/table/211", "row": 0, "column": 6, "expected": "2.0718", "label": "Nd 3d at radius 0.180"},
+        {"page": 60, "block_id": "#/mineru/60/table/211", "row": 15, "column": 7, "expected": "-1.1183", "label": "Nd 4s at radius 0.800"},
+        {"page": 75, "block_id": "#/mineru/75/table/255", "row": 1, "column": 1, "expected": "0.1280", "label": "Re 1s at radius 0.0001"},
+        {"page": 75, "block_id": "#/mineru/75/table/255", "row": 39, "column": 2, "expected": "-3.6341", "label": "Re 2s at radius 0.070"},
+        {"page": 75, "block_id": "#/mineru/75/table/256", "row": 0, "column": 4, "expected": "2.3956", "label": "Re 3s at radius 0.180"},
+        {"page": 75, "block_id": "#/mineru/75/table/256", "row": 15, "column": 10, "expected": "0.8207", "label": "Re 4f at radius 0.800"},
+        {"page": 69, "block_id": "#/mineru/69/table/237", "row": 1, "column": 12, "expected": "0.0007", "label": "Tm 6s at radius 0.0001; leading-digit reader artifact"},
+        {"page": 69, "block_id": "#/mineru/69/table/237", "row": 2, "column": 4, "expected": "0.0346", "label": "Tm 3s at radius 0.0002; leading-digit reader artifact"},
+        {"page": 69, "block_id": "#/mineru/69/table/237", "row": 2, "column": 12, "expected": "0.0015", "label": "Tm 6s at radius 0.0002; leading-digit reader artifact"},
+        {"page": 56, "block_id": "#/mineru/56/table/199", "row": 24, "column": 11, "expected": "-0.7795", "label": "radial value at radius 2.000; dropped-digit primary artifact"}
+      ]
+    },
+    {
+      "source_sha256": "416d651377c4cce7ec6c91680afba2764f1d4e549525bc657d147faf6c5e0ef0",
+      "source": "2207.10841v3.pdf",
+      "version": "v3",
+      "cells": [
+        {"page": 13, "block_id": "#/tables/0", "row": 2, "column": 1, "expected": "-2846.292", "label": "grouped thousands in AO energy"},
+        {"page": 13, "block_id": "#/tables/0", "row": 2, "column": 2, "expected": "57.43", "label": "AO energy error"},
+        {"page": 13, "block_id": "#/tables/0", "row": 2, "column": 4, "expected": "42.05", "label": "MRA energy error"},
+        {"page": 13, "block_id": "#/tables/0", "row": 4, "column": 3, "expected": "-2901.840", "label": "grouped thousands in MRA energy"},
+        {"page": 15, "block_id": "#/tables/1", "row": 4, "column": 2, "expected": "-8.319", "label": "3s orbital energy"},
+        {"page": 15, "block_id": "#/tables/1", "row": 5, "column": 1, "expected": "7.879", "label": "primary correct; second reader invented leading digit"},
+        {"page": 15, "block_id": "#/tables/1", "row": 6, "column": 1, "expected": "5.927", "label": "primary correct; second reader invented leading digit"},
+        {"page": 15, "block_id": "#/tables/2", "row": 1, "column": 1, "expected": "-14.556089", "label": "fractional digit grouping in LCAO energy"},
+        {"page": 15, "block_id": "#/tables/2", "row": 3, "column": 2, "expected": "-14.661475", "label": "fractional digit grouping in MRA energy"},
+        {"page": 15, "block_id": "#/tables/2", "row": 4, "column": 1, "expected": "-14.6673547", "label": "fractional grouping with footnote"},
+        {"page": 19, "block_id": "#/tables/3", "row": 1, "column": 1, "expected": "-3751.7", "label": "thousands separator in sparse multi-header table"},
+        {"page": 19, "block_id": "#/tables/3", "row": 2, "column": 5, "expected": "-4404.0", "label": "reader-refused CI value"},
+        {"page": 21, "block_id": "#/tables/4", "row": 1, "column": 1, "expected": "54.05", "label": "basis error"},
+        {"page": 21, "block_id": "#/tables/4", "row": 6, "column": 1, "expected": "0.06", "label": "small basis error"}
+      ]
+    },
+    {
+      "source_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "source": "1706.03762v7.pdf",
+      "version": "v2",
+      "cells": [
+        {"page": 8, "block_id": "#/tables/1", "row": 2, "column": 1, "expected": "23.75", "label": "ByteNet EN-DE BLEU"},
+        {"page": 8, "block_id": "#/tables/1", "row": 3, "column": 2, "expected": "39.2", "label": "Deep-Att EN-FR BLEU"},
+        {"page": 8, "block_id": "#/tables/1", "row": 4, "column": 2, "expected": "39.92", "label": "GNMT EN-FR BLEU"},
+        {"page": 8, "block_id": "#/tables/1", "row": 5, "column": 2, "expected": "40.46", "label": "ConvS2S EN-FR BLEU"},
+        {"page": 8, "block_id": "#/tables/1", "row": 6, "column": 2, "expected": "40.56", "label": "MoE EN-FR BLEU"},
+        {"page": 8, "block_id": "#/tables/1", "row": 7, "column": 2, "expected": "40.4", "label": "Deep-Att ensemble EN-FR BLEU"},
+        {"page": 10, "block_id": "#/tables/3", "row": 1, "column": 2, "expected": "88.3", "label": "WSJ parser F1"},
+        {"page": 10, "block_id": "#/tables/3", "row": 10, "column": 2, "expected": "92.7", "label": "Transformer semi-supervised F1"},
+        {"page": 10, "block_id": "#/tables/3", "row": 12, "column": 2, "expected": "93.3", "label": "generative parser F1"}
+      ]
+    }
+  ]
+}

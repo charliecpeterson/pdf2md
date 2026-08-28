@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "selection": "All source-row recovery cells with pre-existing hash-pinned x-bounds",
+  "recovery_dir": "out/reviews/fischer-source-row-recovery-v2",
+  "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+  "reference_sha256": "572a96dce5bedf7eb668fb7ccba54d855141a81ee2796112644acca5eb7a446a",
+  "expected": {
+    "panels_in_corpus": 12,
+    "panels_checked": 7,
+    "panels_agree": 7,
+    "panels_disagree": 0,
+    "panels_tool_refused": 0,
+    "panels_no_reference": 5,
+    "cells_checked": 1089,
+    "agree": 1089,
+    "disagree": 0,
+    "tool_refused": 0
+  }
+}

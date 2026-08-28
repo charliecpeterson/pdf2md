@@ -1,0 +1,1651 @@
+{
+  "schema_version": 1,
+  "method": "controlled_multifamily_table_degradation",
+  "sources": "tests/multifamily_degradation_sources.json",
+  "sources_sha256": "1d539414c2b7b8bde60ff84df1258199155254a3822425bb68dd8518192a9e5f",
+  "corpus_pdf": "multifamily-table-degradation.pdf",
+  "corpus_sha256": "263f2589e86a0d5364270088666ce786f32988dd12896c85c1e0ca8fd4446247",
+  "families": [
+    {
+      "id": "grasp-fixed-width",
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/grasp-nixiv-41.png",
+      "source_crop_sha256": "67e95f38e22a1dda08de6795b9c824b3c2ffeb7e3bd8650c544d76f4e3efb70f",
+      "typography": "born_digital_fixed_width",
+      "features": [
+        "negative_signs",
+        "long_decimals",
+        "fixed_width_numerics",
+        "table_rules"
+      ]
+    },
+    {
+      "id": "fischer-serif-superscripts",
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/fischer-stability-table-ii.png",
+      "source_crop_sha256": "338e80d5fc8fc3de622c98a9fb2f8d6de8aa0fecb11f9db7f36cc67309b73415",
+      "typography": "proportional_serif",
+      "features": [
+        "superscript_footnotes",
+        "negative_signs_near_rules",
+        "semantic_placeholders"
+      ]
+    },
+    {
+      "id": "slater-curved-two-panel",
+      "source_crop": "out/reviews/source-row-alignment-heldout-v1/source-crops/slater-thomas-fermi-right.png",
+      "source_crop_sha256": "235a952572e5a27c421b76ab52ffb318b61204613eb564f2571de02fe9f94631",
+      "typography": "scanned_serif_book",
+      "features": [
+        "curved_page",
+        "faint_photocopy",
+        "side_by_side_panels",
+        "small_decimals"
+      ]
+    },
+    {
+      "id": "grasp-scientific-notation",
+      "source_crop": "out/reviews/heldout-data-reader-v1/source-crops/grasp-scientific-p186.png",
+      "source_crop_sha256": "c5e17699f108afb7bd743e2b63a440271c86b66dd99a002a97da7dc0418d3c5f",
+      "typography": "born_digital_fixed_width_scientific",
+      "features": [
+        "positive_exponents",
+        "negative_exponents",
+        "superscripts"
+      ]
+    },
+    {
+      "id": "nasa-leading-dot",
+      "source_crop": "out/natural-errors-scanned/2cde66d4e1bc0e6d/v1/assets/mineru_2_table_16_p2.png",
+      "source_crop_sha256": "58ad61d6505834dd184ee3c3ab3685a7cd4abd2408ee297854881129d97bf65b",
+      "typography": "scanned_dot_matrix",
+      "features": [
+        "leading_dot_decimals",
+        "faint_photocopy",
+        "mixed_text_and_numeric"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "id": "clean",
+      "factors": [],
+      "role": "control"
+    },
+    {
+      "id": "dpi_150",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated"
+    },
+    {
+      "id": "dpi_100",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated"
+    },
+    {
+      "id": "blur_1_2",
+      "factors": [
+        "blur"
+      ],
+      "role": "isolated"
+    },
+    {
+      "id": "skew_1_5",
+      "factors": [
+        "skew"
+      ],
+      "role": "isolated"
+    },
+    {
+      "id": "contrast_minus_35",
+      "factors": [
+        "contrast"
+      ],
+      "role": "isolated"
+    },
+    {
+      "id": "adaptive_binarization",
+      "factors": [
+        "binarization"
+      ],
+      "role": "isolated"
+    },
+    {
+      "id": "jpeg_25",
+      "factors": [
+        "jpeg"
+      ],
+      "role": "isolated"
+    },
+    {
+      "id": "dpi_100_contrast",
+      "factors": [
+        "resolution",
+        "contrast"
+      ],
+      "role": "interaction"
+    },
+    {
+      "id": "skew_blur",
+      "factors": [
+        "skew",
+        "blur"
+      ],
+      "role": "interaction"
+    },
+    {
+      "id": "combined_hard",
+      "factors": [
+        "resolution",
+        "blur",
+        "contrast",
+        "skew",
+        "jpeg"
+      ],
+      "role": "interaction"
+    }
+  ],
+  "pages": [
+    {
+      "page": 1,
+      "family": "grasp-fixed-width",
+      "variant": "clean",
+      "factors": [],
+      "role": "control",
+      "requested_operations": [],
+      "resolved_operations": [],
+      "image": "001-grasp-fixed-width-clean.png",
+      "image_sha256": "797fb3b0108a02fae319ee790f6cbcbe730d154913447e73f9b5e5691cfda803",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 2,
+      "family": "grasp-fixed-width",
+      "variant": "dpi_150",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.5"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "1014x1146!",
+        "-resize",
+        "2028x2292!"
+      ],
+      "image": "002-grasp-fixed-width-dpi_150.png",
+      "image_sha256": "d3209041f3039f008ad2605d37d79612ad9f5560f57fdaf7aa388a11033b67b0",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 3,
+      "family": "grasp-fixed-width",
+      "variant": "dpi_100",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.333333"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "676x764!",
+        "-resize",
+        "2028x2292!"
+      ],
+      "image": "003-grasp-fixed-width-dpi_100.png",
+      "image_sha256": "62851f493c1c1b618a93503f5f9237d2bcc59fc72e890f519b3fa9458bfc649e",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 4,
+      "family": "grasp-fixed-width",
+      "variant": "blur_1_2",
+      "factors": [
+        "blur"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "004-grasp-fixed-width-blur_1_2.png",
+      "image_sha256": "92972829ef24888f7f2bac2250d34216e8eb627d418d874e1f2fd077019b7ffe",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 5,
+      "family": "grasp-fixed-width",
+      "variant": "skew_1_5",
+      "factors": [
+        "skew"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "rotate:1.5"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "2028x2292+0+0",
+        "+repage"
+      ],
+      "image": "005-grasp-fixed-width-skew_1_5.png",
+      "image_sha256": "c7984c013b387281fe5fe30cb73ffbcf228659b3c6f5b93304fb4be0d62e4932",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 6,
+      "family": "grasp-fixed-width",
+      "variant": "contrast_minus_35",
+      "factors": [
+        "contrast"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "006-grasp-fixed-width-contrast_minus_35.png",
+      "image_sha256": "b0d75046e653674b80cb877bfd1ff6d422051db6a339865c78469f56460a99f3",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 7,
+      "family": "grasp-fixed-width",
+      "variant": "adaptive_binarization",
+      "factors": [
+        "binarization"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "lat:25x25+5%"
+      ],
+      "resolved_operations": [
+        "-colorspace",
+        "Gray",
+        "-lat",
+        "25x25+5%",
+        "-negate"
+      ],
+      "image": "007-grasp-fixed-width-adaptive_binarization.png",
+      "image_sha256": "158469be46ac39bada996cd05913c7a5c4db15a6f69e3c04625d224f5db66ee3",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 8,
+      "family": "grasp-fixed-width",
+      "variant": "jpeg_25",
+      "factors": [
+        "jpeg"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "jpeg:25"
+      ],
+      "resolved_operations": [
+        "jpeg_roundtrip",
+        "25"
+      ],
+      "image": "008-grasp-fixed-width-jpeg_25.png",
+      "image_sha256": "2602530e6f9335943c3e6fd366609ace0a9108338e04b4f70aff1d663fa93fc0",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 9,
+      "family": "grasp-fixed-width",
+      "variant": "dpi_100_contrast",
+      "factors": [
+        "resolution",
+        "contrast"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "676x764!",
+        "-resize",
+        "2028x2292!",
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "009-grasp-fixed-width-dpi_100_contrast.png",
+      "image_sha256": "4e4f3d9106fca248196684ae9aae7d6c1144ade4a3b8888b1e0308f11c706f8c",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 10,
+      "family": "grasp-fixed-width",
+      "variant": "skew_blur",
+      "factors": [
+        "skew",
+        "blur"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "rotate:1.5",
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "2028x2292+0+0",
+        "+repage",
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "010-grasp-fixed-width-skew_blur.png",
+      "image_sha256": "73601c67cfee14c0c56415043df3749ec276c70176f6ff6a6cf03e16da8896e6",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 11,
+      "family": "grasp-fixed-width",
+      "variant": "combined_hard",
+      "factors": [
+        "resolution",
+        "blur",
+        "contrast",
+        "skew",
+        "jpeg"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "blur:1.2",
+        "contrast:-35",
+        "rotate:1.5",
+        "jpeg:40"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "676x764!",
+        "-resize",
+        "2028x2292!",
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "2028x2292+0+0",
+        "+repage",
+        "jpeg_roundtrip",
+        "40"
+      ],
+      "image": "011-grasp-fixed-width-combined_hard.png",
+      "image_sha256": "6d2da0231440795926a7b581a69de4683b90c6986ce5bf9b014044b4fe3931ef",
+      "pixel_size": [
+        2028,
+        2292
+      ]
+    },
+    {
+      "page": 12,
+      "family": "fischer-serif-superscripts",
+      "variant": "clean",
+      "factors": [],
+      "role": "control",
+      "requested_operations": [],
+      "resolved_operations": [],
+      "image": "012-fischer-serif-superscripts-clean.png",
+      "image_sha256": "7d026854d320ae34f2927867c088aa54c810d8f59e671d43171246052bb3cca9",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 13,
+      "family": "fischer-serif-superscripts",
+      "variant": "dpi_150",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.5"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "752x383!",
+        "-resize",
+        "1505x766!"
+      ],
+      "image": "013-fischer-serif-superscripts-dpi_150.png",
+      "image_sha256": "accac0471dc50192d59f3b8dac71de36c492ffc71c9de7050d8fb3770763dacb",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 14,
+      "family": "fischer-serif-superscripts",
+      "variant": "dpi_100",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.333333"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "502x255!",
+        "-resize",
+        "1505x766!"
+      ],
+      "image": "014-fischer-serif-superscripts-dpi_100.png",
+      "image_sha256": "ce6b1b4848c1a701e3db2ac91c7c51b982f9a0af9dbd75e9e118d3227604485d",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 15,
+      "family": "fischer-serif-superscripts",
+      "variant": "blur_1_2",
+      "factors": [
+        "blur"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "015-fischer-serif-superscripts-blur_1_2.png",
+      "image_sha256": "359a0954f83c6fd232d5b8405b4c7856fea8eab3c5d424559f13150344a05acc",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 16,
+      "family": "fischer-serif-superscripts",
+      "variant": "skew_1_5",
+      "factors": [
+        "skew"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "rotate:1.5"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "1505x766+0+0",
+        "+repage"
+      ],
+      "image": "016-fischer-serif-superscripts-skew_1_5.png",
+      "image_sha256": "9c3b6380d136c3c5cc2d2348c326c85e770b75cbdd14c2d09e904e402b48b2c8",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 17,
+      "family": "fischer-serif-superscripts",
+      "variant": "contrast_minus_35",
+      "factors": [
+        "contrast"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "017-fischer-serif-superscripts-contrast_minus_35.png",
+      "image_sha256": "0417e71c91c39a0d6a2e34f96a5c753e007ed756fbc72e8e45d06bd2709d87a8",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 18,
+      "family": "fischer-serif-superscripts",
+      "variant": "adaptive_binarization",
+      "factors": [
+        "binarization"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "lat:25x25+5%"
+      ],
+      "resolved_operations": [
+        "-colorspace",
+        "Gray",
+        "-lat",
+        "25x25+5%",
+        "-negate"
+      ],
+      "image": "018-fischer-serif-superscripts-adaptive_binarization.png",
+      "image_sha256": "9b0027820c26cf12076c15f1d061f71d01956de2cbfb6982507b4be3e7751094",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 19,
+      "family": "fischer-serif-superscripts",
+      "variant": "jpeg_25",
+      "factors": [
+        "jpeg"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "jpeg:25"
+      ],
+      "resolved_operations": [
+        "jpeg_roundtrip",
+        "25"
+      ],
+      "image": "019-fischer-serif-superscripts-jpeg_25.png",
+      "image_sha256": "0beb7c0bb77926860a800a8ec993e3fa89130a4899f1fc7264a0f29f7a7d29a4",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 20,
+      "family": "fischer-serif-superscripts",
+      "variant": "dpi_100_contrast",
+      "factors": [
+        "resolution",
+        "contrast"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "502x255!",
+        "-resize",
+        "1505x766!",
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "020-fischer-serif-superscripts-dpi_100_contrast.png",
+      "image_sha256": "db1ddb75e8f2aef1fa678c8b7f900bb0c7d374ccf2f98bd32506a5a0ecb27f4c",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 21,
+      "family": "fischer-serif-superscripts",
+      "variant": "skew_blur",
+      "factors": [
+        "skew",
+        "blur"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "rotate:1.5",
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "1505x766+0+0",
+        "+repage",
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "021-fischer-serif-superscripts-skew_blur.png",
+      "image_sha256": "f106bfd4e11860c00b9ce3d589efa096d1ae8bac9d0650d82b46140cb1e07e08",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 22,
+      "family": "fischer-serif-superscripts",
+      "variant": "combined_hard",
+      "factors": [
+        "resolution",
+        "blur",
+        "contrast",
+        "skew",
+        "jpeg"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "blur:1.2",
+        "contrast:-35",
+        "rotate:1.5",
+        "jpeg:40"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "502x255!",
+        "-resize",
+        "1505x766!",
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "1505x766+0+0",
+        "+repage",
+        "jpeg_roundtrip",
+        "40"
+      ],
+      "image": "022-fischer-serif-superscripts-combined_hard.png",
+      "image_sha256": "d17d9bcbb75eb51a1f8048bc26d47b73fbd77c60cfdefa1d42667a083beade49",
+      "pixel_size": [
+        1505,
+        766
+      ]
+    },
+    {
+      "page": 23,
+      "family": "slater-curved-two-panel",
+      "variant": "clean",
+      "factors": [],
+      "role": "control",
+      "requested_operations": [],
+      "resolved_operations": [],
+      "image": "023-slater-curved-two-panel-clean.png",
+      "image_sha256": "f29ad8d94f03d78c75cb62c3c955f9628da36b78f69279aa455324ca935cb797",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 24,
+      "family": "slater-curved-two-panel",
+      "variant": "dpi_150",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.5"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "370x450!",
+        "-resize",
+        "741x900!"
+      ],
+      "image": "024-slater-curved-two-panel-dpi_150.png",
+      "image_sha256": "1d4f14b204d0875640530b3cdcd5581ac6b2888cd3ea46a648b8a191890d8b50",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 25,
+      "family": "slater-curved-two-panel",
+      "variant": "dpi_100",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.333333"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "247x300!",
+        "-resize",
+        "741x900!"
+      ],
+      "image": "025-slater-curved-two-panel-dpi_100.png",
+      "image_sha256": "042b57aca3e34f4cc28873a3dcc2b77d3b43d81e99d5fcb531d6c58228079243",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 26,
+      "family": "slater-curved-two-panel",
+      "variant": "blur_1_2",
+      "factors": [
+        "blur"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "026-slater-curved-two-panel-blur_1_2.png",
+      "image_sha256": "640bf3083d4e29e7da82e3907a89f4c233c707d9331e2ded626aaf6f0c96eadc",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 27,
+      "family": "slater-curved-two-panel",
+      "variant": "skew_1_5",
+      "factors": [
+        "skew"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "rotate:1.5"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "741x900+0+0",
+        "+repage"
+      ],
+      "image": "027-slater-curved-two-panel-skew_1_5.png",
+      "image_sha256": "9d036f9dc624ffaab88b67d30400de85e2d0bcb1281cf83c1d325cc2b0267b92",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 28,
+      "family": "slater-curved-two-panel",
+      "variant": "contrast_minus_35",
+      "factors": [
+        "contrast"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "028-slater-curved-two-panel-contrast_minus_35.png",
+      "image_sha256": "e0153ed23e6896c67dbfa7db96baa3f2cbd905018c0ca0d72615ca7011b6dfeb",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 29,
+      "family": "slater-curved-two-panel",
+      "variant": "adaptive_binarization",
+      "factors": [
+        "binarization"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "lat:25x25+5%"
+      ],
+      "resolved_operations": [
+        "-colorspace",
+        "Gray",
+        "-lat",
+        "25x25+5%",
+        "-negate"
+      ],
+      "image": "029-slater-curved-two-panel-adaptive_binarization.png",
+      "image_sha256": "85042c53bb06e1420fc6044e9c865375967880f23efb3b440704b13b354a738a",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 30,
+      "family": "slater-curved-two-panel",
+      "variant": "jpeg_25",
+      "factors": [
+        "jpeg"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "jpeg:25"
+      ],
+      "resolved_operations": [
+        "jpeg_roundtrip",
+        "25"
+      ],
+      "image": "030-slater-curved-two-panel-jpeg_25.png",
+      "image_sha256": "af139758cb6d68cb9c973e72b4f9079d1a5820be4789f986306b494c362f2b57",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 31,
+      "family": "slater-curved-two-panel",
+      "variant": "dpi_100_contrast",
+      "factors": [
+        "resolution",
+        "contrast"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "247x300!",
+        "-resize",
+        "741x900!",
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "031-slater-curved-two-panel-dpi_100_contrast.png",
+      "image_sha256": "1c0e58fbae5c9b794893007432063a672813b8da9c3d358afcbbe435a174f796",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 32,
+      "family": "slater-curved-two-panel",
+      "variant": "skew_blur",
+      "factors": [
+        "skew",
+        "blur"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "rotate:1.5",
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "741x900+0+0",
+        "+repage",
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "032-slater-curved-two-panel-skew_blur.png",
+      "image_sha256": "9be0ce13807e2c5838246432ce6c05c3dd8385714e4772a99d4945d5b152bbd6",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 33,
+      "family": "slater-curved-two-panel",
+      "variant": "combined_hard",
+      "factors": [
+        "resolution",
+        "blur",
+        "contrast",
+        "skew",
+        "jpeg"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "blur:1.2",
+        "contrast:-35",
+        "rotate:1.5",
+        "jpeg:40"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "247x300!",
+        "-resize",
+        "741x900!",
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "741x900+0+0",
+        "+repage",
+        "jpeg_roundtrip",
+        "40"
+      ],
+      "image": "033-slater-curved-two-panel-combined_hard.png",
+      "image_sha256": "8a3ce26b4a6cbb70fbfb0aeedbe1e25f7c34a326350593ba4c5e55dea8dc9a5a",
+      "pixel_size": [
+        741,
+        900
+      ]
+    },
+    {
+      "page": 34,
+      "family": "grasp-scientific-notation",
+      "variant": "clean",
+      "factors": [],
+      "role": "control",
+      "requested_operations": [],
+      "resolved_operations": [],
+      "image": "034-grasp-scientific-notation-clean.png",
+      "image_sha256": "31630d5ca4ed7c4879801bc3bc898592b5d3f421b52964878d85b6d7f51ba63f",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 35,
+      "family": "grasp-scientific-notation",
+      "variant": "dpi_150",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.5"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "872x256!",
+        "-resize",
+        "1744x513!"
+      ],
+      "image": "035-grasp-scientific-notation-dpi_150.png",
+      "image_sha256": "51b051b932b781ba9ad213aba2adce9cdc888261d02b09dbbd2d2711e530ce1a",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 36,
+      "family": "grasp-scientific-notation",
+      "variant": "dpi_100",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.333333"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "581x171!",
+        "-resize",
+        "1744x513!"
+      ],
+      "image": "036-grasp-scientific-notation-dpi_100.png",
+      "image_sha256": "b026dca3a9d04ea1450452807a0b71d42621bef266ff7b9e3fd09fe8ff0bf325",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 37,
+      "family": "grasp-scientific-notation",
+      "variant": "blur_1_2",
+      "factors": [
+        "blur"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "037-grasp-scientific-notation-blur_1_2.png",
+      "image_sha256": "ab04069399bdb37922f4b89a49be2346be5e23bc69a2a1354a1796dd3de90600",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 38,
+      "family": "grasp-scientific-notation",
+      "variant": "skew_1_5",
+      "factors": [
+        "skew"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "rotate:1.5"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "1744x513+0+0",
+        "+repage"
+      ],
+      "image": "038-grasp-scientific-notation-skew_1_5.png",
+      "image_sha256": "041e454162acf6aef84215b64ee1d0a806d2d21cf010d3b7dafcb74544525601",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 39,
+      "family": "grasp-scientific-notation",
+      "variant": "contrast_minus_35",
+      "factors": [
+        "contrast"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "039-grasp-scientific-notation-contrast_minus_35.png",
+      "image_sha256": "a3b0f39768a3af6266ae4155187feaf480d46174f331ab45de0dbc97d5767794",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 40,
+      "family": "grasp-scientific-notation",
+      "variant": "adaptive_binarization",
+      "factors": [
+        "binarization"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "lat:25x25+5%"
+      ],
+      "resolved_operations": [
+        "-colorspace",
+        "Gray",
+        "-lat",
+        "25x25+5%",
+        "-negate"
+      ],
+      "image": "040-grasp-scientific-notation-adaptive_binarization.png",
+      "image_sha256": "57aadf01be7972adeee150dadf72ac51a95bcd7a1c2ff23bd98017eb9d352e0c",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 41,
+      "family": "grasp-scientific-notation",
+      "variant": "jpeg_25",
+      "factors": [
+        "jpeg"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "jpeg:25"
+      ],
+      "resolved_operations": [
+        "jpeg_roundtrip",
+        "25"
+      ],
+      "image": "041-grasp-scientific-notation-jpeg_25.png",
+      "image_sha256": "7c0cc865a3240460de04f993c33c089670a3f4e883f87a289ee9c6669544c78c",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 42,
+      "family": "grasp-scientific-notation",
+      "variant": "dpi_100_contrast",
+      "factors": [
+        "resolution",
+        "contrast"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "581x171!",
+        "-resize",
+        "1744x513!",
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "042-grasp-scientific-notation-dpi_100_contrast.png",
+      "image_sha256": "000d0e23cea9fb07234b3c20376ac69aa4ef66a234c30de428040521ca98beb5",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 43,
+      "family": "grasp-scientific-notation",
+      "variant": "skew_blur",
+      "factors": [
+        "skew",
+        "blur"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "rotate:1.5",
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "1744x513+0+0",
+        "+repage",
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "043-grasp-scientific-notation-skew_blur.png",
+      "image_sha256": "e562c35accae46c872e2c5b7e8f00f098750aa6a8815867e42c38cb3e24580cc",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 44,
+      "family": "grasp-scientific-notation",
+      "variant": "combined_hard",
+      "factors": [
+        "resolution",
+        "blur",
+        "contrast",
+        "skew",
+        "jpeg"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "blur:1.2",
+        "contrast:-35",
+        "rotate:1.5",
+        "jpeg:40"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "581x171!",
+        "-resize",
+        "1744x513!",
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "1744x513+0+0",
+        "+repage",
+        "jpeg_roundtrip",
+        "40"
+      ],
+      "image": "044-grasp-scientific-notation-combined_hard.png",
+      "image_sha256": "32882926bcfbba7782634b444dc80e5e4f3b3746ab7a5ec7a6d4c92feaf9e13e",
+      "pixel_size": [
+        1744,
+        513
+      ]
+    },
+    {
+      "page": 45,
+      "family": "nasa-leading-dot",
+      "variant": "clean",
+      "factors": [],
+      "role": "control",
+      "requested_operations": [],
+      "resolved_operations": [],
+      "image": "045-nasa-leading-dot-clean.png",
+      "image_sha256": "e01025ece0231124f9632e279b4c4c871cc614bec5a9e9e52425416b734e4003",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 46,
+      "family": "nasa-leading-dot",
+      "variant": "dpi_150",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.5"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "828x170!",
+        "-resize",
+        "1657x341!"
+      ],
+      "image": "046-nasa-leading-dot-dpi_150.png",
+      "image_sha256": "e7dd35d5fc1a3ef04eb4370bd32dae8ae4f91041e12274ec6b9427a2f5af8e90",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 47,
+      "family": "nasa-leading-dot",
+      "variant": "dpi_100",
+      "factors": [
+        "resolution"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "scale:0.333333"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "552x114!",
+        "-resize",
+        "1657x341!"
+      ],
+      "image": "047-nasa-leading-dot-dpi_100.png",
+      "image_sha256": "af4e55d81f805e13be920fcfd6238312df427a0b77b0fdf699003b5fac871407",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 48,
+      "family": "nasa-leading-dot",
+      "variant": "blur_1_2",
+      "factors": [
+        "blur"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "048-nasa-leading-dot-blur_1_2.png",
+      "image_sha256": "ef8c7aa2e10916dc33fc91da7853e8021442022ffb8fe04d495db7532801e4ce",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 49,
+      "family": "nasa-leading-dot",
+      "variant": "skew_1_5",
+      "factors": [
+        "skew"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "rotate:1.5"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "1657x341+0+0",
+        "+repage"
+      ],
+      "image": "049-nasa-leading-dot-skew_1_5.png",
+      "image_sha256": "356ed056c36bc24b599d95e2724159ab5275685092eed6ed23a4a8d2ad7d89e9",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 50,
+      "family": "nasa-leading-dot",
+      "variant": "contrast_minus_35",
+      "factors": [
+        "contrast"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "050-nasa-leading-dot-contrast_minus_35.png",
+      "image_sha256": "178835dbe9d7a8c727e8f3064b95b58a2621dfe3c66a0355d17ae5ac2f3a818f",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 51,
+      "family": "nasa-leading-dot",
+      "variant": "adaptive_binarization",
+      "factors": [
+        "binarization"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "lat:25x25+5%"
+      ],
+      "resolved_operations": [
+        "-colorspace",
+        "Gray",
+        "-lat",
+        "25x25+5%",
+        "-negate"
+      ],
+      "image": "051-nasa-leading-dot-adaptive_binarization.png",
+      "image_sha256": "4a4a939d6c79f88b16c9c99a18e7c86d8d89fc7d3a36cf269f4922ca15c0ca2f",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 52,
+      "family": "nasa-leading-dot",
+      "variant": "jpeg_25",
+      "factors": [
+        "jpeg"
+      ],
+      "role": "isolated",
+      "requested_operations": [
+        "jpeg:25"
+      ],
+      "resolved_operations": [
+        "jpeg_roundtrip",
+        "25"
+      ],
+      "image": "052-nasa-leading-dot-jpeg_25.png",
+      "image_sha256": "702467948020d2f2835555378206343ef2f5a89011269c07fdf1f121e33ad4b7",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 53,
+      "family": "nasa-leading-dot",
+      "variant": "dpi_100_contrast",
+      "factors": [
+        "resolution",
+        "contrast"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "contrast:-35"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "552x114!",
+        "-resize",
+        "1657x341!",
+        "-brightness-contrast",
+        "0x-35"
+      ],
+      "image": "053-nasa-leading-dot-dpi_100_contrast.png",
+      "image_sha256": "225c2cb14152198af36e55c1c2717e77d099ee9c4510c8c6c47f689fc3ecdf44",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 54,
+      "family": "nasa-leading-dot",
+      "variant": "skew_blur",
+      "factors": [
+        "skew",
+        "blur"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "rotate:1.5",
+        "blur:1.2"
+      ],
+      "resolved_operations": [
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "1657x341+0+0",
+        "+repage",
+        "-blur",
+        "0x1.2"
+      ],
+      "image": "054-nasa-leading-dot-skew_blur.png",
+      "image_sha256": "51e4b638d3beb40c041435f1cd528f5071b55c3b7a72e7e094b989694c05fc71",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    },
+    {
+      "page": 55,
+      "family": "nasa-leading-dot",
+      "variant": "combined_hard",
+      "factors": [
+        "resolution",
+        "blur",
+        "contrast",
+        "skew",
+        "jpeg"
+      ],
+      "role": "interaction",
+      "requested_operations": [
+        "scale:0.333333",
+        "blur:1.2",
+        "contrast:-35",
+        "rotate:1.5",
+        "jpeg:40"
+      ],
+      "resolved_operations": [
+        "-filter",
+        "Lanczos",
+        "-resize",
+        "552x114!",
+        "-resize",
+        "1657x341!",
+        "-blur",
+        "0x1.2",
+        "-brightness-contrast",
+        "0x-35",
+        "-background",
+        "white",
+        "-rotate",
+        "1.5",
+        "-gravity",
+        "center",
+        "-crop",
+        "1657x341+0+0",
+        "+repage",
+        "jpeg_roundtrip",
+        "40"
+      ],
+      "image": "055-nasa-leading-dot-combined_hard.png",
+      "image_sha256": "d00646abb6cd2762071a8695461c58ccf778c61d18bc017a9ba78349a9a183a8",
+      "pixel_size": [
+        1657,
+        341
+      ]
+    }
+  ],
+  "tools": {
+    "imagemagick": "Version: ImageMagick 7.1.1-47 Q16-HDRI aarch64 22763 https://imagemagick.org",
+    "pillow": "10.4.0"
+  }
+}

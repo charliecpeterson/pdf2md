@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-checked controls surrounding natural primary errors in degraded ORNL monospaced scientific output.",
+  "documents": [
+    {
+      "source_sha256": "d9f208b5bceff4897affa087efa740152a5692e479b9c02aaf467834a0a78931",
+      "source": "out/natural-errors-scanned/d9f208b5bceff489/source.pdf",
+      "version": "v1",
+      "cells": [
+        {"page": 1, "block_id": "#/mineru/1/table/5", "row": 0, "column": 0, "expected": "466.91", "label": "ORNL report page 54; resonance energy control"},
+        {"page": 1, "block_id": "#/mineru/1/table/5", "row": 0, "column": 1, "expected": "467.15", "label": "ORNL report page 54; updated resonance energy control"},
+        {"page": 1, "block_id": "#/mineru/1/table/5", "row": 2, "column": 0, "expected": "0.49502E-04", "label": "ORNL report page 54; small scientific-notation control"},
+        {"page": 1, "block_id": "#/mineru/1/table/5", "row": 2, "column": 1, "expected": "0.52906E-04", "label": "ORNL report page 54; updated small scientific-notation control"},
+        {"page": 1, "block_id": "#/mineru/1/table/11", "row": 2, "column": 0, "expected": "0.52080E-01", "label": "ORNL report page 54; sample-thickness control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 2, "column": 0, "expected": "0.94888", "label": "ORNL report page 55; fractional-abundance control"},
+        {"page": 2, "block_id": "#/mineru/2/table/19", "row": 2, "column": 2, "expected": "0.66121D-03", "label": "ORNL report page 55; valid Fortran D-exponent control"},
+        {"page": 2, "block_id": "#/mineru/2/table/24", "row": 2, "column": 1, "expected": "0.53836E-02", "label": "ORNL report page 55; updated resonance-width control"},
+        {"page": 3, "block_id": "#/mineru/3/table/37", "row": 2, "column": 1, "expected": "-0.20693E-01", "label": "ORNL report page 56; signed scientific-notation control"},
+        {"page": 3, "block_id": "#/mineru/3/table/43", "row": 2, "column": 1, "expected": "0.94810", "label": "ORNL report page 56; fractional-abundance control adjacent to a bad exponent"},
+        {"page": 3, "block_id": "#/mineru/3/table/48", "row": 0, "column": 2, "expected": "0.48384E-02", "label": "ORNL report page 56; error-column control"},
+        {"page": 3, "block_id": "#/mineru/3/table/48", "row": 5, "column": 1, "expected": "0.35905E-02", "label": "ORNL report page 56; same crop as the leading-digit error"},
+        {"page": 4, "block_id": "#/mineru/4/table/53", "row": 2, "column": 1, "expected": "0.56053E-04", "label": "ORNL report page 57; late-iteration small-value control"},
+        {"page": 4, "block_id": "#/mineru/4/table/53", "row": 8, "column": 1, "expected": "0.82585E-03", "label": "ORNL report page 57; repeated-digit control"},
+        {"page": 4, "block_id": "#/mineru/4/table/55", "row": 1, "column": 0, "expected": "-0.17400D-01", "label": "ORNL report page 57; signed Fortran D-exponent control"},
+        {"page": 4, "block_id": "#/mineru/4/table/55", "row": 1, "column": 2, "expected": "0.67549D-01", "label": "ORNL report page 57; positive Fortran D-exponent control"},
+        {"page": 4, "block_id": "#/mineru/4/table/61", "row": 1, "column": 0, "expected": "-0.19608D-02", "label": "ORNL report page 57; repeated signed D-exponent control"},
+        {"page": 4, "block_id": "#/mineru/4/table/61", "row": 2, "column": 2, "expected": "0.25027D-02", "label": "ORNL report page 57; final error-column D-exponent control"}
+      ]
+    }
+  ]
+}

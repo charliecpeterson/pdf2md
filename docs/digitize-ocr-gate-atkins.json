@@ -1,0 +1,200 @@
+{
+  "figures": 1269,
+  "seconds": 174.005,
+  "ocr_candidates_without_gate": 753,
+  "labelled_ocr_recoveries": 12,
+  "target_rows": [
+    {
+      "block_id": "#/pictures/74",
+      "page": 78,
+      "target": true,
+      "series_geometry": true,
+      "frames": 13,
+      "polylines": 35,
+      "inside_paths": 4,
+      "wide_nonflat": 4,
+      "max_x_ratio": 4.0,
+      "max_wide_y_ratio": 3.0
+    },
+    {
+      "block_id": "#/pictures/96",
+      "page": 98,
+      "target": true,
+      "series_geometry": true,
+      "frames": 4,
+      "polylines": 142,
+      "inside_paths": 178,
+      "wide_nonflat": 10,
+      "max_x_ratio": 7.0438,
+      "max_wide_y_ratio": 4.8478
+    },
+    {
+      "block_id": "#/pictures/98",
+      "page": 105,
+      "target": true,
+      "series_geometry": true,
+      "frames": 1,
+      "polylines": 64,
+      "inside_paths": 18,
+      "wide_nonflat": 3,
+      "max_x_ratio": 1.0,
+      "max_wide_y_ratio": 1.0
+    },
+    {
+      "block_id": "#/pictures/138",
+      "page": 152,
+      "target": true,
+      "series_geometry": true,
+      "frames": 1,
+      "polylines": 112,
+      "inside_paths": 42,
+      "wide_nonflat": 4,
+      "max_x_ratio": 1.0966,
+      "max_wide_y_ratio": 1.0
+    },
+    {
+      "block_id": "#/pictures/234",
+      "page": 220,
+      "target": true,
+      "series_geometry": true,
+      "frames": 1,
+      "polylines": 26,
+      "inside_paths": 24,
+      "wide_nonflat": 3,
+      "max_x_ratio": 1.0004,
+      "max_wide_y_ratio": 1.0086
+    },
+    {
+      "block_id": "#/pictures/456",
+      "page": 403,
+      "target": true,
+      "series_geometry": true,
+      "frames": 2,
+      "polylines": 89,
+      "inside_paths": 44,
+      "wide_nonflat": 5,
+      "max_x_ratio": 1.0,
+      "max_wide_y_ratio": 1.0025
+    },
+    {
+      "block_id": "#/pictures/806",
+      "page": 616,
+      "target": true,
+      "series_geometry": true,
+      "frames": 22,
+      "polylines": 13,
+      "inside_paths": 21,
+      "wide_nonflat": 13,
+      "max_x_ratio": 4.0361,
+      "max_wide_y_ratio": 3.7676
+    },
+    {
+      "block_id": "#/pictures/807",
+      "page": 617,
+      "target": true,
+      "series_geometry": true,
+      "frames": 19,
+      "polylines": 10,
+      "inside_paths": 14,
+      "wide_nonflat": 7,
+      "max_x_ratio": 4.0401,
+      "max_wide_y_ratio": 3.6275
+    },
+    {
+      "block_id": "#/pictures/1056",
+      "page": 792,
+      "target": true,
+      "series_geometry": true,
+      "frames": 37,
+      "polylines": 5,
+      "inside_paths": 3,
+      "wide_nonflat": 3,
+      "max_x_ratio": 5.0205,
+      "max_wide_y_ratio": 8.849
+    },
+    {
+      "block_id": "#/pictures/1217",
+      "page": 955,
+      "target": true,
+      "series_geometry": true,
+      "frames": 17,
+      "polylines": 105,
+      "inside_paths": 45,
+      "wide_nonflat": 4,
+      "max_x_ratio": 4.0001,
+      "max_wide_y_ratio": 4.0
+    },
+    {
+      "block_id": "#/pictures/1225",
+      "page": 961,
+      "target": true,
+      "series_geometry": true,
+      "frames": 8,
+      "polylines": 89,
+      "inside_paths": 66,
+      "wide_nonflat": 6,
+      "max_x_ratio": 8.0559,
+      "max_wide_y_ratio": 1.0838
+    },
+    {
+      "block_id": "#/pictures/1248",
+      "page": 978,
+      "target": true,
+      "series_geometry": true,
+      "frames": 1,
+      "polylines": 51,
+      "inside_paths": 3,
+      "wide_nonflat": 3,
+      "max_x_ratio": 1.0071,
+      "max_wide_y_ratio": 1.0
+    }
+  ],
+  "single_feature_thresholds": [
+    {
+      "field": "inside_paths",
+      "positive_floor": 3,
+      "kept": 498,
+      "targets_kept": 12
+    },
+    {
+      "field": "wide_nonflat",
+      "positive_floor": 3,
+      "kept": 382,
+      "targets_kept": 12
+    },
+    {
+      "field": "max_x_ratio",
+      "positive_floor": 1.0,
+      "kept": 549,
+      "targets_kept": 12
+    },
+    {
+      "field": "max_wide_y_ratio",
+      "positive_floor": 1.0,
+      "kept": 551,
+      "targets_kept": 12
+    }
+  ],
+  "candidate_rules": [
+    {
+      "rule": "series geometry can produce data",
+      "kept": 657,
+      "targets_kept": 12
+    },
+    {
+      "rule": "wide_nonflat >= 2",
+      "kept": 503,
+      "targets_kept": 12
+    },
+    {
+      "rule": "x_span >= 1 and y_span >= 1",
+      "kept": 502,
+      "targets_kept": 12
+    },
+    {
+      "rule": "chart geometry",
+      "kept": 361,
+      "targets_kept": 12
+    }
+  ]
+}

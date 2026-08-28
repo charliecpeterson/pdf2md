@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "purpose": "Source-pinned table row-key recognition across four document typefaces and scan conditions.",
+  "minimum_score": 0.99,
+  "documents": [
+    {
+      "id": "dolg-table-iii",
+      "source": "dolg-ecp.pdf",
+      "source_sha256": "24f433c4edfb3f419016b2a90b4aecd989394925685ade3fe3efa66c3665011a",
+      "typeface": "born-digital serif with chemical subscripts",
+      "role": "development",
+      "records_from": "out/reviews/table-key-reader/report.json",
+      "crop_dir": "out/reviews/table-key-reader/crops"
+    },
+    {
+      "id": "fischer-radial-grid",
+      "source": "1-s2.0-S0092640X72800081-main.pdf",
+      "source_sha256": "0685e8d85e2237d8795a1fb48df01fba50a7a79cf207787cce31955487d0eb47",
+      "typeface": "low-resolution dot-matrix scan",
+      "role": "development",
+      "page": 30,
+      "source_crop": "out/0685e8d85e2237d8/v5/assets/mineru_30_table_120_p30.png",
+      "samples": [
+        {"id": "radius-00001", "expected": "0.0001", "primary": "0.0001", "box": [50, 134, 140, 164]},
+        {"id": "radius-00002", "expected": "0.0002", "primary": "0.0002", "box": [50, 160, 140, 182]},
+        {"id": "radius-00004", "expected": "0.0004", "primary": "0.0004", "box": [50, 203, 140, 225]},
+        {"id": "radius-00006", "expected": "0.0006", "primary": "0.0006", "box": [50, 225, 140, 247]},
+        {"id": "radius-00008", "expected": "0.0008", "primary": "0.0008", "box": [50, 246, 140, 269]},
+        {"id": "radius-00010", "expected": "0.0010", "primary": "0.0010", "box": [50, 269, 140, 290]},
+        {"id": "radius-00015", "expected": "0.0015", "primary": "0.0015", "box": [50, 312, 140, 334]},
+        {"id": "radius-00020", "expected": "0.0020", "primary": "0.0020", "box": [50, 335, 140, 357]},
+        {"id": "radius-00025", "expected": "0.0025", "primary": "0.0025", "box": [50, 356, 140, 378]},
+        {"id": "radius-00030", "expected": "0.0030", "primary": "0.0030", "box": [50, 378, 140, 401]},
+        {"id": "radius-00035", "expected": "0.0035", "primary": "0.0035", "box": [50, 399, 140, 423]},
+        {"id": "radius-00040", "expected": "0.0040", "primary": "0.0040", "box": [50, 421, 140, 445]}
+      ]
+    },
+    {
+      "id": "slater-one-electron-energies",
+      "source": "slater-quantum_theory_of_atomic_structure-vol1.pdf",
+      "source_sha256": "cc30d2877cfb32b45135a6ab36dfb903eddcacaf8427f025d482074bb3ca56d6",
+      "typeface": "degraded mid-century book scan",
+      "role": "development",
+      "page": 215,
+      "source_crop": "out/agent-full-books/cc30d2877cfb32b4/v1/assets/mineru_215_table_1680_p215.png",
+      "samples": [
+        {"id": "element-h", "expected": "H 1", "primary": "H 1", "box": [20, 108, 150, 162]},
+        {"id": "element-he", "expected": "He 2", "primary": "He 2", "box": [20, 162, 150, 202]},
+        {"id": "element-li", "expected": "Li 3", "primary": "Li 3", "box": [20, 198, 150, 238]},
+        {"id": "element-cl", "expected": "Cl 17", "primary": "Cl 17", "box": [20, 701, 150, 742]},
+        {"id": "element-a", "expected": "A 18", "primary": "A 18", "box": [20, 738, 150, 778]},
+        {"id": "element-ni", "expected": "Ni 28", "primary": "Ni 28", "box": [20, 1097, 150, 1138]},
+        {"id": "element-cu", "expected": "Cu 29", "primary": "Cu 29", "box": [20, 1134, 150, 1174]},
+        {"id": "element-zn", "expected": "Zn 30", "primary": "Zn 30", "box": [20, 1170, 150, 1210]},
+        {"id": "element-kr", "expected": "Kr 36", "primary": "Kr 36", "box": [20, 1385, 150, 1426]},
+        {"id": "element-rb", "expected": "Rb 37", "primary": "Rb 37", "box": [20, 1421, 150, 1462]},
+        {"id": "element-zr", "expected": "Zr 40", "primary": "Zr 40", "box": [20, 1529, 150, 1570]},
+        {"id": "element-nb", "expected": "Nb 41", "primary": "Nb 41", "box": [20, 1565, 150, 1612]}
+      ]
+    },
+    {
+      "id": "grasp-orbital-iteration",
+      "source": "GRASP2018-manual.pdf",
+      "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+      "typeface": "born-digital monospaced program-output table",
+      "role": "held_out",
+      "page": 289,
+      "source_crop": "out/reviews/line-reader-v6/holdout/grasp-page-289.png",
+      "samples": [
+        {"id": "orbital-3s", "expected": "3s", "primary": "3s", "box": [400, 430, 500, 476]},
+        {"id": "orbital-3p-minus", "expected": "3p-", "primary": "3p-", "box": [400, 480, 500, 530]},
+        {"id": "orbital-3p", "expected": "3p", "primary": "3p", "box": [400, 529, 500, 579]},
+        {"id": "orbital-3d-minus", "expected": "3d-", "primary": "3d-", "box": [400, 579, 500, 625]},
+        {"id": "orbital-3d", "expected": "3d", "primary": "3d", "box": [400, 629, 500, 675]},
+        {"id": "orbital-4s", "expected": "4s", "primary": "4s", "box": [400, 679, 500, 725]},
+        {"id": "orbital-4p-minus", "expected": "4p-", "primary": "4p-", "box": [400, 729, 500, 775]},
+        {"id": "orbital-4p", "expected": "4p", "primary": "4p", "box": [400, 779, 500, 825]},
+        {"id": "orbital-4d-minus", "expected": "4d-", "primary": "4d-", "box": [400, 828, 500, 874]},
+        {"id": "orbital-4d", "expected": "4d", "primary": "4d", "box": [400, 878, 500, 924]},
+        {"id": "orbital-4f-minus", "expected": "4f-", "primary": "4f-", "box": [400, 928, 500, 974]},
+        {"id": "orbital-4f", "expected": "4f", "primary": "4f", "box": [400, 978, 500, 1024]},
+        {"id": "orbital-5s", "expected": "5s", "primary": "5s", "box": [400, 1029, 500, 1075]},
+        {"id": "orbital-5p-minus", "expected": "5p-", "primary": "5p-", "box": [400, 1078, 500, 1124]},
+        {"id": "orbital-5p", "expected": "5p", "primary": "5p", "box": [400, 1128, 500, 1174]},
+        {"id": "orbital-5d-minus", "expected": "5d-", "primary": "5d-", "box": [400, 1178, 500, 1224]},
+        {"id": "orbital-5d", "expected": "5d", "primary": "5d", "box": [400, 1228, 500, 1274]},
+        {"id": "orbital-6s", "expected": "6s", "primary": "6s", "box": [400, 1277, 500, 1323]},
+        {"id": "orbital-6p-minus", "expected": "6p-", "primary": "6p-", "box": [400, 1326, 500, 1372]},
+        {"id": "orbital-6p", "expected": "6p", "primary": "6p", "box": [400, 1376, 500, 1422]}
+      ]
+    }
+  ]
+}

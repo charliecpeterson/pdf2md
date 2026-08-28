@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "method": "render_back_band_calibration",
+  "crop_recipe": {
+    "dpi": 220,
+    "padding_pts": 6.0
+  },
+  "inputs": {
+    "labels_sha256": "af6eac48c4909d7dbbf8f57c45746a89b32efd221afa9292c46cf3d024484f5d",
+    "recovery_corpus_sha256": "32e146d65d9848555a1f4eb63676797e75244ddae28b57526ea5a922371bb881"
+  },
+  "summary": {
+    "positive_truth_ceiling": {
+      "n": 8,
+      "min": 0.113,
+      "median": 0.274,
+      "max": 0.373
+    },
+    "positive_production_exact": {
+      "n": 3,
+      "min": 0.297,
+      "median": 0.337,
+      "max": 0.366
+    },
+    "negative_natural_production": {
+      "n": 3,
+      "min": 0.11,
+      "median": 0.302,
+      "max": 0.345
+    },
+    "negative_synthetic_corruptions": {
+      "n": 15,
+      "min": 0.114,
+      "median": 0.271,
+      "max": 0.397
+    },
+    "separation": {
+      "min_positive_above_max_negative": false,
+      "current_bands": {
+        "similar_above": 0.7,
+        "dissimilar_below": 0.45
+      }
+    }
+  },
+  "results": [
+    {
+      "source": "1706.03762v7.pdf",
+      "block_id": "#/texts/88",
+      "page": 4,
+      "kind": "born-digital",
+      "positive_truth": {
+        "verdict": "dissimilar",
+        "score": 0.304,
+        "topology_iou": 0.084,
+        "aspect_agreement": 0.816
+      },
+      "positive_production_exact": null,
+      "negative_production": {
+        "verdict": "dissimilar",
+        "score": 0.302,
+        "topology_iou": 0.064,
+        "aspect_agreement": 0.858
+      },
+      "negatives_synthetic": [
+        {
+          "kind": "drop-subscript",
+          "verdict": "dissimilar",
+          "score": 0.331,
+          "topology_iou": 0.102,
+          "aspect_agreement": 0.866
+        }
+      ]
+    },
+    {
+      "source": "1706.03762v7.pdf",
+      "block_id": "#/texts/106",
+      "page": 5,
+      "kind": "born-digital",
+      "positive_truth": {
+        "verdict": "dissimilar",
+        "score": 0.276,
+        "topology_iou": 0.122,
+        "aspect_agreement": 0.635
+      },
+      "positive_production_exact": {
+        "verdict": "dissimilar",
+        "score": 0.297,
+        "topology_iou": 0.124,
+        "aspect_agreement": 0.701
+      },
+      "negative_production": null,
+      "negatives_synthetic": [
+        {
+          "kind": "drop-subscript",
+          "verdict": "dissimilar",
+          "score": 0.268,
+          "topology_iou": 0.118,
+          "aspect_agreement": 0.617
+        },
+        {
+          "kind": "term-drop",
+          "verdict": "dissimilar",
+          "score": 0.232,
+          "topology_iou": 0.097,
+          "aspect_agreement": 0.546
+        }
+      ]
+    },
+    {
+      "source": "1706.03762v7.pdf",
+      "block_id": "#/texts/115",
+      "page": 6,
+      "kind": "born-digital",
+      "positive_truth": {
+        "verdict": "dissimilar",
+        "score": 0.119,
+        "topology_iou": 0.084,
+        "aspect_agreement": 0.201
+      },
+      "positive_production_exact": null,
+      "negative_production": {
+        "verdict": "dissimilar",
+        "score": 0.11,
+        "topology_iou": 0.102,
+        "aspect_agreement": 0.129
+      },
+      "negatives_synthetic": [
+        {
+          "kind": "drop-subscript",
+          "verdict": "dissimilar",
+          "score": 0.121,
+          "topology_iou": 0.079,
+          "aspect_agreement": 0.219
+        },
+        {
+          "kind": "term-drop",
+          "verdict": "unrenderable"
+        }
+      ]
+    },
+    {
+      "source": "1706.03762v7.pdf",
+      "block_id": "#/texts/134",
+      "page": 7,
+      "kind": "born-digital",
+      "positive_truth": {
+        "verdict": "dissimilar",
+        "score": 0.373,
+        "topology_iou": 0.18,
+        "aspect_agreement": 0.824
+      },
+      "positive_production_exact": null,
+      "negative_production": {
+        "verdict": "dissimilar",
+        "score": 0.345,
+        "topology_iou": 0.198,
+        "aspect_agreement": 0.688
+      },
+      "negatives_synthetic": [
+        {
+          "kind": "drop-subscript",
+          "verdict": "dissimilar",
+          "score": 0.397,
+          "topology_iou": 0.167,
+          "aspect_agreement": 0.932
+        }
+      ]
+    },
+    {
+      "source": "slater-50page.pdf",
+      "block_id": "#/texts/111",
+      "page": 22,
+      "status": "no_pinned_artifact"
+    },
+    {
+      "source": "slater-50page.pdf",
+      "block_id": "#/texts/121",
+      "page": 23,
+      "status": "no_pinned_artifact"
+    },
+    {
+      "source": "slater-50page.pdf",
+      "block_id": "#/texts/141",
+      "page": 26,
+      "status": "no_pinned_artifact"
+    },
+    {
+      "source": "slater-50page.pdf",
+      "block_id": "#/texts/168",
+      "page": 29,
+      "status": "no_pinned_artifact"
+    },
+    {
+      "source": "2207.10841v3.pdf",
+      "block_id": "#/texts/31",
+      "page": 6,
+      "kind": "born-digital",
+      "positive_truth": {
+        "verdict": "dissimilar",
+        "score": 0.26,
+        "topology_iou": 0.07,
+        "aspect_agreement": 0.703
+      },
+      "positive_production_exact": {
+        "verdict": "dissimilar",
+        "score": 0.366,
+        "topology_iou": 0.1,
+        "aspect_agreement": 0.986
+      },
+      "negative_production": null,
+      "negatives_synthetic": [
+        {
+          "kind": "drop-subscript",
+          "verdict": "dissimilar",
+          "score": 0.26,
+          "topology_iou": 0.071,
+          "aspect_agreement": 0.703
+        },
+        {
+          "kind": "fraction-swap",
+          "verdict": "dissimilar",
+          "score": 0.318,
+          "topology_iou": 0.097,
+          "aspect_agreement": 0.835
+        },
+        {
+          "kind": "symbol-swap",
+          "verdict": "dissimilar",
+          "score": 0.263,
+          "topology_iou": 0.074,
+          "aspect_agreement": 0.706
+        },
+        {
+          "kind": "term-drop",
+          "verdict": "dissimilar",
+          "score": 0.202,
+          "topology_iou": 0.077,
+          "aspect_agreement": 0.495
+        }
+      ]
+    },
+    {
+      "source": "2207.10841v3.pdf",
+      "block_id": "#/texts/36",
+      "page": 6,
+      "kind": "born-digital",
+      "positive_truth": {
+        "verdict": "dissimilar",
+        "score": 0.282,
+        "topology_iou": 0.091,
+        "aspect_agreement": 0.728
+      },
+      "positive_production_exact": {
+        "verdict": "dissimilar",
+        "score": 0.337,
+        "topology_iou": 0.101,
+        "aspect_agreement": 0.888
+      },
+      "negative_production": null,
+      "negatives_synthetic": [
+        {
+          "kind": "drop-subscript",
+          "verdict": "dissimilar",
+          "score": 0.297,
+          "topology_iou": 0.099,
+          "aspect_agreement": 0.758
+        },
+        {
+          "kind": "fraction-swap",
+          "verdict": "dissimilar",
+          "score": 0.339,
+          "topology_iou": 0.071,
+          "aspect_agreement": 0.965
+        },
+        {
+          "kind": "symbol-swap",
+          "verdict": "dissimilar",
+          "score": 0.279,
+          "topology_iou": 0.085,
+          "aspect_agreement": 0.73
+        },
+        {
+          "kind": "term-drop",
+          "verdict": "unrenderable"
+        }
+      ]
+    },
+    {
+      "source": "GRASP2018-manual.pdf",
+      "block_id": "#/mineru/34/equation/343",
+      "page": 34,
+      "kind": "born-digital",
+      "positive_truth": {
+        "verdict": "dissimilar",
+        "score": 0.271,
+        "topology_iou": 0.095,
+        "aspect_agreement": 0.684
+      },
+      "positive_production_exact": {
+        "verdict": "unrenderable"
+      },
+      "negative_production": null,
+      "negatives_synthetic": [
+        {
+          "kind": "drop-subscript",
+          "verdict": "dissimilar",
+          "score": 0.285,
+          "topology_iou": 0.09,
+          "aspect_agreement": 0.74
+        },
+        {
+          "kind": "symbol-swap",
+          "verdict": "dissimilar",
+          "score": 0.271,
+          "topology_iou": 0.093,
+          "aspect_agreement": 0.684
+        },
+        {
+          "kind": "term-drop",
+          "verdict": "unrenderable"
+        }
+      ]
+    },
+    {
+      "source": "GRASP2018-manual.pdf",
+      "block_id": "#/mineru/35/equation/348",
+      "page": 35,
+      "kind": "born-digital",
+      "positive_truth": {
+        "verdict": "dissimilar",
+        "score": 0.113,
+        "topology_iou": 0.057,
+        "aspect_agreement": 0.244
+      },
+      "positive_production_exact": {
+        "verdict": "unrenderable"
+      },
+      "negative_production": null,
+      "negatives_synthetic": [
+        {
+          "kind": "symbol-swap",
+          "verdict": "dissimilar",
+          "score": 0.114,
+          "topology_iou": 0.058,
+          "aspect_agreement": 0.244
+        }
+      ]
+    }
+  ]
+}
