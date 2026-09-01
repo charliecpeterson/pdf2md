@@ -1485,6 +1485,28 @@ def test_assess_equation():
     assert assess_equation(r"[ \text {Core} ] 4 \sigma", "[Core]4σ") is None
 
 
+def test_latex_tokens_do_not_weld_across_structure():
+    from pdf2md.confidence import _latex_tokens
+
+    # A command is a token boundary. Deleting it welded a sum's limit onto the
+    # next symbol (`bendsUBEND`) and a fraction onto what followed (`12kBEND`),
+    # which the text layer can never match because the page sets them apart.
+    assert _latex_tokens(r"\sum _ { \text {bends} } U ^ { B E N D }") == {"bends", "UBEND"}
+    # The fraction's parts no longer weld onto what follows; the script still
+    # attaches to its own base, which is how the layer spells it.
+    assert _latex_tokens(r"\frac { 1 } { 2 } k ^ { B E N D }") == {"kBEND"}
+
+    # An environment and its column spec were never visible text.
+    assert _latex_tokens(r"\begin{array}{rlr} P _ { n l } \end{array}") == {"Pnl"}
+
+    # Still rejoins Docling's per-glyph spacing, and still attaches a script to
+    # an alphanumeric base the way the layer draws it.
+    assert _latex_tokens(r"E _ { 0 } ( M R - c c C A )") == {"E0", "MR", "ccCA"}
+
+    # A genuine misread stays a mismatch -- the fix must not launder one away.
+    assert _latex_tokens(r"U ^ { i o t }") == {"Uiot"}
+
+
 def test_unsplit_numbers_protects_values():
     from pdf2md.scripts import apply_scripts
 

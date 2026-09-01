@@ -39,9 +39,21 @@ _TOKEN = re.compile(r"[A-Za-z0-9]{2,}")
 _TEXT_WRAPPER = re.compile(r"\\(?:text|mathrm|mathbf|mathit|operatorname)\s*\{([^{}]*)\}")
 # Operators whose name *is* the visible text (\exp, \max), not a symbol — keep it.
 _TEXT_OP = re.compile(r"\\(max|min|exp|log|ln|sin|cos|tan|det|lim|sup|inf|deg|arg|gcd)(?![a-zA-Z])")
-# Docling spaces out every glyph (`M R - c c C A`) and wraps scripts in `_{}`/`^{}`;
-# drop the remaining command words and that structure so words rejoin.
-_LATEX_STRUCT = re.compile(r"\\[a-zA-Z]+|[_^{}\s]")
+# An environment declaration and its column spec (`\begin{array}{rlr}`) is markup
+# that was never visible text; leaving it in put `array` and `rlr` in the token
+# set, where they can only count as content the text layer appears to be missing.
+_ENVIRONMENT = re.compile(r"\\(?:begin|end)\s*\{[^{}]*\}(?:\s*\{[^{}]*\})?")
+# A script group attaches to its base the way the text layer draws it, so `E_{0}`
+# reads as `E0`. Only after an alphanumeric: a limit hanging off a command
+# (`\sum_{bends}`) is set apart on the page, not glued to the operator.
+_SCRIPT_GROUP = re.compile(r"(?<=[A-Za-z0-9])[_^]\{([^{}]*)\}")
+_SCRIPT_CHAR = re.compile(r"(?<=[A-Za-z0-9])[_^]([A-Za-z0-9])")
+# A command marks a token boundary, held as a sentinel because whitespace is
+# about to be removed and so cannot mark it. Docling spaces out every glyph
+# (`M R - c c C A`), and that strip is what rejoins the word.
+_COMMAND = re.compile(r"\\[a-zA-Z]+")
+_BOUNDARY = "\x00"
+_STRUCT = re.compile(r"[\x00_^{}]")
 
 
 def is_clean(text: str) -> bool:
@@ -57,9 +69,26 @@ def is_clean(text: str) -> bool:
 
 
 def _latex_tokens(latex: str) -> set[str]:
-    s = _TEXT_WRAPPER.sub(r"\1", latex)
+    """Visible tokens of an equation's LaTeX, as the text layer would spell them.
+
+    Order is load-bearing. Commands become boundaries *before* whitespace is
+    stripped, because the strip is what rejoins Docling's per-glyph spacing and
+    would otherwise weld separate symbols into one token. Deleting the structure
+    outright, as this did, produced tokens no layer could ever match:
+    `\\frac{1}{2} k^{BEND}` came out as `12kBEND` against a layer holding `1`,
+    `2`, `k` and `BEND`, and `\\sum_{\\text{bends}} U^{BEND}` as `bendsUBEND`.
+    Those welds were the largest single source of apparent disagreement between
+    correct LaTeX and the layer.
+    """
+    s = _ENVIRONMENT.sub(" ", latex)
+    s = _TEXT_WRAPPER.sub(r"\1", s)
     s = _TEXT_OP.sub(r"\1", s)
-    return set(_TOKEN.findall(_LATEX_STRUCT.sub("", s)))
+    s = _COMMAND.sub(_BOUNDARY, s)
+    s = re.sub(r"\s+", "", s)
+    while (joined := _SCRIPT_GROUP.sub(r"\1", s)) != s:  # nested scripts
+        s = joined
+    s = _SCRIPT_CHAR.sub(r"\1", s)
+    return set(_TOKEN.findall(_STRUCT.sub(" ", s)))
 
 
 def assess_equation(latex: str, text_layer: str) -> tuple[float, str | None] | None:
