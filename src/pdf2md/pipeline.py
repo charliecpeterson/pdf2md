@@ -1017,9 +1017,13 @@ def _warn_about_scan_overlays(pdf_path: Path, ocr_pages: set[int], config: Confi
     """Say so when a document is a scan carrying someone else's OCR.
 
     Detecting it gets the posture right — crops authoritative, cells candidates —
-    but the transcription is still whoever digitised the paper. On a 1972 scan
-    theirs left 22% of numeric tokens malformed where a re-OCR left 8%, so the
-    reader should be told there is a better reading available for the asking."""
+    but the transcription is still whoever digitised the paper, and on an old
+    scan that is the worst reading available. Measured over all 99 pages of a
+    1972 data-table paper: the embedded layer leaves 22.9% of value tokens
+    malformed and recovers 21% of each page's printed row grid, where MinerU
+    leaves 0.6% and recovers 99%. A re-OCR through --force-ocr sits between them
+    (8% on a three-page sample). Naming the better path is the point of the
+    warning."""
     if not ocr_pages or config.force_ocr:
         return
     with GlyphIndex(pdf_path) as glyphs:
@@ -1027,9 +1031,11 @@ def _warn_about_scan_overlays(pdf_path: Path, ocr_pages: set[int], config: Confi
     if overlaid:
         log.warning(
             "%d page(s) are scans carrying an embedded OCR text layer; that text is "
-            "kept as a candidate beside the authoritative crops. Re-run with "
-            "--force-ocr to transcribe them afresh, which on a measured 1972 scan "
-            "cut malformed numeric tokens from 22%% to 8%%.",
+            "kept as a candidate beside the authoritative crops and is only as good "
+            "as whoever digitised the paper. For a fresh transcription re-run with "
+            "--engine mineru, which on a measured 1972 scan cut malformed value "
+            "tokens from 22.9%% to 0.6%%; --force-ocr is the fallback where MinerU "
+            "is unavailable.",
             overlaid,
         )
 

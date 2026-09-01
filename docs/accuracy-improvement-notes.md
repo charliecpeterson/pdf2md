@@ -66,6 +66,32 @@ tables degraded only in lane resolution, never content, and lanes are the one
 thing the engine gets right. It is written as `data/tables/<block>.glyph.md`
 beside the engine's grid, never as the emitted table.
 
+Engine choice on a scan carrying someone else's OCR (2026-08-31, all 99 pages
+of Atomic Data 4, 301-399, S0092640X72800081, `--no-formula --force`):
+
+Ground truth without labels: every atom in that paper is tabulated on the same
+radius grid, so the grid the two engines between them establish is the printed
+one. It came out at 97 values and matches the page exactly. Scoring each engine
+against the union means neither is judged by its own self-consistency -- an
+engine that misreads a value consistently shows up as missing it, not as
+redefining the grid.
+
+| | tables | pages with a grid | mean grid recovery | >95% recovered | value tokens | malformed |
+|---|---|---|---|---|---|---|
+| MinerU | 145 | 69 | 99% | 67 | 73,342 | 0.6% |
+| Docling on the embedded layer | 82 | 68 | 21% | 0 | 70,583 | 22.9% |
+
+Docling's failures are the 1972 OCR showing through unchanged: `0,0002`,
+`O.O001`, `0.000[`. MinerU's 450 are almost all header strings the token filter
+cannot classify (`ZETA(4D)`, `1/R**3`), not misread values. The row/grid audit
+reaches the same verdict by a different route: 1 of MinerU's 145 tables carries
+a structural finding against 79 of Docling's 82.
+
+Caveat on what was measured: the radius column is the row *label*, chosen
+because it is the one column with checkable structure. There is no independent
+ground truth here for the wavefunction values themselves -- only that they are
+well-formed and that the two engines' structures now agree.
+
 Engine-differential concordance (2026-08-31, `scripts/eval_engine_table_agreement.py`
 over the ten-document corpus converted by both Docling and MinerU, 61 matched
 tables from 9 documents):

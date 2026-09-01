@@ -52,9 +52,10 @@ here.
   never does. Geometry alone conflates it with a full-page figure plate; render mode
   separates them by construction. Across 44 documents and 828 pages it flags 30/30 pages of
   that scan and nothing else. The pipeline also warns that a fresh transcription is
-  available: measured on three of those pages, the embedded layer leaves 22% of numeric
-  tokens malformed, `--force-ocr` 8%, and `--engine mineru` 1% with 3.4x as many tokens
-  recovered.
+  available, and names the engine worth reaching for: measured over all 99 pages of that
+  paper, the embedded layer recovers 21% of each page's printed row grid with 22.9% of value
+  tokens malformed, where MinerU recovers 99% with 0.6%, on 145 tables against 82.
+  `--force-ocr` sits between them at 8% on a three-page sample.
 - Scanned tables get row accounting too. Everything else in the table audit needs glyph
   geometry, so on a scanned page it refused and a dropped row went unreported — on exactly
   the documents where extraction is worst. `raster_row_findings` reads the table's own crop

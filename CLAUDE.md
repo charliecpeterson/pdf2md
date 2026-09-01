@@ -331,10 +331,14 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   `page_chars` then reports those pages as having no layer, so the existing scanned-page
   machinery takes over.
 - **Detecting the overlay fixes the posture, not the transcription.** The kept text is still
-  whoever digitised the paper. Measured on three pages of a 1972 data table: Docling on the
-  embedded layer left 22% of numeric tokens malformed, `--force-ocr` 8%, and `--engine
-  mineru` 1% while recovering 3.4x as many tokens. The pipeline warns and names `--force-ocr`
-  when it detects the case; MinerU is the better answer where it is available.
+  whoever digitised the paper, and on an old scan that is the worst reading available.
+  Measured over all 99 pages of a 1972 data table, scored against the printed row grid the
+  two engines between them establish (97 values, no labels needed — every atom's table uses
+  the same grid): Docling on the embedded layer recovers 21% of each page's grid with 22.9%
+  of value tokens malformed, and MinerU 99% with 0.6%, on 145 tables against 82. The audit
+  built here agrees independently: 1 of MinerU's 145 tables carries a structural finding
+  against 79 of Docling's 82. `--force-ocr` sits between them (8% on a three-page sample).
+  The pipeline warns and names `--engine mineru` when it detects the case.
 - **`--force-ocr` re-OCRs the page and suppresses the glyph layer.** For a PDF whose
   embedded text is itself bad OCR, the engine OCRs full pages (`force_full_page_ocr`) and
   `GlyphIndex(force_ocr=True)` reports every page as having no text — so the doc is treated
