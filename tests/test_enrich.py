@@ -644,3 +644,30 @@ def test_word_recall_does_not_invent_a_join_the_output_lacks():
     # `be` + `ta` joins to `beta`, which the output has; `gamma` does not, so it
     # stays a genuine loss.
     assert p.extra["glyph_word_recall"] == {"matched": 2, "total": 3, "strict": 2}
+
+
+def test_a_shattered_fragment_is_not_measured_for_recall():
+    # Docling breaks a display equation into blocks of one or two characters.
+    # A recall ratio over one or two tokens says nothing, and these were 30 of
+    # the 46 low-recall blocks with three source tokens or fewer.
+    b = Block(id="#/f", type=BlockType.PARAGRAPH, text="aT", page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="aT r")}))
+    assert "glyph_word_recall" not in b.extra
+
+
+def test_a_block_that_lost_everything_is_still_measured():
+    # Both sides have to be small. A region holding a paragraph that emits two
+    # characters is a catastrophic loss, not a fragment, and must still count.
+    b = Block(id="#/p", type=BlockType.PARAGRAPH, text="aT", page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs(
+        {1: _FakePC(text="the equilibrium constant depends on temperature and pressure")}))
+    rec = b.extra["glyph_word_recall"]
+    assert rec["total"] == 8 and rec["matched"] == 0
+
+
+def test_a_short_list_entry_is_not_mistaken_for_a_fragment():
+    # `Simple mixtures` missing its printed `5` is a real list-marker case with
+    # fifteen characters of output, not a shattered glyph.
+    b = Block(id="#/l", type=BlockType.LIST, text="Simple mixtures", page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="5 Simple mixtures")}))
+    assert b.extra["glyph_word_recall"]["list_marker_only"] is True

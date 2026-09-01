@@ -437,6 +437,13 @@ def _table_grid(raw: RawTable, pc: PageChars, vocab, *, escape: bool) -> list[Gr
 # already loaded here; the document-level numeric check runs once after emit.
 # Both are informational signals — nothing downstream rewrites a block.
 
+# What counts as a shattered fragment rather than content: both the emitted
+# text and its source region are this small. Sized so a contents entry like
+# `Simple mixtures` missing its printed `5` stays measured -- that is a real
+# list-marker case with 15 characters of output, not a fragment.
+_FRAGMENT_TOKENS = 3
+_FRAGMENT_CHARS = 3
+
 # Below this fraction of its source-region words surviving, a prose block is
 # counted as low-recall (content likely dropped or garbled, not just reordered).
 # A page is a scanned image with an OCR overlay when one image covers this
@@ -513,7 +520,17 @@ def record_block_recall(block: Block, pc, emitted: str | None = None) -> None:
     src = _recall_words(pc.region_scriptsplit(block.bbox))
     if not src:
         return
-    out = _recall_words(block.text if emitted is None else emitted)
+    content = block.text if emitted is None else emitted
+    # A shattered display equation reaches here as blocks of one or two
+    # characters -- `aT`, `bV`, `T`, `)` -- whose region holds as little. A
+    # ratio over one or two tokens says nothing either way, and 30 of the 46
+    # low-recall blocks with three source tokens or fewer are these. Both sides
+    # have to be tiny: a block whose region holds a hundred words and emits two
+    # characters is a catastrophic loss and stays measured, which is what keeps
+    # the 33 table blocks here (empty `text`, measured against their markup).
+    if len(src) <= _FRAGMENT_TOKENS and len(content.strip()) < _FRAGMENT_CHARS:
+        return
+    out = _recall_words(content)
     src = _split_glued(_rejoin_split(src, Counter(out)), out)
     strict = sum((Counter(src) & Counter(out)).values())
     folded = sum(
