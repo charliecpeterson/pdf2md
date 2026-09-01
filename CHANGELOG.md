@@ -41,6 +41,20 @@ here.
   page evidence; optional GROBID candidates keep the existing fill-gaps-only policy.
 
 ### Added
+- A scan carrying an embedded OCR text layer is now recognised and treated as a scan. It is
+  the one condition under which this project's whole premise inverts: the text layer exists,
+  so nothing routes the page down the scanned path, and every glyph-truth check then
+  verifies the engine against the same corrupted characters and reports agreement. On a 1972
+  data-table paper that meant 79 of 82 tables correctly flagged as structurally broken while
+  `O.00]7` was handed over as a value with no marker, `ocr_pages: 0` and `tables_verified:
+  82`. Detection is two structural properties — one image covering most of the page, and the
+  text over it drawn invisibly, which is what an OCR overlay must do and what page text
+  never does. Geometry alone conflates it with a full-page figure plate; render mode
+  separates them by construction. Across 44 documents and 828 pages it flags 30/30 pages of
+  that scan and nothing else. The pipeline also warns that a fresh transcription is
+  available: measured on three of those pages, the embedded layer leaves 22% of numeric
+  tokens malformed, `--force-ocr` 8%, and `--engine mineru` 1% with 3.4x as many tokens
+  recovered.
 - Scanned tables get row accounting too. Everything else in the table audit needs glyph
   geometry, so on a scanned page it refused and a dropped row went unreported — on exactly
   the documents where extraction is worst. `raster_row_findings` reads the table's own crop

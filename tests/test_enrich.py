@@ -4,6 +4,8 @@ what) that used to live untested inside the Docling adapter."""
 
 from __future__ import annotations
 
+import pytest
+
 from pdf2md.enrich import enrich_blocks, enrich_figures, enrich_tables
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, RawCell, RawTable, TableData
 
@@ -416,3 +418,70 @@ def test_recall_is_not_claimed_where_two_blocks_claim_one_region():
     ]
     marked, _ = recall_review_flags(apart)
     assert {f.block_id for f in marked} == {"#/a", "#/b"}
+
+
+
+class _Obj:
+    def __init__(self, kind, pos=None):
+        self.type, self._pos, self.raw = kind, pos, object()
+
+    def get_pos(self):
+        return self._pos
+
+
+class _Page:
+    """A page as `_detect_overlay` reads one: a size and a list of objects."""
+
+    def __init__(self, objects, size=(200.0, 200.0)):
+        self._objects, self._size = objects, size
+
+    def get_size(self):
+        return self._size
+
+    def get_objects(self):
+        return self._objects
+
+
+def _page(*, image, text_objects, size=(200.0, 200.0)):
+    objects = []
+    if image:
+        objects.append(_Obj(3, image))
+    objects += [_Obj(1) for _ in range(text_objects)]
+    return _Page(objects, size)
+
+
+def test_a_scan_with_an_invisible_ocr_overlay_reads_as_having_no_text_layer(monkeypatch):
+    from pdf2md import enrich
+
+    monkeypatch.setattr(enrich, "_render_mode", lambda obj: 3)  # invisible
+    index = enrich.GlyphIndex.__new__(enrich.GlyphIndex)
+    assert index._detect_overlay(_page(image=(0, 0, 200, 200), text_objects=900))
+
+
+def test_a_full_page_figure_with_labels_is_not_a_scan(monkeypatch):
+    from pdf2md import enrich
+
+    # Identical geometry — a full-page image with text over it — but the text is
+    # drawn visibly, so it is the page's own content rather than an overlay.
+    monkeypatch.setattr(enrich, "_render_mode", lambda obj: 0)  # fill
+    index = enrich.GlyphIndex.__new__(enrich.GlyphIndex)
+    assert index._detect_overlay(_page(image=(0, 0, 200, 200), text_objects=114)) is False
+
+
+def test_a_page_without_a_full_page_image_is_never_a_scan(monkeypatch):
+    from pdf2md import enrich
+
+    monkeypatch.setattr(enrich, "_render_mode", lambda obj: 3)
+    index = enrich.GlyphIndex.__new__(enrich.GlyphIndex)
+    assert index._detect_overlay(_page(image=(10, 10, 60, 60), text_objects=900)) is False
+    assert index._detect_overlay(_page(image=None, text_objects=900)) is False
+
+
+def test_too_little_text_to_judge(monkeypatch):
+    from pdf2md import enrich
+
+    # A full-page plate with a caption under it is not a scan, and neither is a
+    # blank page with a stamp on it.
+    monkeypatch.setattr(enrich, "_render_mode", lambda obj: 3)
+    index = enrich.GlyphIndex.__new__(enrich.GlyphIndex)
+    assert index._detect_overlay(_page(image=(0, 0, 200, 200), text_objects=5)) is False

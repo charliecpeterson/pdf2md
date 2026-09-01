@@ -18,6 +18,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 import pypdfium2 as pdfium
+import pypdfium2.raw as pdfium_c
 
 from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
 from pdf2md.conservation import numeric_accounting, numeric_conservation
@@ -81,6 +82,12 @@ def refilled(text: str, bbox, pc) -> str:
     return reading if reading and not is_garbage(reading) else text
 
 
+def _render_mode(obj) -> int:
+    """A text object's PDF render mode. Its own function so the overlay detector
+    can be exercised without authoring a PDF."""
+    return pdfium_c.FPDFTextObj_GetTextRenderMode(obj.raw)
+
+
 class GlyphIndex:
     """Per-document pypdfium2 glyph access: per-page `PageChars` (cached) and the
     page-text vocabulary (lazy). Engine-independent — built straight from the PDF."""
@@ -88,6 +95,7 @@ class GlyphIndex:
     def __init__(self, pdf_path: Path, *, force_ocr: bool = False) -> None:
         self._pdf = pdfium.PdfDocument(str(pdf_path))
         self._cache: dict[int, PageChars | None] = {}
+        self._overlay: dict[int, bool] = {}
         self._vocab: set[str] | None = None
         # Under --force-ocr the embedded text layer is distrusted, so report every page as
         # having none: the doc is treated as a scan (ocr flag set, glyph-based refill/
@@ -97,6 +105,14 @@ class GlyphIndex:
     def page_chars(self, page_no: int | None) -> PageChars | None:
         if page_no is None or self._force_ocr:
             return None
+        if self.scanned_overlay(page_no):
+            # A digitised scan's OCR layer is not the page's own text: it is one
+            # more reading of the pixels, and on an old scan a bad one. Reporting
+            # it as no layer is what routes the page down the scanned path --
+            # crop authoritative, cells candidates -- instead of letting every
+            # glyph check verify the engine against the same wrong characters and
+            # report agreement.
+            return None
         if page_no not in self._cache:
             try:
                 pc = PageChars(self._pdf[page_no - 1])
@@ -105,6 +121,54 @@ class GlyphIndex:
                 log.warning("char geometry failed on page %d: %s", page_no, exc)
                 self._cache[page_no] = None
         return self._cache[page_no]
+
+    def scanned_overlay(self, page_no: int | None) -> bool:
+        """Whether the page is a scanned image with a text layer drawn over it.
+
+        Two conditions. One image covers most of the page, and the text drawn over
+        it is *invisible* -- render mode 3, which is what an OCR overlay must use
+        so it does not obscure the scan it describes. Geometry alone is not
+        enough: a full-page figure plate carries labels inside its own bounds and
+        looks identical by position. Render mode separates them by construction,
+        and measured across 44 documents it does so cleanly -- a 1972 scan is
+        900 invisible text objects on a full-page image, a figure plate is 114
+        visible ones."""
+        if page_no is None:
+            return False
+        if page_no not in self._overlay:
+            try:
+                self._overlay[page_no] = self._detect_overlay(self._pdf[page_no - 1])
+            except Exception as exc:  # noqa: BLE001 - geometry is best-effort
+                log.warning("scan detection failed on page %d: %s", page_no, exc)
+                self._overlay[page_no] = False
+        return self._overlay[page_no]
+
+    def _detect_overlay(self, page) -> bool:
+        width, height = page.get_size()
+        if width <= 0 or height <= 0:
+            return False
+        cover = None
+        for obj in page.get_objects():
+            if obj.type != _PDFIUM_IMAGE:
+                continue
+            x0, y0, x1, y1 = obj.get_pos()
+            if abs(x1 - x0) * abs(y1 - y0) / (width * height) > _SCAN_IMAGE_COVER:
+                cover = (min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1))
+        if cover is None:
+            return False
+
+        drawn = invisible = 0
+        for obj in page.get_objects():
+            if obj.type != _PDFIUM_TEXT:
+                continue
+            drawn += 1
+            if _render_mode(obj) == _RENDER_INVISIBLE:
+                invisible += 1
+        # Too little text to judge: a full-page figure with a caption under it is
+        # not a scan, and neither is a blank plate.
+        if drawn < _SCAN_MIN_TEXT_OBJECTS:
+            return False
+        return invisible / drawn > _SCAN_INVISIBLE_SHARE
 
     @property
     def page_count(self) -> int:
@@ -308,6 +372,16 @@ def _table_grid(raw: RawTable, pc: PageChars, vocab, *, escape: bool) -> list[Gr
 
 # Below this fraction of its source-region words surviving, a prose block is
 # counted as low-recall (content likely dropped or garbled, not just reordered).
+# A page is a scanned image with an OCR overlay when one image covers this
+# much of it and this share of its characters sit inside that image.
+_PDFIUM_TEXT = 1
+_PDFIUM_IMAGE = 3
+# PDF text render mode 3: draw nothing. What an OCR overlay uses so the scan
+# underneath stays visible, and what page text never uses.
+_RENDER_INVISIBLE = 3
+_SCAN_IMAGE_COVER = 0.7
+_SCAN_INVISIBLE_SHARE = 0.9
+_SCAN_MIN_TEXT_OBJECTS = 20
 LOW_RECALL_BELOW = 0.90
 # How much of the smaller box two prose regions may share before neither
 # block's recall is decidable.

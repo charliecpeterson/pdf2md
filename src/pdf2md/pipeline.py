@@ -498,6 +498,7 @@ def convert_file(
     _audit_scanned_tables(result.tables, vdir)
 
     ocr_pages = {b.page for b in result.blocks if b.extra.get("ocr")}
+    _warn_about_scan_overlays(pdf_path, ocr_pages, config)
 
     # Lossless vector export beside the PNG crop (--figure-svg): a born-digital figure's
     # geometry and text as SVG a reader can parse. Scanned pages skip — their SVG would
@@ -1010,6 +1011,27 @@ def _table_crops(blocks, tables, *, include_structured: bool = False) -> tuple[l
             b.extra["cells_unverified"] = True
             authoritative.add(b.id)
     return selected, authoritative
+
+
+def _warn_about_scan_overlays(pdf_path: Path, ocr_pages: set[int], config: Config) -> None:
+    """Say so when a document is a scan carrying someone else's OCR.
+
+    Detecting it gets the posture right — crops authoritative, cells candidates —
+    but the transcription is still whoever digitised the paper. On a 1972 scan
+    theirs left 22% of numeric tokens malformed where a re-OCR left 8%, so the
+    reader should be told there is a better reading available for the asking."""
+    if not ocr_pages or config.force_ocr:
+        return
+    with GlyphIndex(pdf_path) as glyphs:
+        overlaid = sum(glyphs.scanned_overlay(page) for page in sorted(ocr_pages))
+    if overlaid:
+        log.warning(
+            "%d page(s) are scans carrying an embedded OCR text layer; that text is "
+            "kept as a candidate beside the authoritative crops. Re-run with "
+            "--force-ocr to transcribe them afresh, which on a measured 1972 scan "
+            "cut malformed numeric tokens from 22%% to 8%%.",
+            overlaid,
+        )
 
 
 def _audit_scanned_tables(tables, version_dir: Path) -> None:

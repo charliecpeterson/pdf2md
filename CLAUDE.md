@@ -319,6 +319,22 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   percentile 0.085, so `_AMBIGUOUS_REGION_SHARE = 0.15` is far outside normal; past it the
   block gets an informational region-boundary note instead of a recall action. This is the
   honest form of the admission `quality.py` already makes about region-boundary accuracy.
+- **A scan carrying someone else's OCR is detected and treated as a scan.** This is the one
+  condition under which the whole verification layer inverts: the text layer exists, so
+  nothing routes the page down the scanned path, and every glyph check then verifies the
+  engine against the same wrong characters and reports agreement. `GlyphIndex.scanned_overlay`
+  identifies it from two properties, both structural — one image covering most of the page,
+  and the text over it drawn in render mode 3 (invisible), which is what an OCR overlay must
+  use and what page text never does. Geometry alone is not enough: a full-page figure plate
+  carries labels inside its own bounds and is indistinguishable by position. Measured across
+  44 documents and 828 pages, the pair flags 30/30 pages of a 1972 scan and nothing else.
+  `page_chars` then reports those pages as having no layer, so the existing scanned-page
+  machinery takes over.
+- **Detecting the overlay fixes the posture, not the transcription.** The kept text is still
+  whoever digitised the paper. Measured on three pages of a 1972 data table: Docling on the
+  embedded layer left 22% of numeric tokens malformed, `--force-ocr` 8%, and `--engine
+  mineru` 1% while recovering 3.4x as many tokens. The pipeline warns and names `--force-ocr`
+  when it detects the case; MinerU is the better answer where it is available.
 - **`--force-ocr` re-OCRs the page and suppresses the glyph layer.** For a PDF whose
   embedded text is itself bad OCR, the engine OCRs full pages (`force_full_page_ocr`) and
   `GlyphIndex(force_ocr=True)` reports every page as having no text — so the doc is treated
