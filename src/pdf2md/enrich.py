@@ -40,16 +40,23 @@ from pdf2md.normalize import (
 from pdf2md.preformat import is_preformatted
 from pdf2md.schema import (
     PROSE_TYPES,
+    BBox,
     Block,
     BlockType,
     CoverageFlag,
     FigureRef,
+    RawCell,
     RawTable,
     TableData,
 )
 from pdf2md.scripts import PageChars, apply_scripts
 from pdf2md.table_audit import audit_table
-from pdf2md.table_rebuild import check_table_cells, glyph_grid, grid_markdown
+from pdf2md.table_rebuild import (
+    check_table_cells,
+    engine_lane_bounds,
+    glyph_grid,
+    grid_markdown,
+)
 from pdf2md.tables import GridCell, build_gfm, build_html, gfm_rows, html_tables, render_table
 
 log = get_logger("enrich")
@@ -347,10 +354,70 @@ def _rebuilt_table(raw: RawTable, pc: PageChars, vocab, spanning: bool):
 _RULE_PIPE = re.compile(r"(?:(?<=\s)|^)\|(?=\s|$)")
 
 
+def _cell_read_boxes(raw: RawTable) -> dict[int, BBox]:
+    """Per cell (by index), the box to read its glyphs from: its own, widened to
+    its column's lane but never past a row-neighbour.
+
+    An engine draws a cell box a point or two inside the ink, and a glyph counts
+    as inside only when its *center* is. The last character of a tight cell falls
+    out, and the font-decode refill then writes the truncated reading over the
+    cell: measured on the GRASP2018 contents pages, `12.1` refilled as `12.`,
+    `A.1` as `A.` and `6.10` as `6.1`.
+
+    Two bounds, because each alone fails. The column lane (`engine_lane_bounds`,
+    the union of that column's single-column cells) is what an individual tight
+    box lacks -- on those pages column 0 spans 90.0-122.9 while the cell holding
+    `12.1` claims only 99.1-117.6. But widening to the *neighbour's* box instead
+    pulls a table of contents' leader dots into the page-number cell (`13` reads
+    as `. . . . . . 13` on 848 cells corpus-wide), because the gap between two
+    boxes is full of them; the number column's own lane is narrow and excludes
+    them. And the lane alone can overlap the next column's, so a row-neighbour
+    still caps it and no glyph is read into two cells.
+
+    Neither bound is a tolerance: both are measured off the engine's own cell
+    geometry, and a cell whose column has no lane keeps its own box.
+    """
+    lanes = engine_lane_bounds(raw)
+    columns = sorted({c.col for c in raw.cells
+                      if c.bbox is not None and c.col_span == 1})
+    lane_of = dict(zip(columns, lanes))
+
+    boxes: dict[int, BBox] = {}
+    rows: dict[int, list[tuple[int, RawCell]]] = defaultdict(list)
+    for i, c in enumerate(raw.cells):
+        if c.bbox is not None:
+            rows[c.row].append((i, c))
+    for row in rows.values():
+        row.sort(key=lambda pair: min(pair[1].bbox.x0, pair[1].bbox.x1))
+        # Left to right, each cell bounded on the left by where the previous
+        # one's *read* box ended: widening then never reaches ink another cell
+        # will also read, so no glyph is claimed twice. (Engine boxes that
+        # already overlap stay as they are -- that is the engine's own doing.)
+        prev_hi = None
+        for slot, (i, c) in enumerate(row):
+            own_lo = min(c.bbox.x0, c.bbox.x1)
+            own_hi = max(c.bbox.x0, c.bbox.x1)
+            lane = lane_of.get(c.col) if c.col_span == 1 else None
+            if lane is None:
+                prev_hi = own_hi
+                continue
+            allowed_lo, allowed_hi = lane
+            if prev_hi is not None:
+                allowed_lo = max(allowed_lo, prev_hi)
+            if slot + 1 < len(row):
+                nxt = row[slot + 1][1].bbox
+                allowed_hi = min(allowed_hi, min(nxt.x0, nxt.x1))
+            read_lo, read_hi = min(own_lo, allowed_lo), max(own_hi, allowed_hi)
+            boxes[i] = BBox(x0=read_lo, y0=c.bbox.y0, x1=read_hi, y1=c.bbox.y1)
+            prev_hi = read_hi
+    return boxes
+
+
 def _table_grid(raw: RawTable, pc: PageChars, vocab, *, escape: bool) -> list[GridCell]:
     out = []
-    for c in raw.cells:
-        cell = refilled(c.text, c.bbox, pc)
+    read_boxes = _cell_read_boxes(raw)
+    for i, c in enumerate(raw.cells):
+        cell = refilled(c.text, read_boxes.get(i, c.bbox), pc)
         if cell != c.text:  # refilled from pdfium: drop captured column-rule pipes
             cell = " ".join(_RULE_PIPE.sub(" ", cell).split())
         text = apply_scripts(religatured(cell, vocab),

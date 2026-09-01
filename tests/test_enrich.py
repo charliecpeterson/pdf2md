@@ -6,7 +6,13 @@ from __future__ import annotations
 
 import pytest
 
-from pdf2md.enrich import enrich_blocks, enrich_figures, enrich_tables, record_recall
+from pdf2md.enrich import (
+    _cell_read_boxes,
+    enrich_blocks,
+    enrich_figures,
+    enrich_tables,
+    record_recall,
+)
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, RawCell, RawTable, TableData
 
 _BB = BBox(x0=0, y0=10, x1=10, y1=0)
@@ -510,3 +516,55 @@ def test_too_little_text_to_judge(monkeypatch):
     monkeypatch.setattr(enrich, "_render_mode", lambda obj: 3)
     index = enrich.GlyphIndex.__new__(enrich.GlyphIndex)
     assert index._detect_overlay(_page(image=(0, 0, 200, 200), text_objects=5)) is False
+
+
+def _cell(text, col, x0, x1, row=0, span=1):
+    return RawCell(text=text, bbox=BBox(x0=x0, y0=20.0, x1=x1, y1=10.0),
+                   row=row, col=col, row_span=1, col_span=span, header=False)
+
+
+def test_cell_read_box_widens_to_the_column_lane():
+    # The engine draws a cell box inside the ink and `_region` keeps a glyph only
+    # when its center is inside, so a tight box truncates the refill. Column 0's
+    # lane is the union of its cells (10..40), which is wider than the tight cell
+    # claiming 20..30 -- that union is what the individual box lacks.
+    raw = RawTable(
+        cells=[_cell("a", 0, 20.0, 30.0), _cell("b", 1, 60.0, 90.0),
+               _cell("c", 0, 10.0, 40.0, row=1), _cell("d", 1, 60.0, 90.0, row=1)],
+        num_rows=2, num_cols=2,
+    )
+    boxes = _cell_read_boxes(raw)
+    assert (boxes[0].x0, boxes[0].x1) == (10.0, 40.0)
+    # The y range is the cell's own: widening is horizontal only.
+    assert (boxes[0].y0, boxes[0].y1) == (20.0, 10.0)
+
+
+def test_cell_read_box_never_crosses_into_the_next_cell():
+    # Widening stops at the neighbour even when the lane runs past it, so a
+    # table of contents' leader dots stay out of the page-number cell.
+    raw = RawTable(
+        cells=[_cell("a", 0, 20.0, 30.0), _cell("b", 1, 35.0, 90.0),
+               _cell("c", 0, 10.0, 80.0, row=1), _cell("d", 1, 85.0, 90.0, row=1)],
+        num_rows=2, num_cols=2,
+    )
+    boxes = _cell_read_boxes(raw)
+    assert boxes[0].x0 == 10.0        # widened left to the lane
+    assert boxes[0].x1 == 35.0        # capped at the neighbour, not the lane's 80
+
+
+def test_cell_read_boxes_do_not_claim_a_glyph_twice():
+    # Left to right, each cell is bounded by where the previous one's *read* box
+    # ended, so widening cannot reach ink another cell will also read.
+    raw = RawTable(
+        cells=[_cell("a", 0, 20.0, 30.0), _cell("b", 1, 32.0, 50.0),
+               _cell("c", 0, 10.0, 45.0, row=1), _cell("d", 1, 31.0, 50.0, row=1)],
+        num_rows=2, num_cols=2,
+    )
+    boxes = _cell_read_boxes(raw)
+    assert boxes[0].x1 <= boxes[1].x0
+
+
+def test_cell_read_box_falls_back_to_its_own_when_the_column_has_no_lane():
+    # A spanning cell has no single-column lane; it keeps the engine's box.
+    raw = RawTable(cells=[_cell("a", 0, 20.0, 30.0, span=2)], num_rows=1, num_cols=2)
+    assert _cell_read_boxes(raw) == {}

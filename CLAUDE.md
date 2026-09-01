@@ -372,6 +372,20 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   `_promote_figure_captions` lifts a 'Fig N.' line out of those labels into `caption`
   (`extract_caption`), so a scan's caption renders as the figure's visible caption; a figure
   with a Docling-supplied caption already is left alone.
+- **A cell's glyphs are read from its column lane, not its own box.** An engine draws
+  the box inside the ink and `_region` keeps a glyph only when its *center* is inside, so
+  a tight box truncates the font-decode refill and it writes the short reading over the
+  cell: on the GRASP2018 contents pages `12.1` refilled as `12.`, `A.1` as `A.`, `6.10`
+  as `6.1`. `enrich._cell_read_boxes` widens each cell to its column's lane
+  (`table_rebuild.engine_lane_bounds`, the union of that column's single-column cells --
+  column 0 there spans 90.0-122.9 where the cell claims 99.1-117.6) but never past a
+  row-neighbour, and processes a row left to right so the bound is the previous cell's
+  *read* edge. Both bounds are load-bearing: the neighbour alone pulls a contents page's
+  leader dots into the number cell (848 cells corpus-wide read `. . . . . 13` for `13`),
+  the lane alone can overlap the next column and claim a glyph twice. Measured after:
+  318 cells recover clipped characters, 0 gain leaders, 0 cell pairs overlap more than
+  the engine's own boxes already did. Script detection still uses the cell's own box --
+  that is about geometry inside the cell.
 - **Broken-font text (dingbat mojibake) is repaired from pdfium, not the engine.**
   A font with no usable ToUnicode CMap makes Docling's default backend emit symbol-
   font garbage (`/a114❛❝...`); pypdfium2 decodes it correctly. `enrich.py` detects
