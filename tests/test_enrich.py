@@ -603,6 +603,21 @@ def test_a_list_item_number_is_not_reported_as_lost_text():
     assert len(informational) == 1 and "list marker" in informational[0].reason
 
 
+def test_a_well_recalled_list_item_says_nothing_at_all():
+    # The bullet explanation is only worth making where a finding would
+    # otherwise be raised. Emitting it for every numbered list item put 1128
+    # informational rows across the corpus against the 75 blocks that were
+    # actually low-recall.
+    words = "the properties of gases at low temperature and high pressure here"
+    b = Block(id="#/l", type=BlockType.LIST, text=words, page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text=f"1 {words}")}))
+    rec = b.extra["glyph_word_recall"]
+    assert rec["matched"] / rec["total"] >= 0.9  # one number out of twelve
+    assert b.extra["glyph_word_recall"]["list_marker_only"] is True
+    marked, informational = recall_review_flags([b])
+    assert marked == [] and informational == []
+
+
 def test_a_list_item_losing_a_word_is_still_an_action():
     # The exemption is only for the leading number. A missing word still counts.
     b = Block(id="#/l", type=BlockType.LIST, text="The properties", page=1, bbox=_BB)

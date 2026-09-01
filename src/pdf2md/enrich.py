@@ -594,7 +594,12 @@ def recall_review_flags(blocks: list[Block]) -> tuple[list[CoverageFlag], list[C
                 "", disposition="informational", severity="low", content_impact="low",
             ))
             continue
-        if rec.get("list_marker_only"):
+        low_recall = rec["matched"] / rec["total"] < LOW_RECALL_BELOW
+        if low_recall and rec.get("list_marker_only"):
+            # Said only where a finding would otherwise have been raised.
+            # Explaining the bullet on every numbered list item put 608
+            # informational rows in one textbook's review against the 70 blocks
+            # that were actually low-recall -- noise that buries the rest.
             informational.append(CoverageFlag(
                 b.id, b.page,
                 "list marker: the item's printed number is rendered as a bullet, "
@@ -602,7 +607,7 @@ def recall_review_flags(blocks: list[Block]) -> tuple[list[CoverageFlag], list[C
                 "", disposition="informational", severity="low", content_impact="low",
             ))
             continue
-        if rec["matched"] / rec["total"] < LOW_RECALL_BELOW:
+        if low_recall:
             reason = (
                 f"text layer recall: {missing} of {rec['total']} source word(s) "
                 f"reach no part of the emitted text"
