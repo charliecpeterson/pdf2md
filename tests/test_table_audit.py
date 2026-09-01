@@ -415,3 +415,22 @@ def test_a_column_collapsed_into_one_cell_needs_no_column_profile():
             ["Ca3f2", "1.705"]]
     found = kinds(f.__dict__ for f in grid_findings(["type", "r"], pair))
     assert "otherwise single-value numeric columns" in found["merged_cells"]["detail"]
+
+
+def test_a_digit_grouped_decimal_is_one_value_not_a_collapsed_row():
+    # The page prints 0.85745 as `0.857 45` and -14.556089 as `-14.556 089`.
+    # Reading the thin space as a row boundary reported six merged_cells across
+    # the corpus on values that were never merged.
+    from pdf2md.table_audit import grid_findings
+
+    rows = [["1H", "2.792 85"], ["2H", "0.857 44"], ["14N", "0.403 76"]]
+    assert [f.kind for f in grid_findings(["Nuclide", "moment"], rows)] == []
+
+
+def test_two_integers_in_a_cell_still_read_as_a_collapse():
+    # The decimal point is what marks the grouping convention. Two bare
+    # integers have no such convention behind them and stay suspicious.
+    from pdf2md.table_audit import grid_findings
+
+    rows = [["A", "31"], ["B", "45"], ["C", "58"], ["D", "227 229"]]
+    assert "merged_cells" in [f.kind for f in grid_findings(["x", "y"], rows)]

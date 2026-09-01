@@ -38,6 +38,20 @@ _EXTENT_PAD_PT = 2.0
 _LANE_MARGIN_PT = 1.0
 # Thousands separators are part of a number; a trailing comma is a list.
 _NUMBER = re.compile(r"[−‑–-]?\d(?:[\d,]*\d)?(?:\.\d+)?|[−‑–-]?\.\d+")
+# A decimal typeset with its fraction digits in groups: the page prints
+# `0.85745` as `0.857 45` and `-14.556089` as `-14.556 089`. That is one value,
+# not two collapsed rows, and `table_rebuild.content_norm` already treats such
+# in-number spacing as typesetting. Requiring the decimal point is what keeps
+# `32 33` and `227 229` -- two integers with no separator convention behind
+# them -- reading as the collapse they usually are. Measured over the corpus it
+# clears 6 of 102 merged_cells findings and changes none of the rest.
+_DECIMAL = re.compile(r"[−‑–+-]?\d+\.\d+")
+_DIGIT_GROUP = re.compile(r"\d{2,3}")
+
+
+def _is_digit_grouped(parts: list[str]) -> bool:
+    return (len(parts) > 1 and bool(_DECIMAL.fullmatch(parts[0]))
+            and all(_DIGIT_GROUP.fullmatch(part) for part in parts[1:]))
 # A column counts as numeric when this share of its filled data cells is a lone
 # number. Parameter tables carry the occasional blank or footnote marker.
 _NUMERIC_COLUMN_SHARE = 0.6
@@ -484,6 +498,8 @@ def grid_findings(header: list[str], rows: list[list[str]]) -> list[TableFinding
             # published values, "1.478 1.338" is two rows collapsed into one.
             parts = cell.split()
             if len(parts) < 2 or not all(_NUMBER.fullmatch(part) for part in parts):
+                continue
+            if _is_digit_grouped(parts):  # one value, typeset in digit groups
                 continue
             # Two values are only suspicious where the column holds one apiece.
             # Many values in a single cell need no such context: a cell holding
