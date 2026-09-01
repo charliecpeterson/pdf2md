@@ -16,7 +16,11 @@ from typing import Any
 # naive downstream parser (front-matter keys removed/renamed, file layout shift).
 # 0.11: books selectively expand Part-like bookmark containers into chapter files,
 # retain each opener, and keep detailed headings in file-local contents.
-FORMAT_VERSION = "0.12"
+# 0.13: bboxes are absolute PDF user space (engines report visible-area
+# coordinates; normalize_page_origin shifts them at the seam). Identical for the
+# common (0, 0)-origin page; a reader mapping bboxes on an offset-origin
+# document must not re-add the origin.
+FORMAT_VERSION = "0.13"
 
 
 class BlockType(str, Enum):

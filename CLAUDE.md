@@ -382,6 +382,19 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   `normalize.expand_ligature_glyphs` maps them back to ff/fi/fl/ffi/ffl (and `\x02`
   soft-hyphen → join) in `clean_reading` before the control-strip — deterministic, no
   dictionary.
+- **A page's visible box does not always start at (0, 0), and engines report
+  coordinates relative to it.** pdfium is absolute user space -- charboxes,
+  `set_cropbox`, page-object bounds -- so on a page with a non-zero MediaBox or
+  CropBox corner every glyph check reads ink that far from the text it is
+  scoring. Measured: an ACS paper with origin (9, 9) scored mean word recall
+  0.53 and an Elsevier one with CropBox (20, 62) scored 0.21; shifting by
+  exactly the origin put both above 0.94. Three of 17 documents were affected,
+  and they were the three worst-scoring in the corpus. `engines/base.py`'s
+  `normalize_page_origin` canonicalizes on user space at the seam (so
+  `Block.bbox`, `TableData.bbox`, `FigureRef.bbox`/`caption_bbox` and
+  `RawCell.bbox` are all absolute from there on), and `render.py` subtracts the
+  origin again when mapping into the rendered raster, which covers the visible
+  box. A (0, 0)-origin document is untouched by both.
 - Docling block/prov bboxes are bottom-left origin (`y0 > y1`); `render.py` flips Y.
   Don't re-flip elsewhere. **Exception: table-cell bboxes are TOPLEFT** — the docling
   adapter (`_cell_bbox`) flips them to bottom-left so enrich's glyph lookups (script

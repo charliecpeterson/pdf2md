@@ -62,7 +62,7 @@ from pdf2md.conservation import (
 from pdf2md.coverage import build_report
 from pdf2md.emit import emit_document
 from pdf2md.engine_state import write_engine_state
-from pdf2md.engines.base import Engine
+from pdf2md.engines.base import Engine, normalize_page_origin
 from pdf2md.logging import Progress, collapse_repeated_warnings, get_logger
 from pdf2md.doi_metadata import (
     DOI_METADATA_NAME,
@@ -367,6 +367,10 @@ def convert_file(
     except Exception as exc:  # noqa: BLE001 - document-level isolate-and-flag
         log.error("engine failed on %s: %s", pdf_path.name, exc)
         return ConvertResult(doc_id, 0, dd, [], failed=True, error=str(exc))
+    if engine.name != "stored":
+        # A stored engine replays state that was normalized before it was written
+        # (a pre-0.13 bundle predates the shift; reconvert those, don't re-shift).
+        normalize_page_origin(result, pdf_path)
     progress.stage(
         "source read complete: %d pages, %d blocks, %d tables, %d figures",
         len(result.page_sizes), len(result.blocks), len(result.tables), len(result.figures),
