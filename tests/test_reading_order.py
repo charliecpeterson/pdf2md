@@ -248,3 +248,20 @@ def test_a_one_word_heading_still_counts_as_flow():
     ]
     finding = page_findings(blocks, emitted("#/p1", "#/p2", "#/p3", "#/h"))
     assert finding is not None and finding["misplaced"] >= 1
+
+
+def test_split_lines_ignores_shattered_fragments_too():
+    # The order check and the split-line check must agree on what a block is.
+    # They did not: only the first excluded fragments, so a display equation
+    # broken into per-glyph blocks read as printed lines cut into pieces.
+    from pdf2md.reading_order import split_line_findings
+
+    blocks = [
+        _flow("#/p1", 700, "The reaction Gibbs energy is defined as follows"),
+        _flow("#/p2", 650, "This equation can be reorganized into the form"),
+        _flow("#/p3", 600, "That is, the slope of the curve at that point"),
+        _flow("#/f1", 640, "d"),
+        _flow("#/f2", 641, "G"),
+        _flow("#/f3", 642, "=m"),
+    ]
+    assert split_line_findings(blocks, emitted(*[b.id for b in blocks])) is None

@@ -155,15 +155,24 @@ def _printed_order(blocks: list[Block], starts: list[float]) -> list[Block]:
     return ordered
 
 
-def page_findings(blocks: list[Block], emitted_at: dict[str, int]) -> dict[str, Any] | None:
-    """How far one page's emitted order departs from its printed order, or None
-    when there is nothing measurable: too few blocks in the flow, a layout that
-    doesn't resolve into columns, or an order that already matches."""
-    flow = [
+def _flow_blocks(blocks: list[Block], emitted_at: dict[str, int]) -> list[Block]:
+    """The page's content in emission order: typed as flow, placed, and long
+    enough to be content rather than a piece of something shattered.
+
+    Shared so the order and split-line checks cannot drift apart on what counts
+    as a block -- they did once, when only the first excluded fragments."""
+    return [
         b for b in blocks
         if b.type in _FLOW_TYPES and b.bbox is not None and b.id in emitted_at
         and len(b.text.strip()) >= _MIN_FLOW_CHARS
     ]
+
+
+def page_findings(blocks: list[Block], emitted_at: dict[str, int]) -> dict[str, Any] | None:
+    """How far one page's emitted order departs from its printed order, or None
+    when there is nothing measurable: too few blocks in the flow, a layout that
+    doesn't resolve into columns, or an order that already matches."""
+    flow = _flow_blocks(blocks, emitted_at)
     if len(flow) < _MIN_BLOCKS:
         return None
     starts = column_starts([b.bbox for b in flow])
@@ -286,10 +295,7 @@ def split_line_findings(
     judgement isn't: a masthead's `Received:` / `July 5, 2016` is also one
     printed line in two blocks, and there it is the layout, not a defect. Saying
     what was measured and leaving the verdict to a reader is the honest form."""
-    flow = [
-        b for b in blocks
-        if b.type in _FLOW_TYPES and b.bbox is not None and b.id in emitted_at
-    ]
+    flow = _flow_blocks(blocks, emitted_at)
     if len(flow) < _MIN_BLOCKS:
         return None
     starts = column_starts([b.bbox for b in flow])

@@ -473,6 +473,25 @@ These constraints came out of the measured experiments and remain project policy
 - No treating shared-crop-geometry OCR votes as independent verification.
 - No automatic promotion of fixed-font glyph-atlas choices.
 
+## Non-Latin script, first measurement, 2026-09-01
+
+Every document measured in this project has been Latin-script English, so
+`normalize.resegment_words` being English-only and the ligature and diacritic
+repair assuming Latin were untested assumptions rather than known-good.
+
+arXiv 2608.30204v1 (cs.CL, 20 pages) carries 52 CJK ideographs in its text
+layer, in tables and inline examples. Converted: accounting intact (211 blocks,
+nothing dropped), word recall 0.9976 with one low-recall block of 186, two
+action-required findings, and **all 52 ideographs present in the emitted
+Markdown** -- the count in the source layer and in the output match exactly.
+
+What that establishes is narrow and worth stating as such. It shows non-Latin
+glyphs pass through the pipeline intact and that the Latin-specific repairs do
+not damage them. It does not test a document *written* in a non-Latin script:
+the layout, column and word-splitting logic all still ran on English prose, and
+`resegment_words` was never reached because it is gated on OCR blocks and this
+document is born-digital. A CJK-primary or Arabic document remains unmeasured.
+
 ## Over-fitting check on blind-v2, 2026-09-01
 
 Every fix in the table-and-order branch was found by staring at the same
