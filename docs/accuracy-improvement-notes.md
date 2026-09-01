@@ -473,6 +473,35 @@ These constraints came out of the measured experiments and remain project policy
 - No treating shared-crop-geometry OCR votes as independent verification.
 - No automatic promotion of fixed-font glyph-atlas choices.
 
+## Over-fitting check on blind-v2, 2026-09-01
+
+Every fix in the table-and-order branch was found by staring at the same
+eighteen documents, and "the check got better" and "the check was fitted to
+these files" produce identical evidence when the evidence comes from those
+files. blind-v2 is the only unseen corpus with a measurement predating the
+branch, which makes it the one instrument that can tell them apart. All ten
+sources re-downloaded and verified against the hashes frozen before anything
+was converted, so arXiv had not replaced a paper under the comparison.
+
+| | before the branch | after |
+|---|---|---|
+| accounting | intact on all ten | intact on all ten |
+| tables flagged | 19% | 18.5% |
+| reading-order pages | 6% | 5.3% |
+| low-recall blocks | 4.6% | 1.1% |
+
+The recall work generalizes: a four-fold drop on documents never inspected,
+which is what the tokenization fixes predicted and could not have been obtained
+by fitting to the working corpus. The table and reading-order rates are flat --
+27 tables and 209 pages cannot resolve the small changes made there (the
+digit-grouped decimal moved 6 findings corpus-wide, and the fragment exclusion
+mostly touches documents whose engine shatters display equations, which these
+ten largely are not). Nothing got worse.
+
+Aggregates only, per the corpus's own discipline; no individual table, page or
+block was opened. blind-v3 was frozen before this run so an untouched set still
+exists.
+
 ## End-use measurement, 2026-09-01
 
 Everything the verification layer reports is internal consistency: the engine
