@@ -700,9 +700,13 @@ def test_low_confidence_equation_uses_image_and_hint():
     eq2 = Block(id="#/texts/10", type=BlockType.EQUATION, text="E _ { n } = E _ { CBS }", page=3,
                 confidence=0.0, extra={"crop_path": "assets/eq2_p3.png",
                                        "text_layer": "E E n CBS scrambled", "ordered": False})
-    text2, _, _ = _render_block(eq2, ctx, [])
+    text2, _, flag2 = _render_block(eq2, ctx, [])
     assert "![equation](assets/eq2_p3.png)" in text2 and "$$" in text2  # LaTeX hint, not soup
-    assert "scrambled" not in text2
+    assert "E E n CBS scrambled" not in text2  # the soup itself is never the hint
+    # A layer that cannot be read cannot judge the LaTeX either, so the finding
+    # says the equation is unverifiable rather than that its extraction is wrong.
+    assert "not verifiable" in text2
+    assert flag2.content_impact == "medium"
 
 
 def test_empty_equation_with_crop_emits_image_not_empty_marker():

@@ -367,6 +367,19 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   `--mineru-executable` at that environment's CLI. The adapter consumes native middle JSON,
   then pdf2md renders source crops and applies the normal coverage and chart-safety gates.
   Do not combine MinerU with `--ocr-page-vlm`: page replacement would discard its element structure.
+- **A page whose text layer is scrambled cannot judge an equation, so its
+  disagreement is not evidence.** `enrich` already records whether the layer was
+  clean and in reading order (`Block.extra['ordered']`, from `is_clean` +
+  `SCRAMBLED_ABOVE`) to decide whether to *show* it as a hint; `emit` now uses the
+  same signal to decide what the finding may *claim*. Measured over the equations
+  in bundles converted with formula enrichment on, 52 of 61 `suspect` verdicts came
+  from a layer already marked unfit, so the finding reads "equation not verifiable"
+  at medium content impact rather than asserting the extraction is wrong. Agreement
+  from an unfit layer still counts (9 equations verify that way), which is why the
+  cross-check keeps running against it -- the asymmetry is the whole point.
+  `_UNTERMINATED_ENVIRONMENT` also drops a runaway `\begin{array} { c c c ...`
+  that never closes (3 of 158 equations): a 4075-character spec reached the token
+  set as one 1000-character `cccc...` counted as missing content.
 - **Equation confidence + image-backing live in `enrich.py`/`confidence.py`, not
   the engine.** When the engine's LaTeX disagrees with the text layer (or a scan
   has none), the equation is cropped to an authoritative image and the text rides

@@ -43,6 +43,12 @@ _TEXT_OP = re.compile(r"\\(max|min|exp|log|ln|sin|cos|tan|det|lim|sup|inf|deg|ar
 # that was never visible text; leaving it in put `array` and `rlr` in the token
 # set, where they can only count as content the text layer appears to be missing.
 _ENVIRONMENT = re.compile(r"\\(?:begin|end)\s*\{[^{}]*\}(?:\s*\{[^{}]*\})?")
+# The same declaration with a column spec that never closes. Docling can run
+# away inside one: a GRASP2018 equation came back as `\begin{array} { c c c ...`
+# for 4075 characters with no closing brace, and the spec then reached the token
+# set as a single 1000-character `cccc...`, counted as content the text layer was
+# missing. Nothing after an unterminated environment spec is visible text.
+_UNTERMINATED_ENVIRONMENT = re.compile(r"\\(?:begin|end)\s*\{[^{}]*\}\s*\{[^{}]*$")
 # A script group attaches to its base the way the text layer draws it, so `E_{0}`
 # reads as `E0`. Only after an alphanumeric: a limit hanging off a command
 # (`\sum_{bends}`) is set apart on the page, not glued to the operator.
@@ -80,7 +86,8 @@ def _latex_tokens(latex: str) -> set[str]:
     Those welds were the largest single source of apparent disagreement between
     correct LaTeX and the layer.
     """
-    s = _ENVIRONMENT.sub(" ", latex)
+    s = _UNTERMINATED_ENVIRONMENT.sub(" ", latex)
+    s = _ENVIRONMENT.sub(" ", s)
     s = _TEXT_WRAPPER.sub(r"\1", s)
     s = _TEXT_OP.sub(r"\1", s)
     s = _COMMAND.sub(_BOUNDARY, s)

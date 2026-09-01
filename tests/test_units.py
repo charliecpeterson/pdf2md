@@ -1506,6 +1506,12 @@ def test_latex_tokens_do_not_weld_across_structure():
     # A genuine misread stays a mismatch -- the fix must not launder one away.
     assert _latex_tokens(r"U ^ { i o t }") == {"Uiot"}
 
+    # A column spec that never closes: Docling ran away inside one for 4075
+    # characters, and the spec reached the token set as a single 1000-character
+    # `cccc...`, counted as content the text layer was missing. Nothing after an
+    # unterminated environment spec is visible text.
+    assert _latex_tokens(r"\begin{array} { c c c" + " c" * 40) == set()
+
 
 def test_unsplit_numbers_protects_values():
     from pdf2md.scripts import apply_scripts

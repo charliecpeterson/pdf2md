@@ -575,16 +575,45 @@ def _render_block(
             else:  # --no-formula: no LaTeX or text-layer reading, only the crop
                 hint, source = "", "the image below is the authoritative source"
             if crop:
-                note = f"> **[pdf2md: equation extraction unverified — {source}]**"
-                body = f"{note}\n\n![equation]({crop})" + (f"\n\n{hint}" if hint else "")
                 intentional_crop = not ctx.formula_enrichment_enabled
+                # A page whose text layer is scrambled or symbol-font garbage
+                # cannot judge the LaTeX, so its disagreement is not evidence
+                # the extraction is wrong. (Its *agreement* still is, which is
+                # why the check keeps running against it.) Measured over the
+                # equations from bundles with formula enrichment on, 52 of 61
+                # "suspect" verdicts came from a layer the enrichment step had
+                # already marked unfit to show, so calling them suspect
+                # extractions was a claim the evidence did not support.
+                unverifiable = (
+                    not intentional_crop
+                    and "text_layer" in b.extra
+                    and not b.extra.get("ordered")
+                )
+                headline = (
+                    "equation not verifiable — the page's own text layer is "
+                    "scrambled or undecodable here, so it cannot judge the LaTeX; "
+                    f"{source}"
+                    if unverifiable
+                    else f"equation extraction unverified — {source}"
+                )
+                note = f"> **[pdf2md: {headline}]**"
+                body = f"{note}\n\n![equation]({crop})" + (f"\n\n{hint}" if hint else "")
+                if intentional_crop:
+                    reason, disposition, severity, impact = (
+                        "equation: image is authoritative", "source_dependent", "none", "low",
+                    )
+                elif unverifiable:
+                    reason, disposition, severity, impact = (
+                        "equation not verifiable: text layer unfit to judge",
+                        "action_required", "medium", "medium",
+                    )
+                else:
+                    reason, disposition, severity, impact = (
+                        "equation extraction unverified", "action_required", "medium", "high",
+                    )
                 return body, CoverageStatus.CROPPED, _flag(
-                    b,
-                    "equation: image is authoritative" if intentional_crop
-                    else "equation extraction unverified",
-                    disposition="source_dependent" if intentional_crop else "action_required",
-                    severity="none" if intentional_crop else "medium",
-                    content_impact="low" if intentional_crop else "high",
+                    b, reason, disposition=disposition,
+                    severity=severity, content_impact=impact,
                 )
             note = (
                 "> **[pdf2md: equation extraction unverified — the rendering below "
