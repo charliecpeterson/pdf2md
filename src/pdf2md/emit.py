@@ -493,7 +493,16 @@ def _render_block(
     if table is not None:
         if table.preformatted:  # ASCII-art table -> code fence, not a mangled grid
             return f"```\n{table.preformatted}\n```", CoverageStatus.EMITTED, None
-        return render_table(table), CoverageStatus.EMITTED, None
+        # The grid is emitted whatever the audit says -- the content is present,
+        # and withholding it would lose data the reader can verify. The marker
+        # rides above it so the table is never read as unquestioned.
+        flag = _table_audit_flag(b, table)
+        marker = f"{flag.marker_text}\n\n" if flag is not None else ""
+        return (
+            marker + render_table(table) + _table_source_links(table),
+            CoverageStatus.EMITTED,
+            flag,
+        )
 
     if b.type == BlockType.FIGURE:
         fig = ctx.figures.get(b.id)
@@ -779,6 +788,49 @@ def _table_candidate_links(table: TableData) -> str:
     ]
     rendered = " · ".join(f"[{label}]({path})" for label, path in links if path)
     return f"\n\nStructured OCR candidate: {rendered}" if rendered else ""
+
+
+_AUDIT_SEVERITY_RANK = {"high": 2, "medium": 1}
+
+
+def _table_audit_flag(b: Block, table: TableData) -> CoverageFlag | None:
+    """One flag carrying every structural finding for this table, or None when
+    the audit found nothing. The marker names each finding so the defect is
+    legible where the table is read, not only in review.md."""
+    findings = table.grid_audit.get("findings") or []
+    if not findings:
+        return None
+    findings = sorted(
+        findings, key=lambda f: -_AUDIT_SEVERITY_RANK.get(f.get("severity"), 0)
+    )
+    severity = findings[0].get("severity", "medium")
+    reason = "table structure: " + ", ".join(
+        dict.fromkeys(finding["kind"] for finding in findings)
+    )
+    details = "\n".join(f"> - {finding['detail']}" for finding in findings)
+    marker = (
+        f"> **[pdf2md: action required ({severity}): {reason}; verify against "
+        f"{_source_page(b.page)}]**\n>\n{details}"
+    )
+    return CoverageFlag(
+        b.id, b.page, reason, marker, "action_required", severity,
+        "high" if severity == "high" else "medium",
+    )
+
+
+def _table_source_links(table: TableData) -> str:
+    """Where to check this table: the printed region, and the data beside it."""
+    links = [
+        ("source crop", table.source_crop),
+        ("CSV", table.data_path),
+        ("JSON", table.json_path),
+        ("glyph-truth grid", table.glyph_grid_path),
+    ]
+    rendered = " · ".join(f"[{label}]({path})" for label, path in links if path)
+    # The `*[pdf2md]` prefix marks the line as emitted navigation, so the
+    # conservation audit doesn't count its link labels as words the source
+    # never had.
+    return f"\n\n*[pdf2md] table source:* {rendered}" if rendered else ""
 
 
 def _flag(

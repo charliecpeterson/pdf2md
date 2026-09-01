@@ -86,6 +86,7 @@ def build_profile(
     metadata: dict | None = None,
     engine_quality: dict | None = None,
     review_queue: dict | None = None,
+    reading_order: dict | None = None,
 ) -> DocumentProfile:
     """`consistency` is the numeric-conservation report from enrich.numeric_conservation;
     None (tests, older callers) records the signal as not computed. Word recall is
@@ -112,6 +113,11 @@ def build_profile(
         and not _unverified(table.block_id)
     )
     tables_image_only = len(doc.tables) - table_candidates - tables_verified
+    # A table can be text-backed cell by cell and still be missing whole rows,
+    # so this is counted beside `tables_verified` rather than folded into it.
+    tables_structurally_flagged = sum(
+        1 for table in doc.tables if table.grid_audit.get("findings")
+    )
     derived_table_datasets = len({
         table.normalized_json_path for table in doc.tables if table.normalized_json_path
     })
@@ -201,6 +207,7 @@ def build_profile(
         tables=len(doc.tables),
         tables_verified=tables_verified,
         tables_candidates=table_candidates,
+        tables_structurally_flagged=tables_structurally_flagged,
         tables_image_only=tables_image_only,
         derived_table_datasets=derived_table_datasets,
         table_cell_evidence=dict(table_cell_evidence),
@@ -229,6 +236,8 @@ def build_profile(
         glyph_recall_words_total=recall["words_total"],
         glyph_recall_words_matched=recall["words_matched"],
         glyph_low_recall_blocks=recall["low_recall_blocks"],
+        glyph_accent_damaged_blocks=recall["accent_damaged_blocks"],
+        reading_order_pages=dict(reading_order or {}),
         numeric_conservation=conservation,
         quality_scorecard=scorecard,
         review_counts=review_counts,
@@ -662,15 +671,29 @@ def write_readme(version_dir: Path, doc: Document, meta: dict, profile: Document
         (
             f"Tables: {p.tables_verified} verified structured, "
             f"{p.tables_candidates} structured OCR candidate(s), "
-            f"{p.tables_image_only} image-only."
+            f"{p.tables_image_only} image-only"
+            + (
+                f"; {p.tables_structurally_flagged} with structural findings "
+                f"(rows merged, dropped, or shifted) — see review.md"
+                if p.tables_structurally_flagged else ""
+            )
+            + "."
         ),
         f"Derived normalized table datasets: {p.derived_table_datasets}.",
         *(
             [f"Embedded-text-layer word recall: {p.glyph_recall_words_matched} of "
              f"{p.glyph_recall_words_total} word(s) across {p.glyph_recall_blocks} block(s)"
-             + (f"; {p.glyph_low_recall_blocks} below 90% — check `profile.json`."
-                if p.glyph_low_recall_blocks else ".")]
+             + (f"; {p.glyph_low_recall_blocks} below 90% — check `review.md`."
+                if p.glyph_low_recall_blocks else ".")
+             + (f" {p.glyph_accent_damaged_blocks} block(s) kept their words but lost "
+                f"diacritics to the font decode."
+                if p.glyph_accent_damaged_blocks else "")]
             if p.glyph_recall_blocks else []
+        ),
+        *(
+            [f"Reading order: {len(p.reading_order_pages)} page(s) emit blocks out of "
+             f"the order the page prints them — see `review.md`."]
+            if p.reading_order_pages else []
         ),
         *_conservation_lines(p.numeric_conservation),
         *(

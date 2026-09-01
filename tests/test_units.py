@@ -1648,17 +1648,22 @@ def test_table_crops_key_on_type_not_id():
     transcript = Block("#/tables/2", BlockType.PARAGRAPH, "# Page\n\ntext", 1, bbox=bb,
                        extra={"ocr": True, "text_source": "vlm-page"})
     tables = [TableData("#/tables/1", 1, bb, gfm="| a |"), TableData("#/tables/2", 1, bb, gfm="| b |")]
-    cropped = {b.id for b in _table_crops([real, transcript], tables)}
-    assert cropped == {"#/tables/1"}  # the real (OCR-scan) table crops; the transcription does not
+    selected, authoritative = _table_crops([real, transcript], tables)
+    # The real (OCR-scan) table crops; the transcription is not a table any more.
+    assert {b.id for b in selected} == {"#/tables/1"}
+    assert authoritative == {"#/tables/1"}
 
     digital = Block("#/tables/3", BlockType.TABLE, "", 1, bbox=bb)
     tables.append(TableData(digital.id, 1, bb, gfm="| c |"))
-    cropped = {
-        b.id for b in _table_crops(
-            [real, transcript, digital], tables, include_structured=True
-        )
-    }
-    assert cropped == {"#/tables/1", "#/tables/3"}
+    # Every table gets a crop; only the scan's is the authority over its cells.
+    selected, authoritative = _table_crops([real, transcript, digital], tables)
+    assert {b.id for b in selected} == {"#/tables/1", "#/tables/3"}
+    assert authoritative == {"#/tables/1"}
+    # --table-ocr reads the crop for every table, so every crop is authoritative.
+    _, authoritative = _table_crops(
+        [real, transcript, digital], tables, include_structured=True
+    )
+    assert authoritative == {"#/tables/1", "#/tables/3"}
 
 
 def test_table_crops_include_glyph_unbacked_tables():
@@ -1674,7 +1679,8 @@ def test_table_crops_include_glyph_unbacked_tables():
         TableData("#/tables/10", 2, bb, gfm="| b |",
                   cell_glyph_check={"cells": {"exact": 30}}),
     ]
-    selected = {b.id for b in _table_crops([raster_read, clean], tables)}
-    assert selected == {"#/tables/9"}
+    selected, authoritative = _table_crops([raster_read, clean], tables)
+    assert {b.id for b in selected} == {"#/tables/9", "#/tables/10"}
+    assert authoritative == {"#/tables/9"}
     assert raster_read.extra["cells_unverified"] is True
     assert "cells_unverified" not in clean.extra

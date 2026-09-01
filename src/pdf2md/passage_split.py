@@ -5,8 +5,11 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 
+from pdf2md.logging import get_logger
 from pdf2md.passage_tokenizer import PassageTokenizer
 from pdf2md.schema import BlockType
+
+log = get_logger("passages")
 
 
 _SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9(\[])")
@@ -113,6 +116,13 @@ def prose_units(text: str) -> list[str]:
     return units
 
 
+def _is_marker(line: str) -> bool:
+    """Whether the line is something pdf2md emitted beside the content rather
+    than content: a review marker, or a link into the bundle's own artifacts."""
+    stripped = line.lstrip()
+    return stripped.startswith(">") or stripped.startswith("*[pdf2md]")
+
+
 def _split_table(
     text: str,
     contextualize: Callable[[str], str],
@@ -127,7 +137,22 @@ def _split_table(
     if separator_index is None or separator_index == 0:
         return None
 
-    header = "\n".join(lines[: separator_index + 1])
+    # A caption above the table is context every continuation needs, so it stays
+    # in the repeated header. A pdf2md marker is not: it belongs to the table as
+    # a whole, and repeating it on each continuation would be wrong even when it
+    # fits. Often it doesn't -- a table whose findings quote the source rows they
+    # are about produced a "header" long enough to fail the conversion outright.
+    grid_index = next(
+        (index for index, line in enumerate(lines[: separator_index + 1])
+         if line.lstrip().startswith("|")),
+        separator_index,
+    )
+    markers = [line for line in lines[:grid_index] if _is_marker(line)]
+    context = [line for line in lines[:grid_index] if not _is_marker(line)]
+    while context and not context[0].strip():
+        context.pop(0)  # the blank a removed marker left behind
+    preamble = "\n".join(markers).strip()
+    header = "\n".join([*context, *lines[grid_index : separator_index + 1]])
     rows = [line for line in lines[separator_index + 1 :] if line.strip()]
     if not rows:
         return [text.strip()]
@@ -136,8 +161,18 @@ def _split_table(
         return f"{header}\n{body}" if body else header
 
     if not _fits(header, contextualize, tokenizer, max_tokens):
-        raise ValueError(
-            "table header exceeds passage_max_tokens and cannot be repeated safely"
+        # A table whose caption and column-header row together exceed the budget
+        # cannot have that header repeated on each continuation. Aborting the
+        # document over it loses everything else in the file, which is the wrong
+        # trade: pack the rows without the header and say so. On the frozen
+        # unseen corpus this is the difference between seven documents and ten.
+        log.warning(
+            "table header exceeds passage_max_tokens (%d); emitting its rows "
+            "without a repeated header", max_tokens,
+        )
+        return _pack_units(
+            [*context, *lines[grid_index : separator_index + 1], *rows],
+            contextualize, tokenizer, max_tokens, separator="\n",
         )
 
     parts: list[str] = []
@@ -163,6 +198,10 @@ def _split_table(
         parts.extend(with_header(part) for part in row_parts)
     if current:
         parts.append(with_header("\n".join(current)))
+    if preamble and parts and _fits(
+        f"{preamble}\n{parts[0]}", contextualize, tokenizer, max_tokens
+    ):
+        parts[0] = f"{preamble}\n{parts[0]}"
     return parts
 
 

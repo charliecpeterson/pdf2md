@@ -115,6 +115,30 @@ def _signals(version_dir: Path) -> dict | None:
         "illegible_table_rows": sum(
             1 for ln in md.splitlines() if ln.startswith("|") and is_garbage(ln)
         ),
+        # The verification signals, read from profile.json rather than recomputed.
+        # All drift, none invariant: a document can legitimately have a table the
+        # engine mangled, and this harness reports how often that happens rather
+        # than asserting it never does.
+        **_verification_signals(version_dir),
+    }
+
+
+def _verification_signals(version_dir: Path) -> dict:
+    """Row/grid, reading-order, and text-layer-recall counts for one bundle."""
+    profile_path = version_dir / "profile.json"
+    if not profile_path.exists():
+        return {}
+    profile = json.loads(profile_path.read_text())
+    order = profile.get("reading_order_pages") or {}
+    return {
+        "tables_flagged": profile.get("tables_structurally_flagged", 0),
+        "order_pages": sum(
+            1 for page in order.values() if "geometry" in page or "numbering" in page
+        ),
+        "order_proven": sum(1 for page in order.values() if "numbering" in page),
+        "split_line_pages": sum(1 for page in order.values() if "split_lines" in page),
+        "low_recall": profile.get("glyph_low_recall_blocks", 0),
+        "accent_damaged": profile.get("glyph_accent_damaged_blocks", 0),
     }
 
 
@@ -140,6 +164,24 @@ def _print_table(sigs: dict[str, dict]) -> None:
               f"{s['eq_total']:3d} {s['eq_image_backed']:3d} {s['ocr_pages']:3d} "
               f"{s['tables']:3d} {s['ligature_residual']:3d} {s['unbalanced_eq']:5d} "
               f"{s['illegible']:5d} {s['illegible_table_rows']:5d}")
+
+    # The verification signals in their own table: they are drift, not
+    # invariants, and mixing them into the accounting columns above would
+    # suggest a document is worse for having had its defects noticed.
+    hdr = (f"{'DOC':28s} {'TBL!':>4} {'ORDER':>5} {'PROVEN':>6} {'SPLIT':>5} "
+           f"{'RECALL':>6} {'ACCENT':>6}")
+    print()
+    print(hdr)
+    print("-" * len(hdr))
+    for s in sigs.values():
+        if not any(s.get(k) for k in
+                   ("tables_flagged", "order_pages", "split_line_pages",
+                    "low_recall", "accent_damaged")):
+            continue
+        print(f"{s['source'][:28]:28s} {s.get('tables_flagged', 0):4d} "
+              f"{s.get('order_pages', 0):5d} {s.get('order_proven', 0):6d} "
+              f"{s.get('split_line_pages', 0):5d} {s.get('low_recall', 0):6d} "
+              f"{s.get('accent_damaged', 0):6d}")
 
 
 def _check(sigs: dict[str, dict], baseline: dict[str, dict]) -> list[str]:

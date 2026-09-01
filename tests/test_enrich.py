@@ -23,6 +23,11 @@ class _FakePC:
     def text_region(self, bbox) -> str:
         return self._text
 
+    def region_scriptsplit(self, bbox) -> str:
+        # The fixtures supply an already-separated reading; the real one splits
+        # scripted groups off their base word.
+        return self._text
+
     def text_lines(self, bbox) -> str:
         return self._lines
 
@@ -219,22 +224,24 @@ def test_prose_word_recall_recorded_when_complete():
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was 92 percent",
               page=1, bbox=_BB)
     enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="overall, The yield was 92 percent.")}))
-    assert p.extra["glyph_word_recall"] == {"matched": 5, "total": 6}
+    assert p.extra["glyph_word_recall"] == {"matched": 5, "total": 6, "strict": 5}
 
 
 def test_prose_word_recall_detects_lost_words():
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was", page=1, bbox=_BB)
     enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="The yield was 92 percent")}))
-    assert p.extra["glyph_word_recall"] == {"matched": 3, "total": 5}
+    assert p.extra["glyph_word_recall"] == {"matched": 3, "total": 5, "strict": 3}
 
 
 def test_prose_word_recall_strips_script_tags_and_skips_empty_regions():
     from pdf2md.enrich import record_block_recall
 
+    # A script tag becomes a boundary on both sides, because the source is read
+    # script-split: `<sup>2</sup>nd` and the layer's `2nd` both give `2` + `nd`.
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the <sup>2</sup>nd point",
               page=1, bbox=_BB)
-    record_block_recall(p, _FakePC(text="The 2nd point."))
-    assert p.extra["glyph_word_recall"]["matched"] == 3
+    record_block_recall(p, _FakePC(text="The 2 nd point."))
+    assert p.extra["glyph_word_recall"]["matched"] == 4
 
     empty = Block(id="#/q", type=BlockType.PARAGRAPH, text="orphan text", page=1, bbox=_BB)
     record_block_recall(empty, _FakePC(text=""))
@@ -249,13 +256,13 @@ def test_recall_summary_aggregates_and_counts_low_blocks():
                      extra={"glyph_word_recall": recall} if recall else {})
 
     blocks = [
-        block({"matched": 98, "total": 100}),   # healthy
-        block({"matched": 4, "total": 10}),     # below the 0.90 floor
+        block({"matched": 98, "total": 100, "strict": 98}),  # healthy
+        block({"matched": 4, "total": 10, "strict": 4}),     # below the 0.90 floor
         block(None),                            # OCR page / empty region: not measured
     ]
     assert recall_summary(blocks) == {
         "blocks_measured": 2, "words_total": 110, "words_matched": 102,
-        "low_recall_blocks": 1,
+        "low_recall_blocks": 1, "accent_damaged_blocks": 0,
     }
 
 
@@ -311,3 +318,101 @@ def test_scriptsplit_separates_scripted_groups():
     # A real space already separates base from script: no extra separator.
     spaced = [ch("1", 0, 0, 5, 10), ch(" ", 5, 0, 7, 10), ch("2", 8, 6.2, 11, 9)]
     assert _scriptsplit_text(spaced) == "1 2\n"
+
+
+def test_recall_flags_separate_missing_words_from_lost_accents():
+    from pdf2md.enrich import recall_review_flags
+
+    def block(bid, recall):
+        return Block(id=bid, type=BlockType.PARAGRAPH, text="x", page=4,
+                     extra={"glyph_word_recall": recall})
+
+    marked, informational = recall_review_flags([
+        block("#/a", {"matched": 20, "total": 20, "strict": 20}),   # clean
+        block("#/b", {"matched": 12, "total": 20, "strict": 12}),   # words gone
+        block("#/c", {"matched": 20, "total": 20, "strict": 18}),   # accents gone
+        block("#/d", {"matched": 19, "total": 20, "strict": 19}),   # within the floor
+    ])
+
+    assert [f.block_id for f in marked] == ["#/b"]
+    assert marked[0].severity == "high"  # 8 words missing
+    assert "8 of 20 source word(s)" in marked[0].reason
+    assert "source page 4" in marked[0].marker_text
+
+    # Accent damage is a different defect: the content is present and misspelled,
+    # so it reaches review.json without putting a marker beside every surname.
+    assert [f.block_id for f in informational] == ["#/c"]
+    assert informational[0].disposition == "informational"
+    assert "diacritics lost: 2 word(s)" in informational[0].reason
+
+
+def test_recall_flags_read_a_bundle_written_before_strict_existed():
+    from pdf2md.enrich import recall_review_flags, recall_summary
+
+    old = Block(id="#/a", type=BlockType.PARAGRAPH, text="x", page=1,
+                extra={"glyph_word_recall": {"matched": 20, "total": 20}})
+    marked, informational = recall_review_flags([old])
+    assert (marked, informational) == ([], [])
+    assert recall_summary([old])["accent_damaged_blocks"] == 0
+
+
+def test_recall_counts_a_line_broken_word_once():
+    from pdf2md.enrich import record_block_recall
+
+    # The layer breaks `structure` across a line with an undecodable soft hyphen;
+    # the emitter rejoins it. Scoring that as two lost words is a metric bug.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the local structure holds",
+              page=1, bbox=_BB)
+    record_block_recall(p, _FakePC(text="the local struc￾\nture holds"))
+    assert p.extra["glyph_word_recall"] == {"matched": 4, "total": 4, "strict": 4}
+
+
+def test_recall_joins_a_word_the_glyph_layer_drew_in_two_runs():
+    from pdf2md.enrich import record_block_recall
+
+    # A styled capital splits `ReAct` across two source tokens with no hyphen to
+    # join on. Scoring that as two lost words measures the draw order, not the
+    # content — and it flagged the title block of a paper twice over.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH,
+              text="ReAct synergizing reasoning and acting", page=1, bbox=_BB)
+    record_block_recall(p, _FakePC(text="reac t synergizing reasoning and acting"))
+    assert p.extra["glyph_word_recall"] == {"matched": 5, "total": 5, "strict": 5}
+
+
+def test_recall_does_not_invent_a_join_the_output_never_had():
+    from pdf2md.enrich import record_block_recall
+
+    # The join is only made when the emitted text actually contains the result,
+    # so two genuinely separate lost words stay lost.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield rose", page=1, bbox=_BB)
+    record_block_recall(p, _FakePC(text="the yield rose over time"))
+    assert p.extra["glyph_word_recall"] == {"matched": 3, "total": 5, "strict": 3}
+
+
+def test_recall_is_not_claimed_where_two_blocks_claim_one_region():
+    from pdf2md.enrich import recall_review_flags
+    from pdf2md.schema import BBox
+
+    def block(bid, box, recall):
+        return Block(id=bid, type=BlockType.PARAGRAPH, text="x", page=1, bbox=box,
+                     extra={"glyph_word_recall": recall})
+
+    poor = {"matched": 12, "total": 20, "strict": 12}
+    # Two boxes sharing most of their area: a word counted missing from one may
+    # simply belong to the other, so neither recall is decidable.
+    overlapping = [
+        block("#/a", BBox(x0=0, y0=0, x1=100, y1=50), poor),
+        block("#/b", BBox(x0=10, y0=5, x1=110, y1=45), dict(poor)),
+    ]
+    marked, informational = recall_review_flags(overlapping)
+    assert marked == []
+    assert {f.block_id for f in informational} == {"#/a", "#/b"}
+    assert "region boundary" in informational[0].reason
+
+    # Boxes that merely sit next to each other are measured as before.
+    apart = [
+        block("#/a", BBox(x0=0, y0=60, x1=100, y1=100), poor),
+        block("#/b", BBox(x0=0, y0=0, x1=100, y1=50), dict(poor)),
+    ]
+    marked, _ = recall_review_flags(apart)
+    assert {f.block_id for f in marked} == {"#/a", "#/b"}

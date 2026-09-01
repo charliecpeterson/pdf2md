@@ -16,7 +16,7 @@ from typing import Any
 # naive downstream parser (front-matter keys removed/renamed, file layout shift).
 # 0.11: books selectively expand Part-like bookmark containers into chapter files,
 # retain each opener, and keep detailed headings in file-local contents.
-FORMAT_VERSION = "0.11"
+FORMAT_VERSION = "0.12"
 
 
 class BlockType(str, Enum):
@@ -110,6 +110,20 @@ class TableData:
     # verdict counts plus uncovered-ink and bounded mismatch samples. Read-only
     # evidence; a mismatch flags review, it never rewrites the cell.
     cell_glyph_check: dict[str, Any] = field(default_factory=dict)
+    # Row- and grid-level audit (table_audit.audit_table): dropped, merged, and
+    # shifted rows the per-cell check cannot see, because a row the engine never
+    # created has no cell to verify. Read-only evidence like the above.
+    grid_audit: dict[str, Any] = field(default_factory=dict)
+    # The same region read out of the glyph layer in the engine's columns
+    # (table_rebuild.glyph_grid), written beside the engine's grid so a reader
+    # can diff them. Never the emitted table.
+    glyph_grid: str = ""
+    glyph_grid_path: str = ""
+    # The table's own region rendered from the source page. Unlike a block's
+    # `crop_path`, which marks the image as the authority over unusable cells,
+    # this rides along with a perfectly good grid so the printed table can be
+    # checked without opening the PDF.
+    source_crop: str = ""
 
 
 @dataclass
@@ -124,6 +138,11 @@ class RawCell:
     row_span: int
     col_span: int
     header: bool
+    # Whether the engine called this a *column* header specifically. `header` is
+    # also true for a leading label column, and a table with one of those has
+    # every row looking like a header row — which switched off merge counting on
+    # a third of the tables measured.
+    column_header: bool = False
 
 
 @dataclass
@@ -275,6 +294,7 @@ class DocumentProfile:
     tables: int
     tables_verified: int                 # structured table data accepted as the readable record
     tables_candidates: int               # structured OCR retained beside an authoritative crop
+    tables_structurally_flagged: int     # grids the row/grid audit found rows missing from
     tables_image_only: int               # no structured candidate was recovered
     derived_table_datasets: int          # normalized datasets derived from source table blocks
     table_cell_evidence: dict[str, int]  # per-cell verification status counts
@@ -308,6 +328,10 @@ class DocumentProfile:
     glyph_recall_words_total: int = 0        # words in those source regions
     glyph_recall_words_matched: int = 0      # of those, present in the emitted text
     glyph_low_recall_blocks: int = 0         # blocks below the 0.90 recall floor
+    glyph_accent_damaged_blocks: int = 0     # blocks whose words survived but lost diacritics
+    # Pages whose emitted order departs from the order the page prints, keyed by
+    # page number. Empty when every page's flow matched or couldn't be resolved.
+    reading_order_pages: dict[str, Any] = field(default_factory=dict)
     numeric_conservation: dict[str, Any] = field(default_factory=dict)
     # ^ whole-document source-vs-output numeric token accounting (available /
     #   reason / counts / missing examples); empty when not computed

@@ -50,6 +50,7 @@ from pdf2md.enrich import (
     enrich_blocks,
     enrich_figures,
     enrich_tables,
+    recall_review_flags,
     resegment_ocr_prose,
 )
 from pdf2md.conservation import (
@@ -83,9 +84,13 @@ from pdf2md.schema import (
     Provenance,
 )
 from pdf2md.transcribe import Transcriber, get_transcriber
+from pdf2md.reading_order import reading_order_flags
 from pdf2md.structure import build_structure
 from pdf2md.symbol_index import write_symbol_index
+from pdf2md.table_artifacts import annotate_table_artifacts
+from pdf2md.table_audit import raster_row_findings
 from pdf2md.table_rebuild import glyph_unbacked_tables
+from pdf2md.tables import gfm_rows
 from pdf2md.visual import (
     _describe_crops,
     _digitize_figures,
@@ -479,15 +484,18 @@ def convert_file(
     assets = vdir / "assets"
     data_dir = vdir / "data"
 
-    crop_blocks = _eq_crops(result.blocks) + _table_crops(
+    table_blocks, authoritative_tables = _table_crops(
         result.blocks,
         result.tables,
         include_structured=bool(config.table_ocr_executable),
     )
+    crop_blocks = _eq_crops(result.blocks) + table_blocks
     crop_count = sum(figure.bbox is not None for figure in result.figures) + len(crop_blocks)
     if crop_count:
         progress.stage("rendering %d source crops", crop_count)
     _render_crops(pdf_path, result.figures, crop_blocks, assets, config)
+    _attach_table_crops(result.blocks, result.tables, authoritative_tables)
+    _audit_scanned_tables(result.tables, vdir)
 
     ocr_pages = {b.page for b in result.blocks if b.extra.get("ocr")}
 
@@ -706,8 +714,20 @@ def convert_file(
         emission_index=emission_index,
     )
     conservation_flags = conservation_review_flags(consistency)
-    doc.coverage.flags.extend(conservation_flags)
-    annotate_conservation_warnings(vdir, conservation_flags, emission_index)
+    recall_flags, diacritic_flags = recall_review_flags(result.blocks)
+    order_flags, order_pages = reading_order_flags(result.blocks, emission_index)
+    doc.coverage.flags.extend(
+        conservation_flags + recall_flags + order_flags + diacritic_flags
+    )
+    # Diacritic findings reach review.json and profile.json but not the Markdown:
+    # the content is there and mis-spelled, and one marker per accented surname
+    # would bury a bibliography.
+    annotate_conservation_warnings(
+        vdir,
+        conservation_flags + _placeable(recall_flags + order_flags, emission_index),
+        emission_index,
+    )
+    annotate_table_artifacts(vdir, doc, doc.coverage.flags)
     review_queue = build_review_queue(doc)
     profile = build_profile(
         doc,
@@ -715,6 +735,7 @@ def convert_file(
         metadata=meta,
         engine_quality=result.quality_evidence,
         review_queue=review_queue,
+        reading_order=order_pages,
     )
     write_review_files(vdir, review_queue)
     write_profile(vdir, doc, profile, md_files)
@@ -949,26 +970,88 @@ def _transcribe_equations(
                 b.extra["transcribed_source"] = "math OCR"
 
 
-def _table_crops(blocks, tables, *, include_structured: bool = False) -> list:
-    """Tables to image-back: ones Docling failed to parse into cells (kept a bbox
-    but no renderable content, would otherwise drop), ones on an OCR'd scan
-    page (the cells are OCR guesses, so the scan pixels are the ground truth),
-    and ones whose cells the glyph check found unbacked (a vision model read a
-    raster table — no embedded text exists behind the cells)."""
+def _placeable(flags, emission_index: dict[str, dict]) -> list:
+    """Flags whose block has somewhere in the Markdown to put a marker.
+
+    A block can be measured and still have no span: a title heading is consumed
+    into the front matter rather than emitted as body. Conservation flags are
+    deliberately not filtered here — a conservation finding on an unplaced block
+    is a contradiction the annotation pass should raise on."""
+    return [
+        flag for flag in flags
+        if (entry := emission_index.get(flag.block_id))
+        and entry.get("start") is not None
+        and entry.get("markdown")
+    ]
+
+
+def _table_crops(blocks, tables, *, include_structured: bool = False) -> tuple[list, set]:
+    """Every table block gets a crop of its own region, so a reader can check the
+    printed table without opening the PDF. The returned id set is the subset
+    where that image is *authoritative* rather than a reference: tables Docling
+    failed to parse into cells (kept a bbox but no renderable content, would
+    otherwise drop), tables on an OCR'd scan page (the cells are OCR guesses, so
+    the scan pixels are the ground truth), and tables whose cells the glyph check
+    found unbacked (a vision model read a raster table — no embedded text exists
+    behind the cells). `include_structured` adds every table to that set for
+    --table-ocr, whose independent reader reads the crop."""
     rendered = {t.block_id for t in tables if (t.gfm or "").strip() or t.html}
     unbacked = glyph_unbacked_tables(tables)
-    selected = []
+    selected, authoritative = [], set()
     for b in blocks:
         # Key on type, not the `#/tables/` id prefix: --ocr-page-vlm repurposes a table block's
         # id into the page-transcription paragraph, which must NOT be cropped as a table.
         if b.bbox is None or b.type is not BlockType.TABLE:
             continue
+        selected.append(b)
         if include_structured or b.id not in rendered or b.extra.get("ocr"):
-            selected.append(b)
+            authoritative.add(b.id)
         elif b.id in unbacked:
             b.extra["cells_unverified"] = True
-            selected.append(b)
-    return selected
+            authoritative.add(b.id)
+    return selected, authoritative
+
+
+def _audit_scanned_tables(tables, version_dir: Path) -> None:
+    """Row accounting for the tables the glyph path could not reach.
+
+    Runs here rather than in `enrich_tables` because it needs the rendered crop,
+    which does not exist until the crop stage. Only fills in where the glyph
+    audit produced no row accounting at all -- a page with a text layer is
+    already measured more precisely than pixels can manage."""
+    for table in tables:
+        if table.grid_audit.get("rows") or not table.source_crop:
+            continue
+        rows = len(gfm_rows(table.gfm)) if (table.gfm or "").strip() else 0
+        if rows < 2:
+            continue
+        found = raster_row_findings(version_dir / table.source_crop, rows)
+        if not found:
+            continue
+        table.grid_audit = {
+            **table.grid_audit,
+            **{k: v for k, v in found.items() if k != "findings"},
+        }
+        if found.get("findings"):
+            table.grid_audit["findings"] = [
+                *table.grid_audit.get("findings", []), *found["findings"],
+            ]
+
+
+def _attach_table_crops(blocks, tables, authoritative: set) -> None:
+    """Hand each table its own crop, and keep `crop_path` for the tables whose
+    image is the authority. That key is what tells the emitter to publish the
+    image instead of the cells, and what marks the block source-dependent for
+    conservation and passages — a usable grid must not carry it."""
+    crops = {
+        b.id: b.extra["crop_path"] for b in blocks
+        if b.type is BlockType.TABLE and b.extra.get("crop_path")
+    }
+    for table in tables:
+        table.source_crop = crops.get(table.block_id, "")
+    for b in blocks:
+        if b.type is BlockType.TABLE and b.id not in authoritative:
+            b.extra.pop("crop_path", None)
 
 
 def _render_pages(pdf_path: Path, pages: set[int], assets: Path, config: Config) -> dict[int, str]:

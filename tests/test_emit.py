@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from pdf2md.coverage import build_report
 from pdf2md.emit import _file_units, _tidy_math, emit_document
 from pdf2md.schema import FORMAT_VERSION, CoverageStatus
@@ -359,7 +361,11 @@ def test_scanned_table_emits_crop_and_structured_candidate_artifacts(tmp_path):
     flag = next(flag for flag in flags if flag.reason == "table candidate unverified")
     assert flag.disposition == "action_required"
 
-    assert (tmp_path / table.candidate_path).read_text().startswith("| RADIUS | 1S | 2S |")
+    # The artifact is read away from document.md, so it carries its own
+    # provenance line before the grid.
+    candidate = (tmp_path / table.candidate_path).read_text()
+    assert "source page 30" in candidate
+    assert "\n| RADIUS | 1S | 2S |\n" in candidate
     with (tmp_path / table.data_path).open(newline="") as stream:
         assert list(csv.reader(stream)) == [
             ["RADIUS", "1S", "2S"],
@@ -907,3 +913,90 @@ def test_illegible_prose_flagged_not_silently_emitted(tmp_path):
     assert g.coverage_status == CoverageStatus.FLAGGED
     report = build_report(doc.doc_id, doc.blocks, flags)
     assert report.illegible == 1 and report.accounted_for and not report.complete
+
+
+def _audited_table_doc():
+    from pdf2md.schema import Block, BlockType, Document, TableData
+
+    block = Block("#/tables/0", BlockType.TABLE, "", 3)
+    structure = build_structure([block], None, title="Doc", page_count=3)
+    table = TableData(
+        block.id, 3, None,
+        gfm="| type | r |\n|---|---|\n| Ag1f1 | 1.22 |\n| Ag3f2 | 1.48 |",
+        source_crop="assets/tables_0_p3.png",
+        grid_audit={
+            "rows": {"source": 3, "engine": 2},
+            "findings": [
+                {"kind": "dropped_row_content", "severity": "high",
+                 "detail": "'Ag2f2 120.0 3 1.34' is missing 120.0, 3, 1.34"},
+                {"kind": "merged_rows", "severity": "medium", "detail": "one merge"},
+            ],
+        },
+    )
+    doc = Document("a" * 64, "/source.pdf", "a" * 64, 1, 3, structure.root,
+                   blocks=[block], tables=[table])
+    return doc, block, table
+
+
+def test_a_table_the_audit_flagged_is_emitted_with_its_findings_beside_it(tmp_path):
+    doc, block, table = _audited_table_doc()
+
+    md_files, flags = _emit(tmp_path, doc)
+    markdown = md_files[0].read_text()
+
+    # The grid still ships: the content is there and withholding it would lose
+    # data the reader can check. It just no longer reads as unquestioned.
+    assert "| Ag1f1 | 1.22 |" in markdown
+    assert block.coverage_status == CoverageStatus.EMITTED
+    assert "is missing 120.0, 3, 1.34" in markdown
+    assert f"[source crop]({table.source_crop})" in markdown
+
+    flag = next(f for f in flags if f.block_id == block.id)
+    assert flag.reason == "table structure: dropped_row_content, merged_rows"
+    assert flag.severity == "high"  # the worst finding sets it, not the first
+
+
+def test_the_derived_table_artifact_carries_the_same_findings(tmp_path):
+    # The artifact is read on its own, away from document.md and its markers.
+    doc, _block, table = _audited_table_doc()
+    _emit(tmp_path, doc)
+
+    candidate = (tmp_path / table.candidate_path).read_text()
+    assert "source page 3" in candidate
+    assert "is missing 120.0, 3, 1.34" in candidate
+    assert "one merge" in candidate
+
+    record = json.loads((tmp_path / table.json_path).read_text())
+    assert record["grid_audit"]["rows"] == {"source": 3, "engine": 2}
+
+
+def test_post_emission_findings_reach_the_artifact_the_reader_opens(tmp_path):
+    from pdf2md.schema import CoverageFlag
+    from pdf2md.table_artifacts import annotate_table_artifacts
+
+    doc, block, table = _audited_table_doc()
+    _emit(tmp_path, doc)
+
+    # A conservation flag on the table's own block, and one raised elsewhere on
+    # the same page: the first reproduces, the second becomes a pointer.
+    flags = [
+        CoverageFlag(block.id, 3, "content conservation: unexplained loss: 2 number(s)",
+                     "> **[pdf2md: ...]**", "action_required", "high", "high"),
+        CoverageFlag("#/texts/9", 3, "content conservation: unexplained loss: 8 word(s)",
+                     "> **[pdf2md: ...]**", "action_required", "medium", "medium"),
+        CoverageFlag(block.id, 3, "table structure: dropped_row_content",
+                     "> **[pdf2md: ...]**", "action_required", "high", "high"),
+    ]
+    assert annotate_table_artifacts(tmp_path, doc, flags) == 1
+
+    candidate = (tmp_path / table.candidate_path).read_text()
+    assert "unexplained loss: 2 number(s)" in candidate
+    assert "source page 3 has 1 other finding(s)" in candidate
+    # The structural summary is already spelled out in the header; not repeated.
+    assert candidate.count("table structure:") == 0
+    # Markers sit above the grid, never inside it.
+    assert candidate.index("unexplained loss") < candidate.index("| type | r |")
+
+    record = json.loads((tmp_path / table.json_path).read_text())
+    assert any("unexplained loss: 2 number(s)" in w
+               for w in record["post_emission_warnings"])

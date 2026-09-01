@@ -123,16 +123,43 @@ src/pdf2md/
                 crop flags are silently ignored for SVG output.
   emit.py       Section tree → .md files + YAML front-matter; sets coverage_status, collects flags.
   tables.py     GFM table render, HTML fallback for spanning cells.
-  table_rebuild.py  born-digital glyph-truth for tables: independent grid rebuild from whitespace
-                corridors (zero-crossing lanes), and check_table_cells — per-engine-cell glyph
-                verification (verdicts + uncovered-ink strays) recorded as read-only evidence on
-                TableData.cell_glyph_check during enrich; spacing_only verdicts are not flagged.
+  table_rebuild.py  born-digital glyph-truth for tables: grid rebuild from whitespace corridors
+                (zero-crossing lanes) plus row_bands (the same projection over y, so a subscript
+                stays on its baseline) and engine_lane_bounds. glyph_grid/grid_markdown read a
+                region into the engine's columns with measured rows — written as <block>.glyph.md
+                beside the engine's grid, never as the emitted table. check_table_cells is the
+                per-engine-cell glyph verification (verdicts + uncovered-ink strays) recorded as
+                read-only evidence on TableData.cell_glyph_check during enrich; spacing_only
+                verdicts are not flagged.
+  table_audit.py  the row- and grid-level failures check_table_cells cannot see, because a row the
+                engine never created has no cell to verify. row_accounting projects the region's
+                ink into rows and requires every value in a row band to reach a cell of the engine
+                rows covering it (dropped rows, merged rows); grid_findings reads only the emitted
+                cells (merged_cells, shifted_values, header_absorbed_data) and stands at medium
+                until the accounting corroborates it. raster_row_findings covers the scanned case
+                the glyph path cannot reach, off the table's own crop. Stored on
+                TableData.grid_audit; becomes a CoverageFlag in emit.
   metadata.py   ranked local bibliographic evidence from embedded fields, front-page and
                 repeated headings, running titles, early bookmarks, and meaningful filenames.
                 Selected, alternate, penalized, and rejected candidates remain inspectable.
   grobid.py     optional GROBID enrichment (--grobid-url): header fields + every reference string
                 parsed from TEI; fill-gaps-only merge (GROBID's header model can latch onto arXiv
                 license boilerplate), raw TEI under data/, unreachable service degrades with a warning.
+  reading_order.py  the one thing the rest of the verification layer is blind to by
+                construction: word recall compares multisets and numeric conservation counts
+                values, so a page whose columns the engine interleaves conserves everything and
+                still reads as nonsense. Two mechanisms. page_findings reads geometry: columns
+                come from where blocks' left edges cluster (a corridor search dies on an
+                overhanging abstract), a block running into the next column separates the flow,
+                and within a segment the printed order is column-major; blocks starting at no
+                column start are set aside, not forced. ordinal_findings reads the document's own
+                numbering: when a page's leading ordinals sort to an unbroken run, that run IS the
+                printed order — no column model, no thresholds, and a page it convicts is high
+                severity rather than medium. split_line_findings reports printed lines cut across
+                several blocks, informational because the detection is exact but the judgement
+                isn't (a masthead's `Received:` / date is also one line in two blocks). All three
+                report the minimum number of blocks whose removal restores order, never the count
+                of inverted pairs.
   coverage.py   tally block dispositions into a CoverageReport.
   quality.py    independent evidence-backed scorecard dimensions and engine-grade evidence.
   review.py     action/source-dependence classification plus sorted review.md and review.json.
@@ -164,8 +191,26 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
                 benchmark_digitize_bundle.py (replay chart work from a completed bundle without re-running the parser),
                 eval_digitize_ocr_gate.py (geometry-only recall/cost gate for outlined-axis OCR),
                 eval_table_rebuild.py (glyph-grid rebuild vs the source-checked cells in
-                tests/glyph_table_labels.json; scores positional exactness and row containment).
-                benchmark.py.
+                tests/glyph_table_labels.json; scores positional exactness and row containment),
+                eval_table_audit.py (row/grid findings vs tests/table_audit_labels.json, whose
+                labels were established from the source text and from two independent line-finding
+                mechanisms agreeing, never from running the audit; precision is the number that
+                matters and --check gates on it).
+                eval_engine_table_agreement.py (two engines' table grids for one source, and
+                whether the row/grid audit flags the tables they disagree about — engine
+                disagreement is unlabelled but plentiful, which is what the thirteen-table label
+                set is not; also scores the shipped <block>.glyph.md against the second engine,
+                because nothing else ever has),
+                eval_engine_order_agreement.py (the same trick on block order: match blocks
+                across engines by box overlap and ask whether reading_order flags the pages the
+                two order differently),
+                eval_engine_text_agreement.py (and on block text, for the prose checks — note
+                that word-level engine disagreement is a weak defect proxy for prose, so read the
+                flagged-where-they-agree cell, not the recall figure),
+                benchmark.py. qa.py also reports the verification signals (flagged tables,
+                reading-order and split-line pages, low-recall and accent-damaged blocks) as
+                drift, never as invariants: a document is not worse for having its defects
+                noticed.
 ```
 
 ## Conventions
@@ -196,6 +241,84 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   (`_eq_crops` crops any equation with no text, not just low-confidence ones) and
   emitted as `![equation](...)`, never a bare "empty equation block". `--no-formula`
   is the CLI lever.
+- **A table block's `crop_path` means the image is authoritative; `TableData.source_crop`
+  does not.** Every table is now cropped so a reader can check the printed region, but
+  `crop_path` is load-bearing well beyond emission: it routes the emitter to publish the
+  image *instead* of the cells, and marks the block source-dependent for conservation,
+  passages, and chunks. `_attach_table_crops` gives every table its `source_crop` and keeps
+  `crop_path` only for the tables the old rule selected (no cells, OCR'd scan page, glyph-
+  unbacked, or `--table-ocr`, whose independent reader reads that crop).
+- **Table artifacts under `data/tables/` carry their own audit header.** They are read away
+  from `document.md`, where an unmarked grid presents as a standalone source. The header is
+  written during emit from `grid_audit`; `annotate_table_artifacts` runs after the
+  conservation pass to add findings that only exist by then. Anything emitted beside content
+  as navigation (the `*[pdf2md] table source:*` line) must be stripped in
+  `conservation._semantic_output`, or its link labels count as words the source never had.
+- **Word recall measures the emitted text against a *script-split, hyphen-joined* reading
+  of the region.** Both sides get the same tokenization or the metric reports its own
+  artifacts: the layer glues a reference marker onto its base word (`technetium67`) where
+  the output separates it, it breaks a word across a line with a soft hyphen the font
+  can't decode (U+FFFE, U+00AD, `\x02`) where the emitter rejoins it, and script tags
+  become a space on the output side to match the split source. Before those three, ten of
+  eleven low-recall blocks on a clean paper were metric bugs. `strict` is the same
+  comparison without diacritic folding; the gap is accent damage (`Co te` for `Côté`),
+  which is a real defect but a different one from a missing word and stays informational.
+- **Conservation compares a block against its own rendered markup, so both sides must be
+  normalized the same way.** `token_accounting` runs `_semantic_output` over the source as
+  well as the output. Without it an HTML table's `td`/`tr`/`tbody` counted as source words
+  and were stripped from the output — one 29-row table reported losing 471 words — and every
+  `<sup>` in a prose block cost two phantom words. On a clean paper that was 25 of 25
+  conservation flags. Anything emitted beside content (the `*[pdf2md] table source:*` line,
+  a marker and its blockquote continuation) is stripped from both readings.
+- **A pdf2md marker above a table is not part of the table's repeated header.**
+  `passage_split._split_table` repeats the caption and column header on every continuation
+  passage; a marker belongs to the table as a whole and rides only with the first. A caption
+  stays in the repeated header, a `>` line or `*[pdf2md]` line does not. When the header
+  genuinely cannot fit the budget the split degrades to unheadered rows with a warning
+  rather than raising — aborting lost the whole document over one wide table, which cost
+  three of ten conversions on the frozen unseen corpus.
+- **A printed table row reaches more than one column; a wrapped cell's continuation does
+  not.** Row-band counting assumes one printed line per row, which holds for a dense
+  parameter table and fails for any table with a paragraph in a cell. Unguarded it reported
+  nine merges for a three-row table of model answers, and `merged_rows` was the most common
+  finding on a corpus of unseen papers — 13 of 19 flagged tables, of which 11 had cells of
+  119-889 characters. Two guards, both needed (10 false positives with only the lane rule,
+  6 with only the width rule, 2 with both): a row whose own cell text cannot fit its box is
+  excluded, and a printed line reaching fewer than `_MIN_ROW_LANES` columns is a
+  continuation, not a row. `row_locator.projection_row_bands` gets this free on the raster
+  path because it projects only the panel's leading stripe, where row labels live.
+- **Every sweep in the table audit clamps to the engine's cell extent, so a grid that is a
+  fragment of its table measures the fragment against itself.** `_covers_little_of` refuses
+  when the cells span under half the block's region in either axis; healthy grids span 0.79
+  to 1.0 (median 0.95 across 95 tables), and the one fragment measured 0.09. Found by
+  running two engines over the same corpus and asking where they disagreed.
+- **Header exclusion uses `column_header`, not `header`.** `RawCell.header` is
+  `column_header or row_header`, and a table whose leading label column is a row header has
+  *every* row looking like a heading — which switched merge counting off entirely on 32 of
+  95 tables measured. `_header_rows` uses column headers only, falling back to row 0 when
+  the engine names none (every table has a heading, and a two-line heading is what the
+  exclusion exists for). After the fix: 0 of 86.
+- **The wrap guard needs an absolute length, not only box overrun.** A cell can overrun a
+  narrow numeric column at eleven characters (`0.965 0.969` does), and no eleven-character
+  cell is a wrapped paragraph. Without `_MIN_WRAP_CHARS` the guard excluded every row of a
+  table whose columns were merely narrow, which silenced both merge checks on a textbook
+  row-pair collapse. Measured: collapse tables max out around 21 characters per cell,
+  wrapped-prose tables run to a median of 48 and a max of 583.
+- **A column whose cells all hold the same count of values is collapsed.**
+  `_numeric_columns` needs most cells to be a *lone* number, so it cannot see a column where
+  *every* cell was merged — none is ever lone. Consistency is the signal instead.
+- **A cell holding many values is a collapsed column whatever its column looks like.**
+  `merged_cells` normally needs the column to be numeric — three lone numbers elsewhere in
+  it — which a table flattened to *one* data row can never satisfy. And the row-band check
+  can't help there either: a cell holding eleven rows of content overruns its box, so the
+  wrapped-cell guard excludes it. So the cell's own contents are the only evidence left,
+  and four or more whitespace-separated values in one cell stands on its own.
+- **Recall is not claimed where two prose blocks claim one region.** The metric compares a
+  block's text against the glyphs in its box, which assumes the box is that block's alone.
+  Across 951 prose blocks the median overlap with a neighbour is zero and the 97th
+  percentile 0.085, so `_AMBIGUOUS_REGION_SHARE = 0.15` is far outside normal; past it the
+  block gets an informational region-boundary note instead of a recall action. This is the
+  honest form of the admission `quality.py` already makes about region-boundary accuracy.
 - **`--force-ocr` re-OCRs the page and suppresses the glyph layer.** For a PDF whose
   embedded text is itself bad OCR, the engine OCRs full pages (`force_full_page_ocr`) and
   `GlyphIndex(force_ocr=True)` reports every page as having no text — so the doc is treated
