@@ -21,12 +21,13 @@ import pypdfium2 as pdfium
 import pypdfium2.raw as pdfium_c
 
 from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
-from pdf2md.conservation import numeric_accounting, numeric_conservation
+from pdf2md.conservation import numeric_accounting, numeric_conservation, semantic_output
 from pdf2md.logging import get_logger
 from pdf2md.legibility import is_garbage
 from pdf2md.normalize import (
     clean_preformatted,
     clean_reading,
+    expand_ligature_glyphs,
     has_split_ligature,
     has_split_word,
     normalize_text,
@@ -49,7 +50,7 @@ from pdf2md.schema import (
 from pdf2md.scripts import PageChars, apply_scripts
 from pdf2md.table_audit import audit_table
 from pdf2md.table_rebuild import check_table_cells, glyph_grid, grid_markdown
-from pdf2md.tables import GridCell, build_gfm, build_html, gfm_rows, html_tables
+from pdf2md.tables import GridCell, build_gfm, build_html, gfm_rows, html_tables, render_table
 
 log = get_logger("enrich")
 
@@ -234,7 +235,6 @@ def enrich_blocks(blocks: list[Block], glyphs) -> None:
             # overlay scripts; both align to the same glyphs.
             b.text = religatured(b.text, glyphs.vocab)
             b.text = apply_scripts(b.text, pc.scored_region(b.bbox))
-            record_block_recall(b, pc)
         elif b.type is BlockType.EQUATION and b.bbox is not None:
             if pc is not None:
                 tl = pc.text_region(b.bbox)
@@ -403,7 +403,14 @@ def _recall_words(text: str) -> list[str]:
     treatment, so the only differences left are content differences: a word the
     page breaks across lines is one word (the emitter rejoins it, and a metric
     that didn't would score every hyphenated line-break as a loss), and script
-    tags are emission syntax."""
+    tags are emission syntax.
+
+    A TeX f-ligature is expanded here for the same reason the line-break hyphen
+    is: the emitted side had it expanded upstream, so leaving the glyph layer's
+    raw control byte alone scores `configuration` against the layer's `con` +
+    `guration` as two losses and a phantom word. Every f-ligature in the
+    document, on every side of the comparison."""
+    text = expand_ligature_glyphs(text)
     # A space, not nothing: the source side is read script-split, so `X<sub>UFF</sub>`
     # has to tokenize as `X UFF` the way the glyph reading of the same ink does.
     # Dropping the tags instead makes every scripted run a phantom miss in one
@@ -414,12 +421,16 @@ def _recall_words(text: str) -> list[str]:
     return _WORDS.findall(text)
 
 
-def record_block_recall(block: Block, pc) -> None:
+def record_block_recall(block: Block, pc, emitted: str | None = None) -> None:
     """Measure how much of the block's source region survived into its emitted
     text: a word-multiset comparison against the glyph layer, order-insensitive
     so scrambled draw order doesn't read as loss. Stored in `extra` for
     provenance; aggregated by `recall_summary`. Skipped when the region holds no
     words (a bbox/layer mismatch measures nothing).
+
+    `emitted` is the output side when it isn't `block.text` -- a block carrying a
+    table renders from its cells and leaves `text` empty, so comparing against
+    `text` scores every printed word as lost.
 
     The source side is read script-split, like the page prints it rather than
     like the draw order glues it: `technetium67` is two tokens on the page, and
@@ -435,7 +446,7 @@ def record_block_recall(block: Block, pc) -> None:
     src = _recall_words(pc.region_scriptsplit(block.bbox))
     if not src:
         return
-    out = _recall_words(block.text)
+    out = _recall_words(block.text if emitted is None else emitted)
     src = _rejoin_split(src, Counter(out))
     strict = sum((Counter(src) & Counter(out)).values())
     folded = sum(
@@ -444,6 +455,33 @@ def record_block_recall(block: Block, pc) -> None:
     block.extra["glyph_word_recall"] = {
         "matched": folded, "total": len(src), "strict": strict,
     }
+
+
+def record_recall(blocks: list[Block], tables: list[TableData], glyphs) -> None:
+    """Record per-block word recall, after every repair pass has run.
+
+    Split out of `enrich_blocks` because a table's markup is only finalized in
+    `enrich_tables`, which runs later. A block carrying a table renders from its
+    cells and leaves `text` empty, so measuring it in `enrich_blocks` compared
+    the printed region against nothing and scored every word as lost: the
+    GRASP2018 manual's three contents pages read 0/266, 0/456 and 0/237 while
+    their tables were emitted in full.
+
+    Preformatted blocks stay out: their text was re-read from the glyph layer, so
+    comparing it against that same layer measures the copy, not the extraction.
+    """
+    by_block = {t.block_id: t for t in tables}
+    for b in blocks:
+        if b.type not in PROSE_TYPES or b.bbox is None or b.extra.get("preformatted"):
+            continue
+        pc = glyphs.page_chars(b.page)
+        if pc is None:
+            continue
+        table = by_block.get(b.id)
+        emitted = None
+        if table is not None:
+            emitted = semantic_output(table.preformatted or render_table(table))
+        record_block_recall(b, pc, emitted)
 
 
 def recall_review_flags(blocks: list[Block]) -> tuple[list[CoverageFlag], list[CoverageFlag]]:

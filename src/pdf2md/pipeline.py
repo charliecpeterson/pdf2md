@@ -51,6 +51,7 @@ from pdf2md.enrich import (
     enrich_figures,
     enrich_tables,
     recall_review_flags,
+    record_recall,
     resegment_ocr_prose,
 )
 from pdf2md.conservation import (
@@ -409,6 +410,9 @@ def convert_file(
             enrich_blocks(result.blocks, glyphs)
             enrich_tables(result.tables, result.raw_tables, glyphs)
             enrich_figures(result.figures, glyphs)
+            # After the table pass: a block that renders from cells has no text of
+            # its own to measure until its markup is final.
+            record_recall(result.blocks, result.tables, glyphs)
 
     figure_cleanup["captions_associated"] = associate_figure_captions(
         result.blocks, result.figures

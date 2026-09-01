@@ -62,7 +62,7 @@ def _raw_words(text: str) -> list[str]:
     return _WORD.findall(normalized)
 
 
-def _semantic_output(text: str) -> str:
+def semantic_output(text: str) -> str:
     """Remove syntax introduced by emission while retaining visible content."""
     text = _PDF2MD_MARKER.sub("", text)
     text = _EMITTED_NAV.sub("", text)
@@ -114,8 +114,8 @@ def token_accounting(source_text: str, output_text: str) -> dict[str, dict[str, 
     losing 471 words that were never content. Whatever counts as emitted syntax
     has to count as syntax in both readings or the difference is the
     normalization, not the document."""
-    source_text = _semantic_output(source_text)
-    output_text = _semantic_output(output_text)
+    source_text = semantic_output(source_text)
+    output_text = semantic_output(output_text)
     return {
         "words": _token_delta(
             _raw_words(source_text),

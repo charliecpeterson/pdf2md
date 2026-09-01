@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from pdf2md.enrich import enrich_blocks, enrich_figures, enrich_tables
+from pdf2md.enrich import enrich_blocks, enrich_figures, enrich_tables, record_recall
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, RawCell, RawTable, TableData
 
 _BB = BBox(x0=0, y0=10, x1=10, y1=0)
@@ -225,14 +225,39 @@ def test_prose_word_recall_recorded_when_complete():
     # a faithful block matches every source word (case/order-insensitive).
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was 92 percent",
               page=1, bbox=_BB)
-    enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="overall, The yield was 92 percent.")}))
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="overall, The yield was 92 percent.")}))
     assert p.extra["glyph_word_recall"] == {"matched": 5, "total": 6, "strict": 5}
 
 
 def test_prose_word_recall_detects_lost_words():
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was", page=1, bbox=_BB)
-    enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="The yield was 92 percent")}))
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="The yield was 92 percent")}))
     assert p.extra["glyph_word_recall"] == {"matched": 3, "total": 5, "strict": 3}
+
+
+def test_word_recall_of_a_table_block_reads_its_cells():
+    # A block whose content renders from cells has no text of its own. Measuring
+    # `text` scored the whole printed region as lost (the GRASP2018 contents pages
+    # read 0/266 while their tables were emitted in full), so the table's own
+    # markup is the output side -- and its markup syntax is not source content.
+    b = Block(id="#/tables/0", type=BlockType.OTHER, text="", page=1, bbox=_BB)
+    t = TableData(block_id="#/tables/0", page=1, bbox=_BB,
+                  gfm="| Running the tools | 169 |")
+    glyphs = _FakeGlyphs({1: _FakePC(text="Running the tools 169")})
+    record_recall([b], [t], glyphs)
+    assert b.extra["glyph_word_recall"] == {"matched": 4, "total": 4, "strict": 4}
+
+
+def test_word_recall_of_a_table_block_still_sees_dropped_characters():
+    # The reason the fix matters: GRASP's contents table emitted "unningthetools"
+    # for "Running the tools". Reading the cells reports that loss instead of
+    # hiding it behind a 0/N that was wrong for an unrelated reason.
+    b = Block(id="#/tables/0", type=BlockType.OTHER, text="", page=1, bbox=_BB)
+    t = TableData(block_id="#/tables/0", page=1, bbox=_BB,
+                  gfm="| unningthetools | 169 |")
+    glyphs = _FakeGlyphs({1: _FakePC(text="Running the tools 169")})
+    record_recall([b], [t], glyphs)
+    assert b.extra["glyph_word_recall"] == {"matched": 1, "total": 4, "strict": 1}
 
 
 def test_prose_word_recall_strips_script_tags_and_skips_empty_regions():
