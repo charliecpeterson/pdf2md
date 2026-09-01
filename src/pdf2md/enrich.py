@@ -668,23 +668,35 @@ def _overlapping_regions(blocks: list[Block]) -> dict[str, float]:
 
 
 def _rejoin_split(source: list[str], emitted: Counter) -> list[str]:
-    """Merge adjacent source words whose concatenation is a word the output has.
+    """Merge a run of adjacent source words whose concatenation the output has.
 
-    A styled capital or a two-run glyph draw splits one printed word across two
-    source tokens with no hyphen to join on: `ReAct` reads as `reac` + `t`, and
-    scoring that as two lost words is the metric measuring the draw order rather
-    than the content. Only a join the output actually contains is made, which is
-    a stricter validator than `normalize.rejoin_split_word`'s page vocabulary and
-    is available here because the emitted text is the thing being compared."""
+    A styled capital or a multi-run glyph draw splits one printed word across
+    several source tokens with no hyphen to join on: `ReAct` reads as `reac` +
+    `t`, and a layer that draws a word one character at a time gives `e` + `x` +
+    `trapolation` for `extrapolation`, `krylo` + `v`, `broyde` + `n`. Scoring
+    those as lost words measures the draw order rather than the content.
+
+    A run of any length is merged, not just a pair, and the longest one wins --
+    the per-character case needs three or more. Only a join the output actually
+    contains is made, which is a stricter validator than
+    `normalize.rejoin_split_word`'s page vocabulary and is available here
+    because the emitted text is the thing being compared. Candidate runs grow
+    only while they still prefix some output word, so the search stays cheap.
+    """
+    prefixes = {word[:size] for word in emitted for size in range(1, len(word) + 1)}
     merged: list[str] = []
     index = 0
     while index < len(source):
-        pair = (
-            source[index] + source[index + 1] if index + 1 < len(source) else None
-        )
-        if pair and emitted[pair]:
-            merged.append(pair)
-            index += 2
+        glued, best = "", 0
+        for end in range(index, len(source)):
+            glued += source[end]
+            if glued not in prefixes:
+                break
+            if end > index and emitted[glued]:
+                best = end
+        if best:
+            merged.append("".join(source[index:best + 1]))
+            index = best + 1
         else:
             merged.append(source[index])
             index += 1

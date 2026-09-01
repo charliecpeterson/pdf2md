@@ -610,3 +610,22 @@ def test_a_list_item_losing_a_word_is_still_an_action():
     assert "list_marker_only" not in b.extra["glyph_word_recall"]
     marked, _ = recall_review_flags([b])
     assert len(marked) == 1
+
+
+def test_word_recall_rejoins_a_word_drawn_character_by_character():
+    # Some layers draw a word in several runs -- `e` + `x` + `trapolation`, or one
+    # character at a time. Merging only adjacent *pairs* left those as lost words;
+    # a run of any length is merged, longest first, and only into a word the
+    # output actually has.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="a krylov subspace extrapolation",
+              page=1, bbox=_BB)
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="a krylo v subspace e x trapolation")}))
+    assert p.extra["glyph_word_recall"] == {"matched": 4, "total": 4, "strict": 4}
+
+
+def test_word_recall_does_not_invent_a_join_the_output_lacks():
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="alpha beta", page=1, bbox=_BB)
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="alpha be ta gamma")}))
+    # `be` + `ta` joins to `beta`, which the output has; `gamma` does not, so it
+    # stays a genuine loss.
+    assert p.extra["glyph_word_recall"] == {"matched": 2, "total": 3, "strict": 2}
