@@ -85,10 +85,16 @@ def test_repeated_third_party_warnings_keep_first_and_report_exact_count(caplog)
 def test_expand_ligature_glyphs():
     # A broken TeX font surfaces its f-ligatures and discretionary hyphen as C0 control
     # bytes; clean_reading must expand them to letters, not strip them to spaces.
-    from pdf2md.normalize import clean_reading
+    from pdf2md.normalize import clean_reading, expand_ligature_glyphs
 
     assert clean_reading("the \x1crst con\x1cguration \x1cles") == "the first configuration files"
     assert clean_reading("di\x1berent e\x1ecient \x1doating") == "different efficient floating"
+    # The same C0 slots mean other things in other TeX fonts: 0x1C is `fi` in an
+    # OT1 text font and what cmsy draws for `\ll`. A ligature is always inside a
+    # word, so a byte alone between spaces is left for the control strip rather
+    # than turning `Normally M << N` into `Normally M fi N`.
+    assert clean_reading("Normally M \x1c N.") == "Normally M N."
+    assert expand_ligature_glyphs("\x1c") == "\x1c"
     assert clean_reading("practi\x02cal") == "practical"  # soft hyphen -> join
     assert clean_reading("normal clean text") == "normal clean text"  # untouched
 
