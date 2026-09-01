@@ -574,6 +574,55 @@ def record_recall(blocks: list[Block], tables: list[TableData], glyphs) -> None:
         if table is not None:
             emitted = semantic_output(table.preformatted or render_table(table))
         record_block_recall(b, pc, emitted)
+    _record_neighbour_attribution(blocks, glyphs)
+
+
+def _record_neighbour_attribution(blocks: list[Block], glyphs) -> None:
+    """Whether a low-recall block's missing words turn up in a block whose box
+    overlaps its own.
+
+    The region-boundary guard silences a finding on the grounds that a word
+    counted missing may belong to the neighbour sharing the region. That is a
+    claim about where the words went, and it is checkable: if none of them
+    appears in any overlapping block's text, the overlap does not explain the
+    loss. Measured over the corpus, the guard was silencing 63 findings, of
+    which 16 had no missing word anywhere in a neighbour -- and poppler,
+    reading the same regions independently, corroborated 19 of the 24 it could
+    judge. Suppressing those is hiding content, not deferring on it.
+    """
+    by_page: dict[int, list[Block]] = defaultdict(list)
+    for block in blocks:
+        if block.bbox is not None and block.text.strip():
+            by_page[block.page].append(block)
+
+    for block in blocks:
+        record = block.extra.get("glyph_word_recall")
+        if not record or not record["total"]:
+            continue
+        if record["matched"] / record["total"] >= LOW_RECALL_BELOW:
+            continue
+        pc = glyphs.page_chars(block.page)
+        if pc is None:
+            continue
+        source = _recall_words(pc.region_scriptsplit(block.bbox))
+        emitted = _recall_words(block.text)
+        source = _split_glued(_rejoin_split(source, Counter(emitted)), emitted)
+        missing = Counter(source) - Counter(emitted)
+        if not missing:
+            continue
+        nearby: Counter = Counter()
+        for other in by_page[block.page]:
+            if other.id != block.id and _boxes_overlap(block.bbox, other.bbox):
+                nearby.update(_recall_words(other.text))
+        record["missing_in_neighbour"] = sum((missing & nearby).values())
+
+
+def _boxes_overlap(a: BBox, b: BBox) -> bool:
+    ax0, ax1 = sorted((a.x0, a.x1))
+    ay0, ay1 = sorted((a.y0, a.y1))
+    bx0, bx1 = sorted((b.x0, b.x1))
+    by0, by1 = sorted((b.y0, b.y1))
+    return min(ax1, bx1) > max(ax0, bx0) and min(ay1, by1) > max(ay0, by0)
 
 
 def recall_review_flags(blocks: list[Block]) -> tuple[list[CoverageFlag], list[CoverageFlag]]:
@@ -598,7 +647,7 @@ def recall_review_flags(blocks: list[Block]) -> tuple[list[CoverageFlag], list[C
         if not rec or not rec["total"]:
             continue
         missing = rec["total"] - rec["matched"]
-        if b.id in ambiguous:
+        if b.id in ambiguous and rec.get("missing_in_neighbour", 1):
             # The recall was measured over a region another block also claims, so
             # a word "missing" here may simply belong to the neighbour. Recorded
             # in provenance, not raised: `quality.py` names region-boundary

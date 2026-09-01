@@ -58,6 +58,13 @@ class _FakeGlyphs:
         return self._vocab
 
 
+def _measurement(block) -> dict:
+    """The recall record's measurement fields, without the bookkeeping a
+    low-recall block also carries (where its missing words turned up)."""
+    record = block.extra["glyph_word_recall"]
+    return {k: record[k] for k in ("matched", "total", "strict")}
+
+
 def _eq(text, page=1):
     return Block(id="#/eq", type=BlockType.EQUATION, text=text, page=page, bbox=_BB)
 
@@ -233,13 +240,13 @@ def test_prose_word_recall_recorded_when_complete():
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was 92 percent",
               page=1, bbox=_BB)
     record_recall([p], [], _FakeGlyphs({1: _FakePC(text="overall, The yield was 92 percent.")}))
-    assert p.extra["glyph_word_recall"] == {"matched": 5, "total": 6, "strict": 5}
+    assert _measurement(p) == {"matched": 5, "total": 6, "strict": 5}
 
 
 def test_prose_word_recall_detects_lost_words():
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was", page=1, bbox=_BB)
     record_recall([p], [], _FakeGlyphs({1: _FakePC(text="The yield was 92 percent")}))
-    assert p.extra["glyph_word_recall"] == {"matched": 3, "total": 5, "strict": 3}
+    assert _measurement(p) == {"matched": 3, "total": 5, "strict": 3}
 
 
 def test_word_recall_of_a_table_block_reads_its_cells():
@@ -264,7 +271,7 @@ def test_word_recall_of_a_table_block_still_sees_dropped_characters():
                   gfm="| unningthetools | 169 |")
     glyphs = _FakeGlyphs({1: _FakePC(text="Running the tools 169")})
     record_recall([b], [t], glyphs)
-    assert b.extra["glyph_word_recall"] == {"matched": 1, "total": 4, "strict": 1}
+    assert _measurement(b) == {"matched": 1, "total": 4, "strict": 1}
 
 
 def test_prose_word_recall_strips_script_tags_and_skips_empty_regions():
@@ -420,7 +427,7 @@ def test_recall_does_not_invent_a_join_the_output_never_had():
     # so two genuinely separate lost words stay lost.
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield rose", page=1, bbox=_BB)
     record_block_recall(p, _FakePC(text="the yield rose over time"))
-    assert p.extra["glyph_word_recall"] == {"matched": 3, "total": 5, "strict": 3}
+    assert _measurement(p) == {"matched": 3, "total": 5, "strict": 3}
 
 
 def test_recall_is_not_claimed_where_two_blocks_claim_one_region():
@@ -587,7 +594,7 @@ def test_word_recall_only_splits_into_words_the_output_really_has():
     record_recall([q], [], _FakeGlyphs({1: _FakePC(text="alpha betagamma")}))
     # `betagamma` would need `beta` and `gamma` adjacent in the output; only
     # `gamma` is there, so the word stays lost and a real drop is still reported.
-    assert q.extra["glyph_word_recall"] == {"matched": 1, "total": 2, "strict": 1}
+    assert _measurement(q) == {"matched": 1, "total": 2, "strict": 1}
 
 
 def test_a_list_item_number_is_not_reported_as_lost_text():
@@ -643,7 +650,7 @@ def test_word_recall_does_not_invent_a_join_the_output_lacks():
     record_recall([p], [], _FakeGlyphs({1: _FakePC(text="alpha be ta gamma")}))
     # `be` + `ta` joins to `beta`, which the output has; `gamma` does not, so it
     # stays a genuine loss.
-    assert p.extra["glyph_word_recall"] == {"matched": 2, "total": 3, "strict": 2}
+    assert _measurement(p) == {"matched": 2, "total": 3, "strict": 2}
 
 
 def test_a_shattered_fragment_is_not_measured_for_recall():
@@ -671,3 +678,33 @@ def test_a_short_list_entry_is_not_mistaken_for_a_fragment():
     b = Block(id="#/l", type=BlockType.LIST, text="Simple mixtures", page=1, bbox=_BB)
     record_recall([b], [], _FakeGlyphs({1: _FakePC(text="5 Simple mixtures")}))
     assert b.extra["glyph_word_recall"]["list_marker_only"] is True
+
+
+def _overlapping_pair(neighbour_text: str):
+    """Two blocks sharing most of a region, the first missing a word."""
+    a = Block(id="#/a", type=BlockType.PARAGRAPH, text="alpha beta", page=1,
+              bbox=BBox(x0=0, y0=10, x1=10, y1=0))
+    b = Block(id="#/b", type=BlockType.PARAGRAPH, text=neighbour_text, page=1,
+              bbox=BBox(x0=1, y0=10, x1=9, y1=0))
+    glyphs = _FakeGlyphs({1: _FakePC(text="alpha beta gamma")})
+    record_recall([a, b], [], glyphs)
+    return a, recall_review_flags([a, b])
+
+
+def test_overlap_excuses_a_loss_only_when_the_words_went_to_the_neighbour():
+    # The guard's claim is that a word counted missing may belong to the block
+    # sharing the region. Where the neighbour does hold it, that stands.
+    a, (marked, informational) = _overlapping_pair("gamma delta")
+    assert a.extra["glyph_word_recall"]["missing_in_neighbour"] == 1
+    assert "#/a" not in {f.block_id for f in marked}
+    assert any(f.block_id == "#/a" and f.reason.startswith("region boundary")
+               for f in informational)
+
+
+def test_overlap_does_not_excuse_a_loss_the_neighbour_cannot_account_for():
+    # Where the word is in neither block, the overlap does not explain it, and
+    # silencing the finding hides content. Corpus-wide this released 16
+    # findings the guard had been suppressing.
+    a, (marked, _) = _overlapping_pair("delta epsilon")
+    assert a.extra["glyph_word_recall"]["missing_in_neighbour"] == 0
+    assert "#/a" in {f.block_id for f in marked}
