@@ -11,6 +11,7 @@ from pdf2md.enrich import (
     enrich_blocks,
     enrich_figures,
     enrich_tables,
+    recall_review_flags,
     record_recall,
 )
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, RawCell, RawTable, TableData
@@ -587,3 +588,25 @@ def test_word_recall_only_splits_into_words_the_output_really_has():
     # `betagamma` would need `beta` and `gamma` adjacent in the output; only
     # `gamma` is there, so the word stays lost and a real drop is still reported.
     assert q.extra["glyph_word_recall"] == {"matched": 1, "total": 2, "strict": 1}
+
+
+def test_a_list_item_number_is_not_reported_as_lost_text():
+    # `emit` renders a list item as `- text`, so the printed number becomes list
+    # structure rather than disappearing. Reported, but not as an action: it was
+    # 81 of 90 numeral-only recall flags across the corpus.
+    b = Block(id="#/l", type=BlockType.LIST, text="The properties of gases",
+              page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="1 The properties of gases")}))
+    assert b.extra["glyph_word_recall"]["list_marker_only"] is True
+    marked, informational = recall_review_flags([b])
+    assert marked == []
+    assert len(informational) == 1 and "list marker" in informational[0].reason
+
+
+def test_a_list_item_losing_a_word_is_still_an_action():
+    # The exemption is only for the leading number. A missing word still counts.
+    b = Block(id="#/l", type=BlockType.LIST, text="The properties", page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="1 The properties of gases")}))
+    assert "list_marker_only" not in b.extra["glyph_word_recall"]
+    marked, _ = recall_review_flags([b])
+    assert len(marked) == 1

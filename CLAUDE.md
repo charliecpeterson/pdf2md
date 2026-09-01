@@ -263,7 +263,16 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   the output separates it, it breaks a word across a line with a soft hyphen the font
   can't decode (U+FFFE, U+00AD, `\x02`) where the emitter rejoins it, and script tags
   become a space on the output side to match the split source. Before those three, ten of
-  eleven low-recall blocks on a clean paper were metric bugs. `strict` is the same
+  eleven low-recall blocks on a clean paper were metric bugs. A fourth: the layer *glues*
+  words the output separates (`carlocalculations`, `articlesyoumaybeinterestedin` -- a
+  journal that draws a heading with no space glyphs glues all of it), so `_split_glued`
+  splits a source word into output words that actually sit adjacent, the mirror of
+  `_rejoin_split` and validated the same strict way. That alone took low-recall blocks
+  from 919 to 372 corpus-wide, the Atkins textbook from 628 to 168. A list item's printed
+  number is then expected normalization, not loss -- `emit` renders it as the bullet --
+  and rides as informational: 81 of 90 numeral-only flags were list items. Recall's
+  measured precision against an independent reader (poppler, `eval_recall_precision.py`)
+  is 0.79, and the corpus now raises 124 recall actions where it once raised over 1,200. `strict` is the same
   comparison without diacritic folding; the gap is accent damage (`Co te` for `Côté`),
   which is a real defect but a different one from a missing word and stays informational.
 - **Conservation compares a block against its own rendered markup, so both sides must be

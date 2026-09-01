@@ -519,9 +519,17 @@ def record_block_recall(block: Block, pc, emitted: str | None = None) -> None:
     folded = sum(
         (Counter(_fold(w) for w in src) & Counter(_fold(w) for w in out)).values()
     )
-    block.extra["glyph_word_recall"] = {
-        "matched": folded, "total": len(src), "strict": strict,
-    }
+    record = {"matched": folded, "total": len(src), "strict": strict}
+    missing = list((Counter(src) - Counter(out)).elements())
+    if (block.type is BlockType.LIST and missing and src
+            and all(word.isdigit() for word in missing) and src[0] in missing):
+        # The emitter renders a list item as `- text`, so the printed number the
+        # region carries is replaced by the bullet rather than dropped by the
+        # extraction. Expected normalization, and the largest remaining source
+        # of recall actions: 81 of 90 numeral-only flags are list items, and in
+        # 84 of 90 the numeral leads the region.
+        record["list_marker_only"] = True
+    block.extra["glyph_word_recall"] = record
 
 
 def record_recall(blocks: list[Block], tables: list[TableData], glyphs) -> None:
@@ -583,6 +591,14 @@ def recall_review_flags(blocks: list[Block]) -> tuple[list[CoverageFlag], list[C
                 b.id, b.page,
                 f"region boundary: this block's box overlaps a neighbour's by "
                 f"{ambiguous[b.id]:.0%}, so its text-layer recall is not decidable",
+                "", disposition="informational", severity="low", content_impact="low",
+            ))
+            continue
+        if rec.get("list_marker_only"):
+            informational.append(CoverageFlag(
+                b.id, b.page,
+                "list marker: the item's printed number is rendered as a bullet, "
+                "so it reaches the Markdown as list structure rather than as text",
                 "", disposition="informational", severity="low", content_impact="low",
             ))
             continue
@@ -675,11 +691,6 @@ def _rejoin_split(source: list[str], emitted: Counter) -> list[str]:
     return merged
 
 
-# A layer glues at most a few words before a real separator appears, and the
-# index below is quadratic in this, so it stays small.
-_MAX_GLUED_WORDS = 4
-
-
 def _split_glued(source: list[str], emitted: list[str]) -> list[str]:
     """Split a source word the layer glued from words the output separates.
 
@@ -693,18 +704,32 @@ def _split_glued(source: list[str], emitted: list[str]) -> list[str]:
     Validated the same strict way: the split is made only into words the output
     actually has, consecutively, so a genuine compound the page prints as one
     word is left alone unless the output really did separate it.
+
+    There is no bound on how many words a run may hold, because a journal that
+    draws a heading without space glyphs glues all of it: an AIP paper's
+    `Articles You May Be Interested In` arrives as one token, as does
+    `correlationconsistentbasissetsforactinides`. Candidate runs are grown
+    only while they still prefix the source word, so the search costs about
+    what a single scan does rather than what every possible run would.
     """
     have = Counter(emitted)
-    joins: dict[str, list[str]] = {}
-    for start in range(len(emitted)):
-        glued = emitted[start]
-        for end in range(start + 1, min(start + _MAX_GLUED_WORDS, len(emitted))):
-            glued += emitted[end]
-            joins.setdefault(glued, emitted[start:end + 1])
+
+    def run_for(word: str) -> list[str] | None:
+        for start in range(len(emitted)):
+            if not word.startswith(emitted[start]):
+                continue
+            glued = ""
+            for end in range(start, len(emitted)):
+                glued += emitted[end]
+                if not word.startswith(glued):
+                    break
+                if glued == word and end > start:
+                    return emitted[start:end + 1]
+        return None
 
     out: list[str] = []
     for word in source:
-        run = joins.get(word) if not have[word] else None
+        run = run_for(word) if not have[word] else None
         out.extend(run if run else [word])
     return out
 
