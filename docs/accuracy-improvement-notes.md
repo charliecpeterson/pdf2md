@@ -473,6 +473,33 @@ These constraints came out of the measured experiments and remain project policy
 - No treating shared-crop-geometry OCR votes as independent verification.
 - No automatic promotion of fixed-font glyph-atlas choices.
 
+## End-use measurement, 2026-09-01
+
+Everything the verification layer reports is internal consistency: the engine
+against the glyph layer, the check against poppler, one parser against another.
+None of it asks whether the Markdown is good to *use*, so a bundle could score
+0.9951 recall with nothing dropped and still answer questions worse than the
+page it came from.
+
+`scripts/agent_benchmark.py` answers the same eleven questions from the bundle's
+retrieval records and from the rendered source pages. Run against `qwen3-vl:8b`:
+
+| | text/table/equation | chart data | outcomes |
+|---|---|---|---|
+| bundle | 6/6 | 1/5 | 7 correct, 4 refused, 0 incorrect |
+| source pages | 6/6 | 2/5 | 8 correct, 2 refused, 1 incorrect |
+
+On the content pdf2md claims to extract the bundle is at parity with looking at
+the page, and the whole gap is chart data -- the known digitization boundary,
+where the bundle declines rather than guesses. The single confidently wrong
+answer in the run came from the source-page mode, not the bundle.
+
+Read it as a smoke test, not a benchmark: eleven questions, five of them
+synthetic plot fixtures, one 8B local model. It is evidence that there is no
+usability problem hiding behind the accounting numbers, not evidence that the
+output is good. The chart-data column is the honest place to push next, and it
+is the same limitation `digitize.py` already documents.
+
 ## Current status and next evidence
 
 Ideas 2, 3, 4, and 7 are implemented. Idea 1 produced a production glyph-cell
