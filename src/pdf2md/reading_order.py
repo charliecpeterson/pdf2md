@@ -59,6 +59,17 @@ _ORDINAL = re.compile(
 _MIN_ORDINALS = 5
 # Below this many flow blocks a page has no order worth checking.
 _MIN_BLOCKS = 4
+# A block of one or two characters is not content with a place in the flow: it
+# is a piece of something the engine shattered. Docling breaks a display
+# equation into per-glyph `paragraph` blocks -- one Atkins page yields `A`, `∂`,
+# `G`, `∂ξ`, `=µ`, `p`, `,` as fourteen separate ones -- and emits them after
+# the prose they sit above, which reads as disorder while telling a reader
+# nothing they can act on. Of 148 flagged pages, 22 had no out-of-order block
+# longer than two words. Excluding them clears 20 findings and reveals 3 more,
+# where the fragments had been padding the ordered run and hiding real prose
+# disorder. A one-word heading (`ACKNOWLEDGMENTS`, `References`) is well clear
+# of this, which is why the bound is characters and not words.
+_MIN_FLOW_CHARS = 3
 
 
 def _span(bbox: BBox) -> tuple[float, float]:
@@ -151,6 +162,7 @@ def page_findings(blocks: list[Block], emitted_at: dict[str, int]) -> dict[str, 
     flow = [
         b for b in blocks
         if b.type in _FLOW_TYPES and b.bbox is not None and b.id in emitted_at
+        and len(b.text.strip()) >= _MIN_FLOW_CHARS
     ]
     if len(flow) < _MIN_BLOCKS:
         return None

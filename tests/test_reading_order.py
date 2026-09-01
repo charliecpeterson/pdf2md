@@ -213,3 +213,38 @@ def test_numbering_convicts_a_page_the_geometry_cannot_resolve():
     assert [f.severity for f in flags] == ["high"]
     assert "numbered entries (1-8)" in flags[0].reason
     assert "numbering" in pages["1"]
+
+
+def _flow(bid: str, top: float, text: str) -> Block:
+    """A single-column block carrying its own text, for the fragment tests."""
+    return Block(id=bid, type=BlockType.PARAGRAPH, text=text, page=1,
+                 bbox=BBox(x0=LEFT, y0=top - 20.0, x1=LEFT + WIDTH, y1=top))
+
+
+def test_a_shattered_equation_is_not_read_as_disorder():
+    # Docling breaks a display equation into per-glyph `paragraph` blocks and
+    # emits them after the prose they sit above. That is out of geometric order
+    # and tells a reader nothing: the "misplaced" content is the character `d`.
+    # The prose is in order, so the page has no finding.
+    blocks = [
+        _flow("#/p1", 700, "The reaction Gibbs energy is defined as follows"),
+        _flow("#/p2", 650, "This equation can be reorganized into the form"),
+        _flow("#/p3", 500, "That is, the slope of the curve at that point"),
+        _flow("#/f1", 600, "d"),
+        _flow("#/f2", 590, "G"),
+        _flow("#/f3", 580, "=m"),
+    ]
+    assert page_findings(blocks, emitted(*[b.id for b in blocks])) is None
+
+
+def test_a_one_word_heading_still_counts_as_flow():
+    # The bound is characters, not words, so a real one-word heading is kept and
+    # emitting it out of place is still reported.
+    blocks = [
+        _flow("#/h", 700, "ACKNOWLEDGMENTS"),
+        _flow("#/p1", 650, "We thank the reviewers for their careful reading"),
+        _flow("#/p2", 600, "This work was supported by a grant from the council"),
+        _flow("#/p3", 550, "The authors declare no competing financial interest"),
+    ]
+    finding = page_findings(blocks, emitted("#/p1", "#/p2", "#/p3", "#/h"))
+    assert finding is not None and finding["misplaced"] >= 1
