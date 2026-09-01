@@ -116,7 +116,7 @@
     "source_sha256": "416d651377c4cce7ec6c91680afba2764f1d4e549525bc657d147faf6c5e0ef0",
     "split_line_pages": 0,
     "tables": 5,
-    "tables_flagged": 2,
+    "tables_flagged": 1,
     "unbalanced_eq": 0
   },
   "234112_1_online.pdf": {
@@ -156,7 +156,7 @@
     "ligature_residual": 0,
     "low_recall": 1,
     "ocr_pages": 0,
-    "order_pages": 12,
+    "order_pages": 3,
     "order_proven": 0,
     "orphaned_crops": 0,
     "pages": 327,
@@ -180,7 +180,7 @@
     "ligature_residual": 0,
     "low_recall": 44,
     "ocr_pages": 1,
-    "order_pages": 56,
+    "order_pages": 55,
     "order_proven": 0,
     "orphaned_crops": 0,
     "pages": 545,
@@ -202,9 +202,9 @@
     "illegible": 3,
     "illegible_table_rows": 0,
     "ligature_residual": 1,
-    "low_recall": 162,
+    "low_recall": 132,
     "ocr_pages": 0,
-    "order_pages": 62,
+    "order_pages": 54,
     "order_proven": 0,
     "orphaned_crops": 0,
     "pages": 1085,
@@ -212,7 +212,7 @@
     "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
     "split_line_pages": 134,
     "tables": 349,
-    "tables_flagged": 53,
+    "tables_flagged": 48,
     "unbalanced_eq": 0
   },
   "ct400952t.pdf": {
