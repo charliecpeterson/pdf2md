@@ -1484,6 +1484,19 @@ def test_assess_equation():
     # Too few alphanumeric tokens to judge (symbol-heavy orbital config).
     assert assess_equation(r"[ \text {Core} ] 4 \sigma", "[Core]4σ") is None
 
+    # The page prints an equation number and the engine omits it. That is page
+    # furniture, not content, so it leaves both sides rather than scoring as a
+    # disagreement -- 57 of 108 equation regions measured here end in one.
+    assert assess_equation(
+        r"V _ { 0 } \subset V _ { 1 } \subset V _ { 2 } \subset \cdots .",
+        "V0 ⊂ V1 ⊂ V2 ⊂ ⋯. (13)") == (1.0, None)
+
+    # And when the engine keeps it, it still leaves both sides -- otherwise the
+    # fix would only move the mismatch to the other direction.
+    assert assess_equation(
+        r"V _ { 0 } \subset V _ { 1 } \subset V _ { 2 } \quad ( 1 3 )",
+        "V0 ⊂ V1 ⊂ V2 (13)") == (1.0, None)
+
 
 def test_latex_tokens_do_not_weld_across_structure():
     from pdf2md.confidence import _latex_tokens

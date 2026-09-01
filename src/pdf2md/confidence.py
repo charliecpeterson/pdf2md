@@ -35,6 +35,9 @@ RENDER_SIMILAR_ABOVE = 0.70
 RENDER_DISSIMILAR_BELOW = 0.45
 
 _TOKEN = re.compile(r"[A-Za-z0-9]{2,}")
+# A printed equation number: page furniture the engine includes only
+# sometimes. Shared by the cross-check and the render-back pass.
+_TRAILING_EQ_NO = re.compile(r"\s*\((?:\d+|[ivx]+)\)\s*$")
 # `\text{cc-pVTZ}` / `\mathrm{...}` wrap real visible text — keep the content.
 _TEXT_WRAPPER = re.compile(r"\\(?:text|mathrm|mathbf|mathit|operatorname)\s*\{([^{}]*)\}")
 # Operators whose name *is* the visible text (\exp, \max), not a symbol — keep it.
@@ -107,11 +110,23 @@ def assess_equation(latex: str, text_layer: str) -> tuple[float, str | None] | N
     the equation's (single-column) bbox: recall catches missing content, precision
     catches content the LaTeX has but the bbox doesn't — adjacent-column prose
     Docling's formula model bled in. A one-directional score misses bleed entirely
-    (the bled tokens just inflate the LaTeX)."""
-    toks = _TOKEN.findall(text_layer)
+    (the bled tokens just inflate the LaTeX).
+
+    A printed equation number leaves both sides. It is page furniture, not part
+    of the equation, and the engine includes it only sometimes -- so whichever
+    way it falls it scores as a disagreement about content. 57 of the 108
+    equation regions measured here end in one, and two of the nine equations
+    whose disagreement survived every other correction differed by nothing
+    else: `V_0 \\subset V_1 \\subset V_2 \\subset \\cdots` against a layer
+    reading the same thing plus `(13)`."""
+    flat = " ".join(text_layer.split())
+    numbered = _TRAILING_EQ_NO.search(flat)
+    toks = _TOKEN.findall(_TRAILING_EQ_NO.sub("", flat))
     if len(toks) < 3:
         return None
     text_set, latex_set = set(toks), _latex_tokens(latex)
+    if numbered:
+        latex_set.discard(numbered.group().strip(" ()"))
     recall = sum(1 for t in text_set if t in latex_set) / len(text_set)
     precision = sum(1 for t in latex_set if t in text_set) / len(latex_set) if latex_set else 1.0
     conf = min(recall, precision)
@@ -148,7 +163,6 @@ def plot_data_accepted(digitization: Digitization | None) -> bool:
 
 _TAG = re.compile(r"\\tag\{[^{}]*\}")
 _LABEL = re.compile(r"\\label\{[^{}]*\}")
-_TRAILING_EQ_NO = re.compile(r"\s*\((?:\d+|[ivx]+)\)\s*$")
 _ALIGN_AMP = re.compile(r"\s*&\s*")
 # An aligned pair's line break: draw the segments as one row rather than refuse
 # (the stacked-vs-flat distortion lands in the topology score, honestly).
