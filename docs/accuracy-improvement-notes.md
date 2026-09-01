@@ -422,8 +422,22 @@ Silent born-digital table mangling stops being something only discovered during
 evaluations. Estimated effort: small.
 
 Status: implemented 2026-08-22, informational only. Per-block word recall is
-recorded during enrichment (`enrich.record_block_recall`, born-digital prose
-blocks with a bbox) and aggregated into `DocumentProfile.glyph_recall_*`.
+recorded during enrichment (`enrich.record_recall`, born-digital prose blocks
+with a bbox) and aggregated into `DocumentProfile.glyph_recall_*`.
+
+Two corrections on 2026-08-31, both found by converting the GRASP2018 manual.
+The measurement runs as its own pass after `enrich_tables` rather than inside
+`enrich_blocks`, because a block that renders from table cells leaves `text`
+empty and a table's markup is not final until that later pass: the manual's
+three contents pages scored 0/266, 0/456 and 0/237 while their tables were
+emitted in full. And `_recall_words` expands TeX f-ligatures on both sides, so
+the glyph layer's `con` + `guration` no longer scores against a correctly
+emitted `configuration` as two losses and a phantom word. Across the 14
+converted documents this moved low-recall blocks 1266 -> 1239 -> 1094 with no
+document newly flagged and none scoring worse; GRASP went 160 -> 14 and its
+document recall 0.9258 -> 0.9933. What the phantom 0/266 had been hiding is a
+real defect: `unningthetools` for "Running the tools" and dingbats for the
+chapter numbers 7 and 10.
 Whole-document numeric conservation runs after emit (`enrich.numeric_conservation`)
 against the markdown just written and lands in `DocumentProfile.numeric_conservation`
 (counts plus up to 12 missing-value examples). Both surface in profile.json and

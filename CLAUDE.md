@@ -62,7 +62,10 @@ src/pdf2md/
                 layer). Reads pypdfium2 glyph geometry; any engine inherits it. resegment_ocr_prose
                 re-splits RapidOCR's run-together words in scanned prose (wordninja; OCR blocks only).
                 Also the read-only token-level consistency signals: per-block word recall vs the
-                glyph layer (record_block_recall, aggregated by profile) and whole-document
+                glyph layer (record_recall, a pass after enrich_tables so a block that renders
+                from cells is measured against its markup rather than its empty text; both sides
+                get the f-ligature expansion, else the layer's `con`+`guration` reads as loss)
+                and whole-document
                 numeric conservation between the embedded layer and the emitted markdown
                 (numeric_conservation; informational only — never rewrites a value).
   normalize.py  text cleanup (Greek glyph names, orphan combining marks, clean_reading) + vocab-
