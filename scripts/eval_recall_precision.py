@@ -30,6 +30,12 @@ A flagged block counts as:
 
 Blocks are sampled per ratio band so the bands with the most volume do not
 drown out the extremes -- the 0.8-0.9 band alone holds 54% of all findings.
+
+Recall is recomputed from the source rather than read out of `provenance.json`.
+A stored value was written by whatever the check did when that bundle was
+converted, so scoring it measures a mix of code versions: six of sixteen
+refutations in the first run of this harness recomputed to no missing words at
+all, against flags that no longer exist.
 """
 
 from __future__ import annotations
@@ -48,7 +54,37 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 import pypdfium2 as pdfium  # noqa: E402
 
-from pdf2md.enrich import _recall_words  # noqa: E402
+from dataclasses import fields  # noqa: E402
+
+from pdf2md.enrich import GlyphIndex, _recall_words, record_recall  # noqa: E402
+from pdf2md.schema import BBox, Block, BlockType, TableData  # noqa: E402
+
+
+def _rescored(version_dir: Path, source: Path) -> dict[str, dict]:
+    """Per block id, recall as the *current* check computes it."""
+    provenance = json.loads((version_dir / "provenance.json").read_text())
+    block_fields = {f.name for f in fields(Block)}
+    table_fields = {f.name for f in fields(TableData)}
+
+    def box(raw):
+        return BBox(**raw) if raw else None
+
+    blocks = [
+        Block(type=BlockType(r["type"]), bbox=box(r.get("bbox")),
+              **{k: r[k] for k in r if k in block_fields and k not in ("type", "bbox")})
+        for r in provenance["blocks"]
+    ]
+    tables = [
+        TableData(**{k: (box(r[k]) if k == "bbox" else r[k])
+                     for k in r if k in table_fields})
+        for r in provenance["tables"]
+    ]
+    for block in blocks:
+        block.extra.pop("glyph_word_recall", None)
+    with GlyphIndex(source) as glyphs:
+        record_recall(blocks, tables, glyphs)
+    return {b.id: b.extra["glyph_word_recall"] for b in blocks
+            if b.extra.get("glyph_word_recall")}
 
 _BANDS = ((0.0, 0.5), (0.5, 0.8), (0.8, 0.9))
 # A word only worth counting as "missing" if it carries content. Single letters
@@ -114,11 +150,13 @@ def sample(version_dir: Path, per_band: int, rng: random.Random) -> list[dict]:
     finally:
         pdf.close()
 
+    fresh = _rescored(version_dir, source)
     banded: dict[tuple[float, float], list[dict]] = {b: [] for b in _BANDS}
     for block in provenance["blocks"]:
-        rec = (block.get("extra") or {}).get("glyph_word_recall")
+        rec = fresh.get(block["id"])
         if not rec or not rec["total"] or not block.get("bbox"):
             continue
+        block.setdefault("extra", {})["glyph_word_recall"] = rec
         ratio = rec["matched"] / rec["total"]
         for band in _BANDS:
             if band[0] <= ratio < band[1]:

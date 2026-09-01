@@ -568,3 +568,22 @@ def test_cell_read_box_falls_back_to_its_own_when_the_column_has_no_lane():
     # A spanning cell has no single-column lane; it keeps the engine's box.
     raw = RawTable(cells=[_cell("a", 0, 20.0, 30.0, span=2)], num_rows=1, num_cols=2)
     assert _cell_read_boxes(raw) == {}
+
+
+def test_word_recall_splits_a_word_the_layer_glued():
+    # The layer draws "Carlo calculations" with no space glyph between them, so
+    # the region reads it as one token while the output has two. Unsplit, that
+    # was one phantom loss plus one phantom extra -- the largest single cause of
+    # false low-recall flags in the corpus (919 blocks -> 372 once handled).
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="monte carlo calculations ran",
+              page=1, bbox=_BB)
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="monte carlocalculations ran")}))
+    assert p.extra["glyph_word_recall"] == {"matched": 4, "total": 4, "strict": 4}
+
+
+def test_word_recall_only_splits_into_words_the_output_really_has():
+    q = Block(id="#/q", type=BlockType.PARAGRAPH, text="alpha gamma", page=1, bbox=_BB)
+    record_recall([q], [], _FakeGlyphs({1: _FakePC(text="alpha betagamma")}))
+    # `betagamma` would need `beta` and `gamma` adjacent in the output; only
+    # `gamma` is there, so the word stays lost and a real drop is still reported.
+    assert q.extra["glyph_word_recall"] == {"matched": 1, "total": 2, "strict": 1}

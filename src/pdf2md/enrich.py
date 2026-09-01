@@ -514,7 +514,7 @@ def record_block_recall(block: Block, pc, emitted: str | None = None) -> None:
     if not src:
         return
     out = _recall_words(block.text if emitted is None else emitted)
-    src = _rejoin_split(src, Counter(out))
+    src = _split_glued(_rejoin_split(src, Counter(out)), out)
     strict = sum((Counter(src) & Counter(out)).values())
     folded = sum(
         (Counter(_fold(w) for w in src) & Counter(_fold(w) for w in out)).values()
@@ -673,6 +673,40 @@ def _rejoin_split(source: list[str], emitted: Counter) -> list[str]:
             merged.append(source[index])
             index += 1
     return merged
+
+
+# A layer glues at most a few words before a real separator appears, and the
+# index below is quadratic in this, so it stays small.
+_MAX_GLUED_WORDS = 4
+
+
+def _split_glued(source: list[str], emitted: list[str]) -> list[str]:
+    """Split a source word the layer glued from words the output separates.
+
+    The mirror of `_rejoin_split`, and needed for the same reason: the layer
+    draws `Carlo calculations` as one run with no space glyph between them, so
+    the region reads `carlocalculations` while the output correctly has two
+    words, and the metric scores one phantom loss plus one phantom extra. Found
+    on flags an independent reader refuted -- `multiwaveletbasis`, `zerofirst`,
+    `rangular` -- where nothing was actually missing.
+
+    Validated the same strict way: the split is made only into words the output
+    actually has, consecutively, so a genuine compound the page prints as one
+    word is left alone unless the output really did separate it.
+    """
+    have = Counter(emitted)
+    joins: dict[str, list[str]] = {}
+    for start in range(len(emitted)):
+        glued = emitted[start]
+        for end in range(start + 1, min(start + _MAX_GLUED_WORDS, len(emitted))):
+            glued += emitted[end]
+            joins.setdefault(glued, emitted[start:end + 1])
+
+    out: list[str] = []
+    for word in source:
+        run = joins.get(word) if not have[word] else None
+        out.extend(run if run else [word])
+    return out
 
 
 def _fold(word: str) -> str:
