@@ -356,6 +356,23 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   findings the check does raise. Suppressing those was hiding content, not deferring on
   it, so `missing_in_neighbour` now gates the note. This is the honest form of the
   admission `quality.py` already makes about region-boundary accuracy.
+- **Poppler is not independent of the reading-order defect it is asked to judge.**
+  Its order largely follows the PDF's content stream, which is where a stream-order
+  defect comes from, so on exactly the pages whose disorder the engine inherited it
+  agrees with the emission and refutes a correct finding — Intro-to_Relativistic-QC
+  page 8 emits `#/texts/38` (top 218.8) before `#/texts/39` (top 230.8) on a one-column
+  list, and poppler called that agreement. `eval_reading_order_precision.py` now proves
+  what it can instead: on a page with one column the printed order IS top to bottom, so
+  a block sitting entirely below its predecessor is out of order with no model and no
+  threshold. Precision on flagged pages 0.61 → 0.71 (both printed; the poppler-alone
+  figure is what compares to earlier runs). **The premise must be tested, not asked of
+  `column_starts`** — it drops a cluster holding less than `_MIN_COLUMN_SHARE` of the
+  page's blocks, so Atkins page 41 (nine blocks at x=43.5, two at x=391.5) reports as
+  single-column, and comparing tops across that pair proves nothing. Assuming it instead
+  of checking it inflated the figure to 0.78 and invented a 35-page recall gap that does
+  not exist. Two column-model theories were also measured and rejected: neither the
+  closest gap between detected column starts (56% of confirmed vs 50% of refuted under
+  30pt) nor the column count separates confirmed from refuted.
 - **Band overlap is what two consecutive paragraphs have, so it cannot be what a
   split printed line is.** `split_line_findings` grouped blocks whose vertical bands
   overlapped inside a column, and the couple of points between one paragraph's
