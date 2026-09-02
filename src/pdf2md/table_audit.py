@@ -59,6 +59,9 @@ _MIN_NUMERIC_CELLS = 3
 # How many values in one cell make it a collapsed column on its own evidence,
 # with no column profile needed.
 _MIN_COLLAPSED_VALUES = 4
+# A sign the engine detached from its number. Every character _NUMBER accepts
+# as a leading sign, so the two stay in step.
+_SIGNS = frozenset("−‑–-")
 # A column has to lose its value in at least this many rows (and in half of
 # them) before the loss reads as the whole column going missing.
 _MIN_DROPPED_COLUMN_ROWS = 3
@@ -481,6 +484,30 @@ def _uniformly_collapsed_columns(rows: list[list[str]]) -> set[int]:
     return collapsed
 
 
+def _rejoin_signs(parts: list[str]) -> list[str]:
+    """Put a sign back on the number it belongs to, when the cell leads with one.
+
+    The engine renders a page's `\u22123383.702155` as `- 3383.702155`, and a lone
+    `-` is not a number, so a cell holding a whole collapsed column of them
+    failed the all-numeric test and was skipped entirely. Table 2 of
+    s00214-006-0174-5 is the case: ten elements and thirty energies flattened
+    into one data row, every column collapsed, and no finding raised.
+
+    Only when the cell begins with a sign, which is what separates a collapsed
+    column of negatives (`- v1 - v2 - v3`) from a range (`151 - 153`, an `exp.
+    ref` column citing references 151 to 153). Rejoining unconditionally turned
+    two such ranges in jp905220k into collapsed rows."""
+    if not parts or parts[0] not in _SIGNS:
+        return parts
+    joined: list[str] = []
+    for part in parts:
+        if joined and joined[-1] in _SIGNS:
+            joined[-1] += part
+        else:
+            joined.append(part)
+    return joined
+
+
 def grid_findings(header: list[str], rows: list[list[str]]) -> list[TableFinding]:
     """Structure the emitted cells give away on their own, no source needed."""
     findings: list[TableFinding] = []
@@ -496,7 +523,7 @@ def grid_findings(header: list[str], rows: list[list[str]]) -> list[TableFinding
             cell = raw_cell.strip()
             # Whitespace-separated only: "1.380, 1.526" is one cell listing two
             # published values, "1.478 1.338" is two rows collapsed into one.
-            parts = cell.split()
+            parts = _rejoin_signs(cell.split())
             if len(parts) < 2 or not all(_NUMBER.fullmatch(part) for part in parts):
                 continue
             if _is_digit_grouped(parts):  # one value, typeset in digit groups

@@ -434,3 +434,28 @@ def test_two_integers_in_a_cell_still_read_as_a_collapse():
 
     rows = [["A", "31"], ["B", "45"], ["C", "58"], ["D", "227 229"]]
     assert "merged_cells" in [f.kind for f in grid_findings(["x", "y"], rows)]
+
+
+def test_a_collapsed_column_of_negatives_is_caught_but_a_range_is_not():
+    from pdf2md.table_audit import grid_findings
+
+    # The engine renders the page's minus sign detached: `-3383.702155` comes
+    # out as `- 3383.702155`. A lone `-` is not a number, so a cell holding a
+    # whole collapsed column of them used to fail the all-numeric test and be
+    # skipped -- s00214-006-0174-5 table 2 flattened ten elements and thirty
+    # energies into one data row with no finding raised.
+    header = ["Element", "Double-zeta", "Triple-zeta"]
+    # Four values is where a lone cell stands on its own evidence; the real
+    # table carried ten.
+    rows = [["Y Zr Nb Mo", "- 3383.702155 - 3597.033816 - 3818.129477 - 4047.120095",
+             "- 3383.715818 - 3597.048279 - 3818.145046 - 4047.136901"]]
+    kinds = {f.kind for f in grid_findings(header, rows)}
+    assert "merged_cells" in kinds
+
+    # A range leads with its value, not a sign: `151 - 153` in an `exp. ref`
+    # column cites references 151 to 153 and is one cell, not two rows.
+    ref_rows = [["[emim]", "109", "151 - 153"], ["[bmim]", "38.5", "17"],
+                ["[hmim]", "32.2", "129"], ["[omim]", "12.1", "130"]]
+    assert "merged_cells" not in {
+        f.kind for f in grid_findings(["ionic liquid", "lambda", "exp. ref"], ref_rows)
+    }
