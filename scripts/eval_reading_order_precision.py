@@ -26,10 +26,13 @@ asked to judge. Its reading order largely follows the PDF's content stream --
 the same stream order an engine follows when it emits two lines the wrong way
 round -- so on exactly the pages where the defect comes from stream order,
 poppler agrees with the emission and refutes a correct finding. Measured over
-this corpus, 14 refuted pages are provably out of printed order by the geometry
-alone, which takes precision from 0.61 to 0.71. That is a floor either way: the
-proof only inspects pairs adjacent in emission order, so a block moved several
-positions is not caught and stays `refuted`.
+this corpus the proof settles 29 pages poppler could not, taking precision from
+0.61 to 0.79. It stays a floor: the proof only inspects pairs adjacent in
+emission order and only pairs sharing a left edge, so a block moved several
+positions, or across columns, is still left to poppler.
+
+No page the check stayed *silent* on carries such a pair, which is the control
+this needs -- the proof is not simply convicting everything it looks at.
 
 Unflagged pages are scored the same way as a control: a page poppler reorders
 that the check stayed silent on is a miss, and the two rates together say
@@ -60,6 +63,10 @@ _WORD = re.compile(r"[^\W\d_]+", re.UNICODE)
 # engine split differently still matches.
 _ANCHOR_WORDS = 4
 _MIN_BLOCKS = 4
+# Two blocks are in the same column when they begin at the same x. Real pairs
+# agree exactly (36.7 against 36.7); the slack is for rounding, not for
+# tolerating a different column, which would be the whole premise gone.
+_SAME_COLUMN_PT = 2.0
 
 
 def _words(text: str) -> list[str]:
@@ -130,11 +137,15 @@ def evaluate(version_dir: Path) -> list[dict]:
             continue
         scored = score_page(blocks, text)
         if scored is None:
-            rows.append({"document": version_dir.parent.name, "page": page,
-                         "flagged": page in flagged, "verdict": "unusable"})
+            rows.append({
+                "document": version_dir.parent.name, "page": page,
+                "flagged": page in flagged,
+                # Geometry does not need poppler to have located anything.
+                "verdict": "proven" if _inverted_within_column(blocks) else "unusable",
+            })
             continue
         verdict = "confirmed" if scored["moves"] else "refuted"
-        if verdict == "refuted" and _inverted_single_column(blocks):
+        if verdict == "refuted" and _inverted_within_column(blocks):
             verdict = "proven"
         rows.append({
             "document": version_dir.parent.name, "page": page,
@@ -145,23 +156,26 @@ def evaluate(version_dir: Path) -> list[dict]:
     return rows
 
 
-def _inverted_single_column(blocks: list[dict]) -> bool:
-    """Whether a one-column page emits a block that sits entirely below its
-    predecessor -- printed order, established without a model or a threshold.
+def _inverted_within_column(blocks: list[dict]) -> bool:
+    """Whether the page emits a block before another that sits entirely above it
+    at the same left edge.
 
-    Only pairs adjacent in emission order, and only bands that do not overlap at
-    all, so nothing here rests on a judgement about what shares a line.
+    Two blocks that begin at the same x are in the same column -- columns are
+    defined by distinct left edges, so no two of them share one. Within a column
+    the printed order is top to bottom. That makes this a local proof needing no
+    column model at all, which matters because the model is not reliable at
+    exactly the moment it is being asked: `column_starts` drops a cluster holding
+    less than `_MIN_COLUMN_SHARE` of the page's blocks, so Atkins page 41 (nine
+    blocks at x=43.5, two at x=391.5) reports as single-column. An earlier
+    version asked it whether the page had one column and credited 9 pages whose
+    "inversion" spanned two of them.
 
-    The premise has to be tested, not assumed. `column_starts` drops a cluster
-    holding less than a share of the page's blocks, so a two-column page whose
-    right column carries two blocks is *reported* as one column -- Atkins page 41
-    has nine blocks at x=43.5 and two at x=391.5 and comes back single-column.
-    Comparing tops across that pair is comparing different columns, which proves
-    nothing. So every block must actually begin at the one start; 9 of the 23
-    pages this first credited did not."""
-    from pdf2md.reading_order import (
-        _COLUMN_TOLERANCE_PT, _flow_blocks, _top, column_starts,
-    )
+    Only pairs adjacent in emission order, and only bands that do not overlap, so
+    nothing rests on a judgement about what shares a line. Verified by reading
+    the pages it convicts: Intro-to_Relativistic-QC page 138 emits `we get`
+    (top 492.7) after the paragraph at top 437.0, when it introduces the equation
+    at 469.3 between them."""
+    from pdf2md.reading_order import _flow_blocks, _top
     from pdf2md.schema import BBox, Block, BlockType
 
     flow_input = [
@@ -170,15 +184,11 @@ def _inverted_single_column(blocks: list[dict]) -> bool:
         for b in blocks if b.get("bbox")
     ]
     emitted = {b["id"]: i for i, b in enumerate(blocks)}
-    flow = _flow_blocks(flow_input, emitted)
-    starts = column_starts([b.bbox for b in flow])
-    if len(starts) != 1 or any(
-        abs(b.bbox.x0 - starts[0]) > _COLUMN_TOLERANCE_PT for b in flow
-    ):
-        return False
-    order = sorted(flow, key=lambda b: emitted[b.id])
+    order = sorted(_flow_blocks(flow_input, emitted), key=lambda b: emitted[b.id])
     return any(
-        _top(a.bbox) < min(b.bbox.y0, b.bbox.y1) for a, b in zip(order, order[1:])
+        abs(a.bbox.x0 - b.bbox.x0) <= _SAME_COLUMN_PT
+        and _top(a.bbox) < min(b.bbox.y0, b.bbox.y1)
+        for a, b in zip(order, order[1:])
     )
 
 
@@ -195,9 +205,18 @@ def report(rows: list[dict], quiet: bool) -> None:
     upheld = grid[(True, "confirmed")] + grid[(True, "proven")]
     judged = upheld + grid[(True, "refuted")]
     missed = grid[(False, "confirmed")] + grid[(True, "confirmed")]
+    # The poppler-alone figure exists to compare across runs, so it is scored
+    # over the pages poppler could actually judge. A page it could not locate
+    # blocks on, that the geometry then proved, is not evidence about poppler.
+    poppler_judged = sum(
+        1 for row in rows
+        if row["flagged"] and (row["verdict"] in ("confirmed", "refuted")
+                               or "located" in row)
+    )
     if judged:
         print(f"\nprecision on flagged pages: {upheld / judged:.2f}"
-              f"   (poppler alone: {grid[(True, 'confirmed')] / judged:.2f})")
+              f"   (poppler alone, over the {poppler_judged} pages it could judge: "
+              f"{grid[(True, 'confirmed')] / poppler_judged:.2f})")
     if missed:
         print(f"recall over pages poppler reorders: "
               f"{grid[(True, 'confirmed')] / missed:.2f}")
