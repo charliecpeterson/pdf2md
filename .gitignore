@@ -58,3 +58,4 @@ Thumbs.db
 # stray R history
 .Rhistory
 out-cuda36/
+out-cuda36b/
