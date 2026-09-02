@@ -275,13 +275,14 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   words the output separates (`carlocalculations`, `articlesyoumaybeinterestedin` -- a
   journal that draws a heading with no space glyphs glues all of it), so `_split_glued`
   splits a source word into output words that actually sit adjacent, the mirror of
-  `_rejoin_split` and validated the same strict way. A run may also match reversed,
-  which is what bidi does to one: the first right-to-left document measured here
-  reads `اسةمنالم` in its region where the output has the three words the other way
-  round. Same claim about the same words, not a weaker one, and measured before it
-  went in -- 8 of 40 Arabic blocks improve, 2 of 1002 Latin blocks improve, nothing
-  gets worse. That alone took low-recall blocks
-  from 919 to 372 corpus-wide, the Atkins textbook from 628 to 168. A list item's printed
+  `_rejoin_split` and validated the same strict way. That alone took low-recall blocks
+  from 919 to 372 corpus-wide, the Atkins textbook from 628 to 168. A run may also
+  match *reversed*, which is what bidi does to one: the first right-to-left document
+  measured here reads `اسةمنالم` in its region where the output has the three words
+  the other way round. Same claim about the same words, not a weaker one -- the
+  pieces must still be adjacent and still concatenate exactly -- and measured before
+  it went in: 8 of 40 Arabic blocks improve, 2 of 1002 Latin blocks improve, nothing
+  gets worse. A list item's printed
   number is then expected normalization, not loss -- `emit` renders it as the bullet --
   and rides as informational: 81 of 90 numeral-only flags were list items. Recall's
   measured precision against an independent reader (poppler, `eval_recall_precision.py`)
