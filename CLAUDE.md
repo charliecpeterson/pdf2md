@@ -416,6 +416,17 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   `_UNTERMINATED_ENVIRONMENT` also drops a runaway `\begin{array} { c c c ...`
   that never closes (3 of 158 equations): a 4075-character spec reached the token
   set as one 1000-character `cccc...` counted as missing content.
+- **A layer that spells symbols with letters passes every per-character test and is
+  still nonsense.** `is_clean` looked for unmapped glyphs (C0/C1 controls, U+FFFD),
+  which a font substituting *ordinary letters* for symbols sails through: Wiley
+  draws `(14)` as `ð14Þ` and a square root as a run of `ffi` ligatures. The
+  equation is then convicted for disagreeing with a broken reference. 101 of 383
+  equation regions carry one of the two signatures, in Wiley and in an ACS review,
+  so it is a font property and not a publisher's; of the 19 suspect equations whose
+  layer was called fit, 11 carry one and are now informational, leaving 8 genuine
+  candidates. This is a classification change, deliberately: dropping `ðNÞ` from
+  both sides of the *comparison* was measured and rejected (71 equations improved,
+  93 got worse), because removing a token both sides carry only lowers the ratio.
 - **Equation confidence + image-backing live in `enrich.py`/`confidence.py`, not
   the engine.** When the engine's LaTeX disagrees with the text layer (or a scan
   has none), the equation is cropped to an authoritative image and the text rides
