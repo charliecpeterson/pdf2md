@@ -473,6 +473,43 @@ These constraints came out of the measured experiments and remain project policy
 - No treating shared-crop-geometry OCR votes as independent verification.
 - No automatic promotion of fixed-font glyph-atlas choices.
 
+## Wiley, and what its font does to the equation check, 2026-09-02
+
+Four Wiley papers -- ORCA, Multiwfn, xtb and a coupled-cluster analysis -- the
+last big chemistry publisher the corpus had never seen. All four convert with
+nothing dropped and word recall 0.984-0.990, raising 2-3 action findings each
+except the 49-page xtb paper at 15.
+
+One is a confirmed defect. The ORCA paper's first page flags "5 of 11 blocks
+out of printed order", and it is right: the left column sits at x0=67 and the
+right at x0=312, and the engine emits the whole right column before the left
+column's body. Poppler, reading independently, puts the left-column headings at
+positions 107 and 233 and the right column at 338 and 516 -- left then right,
+the opposite of the emission. A real column-ordering defect on an unseen
+template, in a paper people cite.
+
+The equation findings are the opposite: not defects at all. Five equations on
+the xtb paper disagree with a text layer the checks judged *fit*, and reading
+them, the LaTeX is right every time -- `FC = SC\varepsilon` is the Roothaan
+equation. What is broken is the layer: Wiley's font draws `(14)` as `ð14Þ` and
+`\sqrt` as `ffiffiffiffiffiff`. Eth, thorn, f and i are ordinary letters, so
+`is_clean` passes a layer that is garbage. This is the same class already
+recorded for `\langle` drawn as `h` and `=` drawn as `)`, and it is not rare:
+101 of 383 equation regions carry `ðNÞ`, across Wiley *and* an ACS review with
+43 of them.
+
+Teaching `_TRAILING_EQ_NO` to read `ðNÞ` as the equation number it draws looks
+obvious and measures badly: 71 equations improve and 93 get worse. Dropping a
+token *both* sides carry lowers the ratio, and for these the LaTeX usually
+carries the number too, so the pair already matched. Not shipped.
+
+Re-measuring the literal-paren version already shipped, now over 381 equations
+rather than the smaller set it was written against: 19 improve, 17 worsen,
+median flat at 0.500, and 5 equations cross from suspect to verified with none
+crossing back. It earns its place on the verdicts, not on the average -- the
+"median 0.523 -> 0.545" recorded when it went in does not hold at this corpus
+size, and that earlier figure should be read as the small-sample number it was.
+
 ## Four new publisher families, and Arabic at last, 2026-09-02
 
 The corpus was arXiv, ACS, AIP, Elsevier and books. Four open-access papers
