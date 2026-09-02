@@ -3,7 +3,7 @@
   "artifacts": {
     "evaluator": {
       "path": "scripts/eval_equations.py",
-      "sha256": "bc04f9f01591e008978f59adf819c491558e88eef1c974e8ebc10af0ecdacc1f"
+      "sha256": "7c7e82f1041f74d9b9d6b5ad0ef30943bc95fb7380649e9dd8bd48bd630b727f"
     },
     "labels": {
       "path": "tests/equation_labels.json",

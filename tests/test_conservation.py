@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections import Counter
+
 from pdf2md.conservation import (
     annotate_conservation_warnings,
     conservation_review_flags,
@@ -142,3 +144,29 @@ def test_conservation_warning_is_inserted_before_the_exact_emitted_block(tmp_pat
     assert f"{flag.marker_text}\n\nrepeated paragraph" in annotated
     assert "action required (medium)" in flag.marker_text
     assert "[source page 3](../source.pdf#page=3)" in flag.marker_text
+
+
+def test_markup_is_syntax_on_both_sides_of_the_comparison():
+    # The source of a table block is its own rendered markup. Counting `td` and
+    # `tr` as source words while stripping them from the output charged one
+    # 29-row table with losing 471 words that were never content.
+    html = (
+        "<table><tbody>"
+        "<tr><th>element</th><th>radius</th></tr>"
+        "<tr><td>Ag</td><td>1.34</td></tr>"
+        "<tr><td>Cd</td><td>1.40</td></tr>"
+        "</tbody></table>"
+    )
+    delta = token_accounting(html, html)["words"]
+    assert delta["losses"] == Counter()
+    assert delta["additions"] == Counter()
+    assert delta["source"] == delta["output"] == 4  # element, radius, Ag, Cd
+
+
+def test_inline_script_tags_are_not_lost_words():
+    # A block with eight superscripts reported "unexplained loss: 16 words":
+    # the tag name counted as a source word and was stripped from the output.
+    source = "the yield of Cu<sup>2+</sup> and Zn<sup>2+</sup> rose"
+    delta = token_accounting(source, "the yield of Cu2+ and Zn2+ rose")["words"]
+    assert delta["losses"] == Counter()
+    assert delta["source"] == 7  # the, yield, of, Cu, and, Zn, rose — no `sup`

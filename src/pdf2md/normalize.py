@@ -69,17 +69,34 @@ _CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
 # discretionary hyphen in the C0 control range with no ToUnicode entry, so pdfium
 # surfaces them as raw control bytes. Without this they'd be stripped to spaces by
 # _CONTROL, manufacturing "rst"/"con guration"/"di erence" from first/configuration/
-# difference. Expand them to letters BEFORE the strip — deterministic, and these bytes
-# never carry real text. (OT1 ligature slots 0x0B-0x0F, here offset into 0x1B-0x1F.)
+# difference. Expand them to letters BEFORE the strip — deterministic.
+# (OT1 ligature slots 0x0B-0x0F, here offset into 0x1B-0x1F.)
 _GLYPH_LIGATURES = {
     0x02: "",  # discretionary hyphen at a line break -> join the word (practi-cal)
     0x1B: "ff", 0x1C: "fi", 0x1D: "fl", 0x1E: "ffi", 0x1F: "ffl",
 }
+_LIGATURE_BYTE = re.compile(r"[\x02\x1b-\x1f]")
 
 
 def expand_ligature_glyphs(text: str) -> str:
-    """Map a broken TeX font's control-byte f-ligatures back to letters."""
-    return text.translate(_GLYPH_LIGATURES)
+    """Map a broken TeX font's control-byte f-ligatures back to letters.
+
+    Only inside a word. The same slots mean other things in other TeX fonts --
+    0x1C is `fi` in an OT1 text font and the relation the maths font draws for
+    `\ll` in cmsy -- and the encoding is not recoverable from the byte. A
+    ligature is always part of a word, so a byte with no letter or digit on
+    either side is something else and is left for `_CONTROL` to strip. Without
+    the guard, `Normally M <0x1c> N` in a 327-page manual came out as
+    `Normally M fi N`."""
+    def expand(match: re.Match) -> str:
+        index = match.start()
+        before = text[index - 1] if index else ""
+        after = text[index + 1] if index + 1 < len(text) else ""
+        if not (before.isalnum() or after.isalnum()):
+            return match.group()
+        return _GLYPH_LIGATURES[ord(match.group())]
+
+    return _LIGATURE_BYTE.sub(expand, text)
 
 
 def clean_reading(text: str) -> str:

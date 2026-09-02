@@ -230,8 +230,13 @@ def evaluate(out_dir: Path, labels_path: Path) -> dict:
     labels = json.loads(labels_path.read_text())
     documents = _latest_provenances(out_dir)
     records = []
+    # A bundle records the path it was converted from, so a document converted
+    # from a renamed or staged copy is filed under that name instead of its own.
+    # The source hash identifies it whatever the file was called, and the labels
+    # already carry it, so fall back to that before declaring a source missing.
+    by_hash = {d["source_sha256"]: d for d in documents.values() if d.get("source_sha256")}
     for label in labels:
-        document = documents.get(label["source"])
+        document = documents.get(label["source"]) or by_hash.get(label.get("source_sha256"))
         if document is None:
             records.append({**label, "status": "source_missing"})
             continue

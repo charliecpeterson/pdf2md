@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "frozen_at": "2026-09-01",
+  "selection": "Two most recent submissions per category from the arXiv API (sortBy=submittedDate, sortOrder=descending) across astro-ph.GA, q-bio.BM, stat.ME, cs.CV and physics.optics, skipping entries arXiv had not yet rendered to PDF and taking the next in that category. The same rule that produced v2, over five categories v2 does not use, so the sets share no papers.",
+  "why": "v2 is about to be spent on a before/after comparison, which is the one thing only it can answer -- it is the sole unseen set with a pre-existing measurement. Spending it erodes its blindness, so this is frozen first to keep an untouched set in existence. Different categories rather than a fresh draw from v2's, because a draw made one day later from the same categories samples nearly the same population.",
+  "discipline": "Downloaded, hashed and page-counted. NOT converted, and no extraction output has been looked at. The first person to use it should convert once and report aggregates before drilling into any individual table.",
+  "documents": [
+    {
+      "arxiv_id": "2608.31144v1",
+      "category": "astro-ph.GA",
+      "url": "https://arxiv.org/pdf/2608.31144v1",
+      "source_sha256": "e8f80d1f415167906b2507f33a264a39d6248efdd59d16405db08eb44c457699",
+      "bytes": 7685848,
+      "pages": 27
+    },
+    {
+      "arxiv_id": "2608.31015v1",
+      "category": "astro-ph.GA",
+      "url": "https://arxiv.org/pdf/2608.31015v1",
+      "source_sha256": "ac628c7d16f6eea97ab1318c36924aac1832fe28f6bbcb12698ac6140c38969d",
+      "bytes": 16062507,
+      "pages": 26
+    },
+    {
+      "arxiv_id": "2608.30337v1",
+      "category": "q-bio.BM",
+      "url": "https://arxiv.org/pdf/2608.30337v1",
+      "source_sha256": "390ca619ddf702fe8d7f2269340285e32bff1e9fc25c0a22816e0abdbf0101c3",
+      "bytes": 724398,
+      "pages": 24
+    },
+    {
+      "arxiv_id": "2608.29886v1",
+      "category": "q-bio.BM",
+      "url": "https://arxiv.org/pdf/2608.29886v1",
+      "source_sha256": "355e0d1e03281838f1bfef408962b0c707c24db86037c014c6a3aafd96fddc9c",
+      "bytes": 3117723,
+      "pages": 13
+    },
+    {
+      "arxiv_id": "2608.31138v1",
+      "category": "stat.ME",
+      "url": "https://arxiv.org/pdf/2608.31138v1",
+      "source_sha256": "35ecfd892757484701c9219ac61ad3a883945d8799c26bbeb478cfd609e6067e",
+      "bytes": 16708715,
+      "pages": 74
+    },
+    {
+      "arxiv_id": "2608.31047v1",
+      "category": "stat.ME",
+      "url": "https://arxiv.org/pdf/2608.31047v1",
+      "source_sha256": "95d0e075bbc410080bda871865a1ada01cc2b9fc32eb126c98d68f92c4fa5838",
+      "bytes": 2959014,
+      "pages": 23
+    },
+    {
+      "arxiv_id": "2608.31159v1",
+      "category": "cs.CV",
+      "url": "https://arxiv.org/pdf/2608.31159v1",
+      "source_sha256": "1ea8cf267ca80f7d87f3f690769073d43637addb72f61e7aea887b25657658fe",
+      "bytes": 4757709,
+      "pages": 58
+    },
+    {
+      "arxiv_id": "2608.31113v1",
+      "category": "cs.CV",
+      "url": "https://arxiv.org/pdf/2608.31113v1",
+      "source_sha256": "c6449b3a7f3bec9a0f7d6379b944ab4cfec7570f8f3ccfa0d2431ca44405e94f",
+      "bytes": 16995064,
+      "pages": 20
+    },
+    {
+      "arxiv_id": "2608.31146v1",
+      "category": "physics.optics",
+      "url": "https://arxiv.org/pdf/2608.31146v1",
+      "source_sha256": "44f47a9565ad29055aa400710ba9fd665a0fffc1c6de42028213f591d7656f2e",
+      "bytes": 1589747,
+      "pages": 41
+    },
+    {
+      "arxiv_id": "2608.30919v1",
+      "category": "physics.optics",
+      "url": "https://arxiv.org/pdf/2608.30919v1",
+      "source_sha256": "16bf6e56b577d1bce624d4adfab4ce319cf9c6311338f7bf5ca0b15ba8f075eb",
+      "bytes": 3081462,
+      "pages": 39
+    }
+  ]
+}

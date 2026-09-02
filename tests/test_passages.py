@@ -404,3 +404,57 @@ def test_passage_tokenizer_spec_rejects_unknown_kind():
         )
     else:
         raise AssertionError("unknown tokenizer kind was accepted")
+
+
+def test_a_table_marker_is_not_repeated_on_every_continuation():
+    # A finding that quotes the source rows it is about is long. Treating it as
+    # part of the repeated column header made a "header" that exceeded the token
+    # budget on its own and failed the whole conversion.
+    from pdf2md.passage_split import _split_table
+
+    marker = (
+        "> **[pdf2md: action required (high): table structure: dropped_row_content]**\n"
+        ">\n"
+        "> - 1 printed row carries 3 numbers that reach no cell of the grid: "
+        "'Ag2f2 120.0 3 1.34' is missing 120.0, 3, 1.34\n"
+        "\n"
+    )
+    table = (
+        "| State | Energy |\n| --- | --- |\n"
+        "| 1s | -0.50 |\n| 2s | -0.12 |\n| 2p | -0.11 |"
+    )
+    # Tight budget: the table still splits, the column header still repeats, and
+    # the marker is carried by no continuation. Previously this raised and took
+    # the conversion down with it.
+    parts = _split_table(marker + table, lambda text: text, _WordTokenizer(), 20)
+    assert len(parts) > 1
+    for part in parts:
+        assert "| State | Energy |" in part
+    assert not any("pdf2md" in part for part in parts[1:])
+
+    # Roomy budget: the marker rides with the first passage, and only that one.
+    roomy = _split_table(marker + table, lambda text: text, _WordTokenizer(), 60)
+    assert roomy[0].startswith("> **[pdf2md:")
+    assert not any("pdf2md" in part for part in roomy[1:])
+
+
+def test_an_unrepeatable_table_header_degrades_instead_of_aborting():
+    # A caption plus a very wide column header can exceed the budget on its own.
+    # Raising here lost the whole document; three of ten unseen papers converted
+    # to nothing because of one table.
+    from pdf2md.passage_split import _split_table
+
+    header = "| " + " | ".join(f"column {n} of many" for n in range(12)) + " |"
+    text = "\n".join([
+        "Table caption: a long caption that is itself most of the budget here.",
+        "",
+        header,
+        "|" + "|".join(["---"] * 12) + "|",
+        "| a | b | c | d | e | f | g | h | i | j | k | l |",
+        "| m | n | o | p | q | r | s | t | u | v | w | x |",
+    ])
+    parts = _split_table(text, lambda t: t, _WordTokenizer(), 20)
+    assert parts  # rather than ValueError
+    assert sum(len(part.split()) for part in parts) >= len(text.split()) - 8
+    for part in parts:
+        assert len(part.split()) <= 20 or "\n" not in part

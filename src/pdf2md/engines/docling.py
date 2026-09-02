@@ -173,6 +173,7 @@ def _raw_cell(c, page_height: float | None) -> RawCell:
         row_span=c.end_row_offset_idx - c.start_row_offset_idx,
         col_span=c.end_col_offset_idx - c.start_col_offset_idx,
         header=getattr(c, "column_header", False) or getattr(c, "row_header", False),
+        column_header=bool(getattr(c, "column_header", False)),
     )
 
 

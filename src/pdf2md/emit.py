@@ -493,7 +493,16 @@ def _render_block(
     if table is not None:
         if table.preformatted:  # ASCII-art table -> code fence, not a mangled grid
             return f"```\n{table.preformatted}\n```", CoverageStatus.EMITTED, None
-        return render_table(table), CoverageStatus.EMITTED, None
+        # The grid is emitted whatever the audit says -- the content is present,
+        # and withholding it would lose data the reader can verify. The marker
+        # rides above it so the table is never read as unquestioned.
+        flag = _table_audit_flag(b, table)
+        marker = f"{flag.marker_text}\n\n" if flag is not None else ""
+        return (
+            marker + render_table(table) + _table_source_links(table),
+            CoverageStatus.EMITTED,
+            flag,
+        )
 
     if b.type == BlockType.FIGURE:
         fig = ctx.figures.get(b.id)
@@ -566,16 +575,57 @@ def _render_block(
             else:  # --no-formula: no LaTeX or text-layer reading, only the crop
                 hint, source = "", "the image below is the authoritative source"
             if crop:
-                note = f"> **[pdf2md: equation extraction unverified — {source}]**"
-                body = f"{note}\n\n![equation]({crop})" + (f"\n\n{hint}" if hint else "")
                 intentional_crop = not ctx.formula_enrichment_enabled
+                # A page whose text layer is scrambled or symbol-font garbage
+                # cannot judge the LaTeX, so its disagreement is not evidence
+                # the extraction is wrong. (Its *agreement* still is, which is
+                # why the check keeps running against it.) Measured over the
+                # equations from bundles with formula enrichment on, 52 of 61
+                # "suspect" verdicts came from a layer the enrichment step had
+                # already marked unfit to show, so calling them suspect
+                # extractions was a claim the evidence did not support.
+                unverifiable = (
+                    not intentional_crop
+                    and "text_layer" in b.extra
+                    and not b.extra.get("ordered")
+                )
+                headline = (
+                    "equation not verifiable — the page's own text layer is "
+                    "scrambled or undecodable here, so it cannot judge the LaTeX; "
+                    f"{source}"
+                    if unverifiable
+                    else f"equation extraction unverified — {source}"
+                )
+                note = f"> **[pdf2md: {headline}]**"
+                body = f"{note}\n\n![equation]({crop})" + (f"\n\n{hint}" if hint else "")
+                if intentional_crop:
+                    reason, disposition, severity, impact = (
+                        "equation: image is authoritative", "source_dependent", "none", "low",
+                    )
+                elif unverifiable:
+                    # Informational, not an action. The LaTeX and the crop both
+                    # ride with the block, so nothing is withheld from a reader
+                    # -- every one of the 494 equations on formula-enabled
+                    # documents here emits its LaTeX, and 277 carry a crop as
+                    # well. What is missing is a verdict, and a verdict is
+                    # missing for a reason that belongs to the page rather than
+                    # to this equation: its text layer cannot judge LaTeX at
+                    # all. Raised as an action it swamps triage without
+                    # separating anything -- one 25-page maths paper produces 78
+                    # identical entries, and 231 of them across the corpus. The
+                    # marker still sits beside the equation, where a reader
+                    # meets it at the point of use.
+                    reason, disposition, severity, impact = (
+                        "equation not verifiable: text layer unfit to judge",
+                        "informational", "low", "low",
+                    )
+                else:
+                    reason, disposition, severity, impact = (
+                        "equation extraction unverified", "action_required", "medium", "high",
+                    )
                 return body, CoverageStatus.CROPPED, _flag(
-                    b,
-                    "equation: image is authoritative" if intentional_crop
-                    else "equation extraction unverified",
-                    disposition="source_dependent" if intentional_crop else "action_required",
-                    severity="none" if intentional_crop else "medium",
-                    content_impact="low" if intentional_crop else "high",
+                    b, reason, disposition=disposition,
+                    severity=severity, content_impact=impact,
                 )
             note = (
                 "> **[pdf2md: equation extraction unverified — the rendering below "
@@ -779,6 +829,49 @@ def _table_candidate_links(table: TableData) -> str:
     ]
     rendered = " · ".join(f"[{label}]({path})" for label, path in links if path)
     return f"\n\nStructured OCR candidate: {rendered}" if rendered else ""
+
+
+_AUDIT_SEVERITY_RANK = {"high": 2, "medium": 1}
+
+
+def _table_audit_flag(b: Block, table: TableData) -> CoverageFlag | None:
+    """One flag carrying every structural finding for this table, or None when
+    the audit found nothing. The marker names each finding so the defect is
+    legible where the table is read, not only in review.md."""
+    findings = table.grid_audit.get("findings") or []
+    if not findings:
+        return None
+    findings = sorted(
+        findings, key=lambda f: -_AUDIT_SEVERITY_RANK.get(f.get("severity"), 0)
+    )
+    severity = findings[0].get("severity", "medium")
+    reason = "table structure: " + ", ".join(
+        dict.fromkeys(finding["kind"] for finding in findings)
+    )
+    details = "\n".join(f"> - {finding['detail']}" for finding in findings)
+    marker = (
+        f"> **[pdf2md: action required ({severity}): {reason}; verify against "
+        f"{_source_page(b.page)}]**\n>\n{details}"
+    )
+    return CoverageFlag(
+        b.id, b.page, reason, marker, "action_required", severity,
+        "high" if severity == "high" else "medium",
+    )
+
+
+def _table_source_links(table: TableData) -> str:
+    """Where to check this table: the printed region, and the data beside it."""
+    links = [
+        ("source crop", table.source_crop),
+        ("CSV", table.data_path),
+        ("JSON", table.json_path),
+        ("glyph-truth grid", table.glyph_grid_path),
+    ]
+    rendered = " · ".join(f"[{label}]({path})" for label, path in links if path)
+    # The `*[pdf2md]` prefix marks the line as emitted navigation, so the
+    # conservation audit doesn't count its link labels as words the source
+    # never had.
+    return f"\n\n*[pdf2md] table source:* {rendered}" if rendered else ""
 
 
 def _flag(

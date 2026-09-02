@@ -85,10 +85,16 @@ def test_repeated_third_party_warnings_keep_first_and_report_exact_count(caplog)
 def test_expand_ligature_glyphs():
     # A broken TeX font surfaces its f-ligatures and discretionary hyphen as C0 control
     # bytes; clean_reading must expand them to letters, not strip them to spaces.
-    from pdf2md.normalize import clean_reading
+    from pdf2md.normalize import clean_reading, expand_ligature_glyphs
 
     assert clean_reading("the \x1crst con\x1cguration \x1cles") == "the first configuration files"
     assert clean_reading("di\x1berent e\x1ecient \x1doating") == "different efficient floating"
+    # The same C0 slots mean other things in other TeX fonts: 0x1C is `fi` in an
+    # OT1 text font and what cmsy draws for `\ll`. A ligature is always inside a
+    # word, so a byte alone between spaces is left for the control strip rather
+    # than turning `Normally M << N` into `Normally M fi N`.
+    assert clean_reading("Normally M \x1c N.") == "Normally M N."
+    assert expand_ligature_glyphs("\x1c") == "\x1c"
     assert clean_reading("practi\x02cal") == "practical"  # soft hyphen -> join
     assert clean_reading("normal clean text") == "normal clean text"  # untouched
 
@@ -1478,6 +1484,47 @@ def test_assess_equation():
     # Too few alphanumeric tokens to judge (symbol-heavy orbital config).
     assert assess_equation(r"[ \text {Core} ] 4 \sigma", "[Core]4σ") is None
 
+    # The page prints an equation number and the engine omits it. That is page
+    # furniture, not content, so it leaves both sides rather than scoring as a
+    # disagreement -- 57 of 108 equation regions measured here end in one.
+    assert assess_equation(
+        r"V _ { 0 } \subset V _ { 1 } \subset V _ { 2 } \subset \cdots .",
+        "V0 ⊂ V1 ⊂ V2 ⊂ ⋯. (13)") == (1.0, None)
+
+    # And when the engine keeps it, it still leaves both sides -- otherwise the
+    # fix would only move the mismatch to the other direction.
+    assert assess_equation(
+        r"V _ { 0 } \subset V _ { 1 } \subset V _ { 2 } \quad ( 1 3 )",
+        "V0 ⊂ V1 ⊂ V2 (13)") == (1.0, None)
+
+
+def test_latex_tokens_do_not_weld_across_structure():
+    from pdf2md.confidence import _latex_tokens
+
+    # A command is a token boundary. Deleting it welded a sum's limit onto the
+    # next symbol (`bendsUBEND`) and a fraction onto what followed (`12kBEND`),
+    # which the text layer can never match because the page sets them apart.
+    assert _latex_tokens(r"\sum _ { \text {bends} } U ^ { B E N D }") == {"bends", "UBEND"}
+    # The fraction's parts no longer weld onto what follows; the script still
+    # attaches to its own base, which is how the layer spells it.
+    assert _latex_tokens(r"\frac { 1 } { 2 } k ^ { B E N D }") == {"kBEND"}
+
+    # An environment and its column spec were never visible text.
+    assert _latex_tokens(r"\begin{array}{rlr} P _ { n l } \end{array}") == {"Pnl"}
+
+    # Still rejoins Docling's per-glyph spacing, and still attaches a script to
+    # an alphanumeric base the way the layer draws it.
+    assert _latex_tokens(r"E _ { 0 } ( M R - c c C A )") == {"E0", "MR", "ccCA"}
+
+    # A genuine misread stays a mismatch -- the fix must not launder one away.
+    assert _latex_tokens(r"U ^ { i o t }") == {"Uiot"}
+
+    # A column spec that never closes: Docling ran away inside one for 4075
+    # characters, and the spec reached the token set as a single 1000-character
+    # `cccc...`, counted as content the text layer was missing. Nothing after an
+    # unterminated environment spec is visible text.
+    assert _latex_tokens(r"\begin{array} { c c c" + " c" * 40) == set()
+
 
 def test_unsplit_numbers_protects_values():
     from pdf2md.scripts import apply_scripts
@@ -1648,17 +1695,22 @@ def test_table_crops_key_on_type_not_id():
     transcript = Block("#/tables/2", BlockType.PARAGRAPH, "# Page\n\ntext", 1, bbox=bb,
                        extra={"ocr": True, "text_source": "vlm-page"})
     tables = [TableData("#/tables/1", 1, bb, gfm="| a |"), TableData("#/tables/2", 1, bb, gfm="| b |")]
-    cropped = {b.id for b in _table_crops([real, transcript], tables)}
-    assert cropped == {"#/tables/1"}  # the real (OCR-scan) table crops; the transcription does not
+    selected, authoritative = _table_crops([real, transcript], tables)
+    # The real (OCR-scan) table crops; the transcription is not a table any more.
+    assert {b.id for b in selected} == {"#/tables/1"}
+    assert authoritative == {"#/tables/1"}
 
     digital = Block("#/tables/3", BlockType.TABLE, "", 1, bbox=bb)
     tables.append(TableData(digital.id, 1, bb, gfm="| c |"))
-    cropped = {
-        b.id for b in _table_crops(
-            [real, transcript, digital], tables, include_structured=True
-        )
-    }
-    assert cropped == {"#/tables/1", "#/tables/3"}
+    # Every table gets a crop; only the scan's is the authority over its cells.
+    selected, authoritative = _table_crops([real, transcript, digital], tables)
+    assert {b.id for b in selected} == {"#/tables/1", "#/tables/3"}
+    assert authoritative == {"#/tables/1"}
+    # --table-ocr reads the crop for every table, so every crop is authoritative.
+    _, authoritative = _table_crops(
+        [real, transcript, digital], tables, include_structured=True
+    )
+    assert authoritative == {"#/tables/1", "#/tables/3"}
 
 
 def test_table_crops_include_glyph_unbacked_tables():
@@ -1674,7 +1726,8 @@ def test_table_crops_include_glyph_unbacked_tables():
         TableData("#/tables/10", 2, bb, gfm="| b |",
                   cell_glyph_check={"cells": {"exact": 30}}),
     ]
-    selected = {b.id for b in _table_crops([raster_read, clean], tables)}
-    assert selected == {"#/tables/9"}
+    selected, authoritative = _table_crops([raster_read, clean], tables)
+    assert {b.id for b in selected} == {"#/tables/9", "#/tables/10"}
+    assert authoritative == {"#/tables/9"}
     assert raster_read.extra["cells_unverified"] is True
     assert "cells_unverified" not in clean.extra

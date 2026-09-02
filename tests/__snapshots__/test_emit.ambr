@@ -2,7 +2,7 @@
 # name: test_emit_snapshot
   '''
   ---
-  format_version: '0.11'
+  format_version: '0.13'
   title: Doc
   authors:
   - A. Author
@@ -41,6 +41,8 @@
   | a | b |
   |---|---|
   | 1 | 2 |
+  
+  *[pdf2md] table source:* [CSV](data/tables/tables_0.csv) · [JSON](data/tables/tables_0.json)
   
   ![Figure 1](assets/pictures_0_p2.png)
   

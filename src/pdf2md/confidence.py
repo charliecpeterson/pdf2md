@@ -35,13 +35,34 @@ RENDER_SIMILAR_ABOVE = 0.70
 RENDER_DISSIMILAR_BELOW = 0.45
 
 _TOKEN = re.compile(r"[A-Za-z0-9]{2,}")
+# A printed equation number: page furniture the engine includes only
+# sometimes. Shared by the cross-check and the render-back pass.
+_TRAILING_EQ_NO = re.compile(r"\s*\((?:\d+|[ivx]+)\)\s*$")
 # `\text{cc-pVTZ}` / `\mathrm{...}` wrap real visible text — keep the content.
 _TEXT_WRAPPER = re.compile(r"\\(?:text|mathrm|mathbf|mathit|operatorname)\s*\{([^{}]*)\}")
 # Operators whose name *is* the visible text (\exp, \max), not a symbol — keep it.
 _TEXT_OP = re.compile(r"\\(max|min|exp|log|ln|sin|cos|tan|det|lim|sup|inf|deg|arg|gcd)(?![a-zA-Z])")
-# Docling spaces out every glyph (`M R - c c C A`) and wraps scripts in `_{}`/`^{}`;
-# drop the remaining command words and that structure so words rejoin.
-_LATEX_STRUCT = re.compile(r"\\[a-zA-Z]+|[_^{}\s]")
+# An environment declaration and its column spec (`\begin{array}{rlr}`) is markup
+# that was never visible text; leaving it in put `array` and `rlr` in the token
+# set, where they can only count as content the text layer appears to be missing.
+_ENVIRONMENT = re.compile(r"\\(?:begin|end)\s*\{[^{}]*\}(?:\s*\{[^{}]*\})?")
+# The same declaration with a column spec that never closes. Docling can run
+# away inside one: a GRASP2018 equation came back as `\begin{array} { c c c ...`
+# for 4075 characters with no closing brace, and the spec then reached the token
+# set as a single 1000-character `cccc...`, counted as content the text layer was
+# missing. Nothing after an unterminated environment spec is visible text.
+_UNTERMINATED_ENVIRONMENT = re.compile(r"\\(?:begin|end)\s*\{[^{}]*\}\s*\{[^{}]*$")
+# A script group attaches to its base the way the text layer draws it, so `E_{0}`
+# reads as `E0`. Only after an alphanumeric: a limit hanging off a command
+# (`\sum_{bends}`) is set apart on the page, not glued to the operator.
+_SCRIPT_GROUP = re.compile(r"(?<=[A-Za-z0-9])[_^]\{([^{}]*)\}")
+_SCRIPT_CHAR = re.compile(r"(?<=[A-Za-z0-9])[_^]([A-Za-z0-9])")
+# A command marks a token boundary, held as a sentinel because whitespace is
+# about to be removed and so cannot mark it. Docling spaces out every glyph
+# (`M R - c c C A`), and that strip is what rejoins the word.
+_COMMAND = re.compile(r"\\[a-zA-Z]+")
+_BOUNDARY = "\x00"
+_STRUCT = re.compile(r"[\x00_^{}]")
 
 
 def is_clean(text: str) -> bool:
@@ -57,9 +78,27 @@ def is_clean(text: str) -> bool:
 
 
 def _latex_tokens(latex: str) -> set[str]:
-    s = _TEXT_WRAPPER.sub(r"\1", latex)
+    """Visible tokens of an equation's LaTeX, as the text layer would spell them.
+
+    Order is load-bearing. Commands become boundaries *before* whitespace is
+    stripped, because the strip is what rejoins Docling's per-glyph spacing and
+    would otherwise weld separate symbols into one token. Deleting the structure
+    outright, as this did, produced tokens no layer could ever match:
+    `\\frac{1}{2} k^{BEND}` came out as `12kBEND` against a layer holding `1`,
+    `2`, `k` and `BEND`, and `\\sum_{\\text{bends}} U^{BEND}` as `bendsUBEND`.
+    Those welds were the largest single source of apparent disagreement between
+    correct LaTeX and the layer.
+    """
+    s = _UNTERMINATED_ENVIRONMENT.sub(" ", latex)
+    s = _ENVIRONMENT.sub(" ", s)
+    s = _TEXT_WRAPPER.sub(r"\1", s)
     s = _TEXT_OP.sub(r"\1", s)
-    return set(_TOKEN.findall(_LATEX_STRUCT.sub("", s)))
+    s = _COMMAND.sub(_BOUNDARY, s)
+    s = re.sub(r"\s+", "", s)
+    while (joined := _SCRIPT_GROUP.sub(r"\1", s)) != s:  # nested scripts
+        s = joined
+    s = _SCRIPT_CHAR.sub(r"\1", s)
+    return set(_TOKEN.findall(_STRUCT.sub(" ", s)))
 
 
 def assess_equation(latex: str, text_layer: str) -> tuple[float, str | None] | None:
@@ -71,11 +110,23 @@ def assess_equation(latex: str, text_layer: str) -> tuple[float, str | None] | N
     the equation's (single-column) bbox: recall catches missing content, precision
     catches content the LaTeX has but the bbox doesn't — adjacent-column prose
     Docling's formula model bled in. A one-directional score misses bleed entirely
-    (the bled tokens just inflate the LaTeX)."""
-    toks = _TOKEN.findall(text_layer)
+    (the bled tokens just inflate the LaTeX).
+
+    A printed equation number leaves both sides. It is page furniture, not part
+    of the equation, and the engine includes it only sometimes -- so whichever
+    way it falls it scores as a disagreement about content. 57 of the 108
+    equation regions measured here end in one, and two of the nine equations
+    whose disagreement survived every other correction differed by nothing
+    else: `V_0 \\subset V_1 \\subset V_2 \\subset \\cdots` against a layer
+    reading the same thing plus `(13)`."""
+    flat = " ".join(text_layer.split())
+    numbered = _TRAILING_EQ_NO.search(flat)
+    toks = _TOKEN.findall(_TRAILING_EQ_NO.sub("", flat))
     if len(toks) < 3:
         return None
     text_set, latex_set = set(toks), _latex_tokens(latex)
+    if numbered:
+        latex_set.discard(numbered.group().strip(" ()"))
     recall = sum(1 for t in text_set if t in latex_set) / len(text_set)
     precision = sum(1 for t in latex_set if t in text_set) / len(latex_set) if latex_set else 1.0
     conf = min(recall, precision)
@@ -112,7 +163,6 @@ def plot_data_accepted(digitization: Digitization | None) -> bool:
 
 _TAG = re.compile(r"\\tag\{[^{}]*\}")
 _LABEL = re.compile(r"\\label\{[^{}]*\}")
-_TRAILING_EQ_NO = re.compile(r"\s*\((?:\d+|[ivx]+)\)\s*$")
 _ALIGN_AMP = re.compile(r"\s*&\s*")
 # An aligned pair's line break: draw the segments as one row rather than refuse
 # (the stacked-vs-flat distortion lands in the topology score, honestly).

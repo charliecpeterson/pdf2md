@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "purpose": "Table-level structural truth for the row/grid audit: which tables the engine got right, and what it got wrong on the ones it didn't. Every label was established without running the audit, so the harness measures it rather than confirming it.",
+  "method": "Positive labels come from the source page's own text (pdftotext / pypdfium2 reading of the region) compared against the emitted grid: a value printed on the page and absent from every cell is a loss whoever reports it. Negative labels come from agreeing row counts between two independent line-finding mechanisms - pypdfium2's native text_lines over the table region and the engine's own cell rows - plus reading the emitted grid. Tables where the two mechanisms disagreed for reasons not yet run down are left unlabelled rather than guessed.",
+  "documents": [
+    {
+      "source": "ct6b00664.pdf",
+      "source_sha256": "9510ceaba258e3f94ba17286e2fd9595c907ed0c583fbc2bcc2f4dfa9772992c",
+      "tables": [
+        {
+          "block_id": "#/tables/0",
+          "page": 3,
+          "expect": [
+            "dropped_row_content",
+            "merged_rows",
+            "merged_cells",
+            "shifted_values",
+            "header_absorbed_data"
+          ],
+          "note": "UFF4MOF-II parameter table. The page prints 60 data rows under two header lines; the grid has 57. Ag2f2 (120.0, CN 3, r=1.34) appears nowhere in the bundle. Na4f2+Mg6f3, Ag4f2+Cd1f1 and Yb6f3+Yb8f4 are each collapsed into one row, Ag4f2's 1.51 is orphaned into a row of its own, Pd4+2's 1.338 sits in Ru4f2's cell, and Li3f2's values are absorbed into the header row."
+        },
+        {
+          "block_id": "#/tables/1",
+          "page": 4,
+          "expect": [],
+          "note": "The continuation of Table 1. 14 data rows printed, 14 emitted; the region's extra printed lines are the footnote rule and footnote text below the grid."
+        }
+      ]
+    },
+    {
+      "source": "ct400952t.pdf",
+      "source_sha256": "8b79020df66c99530aaae9c0c626513389da40d4e06e70e4470a370bb1ffb18e",
+      "tables": [
+        {
+          "block_id": "#/tables/0",
+          "page": 3,
+          "expect": [],
+          "note": "Spanning-cell table emitted as HTML. Both line-finding mechanisms and the engine agree on 20 rows."
+        },
+        {
+          "block_id": "#/tables/1",
+          "page": 4,
+          "expect": [],
+          "note": "8 rows, all three counts agree."
+        },
+        {
+          "block_id": "#/tables/2",
+          "page": 5,
+          "expect": [],
+          "refusal": "row_structure_unavailable",
+          "note": "Printed sideways: the region's glyphs project onto a single band, so there is no row structure to read. The audit must refuse rather than report every value as dropped."
+        },
+        {
+          "block_id": "#/tables/3",
+          "page": 6,
+          "expect": [],
+          "note": "7 rows, all three counts agree."
+        },
+        {
+          "block_id": "#/tables/4",
+          "page": 7,
+          "expect": [],
+          "note": "13 rows, all three counts agree."
+        },
+        {
+          "block_id": "#/tables/5",
+          "page": 8,
+          "expect": [],
+          "note": "13 rows, all three counts agree."
+        },
+        {
+          "block_id": "#/tables/7",
+          "page": 9,
+          "expect": [
+            "dropped_row_content",
+            "shifted_values",
+            "merged_rows"
+          ],
+          "note": "MOF lattice parameter table. Page 9 prints 'b = 16.48 b = 16.733 -1.5' and 'c = 12.66 c = 13.038 -2.9'; neither -1.5 nor -2.9 reaches a cell, and the emitted HTML carries different b and c values for MIL-53(Al) than the page shows. It also emits <tr><td></td><td></td><td></td><td>- 0.4</td>...</tr>, a value alone in a non-leading column. merged_rows was added to this label on 2026-08-31, after a fix to the header exclusion let the check reach this table at all: the grid's row 11 covers both the printed 'MIL-53(Cr) a = 6.60 ...' line and the 'b = 16.48 b = 16.733 -1.5' line beneath it, which is the same loss the dropped_row_content label already records from the source page. The label was incomplete, not the finding wrong."
+        }
+      ]
+    },
+    {
+      "source": "dolg-ecp.pdf",
+      "source_sha256": "24f433c4edfb3f419016b2a90b4aecd989394925685ade3fe3efa66c3665011a",
+      "tables": [
+        {
+          "block_id": "#/tables/0",
+          "page": 4,
+          "expect": [],
+          "note": "15 grid rows against 16 printed lines, the extra being the second header line."
+        },
+        {
+          "block_id": "#/tables/1",
+          "page": 4,
+          "expect": [],
+          "note": "As above; the page carries two tables with the same shape."
+        },
+        {
+          "block_id": "#/tables/2",
+          "page": 7,
+          "expect": [],
+          "note": "29 rows, projection and engine agree exactly."
+        },
+        {
+          "block_id": "#/tables/3",
+          "page": 8,
+          "expect": [],
+          "note": "6 rows, projection and engine agree exactly."
+        }
+      ]
+    }
+  ]
+}

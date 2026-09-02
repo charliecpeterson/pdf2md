@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "frozen_at": "2026-08-31",
+  "selection": "Two most recent submissions per category from the arXiv API (sortBy=submittedDate, sortOrder=descending) across physics.chem-ph, cond-mat.mtrl-sci, cs.CL, eess.IV and math.NA, skipping entries arXiv had not yet rendered to PDF and taking the next in that category. A rule, not a taste: re-running the same queries reproduces the selection method, and nothing about the files was inspected before freezing.",
+  "why": "pdf2md-blind-v1 stopped being blind on 2026-08-31, when diagnosing three false-positive classes meant inspecting its individual tables, pages and blocks. This replaces it. Deliberately broader than v1, which was entirely arXiv machine learning: five categories, so a claim about tables is not a claim about one journal template.",
+  "discipline": "Downloaded, hashed and page-counted. NOT converted, and no extraction output has been looked at. The first person to use it should convert once and report aggregates before drilling into any individual table.",
+  "documents": [
+    {
+      "arxiv_id": "2608.28518v1",
+      "category": "cs.CL",
+      "url": "https://arxiv.org/pdf/2608.28518v1",
+      "source_sha256": "687f155d067fc30288aff56d8abbe511f00d42e6761f59b58c1e1990eca5a41c",
+      "bytes": 540973,
+      "pages": 5
+    },
+    {
+      "arxiv_id": "2608.28560v1",
+      "category": "cs.CL",
+      "url": "https://arxiv.org/pdf/2608.28560v1",
+      "source_sha256": "7937ff37abffeed4fab11aabd8d1aa7b5905b6e2a889f21389c23dfd6acebcce",
+      "bytes": 1268353,
+      "pages": 26
+    },
+    {
+      "arxiv_id": "2608.29041v1",
+      "category": "physics.chem-ph",
+      "url": "https://arxiv.org/pdf/2608.29041v1",
+      "source_sha256": "d72cba25e16d55be21c04b080079842a5953c54cd8772136361acd715cd19e56",
+      "bytes": 2170766,
+      "pages": 38
+    },
+    {
+      "arxiv_id": "2608.29196v1",
+      "category": "eess.IV",
+      "url": "https://arxiv.org/pdf/2608.29196v1",
+      "source_sha256": "153b7573d86e9dd80b6db5ee53aa100ad63f971f55e39d95d5d9dcd9c245b7eb",
+      "bytes": 11653373,
+      "pages": 7
+    },
+    {
+      "arxiv_id": "2608.29246v1",
+      "category": "eess.IV",
+      "url": "https://arxiv.org/pdf/2608.29246v1",
+      "source_sha256": "02a5f891224a4bcd293e6848f8fa96cb573f98734f742f58291e421900b545a7",
+      "bytes": 8067988,
+      "pages": 16
+    },
+    {
+      "arxiv_id": "2608.29344v1",
+      "category": "physics.chem-ph",
+      "url": "https://arxiv.org/pdf/2608.29344v1",
+      "source_sha256": "1a7d8b933ae2c934fe3ec5b7a0d266442912ab79510a1cb73344b1a73c07f66d",
+      "bytes": 6408403,
+      "pages": 15
+    },
+    {
+      "arxiv_id": "2608.29404v1",
+      "category": "cond-mat.mtrl-sci",
+      "url": "https://arxiv.org/pdf/2608.29404v1",
+      "source_sha256": "f34eef93771abcebf6091fa0bfc8daa8549a8f74041e39694ea3c4924b4a6904",
+      "bytes": 12768324,
+      "pages": 24
+    },
+    {
+      "arxiv_id": "2608.29413v1",
+      "category": "cond-mat.mtrl-sci",
+      "url": "https://arxiv.org/pdf/2608.29413v1",
+      "source_sha256": "007e4b3dea66233626aeaa924a0b8420ea0ef3e8ac2a6b4170d11eb8ffe2aa5b",
+      "bytes": 9870015,
+      "pages": 45
+    },
+    {
+      "arxiv_id": "2608.29447v1",
+      "category": "cond-mat.mtrl-sci",
+      "url": "https://arxiv.org/pdf/2608.29447v1",
+      "source_sha256": "369940efca345c2b151d9619ea12960d72c8153cfdbe093a769c5183e41d0c87",
+      "bytes": 712987,
+      "pages": 8
+    },
+    {
+      "arxiv_id": "2608.29457v1",
+      "category": "math.NA",
+      "url": "https://arxiv.org/pdf/2608.29457v1",
+      "source_sha256": "441106bf6e014266aeac7c04bb4ebccaa4a7d2b9e213485044b64ab4d2380e4e",
+      "bytes": 468140,
+      "pages": 25
+    }
+  ]
+}

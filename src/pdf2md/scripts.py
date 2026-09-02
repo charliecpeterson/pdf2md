@@ -239,6 +239,12 @@ class PageChars:
         a phantom loss."""
         return _scriptsplit_text(self._chars)
 
+    def region_scriptsplit(self, bbox) -> str:
+        """`text_region()` tokenized the way `text_scriptsplit` tokenizes a page:
+        a reference marker or exponent the draw order glues onto its base word
+        (`technetium67`) reads as the two tokens the page prints."""
+        return _scriptsplit_text(self._region(bbox))
+
     def text_lines(self, bbox) -> str:
         """Text inside `bbox` with pdfium's native line breaks preserved — the layout
         of a console transcript or ASCII table, which `text_region`'s flat join and

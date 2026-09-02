@@ -76,7 +76,10 @@ the source crops make every uncertain claim inspectable.
 | Clean scanned prose | RapidOCR followed by conservative punctuation repair and English word re-splitting | Default offline fallback. Word splitting is disabled for non-English scans. |
 | Whole-page OCR | OCR-focused VLM through an OpenAI-compatible endpoint | Opt-in. It can improve page text but collapses table, equation, and caption structure into one Markdown block. |
 | Equations | Docling LaTeX checked against the embedded text layer; suspect results become image-backed | Production. Surya re-transcription and Matplotlib render-back comparison are opt-in evidence. |
-| Born-digital tables | Engine grid checked cell-by-cell against PDF glyphs, with uncovered ink and numeric-conservation reports | Production verification. Independent glyph-grid reconstruction remains diagnostic where lane geometry is ambiguous. |
+| Scans carrying an OCR text layer | Detected from a full-page image plus invisible (render-mode-3) text, and treated as a scan | Production. This is the one case where a text layer exists but is not the page's own words, so every glyph check would otherwise confirm the engine's errors instead of catching them. |
+| Reading order | Page columns recovered from block geometry, plus the document's own numbering where a page carries an unbroken run of ordinals | Production. The rest of the audit is order-insensitive by design, so an interleaved two-column page conserves every word and number and still reads as nonsense. The numbering path is proof rather than inference but only covers bibliographies the engine emits one entry per block; the geometric path covers the rest. |
+| Prose against the text layer | Per-block word recall on a script-split, hyphen-joined reading, with accent damage separated from missing words | Production. Missing words are an action beside the block; lost diacritics are recorded without burying a bibliography in markers. |
+| Born-digital tables | Engine grid checked cell-by-cell against PDF glyphs, plus a row-level audit that projects the page's own ink into rows and accounts for every value in it | Production verification. A dropped, merged, or shifted row is named in the Markdown, in every derived artifact, and in `review.md`; the glyph-truth reading of the same region ships beside the engine's grid. |
 | Scanned numeric tables | Crop-authoritative table artifacts, normalized candidates, optional Tesseract comparison, exact external references, and deterministic review sheets | Production is evidence-first. Reader agreement, scientific relations, and validators never silently replace a value. |
 | Experimental table readers | PP-OCRv6/PaddleOCR-VL, projection-derived crops, fixed-font glyph atlases, and row/column recovery | Evaluation-only or separate non-mutating overlays. The measured corpus does not justify automatic OCR value promotion. |
 | Born-digital charts | Vector-path geometry converted to CSV and deterministic Matplotlib code | Production for supported line/scatter charts; the source SVG or crop remains beside the data. |
@@ -750,9 +753,10 @@ out/<source-name>-<doc_id[:8]>/
     assets/<id>_p<n>.png
     data/<id>_p<n>.csv  # accepted chart series
     data/doi-metadata.csl.json # optional raw DOI registry response
-    data/tables/<block>.md   # table transcription candidate
+    data/tables/<block>.md   # table transcription candidate, with its own audit header
+    data/tables/<block>.glyph.md # the same region read out of the PDF's glyph layer
     data/tables/<block>.csv  # raw cell grid
-    data/tables/<block>.json # authority, crop, and lineage
+    data/tables/<block>.json # authority, crop, audit findings, and lineage
     data/tables/<block>.cells.jsonl # per-cell reader and reference evidence
     data/tables/page_<n>_panels.csv  # stitched long-form repeated panels, when detected
     data/tables/page_<n>_panels.json # stitched rows and review checks
@@ -760,6 +764,15 @@ out/<source-name>-<doc_id[:8]>/
     provenance.json     # full blocks, bboxes, coverage, and lineage
 ```
 
+- Every table artifact opens with its own provenance and audit header. A file under
+  `data/tables/` is read away from `document.md`, and an unmarked grid there would
+  present as a standalone source; findings on the table's own block reproduce in full
+  and findings elsewhere on its page become a pointer into `review.md`. Each table also
+  gets a crop of its printed region under `assets/`, so the source can be checked
+  without opening the PDF.
+- `<block>.glyph.md` is the table region read straight out of the glyph layer, in the
+  engine's columns: measured rows against a modelled grid. It is never the emitted
+  table, and exists so a suspect row can be diffed rather than trusted.
 - `doc_id` is the SHA-256 of the source bytes. A completed version is reused only when
   its run fingerprint also matches the effective configuration, pdf2md implementation,
   engine identity, dependency versions, model identifiers, and prompt/cache schema.

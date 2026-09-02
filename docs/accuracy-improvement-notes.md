@@ -59,6 +59,107 @@ Design conclusions for the production shape:
    tables perfect) and as the spanning-cell evidence source; keep it emitted
    beside the hybrid verdicts.
 
+Conclusion 3 shipped 2026-08-31 in a form the lane-resolution finding argues
+for: `table_rebuild.glyph_grid` reads the region with *measured rows and the
+engine's columns*, which sidesteps lane ambiguity entirely — the two failing
+tables degraded only in lane resolution, never content, and lanes are the one
+thing the engine gets right. It is written as `data/tables/<block>.glyph.md`
+beside the engine's grid, never as the emitted table.
+
+Engine choice on a scan carrying someone else's OCR (2026-08-31, all 99 pages
+of Atomic Data 4, 301-399, S0092640X72800081, `--no-formula --force`):
+
+Ground truth without labels: every atom in that paper is tabulated on the same
+radius grid, so the grid the two engines between them establish is the printed
+one. It came out at 97 values and matches the page exactly. Scoring each engine
+against the union means neither is judged by its own self-consistency -- an
+engine that misreads a value consistently shows up as missing it, not as
+redefining the grid.
+
+| | tables | pages with a grid | mean grid recovery | >95% recovered | value tokens | malformed |
+|---|---|---|---|---|---|---|
+| MinerU | 145 | 69 | 99% | 67 | 73,342 | 0.6% |
+| Docling on the embedded layer | 82 | 68 | 21% | 0 | 70,583 | 22.9% |
+
+Docling's failures are the 1972 OCR showing through unchanged: `0,0002`,
+`O.O001`, `0.000[`. MinerU's 450 are almost all header strings the token filter
+cannot classify (`ZETA(4D)`, `1/R**3`), not misread values. The row/grid audit
+reaches the same verdict by a different route: 1 of MinerU's 145 tables carries
+a structural finding against 79 of Docling's 82.
+
+Caveat on what was measured: the radius column is the row *label*, chosen
+because it is the one column with checkable structure. There is no independent
+ground truth here for the wavefunction values themselves -- only that they are
+well-formed and that the two engines' structures now agree.
+
+Engine-differential concordance (2026-08-31, `scripts/eval_engine_table_agreement.py`
+over the ten-document corpus converted by both Docling and MinerU, 61 matched
+tables from 9 documents):
+
+|                | audit flagged | audit silent |
+|----------------|---------------|--------------|
+| engines differ | 8             | 7            |
+| engines agree  | 0             | 44           |
+
+Every table the audit flags is one the two parsers read differently, and it is
+silent on all 44 they read identically. Engine agreement is not ground truth --
+both can be wrong together, and a difference can be one parser's OCR rather than
+the other's structure -- so this is concordance, not precision. It is still the
+stronger measurement: the labelled set is thirteen tables chosen by hand, this is
+sixty-one nobody chose. Recall against disagreement is 8/15; the audit refuses
+far more than it reports, which is the intended trade.
+
+Reading order got the same treatment (`scripts/eval_engine_order_agreement.py`,
+blocks matched across engines by box overlap, 132 pages): 7 of the 8 pages the
+two engines order differently are flagged, and 1 of the 123 they agree on. That
+check previously rested on two pages verified by hand.
+
+The shipped `<block>.glyph.md` was scored the same way for the first time: judged
+against MinerU it is closer than the engine's grid on 6 tables, further on 8, and
+level on 30 of 44. It does not systematically beat the engine, so it does not
+earn a promotion — but the wins are large where they happen (+0.84, +0.94, +1.0),
+which is the badly-extracted table it exists for. Keep it as a fallback, not as a
+general second opinion.
+
+Four false-positive classes were found and closed by this measurement, all of
+them invisible to the labelled set because every labelled table is a dense
+numeric grid: `merged_rows` counting a wrapped cell's continuation lines as
+collapsed rows (13 findings to 2), `shifted_values` reading a multi-line header's
+label fragments as stray values, and a grid covering 9 per cent of its own region
+being compared against itself and reported as agreement, and `merged_cells`
+being unable to see a table flattened to a single data row (no column profile to
+compare against, and the row-band check suppressed by the wrapped-cell guard).
+
+Note on the corpus: it is no longer blind. This session inspected individual
+tables, pages, and blocks in it to diagnose those classes. A future unseen-corpus
+claim needs a fresh selection.
+
+Measured on the frozen ten-document unseen corpus (2026-08-31, `--no-formula
+--force`): 19 of 74 tables carry a structural finding, 16 of ~200 pages a
+reading-order finding, and 13 a split-line note. The ordinal oracle fired on
+none of them — arXiv bibliographies arrive as a single block, so the only
+ordinal-bearing blocks are section headings, one per page, below the five a page
+needs to be called a list. It is validated on journal-style bibliographies
+(dolg-ecp p9, where it and the geometry independently agree on 16 misplaced
+blocks) and has no coverage on the arXiv style. A document-level variant keyed
+on numbered section headings would cover that and does not exist.
+
+The same run turned up a pre-existing hard failure worth recording: three of the
+ten documents aborted outright because one table's caption plus column-header row
+exceeded `passage_max_tokens`, which `_split_table` treated as unrecoverable. It
+now degrades to unheadered row passages with a warning, and the corpus converts
+10/10.
+
+Conclusion 2's per-cell check has a structural blind spot the same pass closed:
+a row the engine never created has no cell to verify, so it passes silently.
+The uncovered-ink sweep does not catch it either, because a neighbouring row's
+padded cell box usually contains the dropped row's glyphs. `table_audit`
+projects the region's ink into rows (`row_bands`, the lane projection's
+transpose) and requires every value a printed row spells to reach a cell of the
+grid rows covering that band. On ct6b00664 Table 1 — 60 printed data rows, 57
+in the grid — the per-cell check reported 19 mismatches and no loss; the row
+accounting names `Ag2f2 120.0 3 1.34` as reaching no cell at all.
+
 The hybrid verification (conclusion 2) is implemented: `check_table_cells`
 runs during enrichment on every born-digital table and records verdict counts,
 uncovered-ink strays, and bounded mismatch samples on
@@ -321,8 +422,22 @@ Silent born-digital table mangling stops being something only discovered during
 evaluations. Estimated effort: small.
 
 Status: implemented 2026-08-22, informational only. Per-block word recall is
-recorded during enrichment (`enrich.record_block_recall`, born-digital prose
-blocks with a bbox) and aggregated into `DocumentProfile.glyph_recall_*`.
+recorded during enrichment (`enrich.record_recall`, born-digital prose blocks
+with a bbox) and aggregated into `DocumentProfile.glyph_recall_*`.
+
+Two corrections on 2026-08-31, both found by converting the GRASP2018 manual.
+The measurement runs as its own pass after `enrich_tables` rather than inside
+`enrich_blocks`, because a block that renders from table cells leaves `text`
+empty and a table's markup is not final until that later pass: the manual's
+three contents pages scored 0/266, 0/456 and 0/237 while their tables were
+emitted in full. And `_recall_words` expands TeX f-ligatures on both sides, so
+the glyph layer's `con` + `guration` no longer scores against a correctly
+emitted `configuration` as two losses and a phantom word. Across the 14
+converted documents this moved low-recall blocks 1266 -> 1239 -> 1094 with no
+document newly flagged and none scoring worse; GRASP went 160 -> 14 and its
+document recall 0.9258 -> 0.9933. What the phantom 0/266 had been hiding is a
+real defect: `unningthetools` for "Running the tools" and dingbats for the
+chapter numbers 7 and 10.
 Whole-document numeric conservation runs after emit (`enrich.numeric_conservation`)
 against the markdown just written and lands in `DocumentProfile.numeric_conservation`
 (counts plus up to 12 missing-value examples). Both surface in profile.json and
@@ -357,6 +472,81 @@ These constraints came out of the measured experiments and remain project policy
 - No lowering of the 0.99 line-reader threshold without held-out calibration.
 - No treating shared-crop-geometry OCR votes as independent verification.
 - No automatic promotion of fixed-font glyph-atlas choices.
+
+## Non-Latin script, first measurement, 2026-09-01
+
+Every document measured in this project has been Latin-script English, so
+`normalize.resegment_words` being English-only and the ligature and diacritic
+repair assuming Latin were untested assumptions rather than known-good.
+
+arXiv 2608.30204v1 (cs.CL, 20 pages) carries 52 CJK ideographs in its text
+layer, in tables and inline examples. Converted: accounting intact (211 blocks,
+nothing dropped), word recall 0.9976 with one low-recall block of 186, two
+action-required findings, and **all 52 ideographs present in the emitted
+Markdown** -- the count in the source layer and in the output match exactly.
+
+What that establishes is narrow and worth stating as such. It shows non-Latin
+glyphs pass through the pipeline intact and that the Latin-specific repairs do
+not damage them. It does not test a document *written* in a non-Latin script:
+the layout, column and word-splitting logic all still ran on English prose, and
+`resegment_words` was never reached because it is gated on OCR blocks and this
+document is born-digital. A CJK-primary or Arabic document remains unmeasured.
+
+## Over-fitting check on blind-v2, 2026-09-01
+
+Every fix in the table-and-order branch was found by staring at the same
+eighteen documents, and "the check got better" and "the check was fitted to
+these files" produce identical evidence when the evidence comes from those
+files. blind-v2 is the only unseen corpus with a measurement predating the
+branch, which makes it the one instrument that can tell them apart. All ten
+sources re-downloaded and verified against the hashes frozen before anything
+was converted, so arXiv had not replaced a paper under the comparison.
+
+| | before the branch | after |
+|---|---|---|
+| accounting | intact on all ten | intact on all ten |
+| tables flagged | 19% | 18.5% |
+| reading-order pages | 6% | 5.3% |
+| low-recall blocks | 4.6% | 1.1% |
+
+The recall work generalizes: a four-fold drop on documents never inspected,
+which is what the tokenization fixes predicted and could not have been obtained
+by fitting to the working corpus. The table and reading-order rates are flat --
+27 tables and 209 pages cannot resolve the small changes made there (the
+digit-grouped decimal moved 6 findings corpus-wide, and the fragment exclusion
+mostly touches documents whose engine shatters display equations, which these
+ten largely are not). Nothing got worse.
+
+Aggregates only, per the corpus's own discipline; no individual table, page or
+block was opened. blind-v3 was frozen before this run so an untouched set still
+exists.
+
+## End-use measurement, 2026-09-01
+
+Everything the verification layer reports is internal consistency: the engine
+against the glyph layer, the check against poppler, one parser against another.
+None of it asks whether the Markdown is good to *use*, so a bundle could score
+0.9951 recall with nothing dropped and still answer questions worse than the
+page it came from.
+
+`scripts/agent_benchmark.py` answers the same eleven questions from the bundle's
+retrieval records and from the rendered source pages. Run against `qwen3-vl:8b`:
+
+| | text/table/equation | chart data | outcomes |
+|---|---|---|---|
+| bundle | 6/6 | 1/5 | 7 correct, 4 refused, 0 incorrect |
+| source pages | 6/6 | 2/5 | 8 correct, 2 refused, 1 incorrect |
+
+On the content pdf2md claims to extract the bundle is at parity with looking at
+the page, and the whole gap is chart data -- the known digitization boundary,
+where the bundle declines rather than guesses. The single confidently wrong
+answer in the run came from the source-page mode, not the bundle.
+
+Read it as a smoke test, not a benchmark: eleven questions, five of them
+synthetic plot fixtures, one 8B local model. It is evidence that there is no
+usability problem hiding behind the accounting numbers, not evidence that the
+output is good. The chart-data column is the honest place to push next, and it
+is the same limitation `digitize.py` already documents.
 
 ## Current status and next evidence
 

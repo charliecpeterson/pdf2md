@@ -23,7 +23,13 @@ _SPACED_DECIMAL = re.compile(r"(?<=\d)[ \t\r\n]+\.[ \t\r\n]+(?=\d)")
 _MARKDOWN_DESTINATION = re.compile(r"(?<=\])\([^\n)]*\)")
 _HTML_TAG = re.compile(r"<[^>]+>")
 _TEX_COMMAND = re.compile(r"\\[A-Za-z]+")
-_PDF2MD_MARKER = re.compile(r"^> \*\*\[pdf2md:.*$", re.MULTILINE)
+# A marker and every blockquote line continuing it: the detail lines quote the
+# source rows a finding is about, and counting those quotes as emitted content
+# would report a table's own losses back as additions.
+_PDF2MD_MARKER = re.compile(r"^> \*\*\[pdf2md:.*(?:\n>.*)*$", re.MULTILINE)
+# Navigation pdf2md emits beside content (links into the bundle's own
+# artifacts). Its labels are not words the source page printed.
+_EMITTED_NAV = re.compile(r"^\*\[pdf2md\][^\n]*$", re.MULTILINE)
 _INTRAWORD_HYPHEN = re.compile(r"([^\W\d_])[-‐‑]\s*([^\W\d_])", re.UNICODE)
 _EXAMPLE_LIMIT = 200
 
@@ -56,9 +62,10 @@ def _raw_words(text: str) -> list[str]:
     return _WORD.findall(normalized)
 
 
-def _semantic_output(text: str) -> str:
+def semantic_output(text: str) -> str:
     """Remove syntax introduced by emission while retaining visible content."""
     text = _PDF2MD_MARKER.sub("", text)
+    text = _EMITTED_NAV.sub("", text)
     text = _MARKDOWN_DESTINATION.sub("", text)
     text = _SCRIPT_TAGS.sub("", text)
     text = _HTML_TAG.sub(" ", text)
@@ -99,8 +106,16 @@ def _token_delta(
 
 
 def token_accounting(source_text: str, output_text: str) -> dict[str, dict[str, Any]]:
-    """Compare word and number multisets, preserving exact difference counts."""
-    output_text = _semantic_output(output_text)
+    """Compare word and number multisets, preserving exact difference counts.
+
+    Both sides get the same treatment. The source of a table is its own rendered
+    markup, so an HTML table's `td`, `tr` and `tbody` are tokens on the source
+    side and stripped on the output side -- which charged one 29-row table with
+    losing 471 words that were never content. Whatever counts as emitted syntax
+    has to count as syntax in both readings or the difference is the
+    normalization, not the document."""
+    source_text = semantic_output(source_text)
+    output_text = semantic_output(output_text)
     return {
         "words": _token_delta(
             _raw_words(source_text),

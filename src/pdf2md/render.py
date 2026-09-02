@@ -59,9 +59,11 @@ def svg_crop(pdf_path: Path, page: int, bbox: BBox, out_path: Path,
         try:
             one.import_pages(src, pages=[page - 1])
             pg = one[0]
-            w, h = pg.get_size()
-            pg.set_cropbox(max(0.0, x0 - padding_pts), max(0.0, y0 - padding_pts),
-                           min(w, x1 + padding_pts), min(h, y1 + padding_pts))
+            # set_cropbox is absolute user space; clamp to the page's own visible
+            # box, whose corner is not always (0, 0).
+            bx0, by0, bx1, by1 = pg.get_bbox()
+            pg.set_cropbox(max(bx0, x0 - padding_pts), max(by0, y0 - padding_pts),
+                           min(bx1, x1 + padding_pts), min(by1, y1 + padding_pts))
             one.save(str(tmp_pdf))
         finally:
             one.close()
@@ -105,13 +107,16 @@ class CropRenderer:
     def _page_image(self, page: int):
         if page not in self._page_cache:
             pg = self._pdf[page - 1]
-            self._page_cache[page] = (pg.get_size(), pg.render(scale=self._scale).to_pil())
+            box = pg.get_bbox()  # rendering covers the visible box, not user space
+            self._page_cache[page] = (
+                pg.get_size(), (box[0], box[1]), pg.render(scale=self._scale).to_pil()
+            )
         return self._page_cache[page]
 
     def full_page(self, page: int, out_path: Path) -> None:
         """Render the whole page (1-based) to `out_path` — the verification raster for a
         scanned page, where the OCR text isn't authoritative and the image is."""
-        _, full = self._page_image(page)
+        _, _, full = self._page_image(page)
         out_path.parent.mkdir(parents=True, exist_ok=True)
         full.save(out_path)
 
@@ -125,14 +130,19 @@ class CropRenderer:
         re-rendering just the region at, say, 600 recovers the sub/superscripts and
         thin strokes an OCR/VLM otherwise misreads — for born-digital pages. (On a
         scanned page the ceiling is the embedded image's own resolution.)"""
-        (w, h), full = self._page_image(page)
+        (w, h), (ox, oy), full = self._page_image(page)
 
-        if bbox.y0 > bbox.y1:  # bottom-left origin: flip into top-left space
-            top, bottom = h - bbox.y0, h - bbox.y1
+        # Bboxes are absolute user space; the rendered raster covers the page's
+        # visible box, whose corner (ox, oy) is not always (0, 0). Translate
+        # before the flip or every crop on such a page cuts (ox, oy) short.
+        x0, x1 = bbox.x0 - ox, bbox.x1 - ox
+        y0, y1 = bbox.y0 - oy, bbox.y1 - oy
+        if y0 > y1:  # bottom-left origin: flip into top-left space
+            top, bottom = h - y0, h - y1
         else:
-            top, bottom = bbox.y0, bbox.y1
-        left = max(0.0, min(bbox.x0, bbox.x1) - self._padding)
-        right = min(w, max(bbox.x0, bbox.x1) + self._padding)
+            top, bottom = y0, y1
+        left = max(0.0, min(x0, x1) - self._padding)
+        right = min(w, max(x0, x1) + self._padding)
         top = max(0.0, top - self._padding)
         bottom = min(h, bottom + self._padding)
 

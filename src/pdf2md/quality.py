@@ -127,17 +127,27 @@ def _content_dimensions(
         note="Only usable equation text counts; an image-backed equation remains structurally present.",
     )
     table_total = len(doc.tables)
+    # A table can be text-backed cell by cell and still be missing whole rows.
+    # Counting it as verified here reported "full" table verification coverage
+    # for a document carrying a high-severity dropped-row finding in its own
+    # review queue.
+    structurally_flagged = sum(1 for table in doc.tables if table.grid_audit.get("findings"))
+    tables_sound = max(0, tables_verified - structurally_flagged)
     table_status = (
         "not_applicable" if not table_total else
-        "full" if tables_verified == table_total else
-        "partial" if tables_verified else "none"
+        "full" if tables_sound == table_total else
+        "partial" if tables_sound else "none"
     )
     table = _ratio(
         table_status,
-        tables_verified,
+        tables_sound,
         table_total,
-        "structured table content and OCR/cell-verification markers",
-        note="Docling's native table score is excluded because it is not implemented.",
+        "structured table content, OCR/cell-verification markers, and the row-level grid audit",
+        note=(
+            "Docling's native table score is excluded because it is not implemented. "
+            "A table whose grid audit found rows dropped, merged, or shifted does not "
+            "count as verified however well its individual cells check out."
+        ),
     )
     figure_text = sum(bool(figure.caption or figure.description or figure.labels) for figure in doc.figures)
     figure_data = sum(plot_data_accepted(figure.digitization) for figure in doc.figures)

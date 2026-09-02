@@ -4,7 +4,16 @@ what) that used to live untested inside the Docling adapter."""
 
 from __future__ import annotations
 
-from pdf2md.enrich import enrich_blocks, enrich_figures, enrich_tables
+import pytest
+
+from pdf2md.enrich import (
+    _cell_read_boxes,
+    enrich_blocks,
+    enrich_figures,
+    enrich_tables,
+    recall_review_flags,
+    record_recall,
+)
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, RawCell, RawTable, TableData
 
 _BB = BBox(x0=0, y0=10, x1=10, y1=0)
@@ -21,6 +30,11 @@ class _FakePC:
         return []
 
     def text_region(self, bbox) -> str:
+        return self._text
+
+    def region_scriptsplit(self, bbox) -> str:
+        # The fixtures supply an already-separated reading; the real one splits
+        # scripted groups off their base word.
         return self._text
 
     def text_lines(self, bbox) -> str:
@@ -42,6 +56,13 @@ class _FakeGlyphs:
 
     def vocab(self):
         return self._vocab
+
+
+def _measurement(block) -> dict:
+    """The recall record's measurement fields, without the bookkeeping a
+    low-recall block also carries (where its missing words turned up)."""
+    record = block.extra["glyph_word_recall"]
+    return {k: record[k] for k in ("matched", "total", "strict")}
 
 
 def _eq(text, page=1):
@@ -218,23 +239,50 @@ def test_prose_word_recall_recorded_when_complete():
     # a faithful block matches every source word (case/order-insensitive).
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was 92 percent",
               page=1, bbox=_BB)
-    enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="overall, The yield was 92 percent.")}))
-    assert p.extra["glyph_word_recall"] == {"matched": 5, "total": 6}
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="overall, The yield was 92 percent.")}))
+    assert _measurement(p) == {"matched": 5, "total": 6, "strict": 5}
 
 
 def test_prose_word_recall_detects_lost_words():
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield was", page=1, bbox=_BB)
-    enrich_blocks([p], _FakeGlyphs({1: _FakePC(text="The yield was 92 percent")}))
-    assert p.extra["glyph_word_recall"] == {"matched": 3, "total": 5}
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="The yield was 92 percent")}))
+    assert _measurement(p) == {"matched": 3, "total": 5, "strict": 3}
+
+
+def test_word_recall_of_a_table_block_reads_its_cells():
+    # A block whose content renders from cells has no text of its own. Measuring
+    # `text` scored the whole printed region as lost (the GRASP2018 contents pages
+    # read 0/266 while their tables were emitted in full), so the table's own
+    # markup is the output side -- and its markup syntax is not source content.
+    b = Block(id="#/tables/0", type=BlockType.OTHER, text="", page=1, bbox=_BB)
+    t = TableData(block_id="#/tables/0", page=1, bbox=_BB,
+                  gfm="| Running the tools | 169 |")
+    glyphs = _FakeGlyphs({1: _FakePC(text="Running the tools 169")})
+    record_recall([b], [t], glyphs)
+    assert b.extra["glyph_word_recall"] == {"matched": 4, "total": 4, "strict": 4}
+
+
+def test_word_recall_of_a_table_block_still_sees_dropped_characters():
+    # The reason the fix matters: GRASP's contents table emitted "unningthetools"
+    # for "Running the tools". Reading the cells reports that loss instead of
+    # hiding it behind a 0/N that was wrong for an unrelated reason.
+    b = Block(id="#/tables/0", type=BlockType.OTHER, text="", page=1, bbox=_BB)
+    t = TableData(block_id="#/tables/0", page=1, bbox=_BB,
+                  gfm="| unningthetools | 169 |")
+    glyphs = _FakeGlyphs({1: _FakePC(text="Running the tools 169")})
+    record_recall([b], [t], glyphs)
+    assert _measurement(b) == {"matched": 1, "total": 4, "strict": 1}
 
 
 def test_prose_word_recall_strips_script_tags_and_skips_empty_regions():
     from pdf2md.enrich import record_block_recall
 
+    # A script tag becomes a boundary on both sides, because the source is read
+    # script-split: `<sup>2</sup>nd` and the layer's `2nd` both give `2` + `nd`.
     p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the <sup>2</sup>nd point",
               page=1, bbox=_BB)
-    record_block_recall(p, _FakePC(text="The 2nd point."))
-    assert p.extra["glyph_word_recall"]["matched"] == 3
+    record_block_recall(p, _FakePC(text="The 2 nd point."))
+    assert p.extra["glyph_word_recall"]["matched"] == 4
 
     empty = Block(id="#/q", type=BlockType.PARAGRAPH, text="orphan text", page=1, bbox=_BB)
     record_block_recall(empty, _FakePC(text=""))
@@ -249,13 +297,13 @@ def test_recall_summary_aggregates_and_counts_low_blocks():
                      extra={"glyph_word_recall": recall} if recall else {})
 
     blocks = [
-        block({"matched": 98, "total": 100}),   # healthy
-        block({"matched": 4, "total": 10}),     # below the 0.90 floor
+        block({"matched": 98, "total": 100, "strict": 98}),  # healthy
+        block({"matched": 4, "total": 10, "strict": 4}),     # below the 0.90 floor
         block(None),                            # OCR page / empty region: not measured
     ]
     assert recall_summary(blocks) == {
         "blocks_measured": 2, "words_total": 110, "words_matched": 102,
-        "low_recall_blocks": 1,
+        "low_recall_blocks": 1, "accent_damaged_blocks": 0,
     }
 
 
@@ -311,3 +359,352 @@ def test_scriptsplit_separates_scripted_groups():
     # A real space already separates base from script: no extra separator.
     spaced = [ch("1", 0, 0, 5, 10), ch(" ", 5, 0, 7, 10), ch("2", 8, 6.2, 11, 9)]
     assert _scriptsplit_text(spaced) == "1 2\n"
+
+
+def test_recall_flags_separate_missing_words_from_lost_accents():
+    from pdf2md.enrich import recall_review_flags
+
+    def block(bid, recall):
+        return Block(id=bid, type=BlockType.PARAGRAPH, text="x", page=4,
+                     extra={"glyph_word_recall": recall})
+
+    marked, informational = recall_review_flags([
+        block("#/a", {"matched": 20, "total": 20, "strict": 20}),   # clean
+        block("#/b", {"matched": 12, "total": 20, "strict": 12}),   # words gone
+        block("#/c", {"matched": 20, "total": 20, "strict": 18}),   # accents gone
+        block("#/d", {"matched": 19, "total": 20, "strict": 19}),   # within the floor
+    ])
+
+    assert [f.block_id for f in marked] == ["#/b"]
+    assert marked[0].severity == "high"  # 8 words missing
+    assert "8 of 20 source word(s)" in marked[0].reason
+    assert "source page 4" in marked[0].marker_text
+
+    # Accent damage is a different defect: the content is present and misspelled,
+    # so it reaches review.json without putting a marker beside every surname.
+    assert [f.block_id for f in informational] == ["#/c"]
+    assert informational[0].disposition == "informational"
+    assert "diacritics lost: 2 word(s)" in informational[0].reason
+
+
+def test_recall_flags_read_a_bundle_written_before_strict_existed():
+    from pdf2md.enrich import recall_review_flags, recall_summary
+
+    old = Block(id="#/a", type=BlockType.PARAGRAPH, text="x", page=1,
+                extra={"glyph_word_recall": {"matched": 20, "total": 20}})
+    marked, informational = recall_review_flags([old])
+    assert (marked, informational) == ([], [])
+    assert recall_summary([old])["accent_damaged_blocks"] == 0
+
+
+def test_recall_counts_a_line_broken_word_once():
+    from pdf2md.enrich import record_block_recall
+
+    # The layer breaks `structure` across a line with an undecodable soft hyphen;
+    # the emitter rejoins it. Scoring that as two lost words is a metric bug.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the local structure holds",
+              page=1, bbox=_BB)
+    record_block_recall(p, _FakePC(text="the local struc￾\nture holds"))
+    assert p.extra["glyph_word_recall"] == {"matched": 4, "total": 4, "strict": 4}
+
+
+def test_recall_joins_a_word_the_glyph_layer_drew_in_two_runs():
+    from pdf2md.enrich import record_block_recall
+
+    # A styled capital splits `ReAct` across two source tokens with no hyphen to
+    # join on. Scoring that as two lost words measures the draw order, not the
+    # content — and it flagged the title block of a paper twice over.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH,
+              text="ReAct synergizing reasoning and acting", page=1, bbox=_BB)
+    record_block_recall(p, _FakePC(text="reac t synergizing reasoning and acting"))
+    assert p.extra["glyph_word_recall"] == {"matched": 5, "total": 5, "strict": 5}
+
+
+def test_recall_does_not_invent_a_join_the_output_never_had():
+    from pdf2md.enrich import record_block_recall
+
+    # The join is only made when the emitted text actually contains the result,
+    # so two genuinely separate lost words stay lost.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="the yield rose", page=1, bbox=_BB)
+    record_block_recall(p, _FakePC(text="the yield rose over time"))
+    assert _measurement(p) == {"matched": 3, "total": 5, "strict": 3}
+
+
+def test_recall_is_not_claimed_where_two_blocks_claim_one_region():
+    from pdf2md.enrich import recall_review_flags
+    from pdf2md.schema import BBox
+
+    def block(bid, box, recall):
+        return Block(id=bid, type=BlockType.PARAGRAPH, text="x", page=1, bbox=box,
+                     extra={"glyph_word_recall": recall})
+
+    poor = {"matched": 12, "total": 20, "strict": 12}
+    # Two boxes sharing most of their area: a word counted missing from one may
+    # simply belong to the other, so neither recall is decidable.
+    overlapping = [
+        block("#/a", BBox(x0=0, y0=0, x1=100, y1=50), poor),
+        block("#/b", BBox(x0=10, y0=5, x1=110, y1=45), dict(poor)),
+    ]
+    marked, informational = recall_review_flags(overlapping)
+    assert marked == []
+    assert {f.block_id for f in informational} == {"#/a", "#/b"}
+    assert "region boundary" in informational[0].reason
+
+    # Boxes that merely sit next to each other are measured as before.
+    apart = [
+        block("#/a", BBox(x0=0, y0=60, x1=100, y1=100), poor),
+        block("#/b", BBox(x0=0, y0=0, x1=100, y1=50), dict(poor)),
+    ]
+    marked, _ = recall_review_flags(apart)
+    assert {f.block_id for f in marked} == {"#/a", "#/b"}
+
+
+
+class _Obj:
+    def __init__(self, kind, pos=None):
+        self.type, self._pos, self.raw = kind, pos, object()
+
+    def get_pos(self):
+        return self._pos
+
+
+class _Page:
+    """A page as `_detect_overlay` reads one: a size and a list of objects."""
+
+    def __init__(self, objects, size=(200.0, 200.0)):
+        self._objects, self._size = objects, size
+
+    def get_size(self):
+        return self._size
+
+    def get_objects(self):
+        return self._objects
+
+
+def _page(*, image, text_objects, size=(200.0, 200.0)):
+    objects = []
+    if image:
+        objects.append(_Obj(3, image))
+    objects += [_Obj(1) for _ in range(text_objects)]
+    return _Page(objects, size)
+
+
+def test_a_scan_with_an_invisible_ocr_overlay_reads_as_having_no_text_layer(monkeypatch):
+    from pdf2md import enrich
+
+    monkeypatch.setattr(enrich, "_render_mode", lambda obj: 3)  # invisible
+    index = enrich.GlyphIndex.__new__(enrich.GlyphIndex)
+    assert index._detect_overlay(_page(image=(0, 0, 200, 200), text_objects=900))
+
+
+def test_a_full_page_figure_with_labels_is_not_a_scan(monkeypatch):
+    from pdf2md import enrich
+
+    # Identical geometry — a full-page image with text over it — but the text is
+    # drawn visibly, so it is the page's own content rather than an overlay.
+    monkeypatch.setattr(enrich, "_render_mode", lambda obj: 0)  # fill
+    index = enrich.GlyphIndex.__new__(enrich.GlyphIndex)
+    assert index._detect_overlay(_page(image=(0, 0, 200, 200), text_objects=114)) is False
+
+
+def test_a_page_without_a_full_page_image_is_never_a_scan(monkeypatch):
+    from pdf2md import enrich
+
+    monkeypatch.setattr(enrich, "_render_mode", lambda obj: 3)
+    index = enrich.GlyphIndex.__new__(enrich.GlyphIndex)
+    assert index._detect_overlay(_page(image=(10, 10, 60, 60), text_objects=900)) is False
+    assert index._detect_overlay(_page(image=None, text_objects=900)) is False
+
+
+def test_too_little_text_to_judge(monkeypatch):
+    from pdf2md import enrich
+
+    # A full-page plate with a caption under it is not a scan, and neither is a
+    # blank page with a stamp on it.
+    monkeypatch.setattr(enrich, "_render_mode", lambda obj: 3)
+    index = enrich.GlyphIndex.__new__(enrich.GlyphIndex)
+    assert index._detect_overlay(_page(image=(0, 0, 200, 200), text_objects=5)) is False
+
+
+def _cell(text, col, x0, x1, row=0, span=1):
+    return RawCell(text=text, bbox=BBox(x0=x0, y0=20.0, x1=x1, y1=10.0),
+                   row=row, col=col, row_span=1, col_span=span, header=False)
+
+
+def test_cell_read_box_widens_to_the_column_lane():
+    # The engine draws a cell box inside the ink and `_region` keeps a glyph only
+    # when its center is inside, so a tight box truncates the refill. Column 0's
+    # lane is the union of its cells (10..40), which is wider than the tight cell
+    # claiming 20..30 -- that union is what the individual box lacks.
+    raw = RawTable(
+        cells=[_cell("a", 0, 20.0, 30.0), _cell("b", 1, 60.0, 90.0),
+               _cell("c", 0, 10.0, 40.0, row=1), _cell("d", 1, 60.0, 90.0, row=1)],
+        num_rows=2, num_cols=2,
+    )
+    boxes = _cell_read_boxes(raw)
+    assert (boxes[0].x0, boxes[0].x1) == (10.0, 40.0)
+    # The y range is the cell's own: widening is horizontal only.
+    assert (boxes[0].y0, boxes[0].y1) == (20.0, 10.0)
+
+
+def test_cell_read_box_never_crosses_into_the_next_cell():
+    # Widening stops at the neighbour even when the lane runs past it, so a
+    # table of contents' leader dots stay out of the page-number cell.
+    raw = RawTable(
+        cells=[_cell("a", 0, 20.0, 30.0), _cell("b", 1, 35.0, 90.0),
+               _cell("c", 0, 10.0, 80.0, row=1), _cell("d", 1, 85.0, 90.0, row=1)],
+        num_rows=2, num_cols=2,
+    )
+    boxes = _cell_read_boxes(raw)
+    assert boxes[0].x0 == 10.0        # widened left to the lane
+    assert boxes[0].x1 == 35.0        # capped at the neighbour, not the lane's 80
+
+
+def test_cell_read_boxes_do_not_claim_a_glyph_twice():
+    # Left to right, each cell is bounded by where the previous one's *read* box
+    # ended, so widening cannot reach ink another cell will also read.
+    raw = RawTable(
+        cells=[_cell("a", 0, 20.0, 30.0), _cell("b", 1, 32.0, 50.0),
+               _cell("c", 0, 10.0, 45.0, row=1), _cell("d", 1, 31.0, 50.0, row=1)],
+        num_rows=2, num_cols=2,
+    )
+    boxes = _cell_read_boxes(raw)
+    assert boxes[0].x1 <= boxes[1].x0
+
+
+def test_cell_read_box_falls_back_to_its_own_when_the_column_has_no_lane():
+    # A spanning cell has no single-column lane; it keeps the engine's box.
+    raw = RawTable(cells=[_cell("a", 0, 20.0, 30.0, span=2)], num_rows=1, num_cols=2)
+    assert _cell_read_boxes(raw) == {}
+
+
+def test_word_recall_splits_a_word_the_layer_glued():
+    # The layer draws "Carlo calculations" with no space glyph between them, so
+    # the region reads it as one token while the output has two. Unsplit, that
+    # was one phantom loss plus one phantom extra -- the largest single cause of
+    # false low-recall flags in the corpus (919 blocks -> 372 once handled).
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="monte carlo calculations ran",
+              page=1, bbox=_BB)
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="monte carlocalculations ran")}))
+    assert p.extra["glyph_word_recall"] == {"matched": 4, "total": 4, "strict": 4}
+
+
+def test_word_recall_only_splits_into_words_the_output_really_has():
+    q = Block(id="#/q", type=BlockType.PARAGRAPH, text="alpha gamma", page=1, bbox=_BB)
+    record_recall([q], [], _FakeGlyphs({1: _FakePC(text="alpha betagamma")}))
+    # `betagamma` would need `beta` and `gamma` adjacent in the output; only
+    # `gamma` is there, so the word stays lost and a real drop is still reported.
+    assert _measurement(q) == {"matched": 1, "total": 2, "strict": 1}
+
+
+def test_a_list_item_number_is_not_reported_as_lost_text():
+    # `emit` renders a list item as `- text`, so the printed number becomes list
+    # structure rather than disappearing. Reported, but not as an action: it was
+    # 81 of 90 numeral-only recall flags across the corpus.
+    b = Block(id="#/l", type=BlockType.LIST, text="The properties of gases",
+              page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="1 The properties of gases")}))
+    assert b.extra["glyph_word_recall"]["list_marker_only"] is True
+    marked, informational = recall_review_flags([b])
+    assert marked == []
+    assert len(informational) == 1 and "list marker" in informational[0].reason
+
+
+def test_a_well_recalled_list_item_says_nothing_at_all():
+    # The bullet explanation is only worth making where a finding would
+    # otherwise be raised. Emitting it for every numbered list item put 1128
+    # informational rows across the corpus against the 75 blocks that were
+    # actually low-recall.
+    words = "the properties of gases at low temperature and high pressure here"
+    b = Block(id="#/l", type=BlockType.LIST, text=words, page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text=f"1 {words}")}))
+    rec = b.extra["glyph_word_recall"]
+    assert rec["matched"] / rec["total"] >= 0.9  # one number out of twelve
+    assert b.extra["glyph_word_recall"]["list_marker_only"] is True
+    marked, informational = recall_review_flags([b])
+    assert marked == [] and informational == []
+
+
+def test_a_list_item_losing_a_word_is_still_an_action():
+    # The exemption is only for the leading number. A missing word still counts.
+    b = Block(id="#/l", type=BlockType.LIST, text="The properties", page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="1 The properties of gases")}))
+    assert "list_marker_only" not in b.extra["glyph_word_recall"]
+    marked, _ = recall_review_flags([b])
+    assert len(marked) == 1
+
+
+def test_word_recall_rejoins_a_word_drawn_character_by_character():
+    # Some layers draw a word in several runs -- `e` + `x` + `trapolation`, or one
+    # character at a time. Merging only adjacent *pairs* left those as lost words;
+    # a run of any length is merged, longest first, and only into a word the
+    # output actually has.
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="a krylov subspace extrapolation",
+              page=1, bbox=_BB)
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="a krylo v subspace e x trapolation")}))
+    assert p.extra["glyph_word_recall"] == {"matched": 4, "total": 4, "strict": 4}
+
+
+def test_word_recall_does_not_invent_a_join_the_output_lacks():
+    p = Block(id="#/p", type=BlockType.PARAGRAPH, text="alpha beta", page=1, bbox=_BB)
+    record_recall([p], [], _FakeGlyphs({1: _FakePC(text="alpha be ta gamma")}))
+    # `be` + `ta` joins to `beta`, which the output has; `gamma` does not, so it
+    # stays a genuine loss.
+    assert _measurement(p) == {"matched": 2, "total": 3, "strict": 2}
+
+
+def test_a_shattered_fragment_is_not_measured_for_recall():
+    # Docling breaks a display equation into blocks of one or two characters.
+    # A recall ratio over one or two tokens says nothing, and these were 30 of
+    # the 46 low-recall blocks with three source tokens or fewer.
+    b = Block(id="#/f", type=BlockType.PARAGRAPH, text="aT", page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="aT r")}))
+    assert "glyph_word_recall" not in b.extra
+
+
+def test_a_block_that_lost_everything_is_still_measured():
+    # Both sides have to be small. A region holding a paragraph that emits two
+    # characters is a catastrophic loss, not a fragment, and must still count.
+    b = Block(id="#/p", type=BlockType.PARAGRAPH, text="aT", page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs(
+        {1: _FakePC(text="the equilibrium constant depends on temperature and pressure")}))
+    rec = b.extra["glyph_word_recall"]
+    assert rec["total"] == 8 and rec["matched"] == 0
+
+
+def test_a_short_list_entry_is_not_mistaken_for_a_fragment():
+    # `Simple mixtures` missing its printed `5` is a real list-marker case with
+    # fifteen characters of output, not a shattered glyph.
+    b = Block(id="#/l", type=BlockType.LIST, text="Simple mixtures", page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="5 Simple mixtures")}))
+    assert b.extra["glyph_word_recall"]["list_marker_only"] is True
+
+
+def _overlapping_pair(neighbour_text: str):
+    """Two blocks sharing most of a region, the first missing a word."""
+    a = Block(id="#/a", type=BlockType.PARAGRAPH, text="alpha beta", page=1,
+              bbox=BBox(x0=0, y0=10, x1=10, y1=0))
+    b = Block(id="#/b", type=BlockType.PARAGRAPH, text=neighbour_text, page=1,
+              bbox=BBox(x0=1, y0=10, x1=9, y1=0))
+    glyphs = _FakeGlyphs({1: _FakePC(text="alpha beta gamma")})
+    record_recall([a, b], [], glyphs)
+    return a, recall_review_flags([a, b])
+
+
+def test_overlap_excuses_a_loss_only_when_the_words_went_to_the_neighbour():
+    # The guard's claim is that a word counted missing may belong to the block
+    # sharing the region. Where the neighbour does hold it, that stands.
+    a, (marked, informational) = _overlapping_pair("gamma delta")
+    assert a.extra["glyph_word_recall"]["missing_in_neighbour"] == 1
+    assert "#/a" not in {f.block_id for f in marked}
+    assert any(f.block_id == "#/a" and f.reason.startswith("region boundary")
+               for f in informational)
+
+
+def test_overlap_does_not_excuse_a_loss_the_neighbour_cannot_account_for():
+    # Where the word is in neither block, the overlap does not explain it, and
+    # silencing the finding hides content. Corpus-wide this released 16
+    # findings the guard had been suppressing.
+    a, (marked, _) = _overlapping_pair("delta epsilon")
+    assert a.extra["glyph_word_recall"]["missing_in_neighbour"] == 0
+    assert "#/a" in {f.block_id for f in marked}

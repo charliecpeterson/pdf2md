@@ -2,10 +2,11 @@
 
 The engine's table structure is a model output; on a born-digital page the glyph
 coordinates are measurement. Within one table region, every true column
-separator is a whitespace corridor no glyph crosses, so grouping chars into
-visual lines (`scripts._lines`) and splitting lanes on tall whitespace gaps
-recovers the grid deterministically — the same trust model as digitize.py's
-vector-path charts, applied to tables.
+separator is a whitespace corridor no glyph crosses, and the same projection
+taken over y (`row_bands`) recovers the rows, so the grid falls out of the
+geometry deterministically — the same trust model as digitize.py's vector-path
+charts, applied to tables. `glyph_grid` pairs those measured rows with the
+engine's own columns, which is the combination each side is right about.
 
 Conservative like row_locator.py: it refuses instead of guessing when no column
 structure emerges, and its output is diff/verification evidence, never an
@@ -14,6 +15,7 @@ automatic replacement for engine cells.
 
 from __future__ import annotations
 
+import math
 import re
 import statistics
 import unicodedata
@@ -31,6 +33,12 @@ _BIN = 0.5
 # criterion -- zero-crossing is: intra-cell word gaps only survive when no
 # other row's ink crosses them, which is exactly the column-aligned case.
 _MIN_SEP_PT = 1.0
+# The row projection's own bin, and the horizontal corridor below which two
+# ink runs belong to one row. Leading in a dense parameter table runs ~11pt
+# with ~7pt cap height, so a corridor under 0.8pt is intra-row (a subscript's
+# ink nearly touches its baseline) and anything wider is a real row gap.
+_ROW_BIN = 0.25
+_MIN_ROW_GAP_PT = 0.8
 
 
 @dataclass
@@ -44,13 +52,23 @@ class RebuiltGrid:
     evidence: dict[str, Any] = field(default_factory=dict)
 
 
-def rebuild_grid(chars: list[Char]) -> tuple[RebuiltGrid | None, dict[str, Any], str | None]:
+def rebuild_grid(
+    chars: list[Char], lane_bounds: list[tuple[float, float]] | None = None
+) -> tuple[RebuiltGrid | None, dict[str, Any], str | None]:
     """Cluster region chars into (rows x lanes). Returns (grid, evidence, refusal);
-    grid is None iff refusal is set. Deterministic, model-free."""
+    grid is None iff refusal is set. Deterministic, model-free.
+
+    Pass `lane_bounds` to read the region into columns someone else measured --
+    the engine's own, when the aim is a grid a reader can diff against the
+    engine's. The whitespace projection splits an uncrossed intra-cell word gap
+    into its own lane, which is right for an independent reconstruction and
+    wrong for a side-by-side comparison."""
     evidence: dict[str, Any] = {"chars": len(chars)}
     ink = [c for c in chars if c[0].strip()]
     if len(ink) < 4:
         return None, evidence, "region_has_no_text"
+    if lane_bounds:
+        return _read_into_lanes(chars, list(lane_bounds), evidence)
 
     widths = [c[3] - c[1] for c in ink]
     evidence["median_char_width"] = round(statistics.median(widths), 2)
@@ -87,34 +105,147 @@ def rebuild_grid(chars: list[Char]) -> tuple[RebuiltGrid | None, dict[str, Any],
         left = gap_hi
     lane_bounds.append((left, hi + 1.0))
 
-    # Visual lines become rows, top-down (PDF y-up). Each char joins the lane its
-    # center falls in; by construction no glyph crosses a separator corridor.
-    # Whitespace glyphs ride along: they're excluded from lane geometry above but
-    # are real cell content ("Training Cost").
-    lines: list[list[Char]] = []
-    for group in _lines(chars):
-        if any(c[0].strip() for c in group):
-            lines.append(group)
-    lines.sort(key=lambda g: -statistics.median((c[2] + c[4]) / 2 for c in g if c[0].strip()))
+    return _read_into_lanes(chars, lane_bounds, evidence)
+
+
+def _read_into_lanes(
+    chars: list[Char], lane_bounds: list[tuple[float, float]], evidence: dict[str, Any]
+) -> tuple[RebuiltGrid | None, dict[str, Any], str | None]:
+    """Ink bands become rows, top-down (PDF y-up). Each char joins the lane its
+    center falls in. Whitespace glyphs ride along: they're excluded from lane
+    geometry but are real cell content ("Training Cost")."""
+    bands = row_bands(chars)
+    if not bands:
+        return None, evidence, "region_has_no_text"
 
     def lane_of(x: float) -> int:
         for i, (lane_lo, lane_hi) in enumerate(lane_bounds):
             if lane_lo <= x <= lane_hi:
                 return i
-        return 0  # unreachable: lanes span [lo-1, hi+1]
+        return 0 if x < lane_bounds[0][0] else len(lane_bounds) - 1
 
     rows: list[list[str]] = []
-    bands: list[tuple[float, float]] = []
-    for group in lines:
+    for lo, hi in bands:
         cells = [""] * len(lane_bounds)
+        group = [c for c in chars if lo <= (c[2] + c[4]) / 2 <= hi]
         for c in sorted(group, key=lambda c: c[1]):
             cells[lane_of((c[1] + c[3]) / 2)] += c[0]
         rows.append([" ".join(cell.split()) for cell in cells])
-        bands.append((min(c[2] for c in group), max(c[4] for c in group)))
 
     evidence.update({"lanes": len(lane_bounds), "rows": len(rows)})
     return RebuiltGrid(rows=rows, lane_bounds=lane_bounds, line_bands=bands,
                        evidence=evidence), evidence, None
+
+
+def row_bands(chars: list[Char]) -> list[tuple[float, float]]:
+    """Horizontal ink bands, top-down (PDF y-up). The vertical twin of
+    `table_rebuild.rebuild_grid`'s lane projection: a row separator is a
+    corridor no glyph crosses. Subscript and superscript ink stays with its
+    baseline because the corridor between them is narrower than the leading,
+    which is what a per-baseline split gets wrong."""
+    ink = [c for c in chars if c[0].strip()]
+    if not ink:
+        return []
+    lo = min(c[2] for c in ink)
+    hi = max(c[4] for c in ink)
+    n_bins = int((hi - lo) / _ROW_BIN) + 1
+    covered = [False] * n_bins
+    for c in ink:
+        # Half-open bins: a glyph whose top lands exactly on a boundary must not
+        # mark the bin above it as ink, or a 1pt row gap reads as 0.75pt.
+        first = max(0, int((c[2] - lo) / _ROW_BIN))
+        last = min(n_bins - 1, max(first, math.ceil((c[4] - lo) / _ROW_BIN) - 1))
+        for b in range(first, last + 1):
+            covered[b] = True
+
+    runs: list[tuple[float, float]] = []
+    start = None
+    for i, is_ink in enumerate(covered + [False]):
+        if is_ink and start is None:
+            start = i
+        elif not is_ink and start is not None:
+            runs.append((lo + start * _ROW_BIN, lo + i * _ROW_BIN))
+            start = None
+
+    bands = [runs[0]]
+    for band in runs[1:]:
+        if band[0] - bands[-1][1] < _MIN_ROW_GAP_PT:
+            bands[-1] = (bands[-1][0], band[1])
+        else:
+            bands.append(band)
+    return sorted(bands, key=lambda b: -b[0])
+
+
+def engine_lane_bounds(raw: RawTable) -> list[tuple[float, float]]:
+    """Per-column x-intervals from the cells that occupy exactly one column.
+    Reading each source row lane by lane keeps stacked header lines and
+    multi-line cells in their own column instead of interleaving them
+    left-to-right across the whole row."""
+    spans: dict[int, tuple[float, float]] = {}
+    for cell in raw.cells:
+        if cell.bbox is None or cell.col_span != 1:
+            continue
+        lo = min(cell.bbox.x0, cell.bbox.x1)
+        hi = max(cell.bbox.x0, cell.bbox.x1)
+        current = spans.get(cell.col)
+        spans[cell.col] = (lo, hi) if current is None else (
+            min(current[0], lo), max(current[1], hi)
+        )
+    return [spans[col] for col in sorted(spans)]
+
+
+def glyph_grid(
+    raw: RawTable, pc: PageChars, region_bbox: BBox | None
+) -> tuple[RebuiltGrid | None, str | None]:
+    """The table as the page's own ink spells it, in the engine's columns.
+
+    Rows are measured (ink bands), columns are the engine's (its cell geometry).
+    That pairing is deliberate: the row structure is what the engine's model gets
+    wrong, its column bounds are what an independent whitespace projection gets
+    wrong on an uncrossed word gap, and using each for what it is right about
+    yields a grid a reader can line up against the engine's row for row."""
+    lanes = engine_lane_bounds(raw)
+    if not lanes:
+        return None, "engine_cells_without_geometry"
+    boxes = [c.bbox for c in raw.cells if c.bbox is not None]
+    extent = BBox(
+        x0=min(min(b.x0, b.x1) for b in boxes) - _CELL_PAD_PT,
+        y0=min(min(b.y0, b.y1) for b in boxes) - _CELL_PAD_PT,
+        x1=max(max(b.x0, b.x1) for b in boxes) + _CELL_PAD_PT,
+        y1=max(max(b.y0, b.y1) for b in boxes) + _CELL_PAD_PT,
+    )
+    if region_bbox is not None:
+        extent = BBox(
+            x0=max(extent.x0, min(region_bbox.x0, region_bbox.x1) - 1.0),
+            y0=max(extent.y0, min(region_bbox.y0, region_bbox.y1) - 1.0),
+            x1=min(extent.x1, max(region_bbox.x0, region_bbox.x1) + 1.0),
+            y1=min(extent.y1, max(region_bbox.y0, region_bbox.y1) + 1.0),
+        )
+    chars = [
+        c for c in pc.region_chars(extent)
+        if extent.y0 <= (c[2] + c[4]) / 2 <= extent.y1
+    ]
+    grid, _evidence, refusal = rebuild_grid(chars, lane_bounds=lanes)
+    return grid, refusal
+
+
+def grid_markdown(grid: RebuiltGrid) -> str:
+    """The rebuilt grid as a GFM table. Its first row heads the table only
+    because GFM demands a header row; nothing here claims to know which printed
+    row is the heading."""
+    if not grid.rows:
+        return ""
+    width = len(grid.lane_bounds)
+
+    def line(cells: list[str]) -> str:
+        padded = list(cells) + [""] * (width - len(cells))
+        return "| " + " | ".join(cell.replace("|", r"\|") for cell in padded) + " |"
+
+    return "\n".join([
+        line(grid.rows[0]),
+        "|" + "|".join(["---"] * width) + "|",
+        *(line(row) for row in grid.rows[1:]),
+    ])
 
 
 def locate(grid: RebuiltGrid, x: float, y: float) -> tuple[int, int] | None:

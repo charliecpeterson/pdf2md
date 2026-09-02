@@ -7,6 +7,10 @@ here.
 
 ## [Unreleased]
 ### Changed
+- `FORMAT_VERSION` is `0.12`: table artifacts carry headers, `<block>.glyph.md` is new, and
+  `profile.json` gains `tables_structurally_flagged` beside `tables_verified` (which counts
+  text-backed cells and says nothing about whether whole rows survived), plus
+  `glyph_accent_damaged_blocks` and `reading_order_pages`.
 - Retrieval passages are now bounded after document and section context is added.
   Prose prefers paragraph and sentence boundaries, lists and code preserve lines,
   and GFM table continuations repeat their caption and column header. Equations carry
@@ -37,6 +41,108 @@ here.
   page evidence; optional GROBID candidates keep the existing fill-gaps-only policy.
 
 ### Added
+- A scan carrying an embedded OCR text layer is now recognised and treated as a scan. It is
+  the one condition under which this project's whole premise inverts: the text layer exists,
+  so nothing routes the page down the scanned path, and every glyph-truth check then
+  verifies the engine against the same corrupted characters and reports agreement. On a 1972
+  data-table paper that meant 79 of 82 tables correctly flagged as structurally broken while
+  `O.00]7` was handed over as a value with no marker, `ocr_pages: 0` and `tables_verified:
+  82`. Detection is two structural properties — one image covering most of the page, and the
+  text over it drawn invisibly, which is what an OCR overlay must do and what page text
+  never does. Geometry alone conflates it with a full-page figure plate; render mode
+  separates them by construction. Across 44 documents and 828 pages it flags 30/30 pages of
+  that scan and nothing else. The pipeline also warns that a fresh transcription is
+  available, and names the engine worth reaching for: measured over all 99 pages of that
+  paper, the embedded layer recovers 21% of each page's printed row grid with 22.9% of value
+  tokens malformed, where MinerU recovers 99% with 0.6%, on 145 tables against 82.
+  `--force-ocr` sits between them at 8% on a three-page sample.
+- Scanned tables get row accounting too. Everything else in the table audit needs glyph
+  geometry, so on a scanned page it refused and a dropped row went unreported — on exactly
+  the documents where extraction is worst. `raster_row_findings` reads the table's own crop
+  through `row_locator.projection_row_bands`, which projects the panel's leading stripe
+  where row labels live, and compares the printed row count against the grid's.
+- A grid that is a fragment of its own table is refused rather than confirmed. The engine's
+  cells should reach the edges of the block it labelled a table: across 95 tables the
+  smallest span was 0.79 of the region and the median 0.95, and the one below that came in
+  at 0.09 — two cells emitted for a table another parser read as ninety-five. Because every
+  sweep here clamps to the cell extent, that fragment was being compared against itself and
+  reported as agreement. Found by running two engines over the same corpus.
+- Word recall now refuses on an ambiguous region instead of guessing. It compares a block's
+  text against the glyphs in its box, which assumes the box is that block's alone; where two
+  prose blocks overlap by more than a sixth of the smaller, a word counted missing may
+  simply belong to the neighbour. Those blocks get an informational region-boundary note
+  rather than a recall action — the last surviving false positive in this metric was exactly
+  that, a stray numeral inside a paragraph's box, and `quality.py` already admits that block
+  accounting does not measure region-boundary accuracy.
+- `scripts/eval_engine_text_agreement.py`: the same concordance for the prose checks, which
+  were changed twice this cycle without anything independent confirming what survived. Over
+  1149 matched blocks it puts 12 of 15 recall findings on blocks the two engines read
+  differently. Read that cell rather than the recall figure: two parsers differ at word
+  level on roughly half of all prose blocks, so disagreement is a weak defect proxy here in
+  a way it is not for a table value.
+- `scripts/eval_engine_order_agreement.py`: reading-order concordance between two engines.
+  Match blocks across parsers by box overlap and ask whether the check fires on the pages
+  they order differently. Over 132 pages of the frozen corpus it flags 7 of the 8 pages the
+  two engines order differently and 1 of the 123 they agree on — the first unlabelled
+  measurement that check has had, against two pages previously verified by hand.
+- `tests/blind_pdf_corpus_v2.json`: a replacement unseen corpus, ten papers over 209 pages
+  across five arXiv categories, selected by API query rather than by taste and frozen by
+  hash without being converted. The first corpus stopped being unseen the day its
+  individual tables were inspected to diagnose three false-positive classes.
+- Born-digital tables are audited row by row, not only cell by cell. The page's own ink is
+  projected into rows and every value a printed row spells has to reach a cell of the grid
+  rows covering it, which catches what per-cell verification structurally cannot: a row the
+  engine never created has no cell to verify. Three text-only signatures ride alongside and
+  need no source — several whitespace-separated numbers in an otherwise single-value column
+  (collapsed rows), a lone value in a non-leading column with the rest of its row empty (a
+  value that lost its row), and a header region carrying a value shaped like its column's
+  data (an absorbed first data row). A text signature stands at medium alone and rises to
+  high when the row accounting measures a merge or a loss in the same table.
+- Whole columns missing from a table grid are reported. A column the engine never created
+  has no cells, so it has no lane for the per-value comparison to use and only its
+  out-of-grid ink gives it away. Two guards keep it apart from a column that merely shifted:
+  the engine's cells in that lane must be empty, and out-of-grid ink must sit at the same x
+  in every row and be no wider than a column.
+- Findings reach every artifact derived from a table, not just `document.md`. Each
+  `data/tables/<block>.md` opens with its own provenance and audit header, its `.json`
+  carries `grid_audit` and `post_emission_warnings`, and findings raised elsewhere on the
+  same page become a pointer into `review.md` — a file read on its own can no longer present
+  as an unmarked, authoritative grid.
+- Every table gets a crop of its printed region under `assets/`, linked from the Markdown
+  and from its artifacts, so the source can be checked without opening the PDF. This is
+  `TableData.source_crop` and does not make the image authoritative; `crop_path` still means
+  that and is still set only where the cells are unusable.
+- `data/tables/<block>.glyph.md`: the table region read straight out of the PDF's glyph
+  layer in the engine's columns — measured rows against a modelled grid. It ships beside the
+  engine's table for comparison and is never the emitted table.
+- Reading order is verified. Everything else in the audit is order-insensitive on purpose —
+  word recall compares multisets, numeric conservation counts values — so a two-column page
+  whose columns the engine interleaves conserved every token and passed every check while
+  reading as nonsense; `quality.py` said as much in its own scorecard. A page's columns are
+  recovered from where its blocks' left edges cluster, and the emitted order is compared
+  against the printed one. It reports the minimum number of blocks whose removal would
+  restore the order, not the count of inverted pairs, and sets aside blocks that begin at no
+  column start rather than forcing them somewhere.
+- Reading order is checked a second way, against the document's own numbering. When a page's
+  leading ordinals sort to an unbroken run, that run *is* the printed order — no column
+  model, no thresholds, nothing to tune — so a page it convicts is reported high rather than
+  medium. The two mechanisms fail for different reasons and cover each other: on one paper's
+  reference page, geometry and numbering independently arrive at the same 16 misplaced
+  blocks, and the printed reference numbering confirms both.
+- Printed lines cut across several blocks are reported, informational. The detection is
+  exact (two blocks sharing a vertical band inside one column) but the judgement isn't: a
+  reference entry shattered into `'Serre,'`, `'C.;'`, `'rey, G.'` is a defect, a masthead's
+  `Received:` and its date are the layout. Measured and shown, verdict left to the reader.
+- `scripts/eval_table_audit.py` and `tests/table_audit_labels.json`: precision and recall for
+  the table row/grid findings over 13 labelled tables. The labels were established from the
+  source page's own text and from two independent line-finding mechanisms agreeing, never
+  from running the audit.
+- `scripts/eval_engine_table_agreement.py`: two engines' table grids for one source, and a
+  contingency of audit findings against engine disagreement. Engine disagreement is
+  unlabelled but plentiful, which is what a thirteen-table label set is not.
+- `scripts/qa.py` reports the verification signals across a corpus — flagged tables,
+  reading-order and split-line pages, low-recall and accent-damaged blocks. Drift, never
+  invariants: a document is not worse for having had its defects noticed.
 - `pdf2md enrich` now adds equation transcription, raster-chart recovery, or crop
   descriptions to a completed bundle without rerunning its layout parser. Each run writes
   a new version and records the source provenance, stored-state hash, selected stages, and
@@ -72,6 +178,70 @@ here.
   tests exercise the CLI from a clean environment.
 
 ### Fixed
+- Merge detection was switched off entirely on a third of tables. `row_accounting` excludes
+  header rows from the merge count and decided "header" with `RawCell.header`, which Docling
+  sets for a leading label column as well as a column heading — so a table with row headers
+  had every row excluded and no merge could ever be reported. It was 32 of 95 tables
+  measured, and it is why a textbook row-pair collapse went unreported. `RawCell` carries
+  `column_header` again and the exclusion uses that, falling back to row 0 when the engine
+  names no column heading. After the fix, 0 of 86; the table concordance moves from 8
+  findings on disputed tables to 10, still with none on tables the two engines agree about.
+- The wrap guard silenced both merge checks on a row-pair collapse. It excluded any row
+  whose cell text overran its box, which a cell reading `0.965 0.969` does in a narrow
+  numeric column — so every row of such a table was excluded and a table printing 9 rows as
+  6 went unreported. It now also requires the cell to be long in absolute terms; nothing
+  under 40 characters is a wrapped paragraph. The wrapped-prose tables it was built for stay
+  silent, and the collapses come back.
+- `_numeric_columns` could not see a column where every cell had been collapsed. It needs
+  most cells to be a lone number, and in a uniformly collapsed column none ever is. A column
+  whose cells consistently hold the same count of values, more than one, now qualifies.
+- Word recall counted a word the glyph layer drew in two runs as two lost words. A styled
+  capital splits `ReAct` into `reac` + `t` with no hyphen to join on, which flagged the title
+  block of a paper twice. Adjacent source words are now joined when the emitted text actually
+  contains the result — a stricter validator than a page vocabulary, and available because
+  the emitted text is the thing being compared.
+- `merged_cells` could not see a table flattened to one data row. It requires the column to
+  be numeric — three lone numbers elsewhere in it — which one data row can never supply, and
+  the row-band check that would otherwise catch it is suppressed by the wrapped-cell guard,
+  because a cell holding eleven rows of content does overrun its box. Four or more
+  whitespace-separated values in a single cell now stands as its own evidence. Found by
+  reading the tables where two engines disagreed and the audit stayed silent.
+- `shifted_values` read a multi-line header's label fragments as stray values. A header
+  spanning several grid rows leaves rows holding one fragment (`(%)*`, `No. of`); the lone
+  cell now has to be a value for the row to count as one that lost its place.
+- `merged_rows` counted wrapped cells as collapsed rows. Row-band counting assumes one
+  printed line per row, which holds for the dense numeric tables the check was labelled
+  against and fails for any table with a paragraph in a cell: a three-row table of model
+  answers reported nine merges. It was the most common finding on the frozen unseen corpus
+  — 13 of 19 flagged tables, 11 of them with cells of 119 to 889 characters. Two guards fix
+  it, and both are needed: a row whose cell text cannot fit its own box is excluded, and a
+  printed line that reaches fewer than two columns is a cell's continuation rather than a
+  row. Blind-corpus `merged_rows` findings fall from 13 to 2, with the real ones intact.
+- Conservation counted markup as content on one side only. `token_accounting` now runs the
+  same normalization over the source as over the output, because a table's source *is* its
+  own rendered markup: `td`, `tr` and `tbody` were source words and stripped from the
+  output, so one 29-row HTML table reported losing 471 words, and every `<sup>` in a prose
+  block cost two. On the paper that started this work that was 25 of 25 conservation flags,
+  every one an artifact.
+- The quality scorecard called table verification `full` for a document whose own review
+  queue carried a high-severity dropped-row finding. A table can be text-backed cell by cell
+  and still be missing whole rows; the row-level audit now feeds the dimension.
+- Word recall measured its own artifacts. The source side is now read script-split and
+  hyphen-joined, and script tags become a space rather than nothing, so both sides tokenize
+  the same way: a reference marker the draw order glues onto its base word, a word broken
+  across a line by a soft hyphen the font can't decode, and a `<sup>` run are no longer read
+  as lost words. On a clean paper this took eleven low-recall blocks down to three, and the
+  three are real.
+- Blocks that lose words now say so where they are read. The measurement has existed since
+  the metric was added and reached `profile.json` as a count and nothing else, so a block
+  missing eight of its words looked identical to a clean one in the Markdown. Lost
+  diacritics are counted and reviewed separately: the content is present and misspelled,
+  which a reader checking a reference list needs to know without a marker beside every
+  accented surname.
+- A table whose caption and column header exceed `passage_max_tokens` aborted the entire
+  conversion. It now degrades to unheadered row passages with a warning. Three of the ten
+  documents in the frozen unseen corpus converted to nothing because of this, on code that
+  predates this cycle.
 - Versions with vision calls that exhausted their retries no longer satisfy the exact-run
   cache. They remain valid source-backed bundles, but the CLI marks them `PARTIAL ENRICHMENT`;
   repeating the same command creates a new version and retries cache misses while reusing
