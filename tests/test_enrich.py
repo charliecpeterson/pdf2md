@@ -708,3 +708,24 @@ def test_overlap_does_not_excuse_a_loss_the_neighbour_cannot_account_for():
     a, (marked, _) = _overlapping_pair("delta epsilon")
     assert a.extra["glyph_word_recall"]["missing_in_neighbour"] == 0
     assert "#/a" in {f.block_id for f in marked}
+
+
+def test_a_glued_run_may_be_emitted_in_reverse_on_a_bidi_page():
+    # A right-to-left page emits the pieces of a glued run the other way round.
+    # Reversal is what bidi does to a run, so this is the same claim about the
+    # same words rather than a weaker one -- the pieces must still be adjacent
+    # and still concatenate exactly.
+    b = Block(id="#/p", type=BlockType.PARAGRAPH, text="gamma beta alpha", page=1,
+              bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="alphabetagamma")}))
+    assert _measurement(b) == {"matched": 3, "total": 3, "strict": 3}
+
+
+def test_a_reversed_run_still_has_to_be_adjacent():
+    # Relaxing the direction must not relax the adjacency: pieces scattered
+    # through the output are not a run, and the word stays lost.
+    b = Block(id="#/p", type=BlockType.PARAGRAPH, text="gamma xxxx beta yyyy alpha",
+              page=1, bbox=_BB)
+    record_recall([b], [], _FakeGlyphs({1: _FakePC(text="alphabetagamma xxxx yyyy")}))
+    rec = b.extra["glyph_word_recall"]
+    assert rec["total"] == 3 and rec["matched"] == 2  # the glued word is not resolved
