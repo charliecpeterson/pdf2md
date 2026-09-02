@@ -603,9 +603,21 @@ def _render_block(
                         "equation: image is authoritative", "source_dependent", "none", "low",
                     )
                 elif unverifiable:
+                    # Informational, not an action. The LaTeX and the crop both
+                    # ride with the block, so nothing is withheld from a reader
+                    # -- every one of the 494 equations on formula-enabled
+                    # documents here emits its LaTeX, and 277 carry a crop as
+                    # well. What is missing is a verdict, and a verdict is
+                    # missing for a reason that belongs to the page rather than
+                    # to this equation: its text layer cannot judge LaTeX at
+                    # all. Raised as an action it swamps triage without
+                    # separating anything -- one 25-page maths paper produces 78
+                    # identical entries, and 231 of them across the corpus. The
+                    # marker still sits beside the equation, where a reader
+                    # meets it at the point of use.
                     reason, disposition, severity, impact = (
                         "equation not verifiable: text layer unfit to judge",
-                        "action_required", "medium", "medium",
+                        "informational", "low", "low",
                     )
                 else:
                     reason, disposition, severity, impact = (

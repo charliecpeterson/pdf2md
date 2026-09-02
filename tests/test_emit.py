@@ -706,7 +706,18 @@ def test_low_confidence_equation_uses_image_and_hint():
     # A layer that cannot be read cannot judge the LaTeX either, so the finding
     # says the equation is unverifiable rather than that its extraction is wrong.
     assert "not verifiable" in text2
-    assert flag2.content_impact == "medium"
+    # And it is not an action: the LaTeX and the crop both ride with the block,
+    # so nothing is withheld -- what is missing is a verdict, for a reason that
+    # belongs to the page rather than to this equation. One 25-page maths paper
+    # produced 78 identical entries when this was action_required.
+    assert flag2.disposition == "informational"
+
+    # A disagreement the layer *could* judge is still an action.
+    eq3 = Block(id="#/texts/11", type=BlockType.EQUATION, text="E ( garbled )", page=3,
+                confidence=0.4, extra={"crop_path": "assets/eq3_p3.png",
+                                       "text_layer": "E(MR-AQCC) (5)", "ordered": True})
+    _, _, flag3 = _render_block(eq3, ctx, [])
+    assert flag3.disposition == "action_required"
 
 
 def test_empty_equation_with_crop_emits_image_not_empty_marker():
