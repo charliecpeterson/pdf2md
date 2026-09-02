@@ -356,6 +356,26 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   findings the check does raise. Suppressing those was hiding content, not deferring on
   it, so `missing_in_neighbour` now gates the note. This is the honest form of the
   admission `quality.py` already makes about region-boundary accuracy.
+- **A sign the engine detached still belongs to its number, and a range does not.**
+  `merged_cells` skips a cell whose whitespace-separated parts are not all numbers,
+  and the engine renders a page's `−3383.702155` as `- 3383.702155` — a lone `-` is
+  not a number, so a cell holding a whole collapsed column of negatives was never
+  examined. s00214-006-0174-5 table 2 flattened ten elements and thirty energies into
+  one data row (source 11 rows against engine 2) and raised nothing. Rejoining
+  unconditionally was measured and rejected first: it turned `151 - 153` in an
+  `exp. ref` column into two collapsed rows. A collapsed column of negatives leads
+  with a sign, a range leads with a value, so the rejoin needs `parts[0]` to be one.
+  Two tables newly convicted corpus-wide, none lost, labelled set still 1.00/1.00.
+- **`eval_table_rows_precision.py` counts printed lines, and a line is not a row.**
+  Poppler and the ink projection both count lines, so on a table whose cells span
+  several lines they agree with each other and neither says anything about whether
+  the grid is right: Intro-to_Relativistic-QC table 28 reads 34 lines for 9 logical
+  rows because its irreps are stacked, and abstaining there is correct. That is why
+  the harness's control matters and why its 40 "silent" tables are not a recall gap —
+  23 have cells long enough to wrap, 7 have no cells, and the 10 whose cells fit one
+  line differ by 1-3 rows, which a caption and a header line inside the region
+  account for. The two with a genuinely collapsed grid were the detached-sign case
+  above.
 - **Poppler is not independent of the reading-order defect it is asked to judge.**
   Its order largely follows the PDF's content stream, which is where a stream-order
   defect comes from, so on exactly the pages whose disorder the engine inherited it
