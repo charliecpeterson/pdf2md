@@ -985,6 +985,39 @@ def test_the_derived_table_artifact_carries_the_same_findings(tmp_path):
     assert record["grid_audit"]["rows"] == {"source": 3, "engine": 2}
 
 
+def test_a_contradicted_arrangement_ships_the_printed_lines_beside_it(tmp_path):
+    # A fixed-width listing the engine labelled a table -- a basis set in an SI --
+    # keeps nearly every value and scrambles which row it belongs to. The audit
+    # convicts it against the page's own ink, and the verbatim reading is then
+    # the one rendering that is not wrong. It rides beside the grid, never as it.
+    doc, block, table = _audited_table_doc()
+    table.printed_lines = (
+        " 5.3824600E-04 2.9081100E-03 1.1034300E-02\n"
+        " 2.4186300E-02 -7.2222900E-02 -1.5947700E-01"
+    )
+    md_files, _ = _emit(tmp_path, doc)
+
+    assert table.printed_lines_path == "data/tables/tables_0.lines.txt"
+    listing = (tmp_path / table.printed_lines_path).read_text()
+    assert " 5.3824600E-04 2.9081100E-03 1.1034300E-02" in listing
+    assert "in place of a grid that put the values in cells they did not come from" in listing
+
+    # The grid is still what document.md publishes; the listing is a link on it.
+    markdown = md_files[0].read_text()
+    assert "| Ag1f1 | 1.22 |" in markdown
+    assert "[printed lines](data/tables/tables_0.lines.txt)" in markdown
+    assert " 5.3824600E-04" not in markdown
+    assert "[printed lines](tables_0.lines.txt)" in (tmp_path / table.candidate_path).read_text()
+
+
+def test_a_table_the_audit_did_not_convict_ships_no_printed_lines(tmp_path):
+    doc, _block, table = _audited_table_doc()
+    _emit(tmp_path, doc)
+
+    assert table.printed_lines == "" and table.printed_lines_path == ""
+    assert not list((tmp_path / "data" / "tables").glob("*.lines.txt"))
+
+
 def test_post_emission_findings_reach_the_artifact_the_reader_opens(tmp_path):
     from pdf2md.schema import CoverageFlag
     from pdf2md.table_artifacts import annotate_table_artifacts

@@ -725,6 +725,7 @@ def audit_table(
             if f.severity == "high" and f.kind in _TEXT_ONLY_KINDS else f
             for f in findings
         ]
+    payload["corroborated"] = corroborated
     if findings:
         payload["findings"] = [
             {

@@ -312,6 +312,22 @@ def enrich_tables(tables: list[TableData], raw_tables: dict[str, RawTable], glyp
             grid, _refusal = glyph_grid(raw, pc, t.bbox)
             if grid is not None:
                 t.glyph_grid = grid_markdown(grid)
+        if pc is not None and t.grid_audit.get("corroborated"):
+            t.printed_lines = _printed_region(pc, t.bbox)
+
+
+def _printed_region(pc: PageChars, bbox: BBox) -> str:
+    """The region's printed lines, verbatim.
+
+    Only worth keeping where the audit has already established the engine's
+    arrangement is wrong. On the Lanthanides SI -- basis sets a journal typeset
+    as fixed-width listings and Docling labelled tables -- the emitted grid
+    holds 98.9% of the region's value tokens and the glyph-column reading 93.9%,
+    while this holds all of them in the order they were printed. A grid that
+    keeps every exponent and loses which coefficient it belongs to is not a
+    usable basis set."""
+    lines = [line.rstrip() for line in pc.text_region(bbox).splitlines()]
+    return "\n".join(lines).strip("\n")
 
 
 def _rendered_rows(t: TableData) -> list[list[str]]:

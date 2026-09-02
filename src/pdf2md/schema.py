@@ -123,6 +123,14 @@ class TableData:
     # can diff them. Never the emitted table.
     glyph_grid: str = ""
     glyph_grid_path: str = ""
+    # The region's printed lines, verbatim, kept only when the row audit
+    # established against the page's own ink that the engine's arrangement is
+    # wrong (grid_audit["corroborated"]). A fixed-width listing the engine
+    # labelled a table -- a basis set in an SI -- keeps every value but scrambles
+    # which row it belongs to, and this is the one reading that does not. Like
+    # the glyph grid: evidence beside the table, never the emitted table.
+    printed_lines: str = ""
+    printed_lines_path: str = ""
     # The table's own region rendered from the source page. Unlike a block's
     # `crop_path`, which marks the image as the authority over unusable cells,
     # this rides along with a perfectly good grid so the printed table can be

@@ -866,6 +866,7 @@ def _table_source_links(table: TableData) -> str:
         ("CSV", table.data_path),
         ("JSON", table.json_path),
         ("glyph-truth grid", table.glyph_grid_path),
+        ("printed lines", table.printed_lines_path),
     ]
     rendered = " · ".join(f"[{label}]({path})" for label, path in links if path)
     # The `*[pdf2md]` prefix marks the line as emitted navigation, so the

@@ -53,6 +53,7 @@ def write_table_artifacts(
         table.cell_evidence_counts = {}
         table.cell_resolution_counts = {}
         table.glyph_grid_path = ""
+        table.printed_lines_path = ""
     for table in doc.tables:
         if not table_has_content(table):
             continue
@@ -71,6 +72,9 @@ def write_table_artifacts(
         glyph_path = table_dir / f"{stem}.glyph.md" if table.glyph_grid else None
         if glyph_path is not None:
             table.glyph_grid_path = glyph_path.relative_to(version_dir).as_posix()
+        lines_path = table_dir / f"{stem}.lines.txt" if table.printed_lines else None
+        if lines_path is not None:
+            table.printed_lines_path = lines_path.relative_to(version_dir).as_posix()
 
         if candidate.suffix == ".md":
             candidate.write_text(_artifact_header(table) + render_table(table) + "\n")
@@ -82,6 +86,8 @@ def write_table_artifacts(
             )
         if glyph_path is not None:
             glyph_path.write_text(_glyph_header(table) + table.glyph_grid + "\n")
+        if lines_path is not None:
+            lines_path.write_text(_lines_header(table) + table.printed_lines + "\n")
 
         rows = gfm_rows(table.gfm) if table.gfm else []
         artifact_rows[table.block_id] = rows
@@ -154,6 +160,10 @@ def _artifact_header(table: TableData) -> str:
         + (
             f" · [glyph-truth grid]({Path(table.glyph_grid_path).name})"
             if table.glyph_grid_path else ""
+        )
+        + (
+            f" · [printed lines]({Path(table.printed_lines_path).name})"
+            if table.printed_lines_path else ""
         ),
         "",
     ]
@@ -172,6 +182,20 @@ def _comment_header(table: TableData) -> str:
     ]
     return "".join(f"<!-- {line} -->\n" for line in lines) + "\n"
 
+
+
+def _lines_header(table: TableData) -> str:
+    """A plain-text file, so nothing re-flows a listing whose meaning is its
+    columns. The header is a comment the way the other artifacts' are, but this
+    one has to survive being read as source text, so it stays prose."""
+    return (
+        f"pdf2md: block {table.block_id} on source page {table.page}, read verbatim "
+        f"from source.pdf. Not a source file.\n"
+        f"The row audit found this table's arrangement contradicted by the page's own "
+        f"ink, so these are its printed lines as typeset, in place of a grid that put "
+        f"the values in cells they did not come from.\n"
+        f"Source: ../../../source.pdf#page={table.page}\n\n"
+    )
 
 
 def _glyph_header(table: TableData) -> str:
