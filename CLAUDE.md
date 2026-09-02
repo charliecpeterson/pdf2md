@@ -291,7 +291,15 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   number is then expected normalization, not loss -- `emit` renders it as the bullet --
   and rides as informational: 81 of 90 numeral-only flags were list items. Recall's
   measured precision against an independent reader (poppler, `eval_recall_precision.py`)
-  is 0.79, and the corpus now raises 124 recall actions where it once raised over 1,200. `strict` is the same
+  is 0.72-0.74 over the 36-document corpus (0.79 was the same measurement on the smaller
+  earlier one; four seeds span 0.01, so the move is composition, not sampling), and the
+  corpus now raises 124 recall actions where it once raised over 1,200. That harness now
+  samples the band *above* the flagging threshold too, as the control it never had:
+  precision says how many flags are real and nothing said how much loss went unflagged.
+  Above the threshold poppler shows a median of 0 content words missing (p75 1, and 4%
+  of blocks missing five or more), against a median of 2 and p75 6 for confirmed flags
+  below it -- so the silent side is genuinely quiet and the threshold separates the two
+  populations. `strict` is the same
   comparison without diacritic folding; the gap is accent damage (`Co te` for `Côté`),
   which is a real defect but a different one from a missing word and stays informational.
 - **Conservation compares a block against its own rendered markup, so both sides must be

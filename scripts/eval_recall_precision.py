@@ -16,6 +16,14 @@ accounts; a word only pypdfium2 sees is not evidence of anything. That is the
 same standard the table-audit labels were held to, mechanized because a recall
 sample is far too large to label by hand.
 
+The band above the flagging threshold (0.9 and up) is sampled too, as the
+control this harness previously lacked. Precision says how many flags are real;
+without a control nothing said how much loss goes unflagged. On that band
+`confirmed` is not itself interesting -- a block at 0.95 recall has lost
+something by definition -- so the report gives the distribution of how many
+content words are missing, which is what separates a tokenization rounding
+artifact from a loss the check should have raised.
+
 A flagged block counts as:
   confirmed  poppler also shows content words absent from the emitted text
   refuted    poppler shows nothing the output lacks -- the flag is the
@@ -86,7 +94,11 @@ def _rescored(version_dir: Path, source: Path) -> dict[str, dict]:
     return {b.id: b.extra["glyph_word_recall"] for b in blocks
             if b.extra.get("glyph_word_recall")}
 
-_BANDS = ((0.0, 0.5), (0.5, 0.8), (0.8, 0.9))
+_BANDS = ((0.0, 0.5), (0.5, 0.8), (0.8, 0.9), (0.9, 1.0001))
+# The band above the flagging threshold. It is scored exactly like the others,
+# as the control the harness previously had none of: precision says how many
+# flags are real, and nothing said how much loss goes unflagged.
+_CONTROL_BAND = "0.9-1.0001"
 # A word only worth counting as "missing" if it carries content. Single letters
 # are where the two readers legitimately disagree (initials, axis labels, a
 # stray list marker), and they dominate any raw difference.
@@ -187,6 +199,11 @@ def sample(version_dir: Path, per_band: int, rng: random.Random) -> list[dict]:
                 missing = _content(_recall_words(text)) - _content(_recall_words(block["text"]))
                 row["verdict"] = "confirmed" if missing else "refuted"
                 row["missing"] = sorted(missing)[:10]
+                # How much, not just whether. A block at 0.95 recall has lost
+                # something by definition, so on the control band the count is
+                # the only thing that separates a rounding artifact from a loss
+                # the check should have raised.
+                row["missing_count"] = sum(missing.values())
             out.append(row)
     return out
 
@@ -199,15 +216,38 @@ def report(rows: list[dict]) -> None:
     total = Counter()
     for band in sorted(by_band):
         c = by_band[band]
-        total += c
+        # The control band is not a flag, so it cannot be part of precision.
+        if band != _CONTROL_BAND:
+            total += c
         judged = c["confirmed"] + c["refuted"]
         p = f"{c['confirmed'] / judged:.2f}" if judged else "n/a"
         print(f"{band:12s} {c['confirmed']:>10d} {c['refuted']:>8d} {c['unusable']:>9d} {p:>10s}")
     judged = total["confirmed"] + total["refuted"]
     p = f"{total['confirmed'] / judged:.2f}" if judged else "n/a"
-    print(f"{'ALL':12s} {total['confirmed']:>10d} {total['refuted']:>8d} "
+    print(f"{'FLAGGED':12s} {total['confirmed']:>10d} {total['refuted']:>8d} "
           f"{total['unusable']:>9d} {p:>10s}")
-    refuted = [r for r in rows if r["verdict"] == "refuted"]
+    control = [r for r in rows if r["band"] == _CONTROL_BAND
+               and r["verdict"] in ("confirmed", "refuted")]
+    if control:
+        counts = sorted(r.get("missing_count", 0) for r in control)
+        flagged = sorted(r.get("missing_count", 0) for r in rows
+                         if r["band"] != _CONTROL_BAND and r["verdict"] == "confirmed")
+        def band_of(values: list[int], n: int) -> int:
+            return values[min(len(values) - 1, n * len(values) // 4)]
+        print(f"\ncontrol -- blocks above the flagging threshold ({len(control)} judged)")
+        print(f"  content words poppler shows missing: median {band_of(counts, 2)}, "
+              f"p75 {band_of(counts, 3)}, max {counts[-1]}")
+        if flagged:
+            print(f"  the same for confirmed flags below it:  median {band_of(flagged, 2)}, "
+                  f"p75 {band_of(flagged, 3)}, max {flagged[-1]}")
+        heavy = [r for r in control if r.get("missing_count", 0) >= 5]
+        print(f"  control blocks missing 5 or more content words: {len(heavy)} "
+              f"({len(heavy) / len(control):.0%})")
+        for row in heavy[:6]:
+            print(f"    {row['document'][:24]:26s} {row['block_id']:14s} p{row['page']:<4d} "
+                  f"recall={row['recall']:.2f} missing={row['missing'][:6]}")
+
+    refuted = [r for r in rows if r["verdict"] == "refuted" and r["band"] != _CONTROL_BAND]
     if refuted:
         print("\nflags poppler does not corroborate (the metric's own artifacts):")
         for row in refuted[:10]:
