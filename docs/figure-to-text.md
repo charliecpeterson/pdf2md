@@ -326,3 +326,52 @@ prerequisite for any further work here rather than a detail of it.
 
 The `data_extraction_note` now names which of the two causes applies, which is
 what made this breakdown possible at all.
+
+## A labelled figure sample (2026-09-02)
+
+`tests/figure_axes_labels.json` holds 50 figures labelled by looking at the
+rendered crop, never by consulting the digitizer — the standard the table-audit
+labels were held to. Each carries whether it is a chart at all, what its axes
+print, and `data_recoverable`: whether the printed figure carries enough scale to
+recover numbers (two numeric axes for line or scatter, a numeric value axis plus
+categories for a bar chart).
+
+Sampled by a fixed rule (seed 20260902) stratified by `data_extraction_status` —
+24 unmatched, 12 extracted, 8 raster, 6 no-chart-geometry — capped at four per
+document. That cap means the set deliberately does **not** match the corpus's
+composition, in which 76% of the unmatched population is one textbook. Rates here
+describe the labelled set and must not be multiplied back up.
+
+`scripts/eval_figure_axes.py` scores against it. On the 36-document corpus:
+
+| | count |
+|---|---|
+| recoverable and extracted | 12 |
+| recoverable and NOT extracted | 11 |
+| unrecoverable and extracted | **0** |
+| unrecoverable and refused | 27 |
+
+**Precision 1.00, recall 0.52.** The pipeline invents no data — every one of the
+12 extractions is a genuinely recoverable chart, and all 6 `no_chart_geometry`
+figures are correctly not charts. What it does is refuse half of what it could
+read.
+
+The misses split cleanly, and neither half is a mystery:
+
+- **6 are `vector_archetype_unmatched`, and 4 of those have a categorical axis.**
+  Bar charts (`y` 0-70% against Bimodal/Biprosody), horizontal bars, markers over
+  VDZ/VTZ/VQZ. The vector reader calibrates two numeric axes; a category axis has
+  nothing to fit. One is a composite (molecular renders beside two line panels)
+  and one has its x ticks written `1×10^-2 … 1×10^-7`, which a numeric tick
+  parser will not read. Note the counter-example in the same set: one
+  `numeric_value_categorical` figure *did* extract, so a categorical axis is not
+  categorically fatal and the mechanism needs pinning down before it is fixed.
+- **5 are `raster_source`** — genuine two-axis scatter and line charts embedded
+  as bitmaps, plus a scanned Slater chart. The vector path cannot reach these by
+  construction; `calibrate.analyze_raster` and `vlm_digitize` exist for exactly
+  this and are not on by default.
+
+And the shape of the unmatched population is itself the finding: of 24 labelled,
+**15 are not charts at all** — journal mastheads, publisher logos, chapter-opener
+decorations, matrix diagrams. Docling classifies page furniture as a Picture, its
+rules present as plot frames, and that is most of what the 840 are.
