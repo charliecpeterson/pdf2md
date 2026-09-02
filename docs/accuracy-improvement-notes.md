@@ -473,6 +473,51 @@ These constraints came out of the measured experiments and remain project policy
 - No treating shared-crop-geometry OCR votes as independent verification.
 - No automatic promotion of fixed-font glyph-atlas choices.
 
+## Throughput: where a conversion should run, 2026-09-01
+
+Docling excludes MPS from the accelerator list whenever formula enrichment is
+on, by design and with no override. Confirmed on this machine, not just from
+the tracker: four models log `Accelerator device: 'mps'` and then the formula
+model logs `Removing MPS from available devices because it is not in
+supported_devices=[CPU, CUDA, XPU]` followed by `Accelerator device: 'cpu'`.
+So on Apple Silicon, asking for equations costs the *whole* pipeline its GPU.
+
+Measured on one 6-page, 22-equation paper:
+
+| where | pipeline | time | equations |
+|---|---|---|---|
+| mac-studio (MPS -> CPU) | classic | 14.6 min | 22 |
+| linux-4090 (CUDA) | classic | 1 min 21 s | 22 |
+| linux-4090 (CUDA) | Docling VLM, transformers | 3.5 min | 6 |
+| mac-studio (MPS) | Docling VLM, MLX | 1.5 min | 22 |
+
+The CUDA classic run is 10.8x faster than the same pipeline on the Mac and its
+output is indistinguishable: 135 blocks, 122 emitted, 13 cropped, 0 dropped,
+recall 0.9970, and the same review breakdown finding for finding. Equation-heavy
+work belongs on the CUDA box; nothing about the tool needs to change.
+
+Two things worth knowing before anyone tries the VLM pipeline. It is generative,
+not extractive, and on the CUDA/transformers run it invented fluent prose: the
+page reads "as long as care is taken when constructing the derivative of g" and
+the output read "as long as are called to when constructing", with "the
+error-smoothing effect" becoming "due to low". Three of four probe phrases
+appear nowhere in the source. That is the failure mode this project's whole
+verification layer exists to catch, and the word-recall check would catch it --
+but a pipeline that can rewrite prose is a poor fit for a tool whose claim is
+that the output is checkable against the page.
+
+The same pipeline under MLX on the Mac did *not* do this on the passage
+checked, matched the classic pipeline's 22 equations, and kept 90.7% of source
+words against the classic pipeline's 89.1%. So the failure is engine-dependent
+rather than inherent, which makes it harder to rely on, not easier. Anyone
+pursuing this needs a real faithfulness measurement across documents, not one
+passage.
+
+Setup note: CUDA formula enrichment needs Python development headers, which
+pdf2md's own doctor reports by name. A system python3.11 without
+`python3-devel` fails; building the venv on a uv-managed CPython avoids needing
+root.
+
 ## Non-Latin script, first measurement, 2026-09-01
 
 Every document measured in this project has been Latin-script English, so
