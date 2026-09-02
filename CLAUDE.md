@@ -141,7 +141,9 @@ src/pdf2md/
                 cells (merged_cells, shifted_values, header_absorbed_data) and stands at medium
                 until the accounting corroborates it. raster_row_findings covers the scanned case
                 the glyph path cannot reach, off the table's own crop. Stored on
-                TableData.grid_audit; becomes a CoverageFlag in emit.
+                TableData.grid_audit; becomes a CoverageFlag in emit. `corroborated` in that
+                payload — the ink established the arrangement is wrong — is also what makes enrich
+                keep the region's printed lines verbatim (TableData.printed_lines).
   metadata.py   ranked local bibliographic evidence from embedded fields, front-page and
                 repeated headings, running titles, early bookmarks, and meaningful filenames.
                 Selected, alternate, penalized, and rejected candidates remain inspectable.
@@ -159,8 +161,11 @@ src/pdf2md/
                 numbering: when a page's leading ordinals sort to an unbroken run, that run IS the
                 printed order — no column model, no thresholds, and a page it convicts is high
                 severity rather than medium. split_line_findings reports printed lines cut across
-                several blocks, informational because the detection is exact but the judgement
-                isn't (a masthead's `Received:` / date is also one line in two blocks). All three
+                several blocks, and keeps a group only when every piece occupies exactly one
+                printed line (counted in the block's own region) — band overlap alone also
+                describes two consecutive paragraphs. Informational because the detection is now
+                exact but the judgement isn't (a masthead's `Received:` / date is also one line in
+                two blocks). All three
                 report the minimum number of blocks whose removal restores order, never the count
                 of inverted pairs.
   coverage.py   tally block dispositions into a CoverageReport.
@@ -351,6 +356,35 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   findings the check does raise. Suppressing those was hiding content, not deferring on
   it, so `missing_in_neighbour` now gates the note. This is the honest form of the
   admission `quality.py` already makes about region-boundary accuracy.
+- **Band overlap is what two consecutive paragraphs have, so it cannot be what a
+  split printed line is.** `split_line_findings` grouped blocks whose vertical bands
+  overlapped inside a column, and the couple of points between one paragraph's
+  descenders and the next's ascenders satisfies that: on Atkins page 92, a
+  *single-column* page, a nine-line and a five-line paragraph were reported as one
+  printed line in two pieces. Measured against the glyph layer, 363 of the 392 groups
+  on pages that have one (93%) held a block spanning several printed lines. The
+  definition is the check — count the printed lines in each piece's own region and keep
+  the group only when every piece occupies exactly one: 733 groups corpus-wide to 29,
+  and the survivors are the shape the docstring always claimed (`'192.'` /
+  `'Allinger, N. L. J. Am. Chem. Soc.'`, `'[N 2'` / `'O5]/(mol dm'`). 341 of the 733 were
+  on scanned pages with no layer to count; those go silent rather than being reported,
+  because band overlap on its own was never evidence. The PDF is opened lazily, only
+  once a page produces a candidate.
+- **A grid can hold every value and still be wrong, and no textual signal tells a
+  listing from a table.** The Lanthanides SI is basis sets typeset as fixed-width
+  listings; the engine calls them tables and 91 of 117 carry a structural finding
+  (second only to the 1972 OCR-overlay scan; born-digital papers with real numeric
+  tables sit at 0-19%). Nothing is lost — 98.9% of value tokens are present, which is
+  why numeric conservation reads clean — they are in the wrong cells, and a grid that
+  keeps every exponent and loses which coefficient it belongs to is not a usable basis
+  set. Two textual discriminators were measured and rejected: printed-lines-vs-engine-
+  rows fires on 132 tables across 12 documents (mostly scans whose region overlaps
+  prose), and line-shape uniformity catches ten well-formed numeric tables at its
+  strictest. So the trigger is `grid_audit["corroborated"]`, the audit's own finding
+  that the ink contradicts the arrangement, and those tables ship `printed_lines`
+  verbatim beside the grid: 99.0% of value tokens in the emitted grid against 100.0% in
+  the listing, in printed order. Evidence beside the table, never the emitted table —
+  the same boundary the glyph grid keeps.
 - **A block of one or two characters is a shattered fragment, not content.** Docling
   breaks a display equation into per-glyph `paragraph` blocks -- one Atkins page yields
   `A`, `d`, `G`, `dx`, `=m`, `p`, `,` as fourteen of them -- and emits them after the
