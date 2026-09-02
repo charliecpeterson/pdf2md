@@ -724,7 +724,9 @@ def convert_file(
     )
     conservation_flags = conservation_review_flags(consistency)
     recall_flags, diacritic_flags = recall_review_flags(result.blocks)
-    order_flags, order_pages = reading_order_flags(result.blocks, emission_index)
+    order_flags, order_pages = reading_order_flags(
+        result.blocks, emission_index, pdf_path=pdf_path, force_ocr=config.force_ocr
+    )
     doc.coverage.flags.extend(
         conservation_flags + recall_flags + order_flags + diacritic_flags
     )

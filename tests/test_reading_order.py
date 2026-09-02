@@ -265,3 +265,23 @@ def test_split_lines_ignores_shattered_fragments_too():
         _flow("#/f3", 642, "=m"),
     ]
     assert split_line_findings(blocks, emitted(*[b.id for b in blocks])) is None
+
+
+def test_split_lines_needs_every_piece_to_be_one_printed_line():
+    from pdf2md.reading_order import split_line_findings
+
+    # Two consecutive paragraphs in a single column, overlapping by the two
+    # points between one's descenders and the next's ascenders. Band overlap
+    # calls them one printed line; counting their printed lines does not.
+    paragraphs = [
+        block("#/p1", LEFT, 400.0), block("#/p2", LEFT, 382.0),
+        block("#/p3", LEFT, 300.0), block("#/p4", LEFT, 200.0),
+    ]
+    at = emitted(*[b.id for b in paragraphs])
+    assert split_line_findings(paragraphs, at, lambda b: 1)["lines"] == 1
+    assert split_line_findings(paragraphs, at, lambda b: 9 if b.id == "#/p1" else 1) is None
+
+    # No counter at all (a scanned page has no layer to count) claims nothing,
+    # rather than falling back to the band overlap that was never evidence.
+    assert split_line_findings(paragraphs, at) is None
+    assert split_line_findings(paragraphs, at, lambda b: 0) is None

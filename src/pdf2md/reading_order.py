@@ -31,6 +31,8 @@ from __future__ import annotations
 import math
 import re
 from collections import defaultdict
+from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from pdf2md.schema import BBox, Block, BlockType, CoverageFlag
@@ -282,7 +284,9 @@ def ordinal_findings(blocks: list[Block], emitted_at: dict[str, int]) -> dict[st
 
 
 def split_line_findings(
-    blocks: list[Block], emitted_at: dict[str, int]
+    blocks: list[Block],
+    emitted_at: dict[str, int],
+    printed_lines: Callable[[Block], int] | None = None,
 ) -> dict[str, Any] | None:
     """Printed lines the engine split across several blocks.
 
@@ -291,10 +295,25 @@ def split_line_findings(
     pieces -- `'Serre,'`, `'C.;'`, `'rey, G.'` are three blocks of one reference
     entry, and `'rey, G.'` doesn't even start at a word boundary.
 
-    Reported informational, never as an action. The detection is exact but the
-    judgement isn't: a masthead's `Received:` / `July 5, 2016` is also one
-    printed line in two blocks, and there it is the layout, not a defect. Saying
-    what was measured and leaving the verdict to a reader is the honest form."""
+    Band overlap alone does not establish that, which is what this measured for
+    a while. Two *consecutive paragraphs* in one column overlap by the couple of
+    points between one's descenders and the next's ascenders, and that satisfies
+    the same test: on Atkins page 92, a single-column page, a nine-line
+    paragraph and a five-line paragraph were reported as one printed line in two
+    pieces. Corpus-wide, 363 of the 392 groups whose page had a readable glyph
+    layer -- 93% -- held a block spanning several printed lines.
+
+    So the definition is the check. `printed_lines` counts the printed lines in
+    a block's own region, and a group survives only when every piece occupies
+    exactly one. That takes the corpus from 733 groups to 29, and what remains
+    is the shape this docstring describes: `'192.'` / `'Allinger, N. L. J. Am.
+    Chem. Soc.'`, `'[N 2'` / `'O5]/(mol dm'`. Without a counter -- a scanned page
+    has no layer to count -- nothing is reported, because band overlap on its
+    own was never evidence of anything.
+
+    Reported informational, never as an action. The detection is now exact but
+    the judgement still isn't: a masthead's `Received:` / `July 5, 2016` is also
+    one printed line in two blocks, and there it is the layout, not a defect."""
     flow = _flow_blocks(blocks, emitted_at)
     if len(flow) < _MIN_BLOCKS:
         return None
@@ -319,6 +338,9 @@ def split_line_findings(
             lines.append([block])
 
     split = [line for line in lines if len(line) > 1]
+    if not split or printed_lines is None:
+        return None
+    split = [line for line in split if all(printed_lines(b) == 1 for b in line)]
     if not split:
         return None
     return {
@@ -330,8 +352,47 @@ def split_line_findings(
     }
 
 
+class _PrintedLines:
+    """Counts the printed lines inside a block's own region, opening the PDF only
+    when something actually asks.
+
+    The split-line check produces candidates from geometry alone on most pages
+    and none at all on many, so opening a second pdfium read for every document
+    would charge every clean paper for a check it never needs. Deferred like
+    `conservation.numeric_conservation` does, and for the same reason: `enrich`
+    imports this module's neighbours."""
+
+    def __init__(self, pdf_path: Path | None, force_ocr: bool) -> None:
+        self._pdf_path = pdf_path
+        self._force_ocr = force_ocr
+        self._glyphs: Any = None
+
+    def count(self, block: Block) -> int:
+        if self._pdf_path is None:
+            return 0
+        if self._glyphs is None:
+            from pdf2md.enrich import GlyphIndex
+
+            self._glyphs = GlyphIndex(self._pdf_path, force_ocr=self._force_ocr).__enter__()
+        page_chars = self._glyphs.page_chars(block.page)
+        if page_chars is None:
+            return 0
+        return sum(
+            1 for line in page_chars.text_region(block.bbox).splitlines() if line.strip()
+        )
+
+    def close(self) -> None:
+        if self._glyphs is not None:
+            self._glyphs.__exit__(None, None, None)
+            self._glyphs = None
+
+
 def reading_order_flags(
-    blocks: list[Block], emission_index: dict[str, dict[str, Any]]
+    blocks: list[Block],
+    emission_index: dict[str, dict[str, Any]],
+    *,
+    pdf_path: Path | None = None,
+    force_ocr: bool = False,
 ) -> tuple[list[CoverageFlag], dict[str, Any]]:
     """One action per page whose emitted order departs from its printed order,
     plus the per-page detail for `profile.json`.
@@ -340,7 +401,11 @@ def reading_order_flags(
     the document's own numbering. They fail for different reasons -- geometry is
     blind to a page it can't resolve into columns, numbering is blind to a page
     that isn't numbered -- so each covers the other's gap, and a page both
-    convict is beyond argument."""
+    convict is beyond argument.
+
+    `pdf_path` is what lets the split-line check verify its groups against the
+    printed lines. It is opened only when a page produces a candidate, so a
+    document with no split-line geometry never pays for the extra read."""
     by_page: dict[int, list[Block]] = defaultdict(list)
     for block in blocks:
         by_page[block.page].append(block)
@@ -352,13 +417,14 @@ def reading_order_flags(
         if entry.get("start") is not None and entry.get("markdown")
     }
 
+    counter = _PrintedLines(pdf_path, force_ocr)
     flags: list[CoverageFlag] = []
     notes: list[CoverageFlag] = []
     pages: dict[str, Any] = {}
     for page in sorted(by_page):
         geometry = page_findings(by_page[page], emitted_at)
         numbering = ordinal_findings(by_page[page], emitted_at)
-        split = split_line_findings(by_page[page], emitted_at)
+        split = split_line_findings(by_page[page], emitted_at, counter.count)
         if split is not None:
             notes.append(CoverageFlag(
                 by_page[page][0].id, page,
@@ -390,6 +456,7 @@ def reading_order_flags(
             f"[source page {page}](../source.pdf#page={page})]**",
             disposition="action_required", severity=severity, content_impact=severity,
         ))
+    counter.close()
     return flags + notes, pages
 
 
