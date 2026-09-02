@@ -26,10 +26,10 @@ asked to judge. Its reading order largely follows the PDF's content stream --
 the same stream order an engine follows when it emits two lines the wrong way
 round -- so on exactly the pages where the defect comes from stream order,
 poppler agrees with the emission and refutes a correct finding. Measured over
-this corpus, 23 of the 28 refuted single-column pages were provably out of
-printed order by the geometry alone, which took precision from 0.61 to 0.78.
-That is a floor either way: the proof only inspects pairs adjacent in emission
-order, so a block moved several positions is not caught and stays `refuted`.
+this corpus, 14 refuted pages are provably out of printed order by the geometry
+alone, which takes precision from 0.61 to 0.71. That is a floor either way: the
+proof only inspects pairs adjacent in emission order, so a block moved several
+positions is not caught and stays `refuted`.
 
 Unflagged pages are scored the same way as a control: a page poppler reorders
 that the check stayed silent on is a miss, and the two rates together say
@@ -150,8 +150,18 @@ def _inverted_single_column(blocks: list[dict]) -> bool:
     predecessor -- printed order, established without a model or a threshold.
 
     Only pairs adjacent in emission order, and only bands that do not overlap at
-    all, so nothing here rests on a judgement about what shares a line."""
-    from pdf2md.reading_order import _flow_blocks, _top, column_starts
+    all, so nothing here rests on a judgement about what shares a line.
+
+    The premise has to be tested, not assumed. `column_starts` drops a cluster
+    holding less than a share of the page's blocks, so a two-column page whose
+    right column carries two blocks is *reported* as one column -- Atkins page 41
+    has nine blocks at x=43.5 and two at x=391.5 and comes back single-column.
+    Comparing tops across that pair is comparing different columns, which proves
+    nothing. So every block must actually begin at the one start; 9 of the 23
+    pages this first credited did not."""
+    from pdf2md.reading_order import (
+        _COLUMN_TOLERANCE_PT, _flow_blocks, _top, column_starts,
+    )
     from pdf2md.schema import BBox, Block, BlockType
 
     flow_input = [
@@ -161,7 +171,10 @@ def _inverted_single_column(blocks: list[dict]) -> bool:
     ]
     emitted = {b["id"]: i for i, b in enumerate(blocks)}
     flow = _flow_blocks(flow_input, emitted)
-    if len(column_starts([b.bbox for b in flow])) != 1:
+    starts = column_starts([b.bbox for b in flow])
+    if len(starts) != 1 or any(
+        abs(b.bbox.x0 - starts[0]) > _COLUMN_TOLERANCE_PT for b in flow
+    ):
         return False
     order = sorted(flow, key=lambda b: emitted[b.id])
     return any(
