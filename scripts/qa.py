@@ -91,6 +91,15 @@ def _signals(version_dir: Path) -> dict | None:
     return {
         "source": Path(d.get("source_path", version_dir.name)).name,
         "source_sha256": d.get("source_sha256", ""),
+        # Which build produced this bundle. Not compared as an invariant -- it
+        # moves on every code change -- but reported, so "no regressions" cannot
+        # quietly mean "nothing has been re-measured". A baselined document sat
+        # here for two months on a July conversion because the reconvert script
+        # skipped bundles with no preserved source, and the gate had no way to
+        # say so.
+        "implementation_sha256": (
+            (d.get("provenance") or {}).get("run_inputs") or {}
+        ).get("implementation_sha256", ""),
         "pages": d.get("page_count", 0),
         "blocks": total,
         "accounted_for": total == buckets,
@@ -205,7 +214,35 @@ def _check(sigs: dict[str, dict], baseline: dict[str, dict]) -> list[str]:
     for source in sorted(baseline.keys() - sigs.keys()):
         print(f"  MISSING: {source} (in baseline, not in outputs)")
         regressions.append(f"{source}: missing output")
+    _report_staleness(sigs)
     return regressions
+
+
+def _report_staleness(sigs: dict[str, dict]) -> None:
+    """Say which bundles were produced by a build other than this one.
+
+    Not a regression: a bundle is stale the moment the code changes, and
+    failing on that would make the gate unusable mid-session. But a check that
+    prints "no regressions" over output nothing has re-measured is worse than
+    one that admits it, so the count is always shown.
+    """
+    from pdf2md.pipeline import _implementation_sha256
+
+    current = _implementation_sha256()
+    stale = sorted(
+        source for source, sig in sigs.items()
+        if sig.get("implementation_sha256") and sig["implementation_sha256"] != current
+    )
+    unknown = sorted(
+        source for source, sig in sigs.items() if not sig.get("implementation_sha256")
+    )
+    if stale or unknown:
+        print(f"\n  {len(stale) + len(unknown)} of {len(sigs)} bundles predate this build "
+              f"— their signatures describe older code, not what it would produce now:")
+        for source in (stale + unknown)[:6]:
+            print(f"    {source}")
+        if len(stale) + len(unknown) > 6:
+            print(f"    ... and {len(stale) + len(unknown) - 6} more")
 
 
 def main() -> None:

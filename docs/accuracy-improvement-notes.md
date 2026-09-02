@@ -473,6 +473,35 @@ These constraints came out of the measured experiments and remain project policy
 - No treating shared-crop-geometry OCR votes as independent verification.
 - No automatic promotion of fixed-font glyph-atlas choices.
 
+## The same corpus on two machines, 2026-09-02
+
+All 20 baselined documents (2875 pages) reconverted on the CUDA box in 73
+minutes, each with the formula setting its own bundle recorded, then compared
+by running `scripts/qa.py` on both machines so the diff is one computation over
+two outputs rather than two summaries.
+
+Thirteen of nineteen comparable documents have identical signatures. The rest
+differ by -2 to +1 blocks, except the 1085-page textbook at -38: **-42 blocks in
+31748, or 0.13%**, with knock-on +/-1 shifts in a few derived findings. The
+accounting invariant holds on every CUDA document -- accounted_for true,
+dropped 0. So extraction is *not* bit-reproducible across accelerators: the
+layout detector makes marginally different calls on CUDA than on CPU/MPS, and
+the effect scales with document size, which is why a 6-page paper came out
+identical and the textbook moved most.
+
+Two consequences. The QA baseline is machine-specific -- running the gate on
+the CUDA box against a Mac-generated baseline shows these as regressions. And
+reproducibility claims need qualifying: same machine reproduces exactly, a
+different accelerator moves about a tenth of a percent of blocks.
+
+The twentieth document was not a machine difference at all. Its Mac entry came
+from a 2026-07-06 conversion -- 580 blocks across 511 pages, about one per page
+-- and had sat in the baseline ever since, because the bundle keeps no
+`source.pdf` and every reconvert this session skipped it on that basis. A second
+machine converting it properly is what exposed it. `qa.py` now reports how many
+bundles predate the running build, so "no regressions against baseline" can no
+longer quietly mean "nothing has been re-measured".
+
 ## Throughput: where a conversion should run, 2026-09-01
 
 Docling excludes MPS from the accelerator list whenever formula enrichment is
