@@ -22,6 +22,10 @@ htmlcov/
 
 # docsmcp output (transcriptions, sqlite, rendered images)
 out/
+# Blind-corpus bundles live outside the working corpus on purpose: scripts
+# scan `out/`, so keeping them here is what stops a spent-but-separate corpus
+# being promoted into the QA gate by a script's choice of directory.
+out-blind-*/
 
 # Local experiment and audit scratch
 tmp/
