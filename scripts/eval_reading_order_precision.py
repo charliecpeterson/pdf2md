@@ -170,11 +170,18 @@ def _inverted_within_column(blocks: list[dict]) -> bool:
     version asked it whether the page had one column and credited 9 pages whose
     "inversion" spanned two of them.
 
-    Only pairs adjacent in emission order, and only bands that do not overlap, so
-    nothing rests on a judgement about what shares a line. Verified by reading
-    the pages it convicts: Intro-to_Relativistic-QC page 138 emits `we get`
-    (top 492.7) after the paragraph at top 437.0, when it introduces the equation
-    at 469.3 between them."""
+    Only pairs adjacent in emission order, and the comparison is between tops.
+    Requiring the bands to be disjoint as well looked safer and was simply wrong:
+    two blocks at one left edge cannot sit side by side on a printed line, so
+    there is nothing for disjointness to rule out, and it threw away true
+    positives that missed by a descender. Every one of the four pages read by
+    hand -- Intro-to_Relativistic-QC 8, 106 and 235, Atkins 803 -- is a real
+    inversion whose bands overlap by 0.7 to 6.5 points.
+
+    The control says the looser rule is still tight: over this corpus it convicts
+    one page in the 1,616 the check stayed silent on. Verified by reading what it
+    convicts: page 138 emits `we get` (top 492.7) after the paragraph at top
+    437.0, when it introduces the equation at 469.3 between them."""
     from pdf2md.reading_order import _flow_blocks, _top
     from pdf2md.schema import BBox, Block, BlockType
 
@@ -186,8 +193,7 @@ def _inverted_within_column(blocks: list[dict]) -> bool:
     emitted = {b["id"]: i for i, b in enumerate(blocks)}
     order = sorted(_flow_blocks(flow_input, emitted), key=lambda b: emitted[b.id])
     return any(
-        abs(a.bbox.x0 - b.bbox.x0) <= _SAME_COLUMN_PT
-        and _top(a.bbox) < min(b.bbox.y0, b.bbox.y1)
+        abs(a.bbox.x0 - b.bbox.x0) <= _SAME_COLUMN_PT and _top(a.bbox) < _top(b.bbox)
         for a, b in zip(order, order[1:])
     )
 
