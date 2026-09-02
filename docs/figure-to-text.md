@@ -282,3 +282,47 @@ measured before the next starts.
    (`restore_log_signs`, powers-of-ten prior). *Shipped: a real
    2-panel × 7-log-series figure recovers at R² 0.992; a 6-panel orbital figure
    prints its 3 clean panels and names the 3 skipped.*
+
+## What the 840 unmatched figures actually are (2026-09-02)
+
+Across the 36-document corpus, 840 of 1,855 figures end as
+`vector_archetype_unmatched` — a vector plot frame was detected and no data came
+out. That is the largest single population in the pipeline, and it looked like
+the obvious place to improve figure recovery. It is not.
+
+The pipeline's own `has_series_geometry` splits it: **721 are calibration
+failures** (the frames do hold line, scatter or bar geometry) and 119 have no
+series geometry at all. But 640 of the 721 are in one document, the Atkins
+textbook. Outside it, 81 across 35 documents.
+
+Two attempts to characterise the cause by probe both failed, in the same way and
+worth recording so they are not repeated:
+
+- **Figure `labels` is not where tick values live.** Not one of the 840 carries
+  four or more numeric tokens there — but neither do the 76 *successful*
+  extractions (68 with fewer than four, 8 with none). Calibration reads tick text
+  off the page region, not off `labels`.
+- **Calling `_calibrate(page, frame, geometry.region)` does not reproduce the
+  pipeline.** It reports "calibration returned nothing" for 17 of the 76 figures
+  that in fact extracted cleanly, and "no frame on re-read" for 56 more. Panels
+  calibrate against a per-panel text region, so a probe using the whole figure
+  region is measuring something else.
+
+A visual sample settled it where the probes could not. Three classes, all correct
+refusals:
+
+- **Symbolic axes.** Atkins Fig. 9.15 (particle in a box) has x ticks `0` and
+  `L` and no y scale at all. There is no numeric axis to calibrate against.
+- **A qualitative y axis.** Atkins Fig. 13.42 has three numeric x ticks
+  (7.1, 10.0, 16.7) against a y axis labelled only "Light intensity". Extracting
+  x alone would be half a dataset.
+- **Page furniture read as a figure.** A WIREs page masthead is classified as a
+  Picture, and its rules and boxes present as plot frames with series geometry.
+
+So the refusal is right in each case sampled, and the headline number is not a
+backlog. What would size the genuinely recoverable remainder is a labelled sample
+of figures known to carry two numeric axes — which does not exist yet, and is the
+prerequisite for any further work here rather than a detail of it.
+
+The `data_extraction_note` now names which of the two causes applies, which is
+what made this breakdown possible at all.
