@@ -351,10 +351,15 @@ describe the labelled set and must not be multiplied back up.
 | unrecoverable and extracted | **0** |
 | unrecoverable and refused | 27 |
 
-**Precision 1.00, recall 0.52.** The pipeline invents no data — every one of the
-12 extractions is a genuinely recoverable chart, and all 6 `no_chart_geometry`
-figures are correctly not charts. What it does is refuse half of what it could
-read.
+**Precision 1.00, recall 0.52** — but read what precision means here before
+trusting it. The label asks whether the *figure* was recoverable, not whether the
+*values* are right, and checking two of the twelve extractions by eye found both
+wrong: `atkins #/pictures/52` shipped a three-curve compression-factor chart as
+`kind="bar"` with two identical points, and `cjk-sample #/pictures/8` mapped a
+categorical y axis (Text, Speech, Prosody) to values between -1.5e8 and -1.3e7.
+Both rode at confidence 0.667, above the 0.5 emit floor. See "Data that never
+went near its own ticks" below. A per-value precision would need a second label
+set holding the printed values themselves, which does not exist.
 
 The misses split cleanly, and neither half is a mystery:
 
@@ -375,3 +380,38 @@ And the shape of the unmatched population is itself the finding: of 24 labelled,
 **15 are not charts at all** — journal mastheads, publisher logos, chapter-opener
 decorations, matrix diagrams. Docling classifies page furniture as a Picture, its
 rules present as plot frames, and that is most of what the 840 are.
+
+
+## Data that never went near its own ticks (2026-09-02)
+
+Three defects, found by asking why one categorical-axis figure extracted when
+four others did not. It turned out not to be a counter-example.
+
+**Two ticks always fit a line exactly, so R² cannot judge that fit.** 14 of the
+76 shipped extractions rest on a two-tick calibration reporting `R^2=1.000`, and
+the confidence formula's `nticks/3` haircut lands every one of them at 0.667 —
+above the 0.5 emit floor. Withholding them all was measured and rejected: Atkins
+`#/pictures/948` reports two ticks on a figure printing six and five, and its
+mapping is *right* (y ticks 0..40, data 0.35..43.07); it only captured one of
+three curves. Tick count alone convicts good data.
+
+**The note could describe a different frame than the data.** `cal0 =
+panels[0][1]` supplied the R², tick count and axis kinds while the series came
+from whichever panel produced them, so `cjk-sample #/pictures/8` shipped 15
+points at confidence 0.667 under a note reading `fit R^2=0.000`. For an auditable
+tool that is the worse of the two: the evidence attached to the data was not the
+evidence for that data. `_panel_series` now returns the calibrations it used.
+
+**The vector path had no in-range check, though the VLM path has had one.**
+`_tick_range_fraction` is the mirror of `_in_range_fraction`: the fraction of
+emitted points within a whole tick span either side of the ticks they were mapped
+from, folded into that panel's confidence. Deliberately generous, because it is
+not policing a curve that runs past the last tick — a correct read sits at 1.08
+of its span and the broken one at 1e6, so the rule only ever catches the
+indefensible. It must be applied per panel: checking every panel's series against
+the first panel's ticks convicts a good second panel with a different y range,
+which `tests/fixtures/subplots.pdf` caught immediately.
+
+On cjk-sample the effect is exactly one figure: `#/pictures/8` goes from
+`extracted` at 0.667 to `data_withheld` at 0.0, and the document's two other
+extractions are untouched.

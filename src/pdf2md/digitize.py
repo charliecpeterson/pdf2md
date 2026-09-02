@@ -367,6 +367,12 @@ class _Calibration(NamedTuple):
     x_kind: str         # "linear" | "log"
     y_kind: str
     flipped: bool       # a tick sign was inferred from monotonicity (hedge the trust)
+    # The span of the tick VALUES the fit was made from. Data may run a little past
+    # the outermost tick, but not by orders of magnitude: a mapping built from two
+    # stray numbers can send a categorical axis to 1e8, and the tick span is the
+    # only thing that says so.
+    x_values: tuple[float, float] = (0.0, 0.0)
+    y_values: tuple[float, float] = (0.0, 0.0)
 
 
 def _drop_outlier(ticks):
@@ -411,8 +417,11 @@ def _fit_ticks(frame, ticks):
     yt, yflip2 = restore_log_signs(yt)
     fx, r2x, kx = fit_axis(xt)
     fy, r2y, ky = fit_axis(yt)
+    xv = [v for v, _ in xt]
+    yv = [v for v, _ in yt]
     return _Calibration(fx, fy, min(r2x, r2y), min(len(xt), len(yt)),
-                        kx, ky, xflip or yflip or xflip2 or yflip2)
+                        kx, ky, xflip or yflip or xflip2 or yflip2,
+                        (min(xv), max(xv)), (min(yv), max(yv)))
 
 
 def _calibrate(page, frame, region):
@@ -958,17 +967,53 @@ class _VectorGeometry:
     forms: list | None = None
 
 
+def _tick_range_fraction(series, cal) -> float:
+    """Fraction of emitted points that sit within reach of the ticks they were mapped
+    from, the vector path's version of the check `_in_range_fraction` already applies
+    to a VLM read.
+
+    Deliberately generous -- a whole tick span of slack on each side -- because it is
+    not policing a curve that runs past the last tick. It is there for a mapping that
+    is wrong by orders of magnitude: cjk-sample #/pictures/8 has a categorical y axis
+    (Text, Speech, Prosody), and two stray numbers near it produced a fit that put the
+    emitted values between -1.5e8 and -1.3e7. Against that, a correct read like Atkins
+    #/pictures/948 (y ticks 0..40, data 0.35..43.07) sits at 1.08 of its span, so any
+    rule between them separates the two; the loose end is chosen so the check can only
+    ever catch the indefensible."""
+    def within(values, span):
+        lo, hi = sorted(span)
+        width = hi - lo
+        if width <= 0:
+            return None
+        return sum(1 for v in values if lo - width <= v <= hi + width)
+
+    xs = [p[0] for s in series for p in s]
+    ys = [p[1] for s in series for p in s]
+    if not xs:
+        return 1.0
+    counts = [c for c in (within(xs, cal.x_values), within(ys, cal.y_values)) if c is not None]
+    return min(counts) / len(xs) if counts else 1.0
+
+
 def _panel_series(pg, panels, polys, forms):
     """Extract each calibrated panel's series. Returns (series, per-series names,
-    kinds, per-panel confidences, r2s, skipped); a panel whose own calibration
-    confidence is below _PANEL_FLOOR is skipped (counted in `skipped`) so one misread
-    inset can't drag every other panel's good data under the emit floor. Names are
-    None-worthy only by the caller (single-panel figures don't need them)."""
+    kinds, per-panel confidences, r2s, used calibrations, in-tick-range fractions,
+    skipped); a panel whose own
+    calibration confidence is below _PANEL_FLOOR is skipped (counted in `skipped`) so
+    one misread inset can't drag every other panel's good data under the emit floor.
+    Names are None-worthy only by the caller (single-panel figures don't need them).
+
+    The used calibrations come back because the caller has to describe the data it is
+    shipping. It used to take the note's r2, tick count and axis kinds from
+    `panels[0]`, which is only the data's own calibration when the first frame
+    happened to produce series -- cjk-sample #/pictures/8 shipped 15 points at
+    confidence 0.667 under a note reading `fit R^2=0.000`, because the two came from
+    different frames."""
     frames = [fr for fr, _ in panels]
     poly_of = _assign([(sum(x for x, _ in p) / len(p), sum(y for _, y in p) / len(p))
                        for p in polys], frames)
     form_of = _assign([(f[0], f[1]) for f in forms], frames)
-    out_series, names, kinds, confs, r2s = [], [], [], [], []
+    out_series, names, kinds, confs, r2s, cals, insides = [], [], [], [], [], [], []
     used = skipped = 0
     for i, (frame, cal) in enumerate(panels):
         confidence = round(max(0.0, min(1.0, cal.r2)) * min(1.0, cal.nticks / 3), 3)
@@ -989,9 +1034,19 @@ def _panel_series(pg, panels, polys, forms):
             kind = "bar"
         if not series:
             continue
+        # A mapping can be arithmetically perfect and still send the data nowhere
+        # near the ticks it was built from. Two ticks always fit a line exactly, so
+        # r2 cannot object to that; this can. Per panel, because each panel has its
+        # own axes -- checking every panel's series against the first panel's ticks
+        # convicts a perfectly good second panel with a different y range.
+        inside = _tick_range_fraction(series, cal)
+        if inside < 1.0:
+            confidence = round(confidence * inside, 3)
         used += 1
         confs.append(confidence)
         r2s.append(cal.r2)
+        cals.append(cal)
+        insides.append(inside)
         kinds.append(kind)
         # a panel whose axis scale differs from the figure's first panel says so in its
         # series names, since Digitization carries one x_kind/y_kind pair
@@ -999,7 +1054,7 @@ def _panel_series(pg, panels, polys, forms):
                  else f" ({cal.x_kind} x, {cal.y_kind} y)")
         names += [f"panel {used} series {j}{scale}" for j in range(1, len(series) + 1)]
         out_series += series
-    return out_series, names, kinds, confs, r2s, skipped
+    return out_series, names, kinds, confs, r2s, cals, insides, skipped
 
 
 def _has_series_geometry(geometry: _VectorGeometry) -> bool:
@@ -1126,7 +1181,9 @@ def vector_ocr_digitize_page(
         if geometry is not None and geometry.forms is not None
         else _page_forms(page, region)
     )
-    series, names, kinds, confs, r2s, skipped = _panel_series(page, panels, polys, forms)
+    series, names, kinds, confs, r2s, cals, insides, skipped = _panel_series(
+        page, panels, polys, forms
+    )
     if not series:
         return None
     confidence = round(min(confs) * 0.9, 3)  # OCR-read ticks: haircut vs the text layer
@@ -1141,7 +1198,7 @@ def vector_ocr_digitize_page(
             + (f"; {skipped} weakly-calibrated panel(s) skipped" if skipped else "")
             + " — verify the axis ranges against the image")
     return Digitization(series, "vector-path/ocr-axes", confidence, note,
-                        x_kind=panels[0][1].x_kind, y_kind=panels[0][1].y_kind,
+                        x_kind=cals[0].x_kind, y_kind=cals[0].y_kind,
                         kind=_dominant_kind(kinds),
                         series_names=names if multi else None)
 
@@ -1186,11 +1243,14 @@ class VectorPathDigitizer:
             return None, geometry
         forms = _page_forms(page, region)
         geometry.forms = forms
-        series, names, kinds, confs, r2s, skipped = _panel_series(page, panels, polys, forms)
+        series, names, kinds, confs, r2s, cals, insides, skipped = _panel_series(
+            page, panels, polys, forms
+        )
         if not series:
             return None, geometry
-        cal0 = panels[0][1]
+        cal0 = cals[0]  # the calibration the shipped data came from, not panels[0]
         confidence = min(confs)
+        inside = min(insides) if insides else 1.0
         kind = _dominant_kind(kinds)
         npts = sum(len(s) for s in series)
         if len(confs) == 1:  # single panel: the common case, same note as always
@@ -1199,7 +1259,10 @@ class VectorPathDigitizer:
                     else f"{npts} {kind} points")
             axes = cal0.x_kind if cal0.x_kind == cal0.y_kind else f"{cal0.x_kind}/{cal0.y_kind}"
             note = (f"vector paths, {what}; {axes} axes calibrated on {cal0.nticks}+ ticks/axis "
-                    f"(fit R^2={cal0.r2:.3f}{'; signs inferred' if cal0.flipped else ''})")
+                    f"(fit R^2={cal0.r2:.3f}{'; signs inferred' if cal0.flipped else ''}"
+                    f"{'' if cal0.nticks >= 3 else '; two ticks fit a line exactly, so that R^2 is not evidence'})"
+                    + ("" if inside >= 1.0 else
+                       f"; {100 - round(inside * 100)}% of points fall outside the tick range"))
             return Digitization(
                 series, "vector-path", confidence, note,
                 x_kind=cal0.x_kind, y_kind=cal0.y_kind, kind=kind,

@@ -1748,3 +1748,30 @@ def test_table_crops_include_glyph_unbacked_tables():
     assert authoritative == {"#/tables/9"}
     assert raster_read.extra["cells_unverified"] is True
     assert "cells_unverified" not in clean.extra
+
+
+def test_data_far_from_its_own_ticks_loses_the_confidence_to_ship():
+    from pdf2md.digitize import _Calibration, _tick_range_fraction
+
+    cal = _Calibration(lambda p: p, lambda p: p, 1.0, 2, "linear", "linear", False,
+                       (0.0, 80.0), (0.0, 5.0))
+    # A correct read runs a little past the last tick and stays wholly in range.
+    assert _tick_range_fraction([[(10.0, 1.0), (70.0, 4.9), (79.0, 5.4)]], cal) == 1.0
+    # cjk-sample #/pictures/8: a categorical y axis fitted from two stray numbers put
+    # the emitted values at -1e8. Two ticks fit a line exactly, so r2 said 1.000.
+    assert _tick_range_fraction([[(60.0, -1.5e8), (65.0, -1.3e7)]], cal) == 0.0
+
+
+def test_each_panel_is_checked_against_its_own_ticks():
+    from pdf2md.digitize import _Calibration, _tick_range_fraction
+
+    # Two stacked subplots, y 0..10 and y 0..100. Checking the second panel's series
+    # against the first panel's ticks convicts a perfectly good panel -- which is what
+    # a first version of this did, and what tests/fixtures/subplots.pdf caught.
+    top = _Calibration(lambda p: p, lambda p: p, 1.0, 3, "linear", "linear", False,
+                       (0.0, 10.0), (0.0, 10.0))
+    bottom = _Calibration(lambda p: p, lambda p: p, 1.0, 3, "linear", "linear", False,
+                          (0.0, 10.0), (0.0, 100.0))
+    lower_series = [[(0.0, 100.0), (5.0, 50.0), (10.0, 0.0)]]
+    assert _tick_range_fraction(lower_series, bottom) == 1.0
+    assert _tick_range_fraction(lower_series, top) < 1.0
