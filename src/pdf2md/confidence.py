@@ -65,9 +65,28 @@ _BOUNDARY = "\x00"
 _STRUCT = re.compile(r"[\x00_^{}]")
 
 
+# A font that maps symbols onto ordinary letters leaves a reading that looks
+# clean and is not. Two signatures, both from real documents and neither
+# occurring in running text: a square root drawn as a run of `ffi` ligatures,
+# and a parenthesised equation number whose brackets come out as eth and thorn
+# (Wiley draws `(14)` as `ð14Þ`). Measured over the corpus, 101 of 383 equation
+# regions carry one -- in Wiley and in an ACS review -- and of the 19 suspect
+# equations whose layer this function called fit, 11 carry one too.
+_SUBSTITUTION = re.compile(r"(?:ffi){3,}|ð(?:\d+|[ivx]+)Þ")
+
+
 def is_clean(text: str) -> bool:
-    """No unmapped symbol-font glyph (a C0/C1 control char or U+FFFD) that would
-    make the text-layer reading an ugly, hole-ridden hint."""
+    """Whether the text-layer reading is fit to be shown, and to be judged
+    against.
+
+    An unmapped symbol-font glyph (a C0/C1 control char or U+FFFD) is the
+    obvious case. The subtler one is a font that substitutes *letters* for
+    symbols: the reading passes every character test and is still nonsense, so
+    an equation scored against it reads as a suspect extraction when the LaTeX
+    was right and only the reference was broken.
+    """
+    if _SUBSTITUTION.search(text):
+        return False
     for c in text:
         if c in "\t\r\n":
             continue

@@ -1498,6 +1498,23 @@ def test_assess_equation():
         "V0 ⊂ V1 ⊂ V2 (13)") == (1.0, None)
 
 
+def test_a_letter_substituting_font_is_not_a_fit_reference():
+    from pdf2md.confidence import is_clean
+
+    # Wiley draws `(14)` as `ð14Þ` and a square root as a run of `ffi`
+    # ligatures. Every character is an ordinary letter, so the reading passes
+    # each per-character test and is still nonsense -- an equation scored
+    # against it reads as a suspect extraction when the LaTeX was right and
+    # only the reference was broken. 11 of the 19 suspect equations whose layer
+    # was called fit carried one of these.
+    assert is_clean("FC = SC\u03b5: \u00f014\u00de") is False
+    assert is_clean("R2 AB + \u03b7 \u22122 ffiffiffiffiffiffiffi q") is False
+
+    # A clean reading, and one with a genuine parenthesised number, still pass.
+    assert is_clean("FC = SC\u03b5 (14)") is True
+    assert is_clean("the coefficient office hours") is True
+
+
 def test_latex_tokens_do_not_weld_across_structure():
     from pdf2md.confidence import _latex_tokens
 
