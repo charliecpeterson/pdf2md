@@ -473,6 +473,45 @@ These constraints came out of the measured experiments and remain project policy
 - No treating shared-crop-geometry OCR votes as independent verification.
 - No automatic promotion of fixed-font glyph-atlas choices.
 
+## Four new publisher families, and Arabic at last, 2026-09-02
+
+The corpus was arXiv, ACS, AIP, Elsevier and books. Four open-access papers
+from families it had never seen, fetched from publisher-hosted PDFs via
+OpenAlex rather than PMC -- a PMC copy is PMC's own re-rendering, which would
+have tested the wrong template.
+
+| paper | publisher | pages | actions |
+|---|---|---|---|
+| Atmos. Chem. Phys. | Copernicus / EGU | 11 | 0 |
+| Frontiers in Drug Discovery | Frontiers | 14 | 0 |
+| Eurasian J. Chemistry | Buketov Univ. (127 Cyrillic letters) | 13 | 1 |
+| Palestine Tech. Univ. Research J. | PTUK (1638 Arabic letters, RTL) | 18 | 10 |
+
+Three convert cleanly; two produce no action at all. Cyrillic is conserved
+exactly, 127 characters in and 127 out. Accounting holds on all four, nothing
+dropped.
+
+The Arabic paper is the first right-to-left document this project has seen, and
+it took two passes to describe honestly. A raw codepoint count says 1699 Arabic
+characters in and 1461 out -- 14% lost. That is wrong: the engine emits Arabic
+*presentation forms* (U+FB50-U+FEFF) where the layer has base letters, and 163
+of the "missing" characters are simply in the other range. Folded through NFKC
+the real figure is 1699 -> 1675, a loss of 24 characters, 1.4%.
+
+What the nine recall flags are actually seeing is the glued-word artifact
+already known from Latin: the source layer runs words together, so a block's
+region reads `اسةمنالم` where the output has three separate words. 151 of the
+165 tokens they call missing are Arabic runs of this shape. `split_glued`
+cannot resolve them because it requires the pieces to sit adjacent *and in the
+same order* in the emitted text, and bidirectional reordering breaks that
+assumption -- the source's logical order and the emitted order genuinely
+differ on a line mixing Arabic with `(LNG)` and `(CH₄)`.
+
+So the standing caveat is now a measurement: non-Latin content survives, and
+the checks over-report on right-to-left text. The fix is not the Latin one --
+matching a glued run without regard to order is much weaker validation than
+matching an adjacent run, and would need its own evidence before it went in.
+
 ## The same corpus on two machines, 2026-09-02
 
 All 20 baselined documents (2875 pages) reconverted on the CUDA box in 73
