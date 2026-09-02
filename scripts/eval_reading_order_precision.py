@@ -14,9 +14,22 @@ flagged page:
 
   confirmed  poppler also reads the blocks in a different order than pdf2md
              emitted them -- two independent readers disagree with the emission
+  proven     the page has one column and a block sitting entirely below another
+             is emitted before it. On one column the printed order IS top to
+             bottom, so this needs no adjudicator and poppler cannot overrule it
   refuted    poppler reads them in exactly the emitted order, so nothing
              corroborates the claim
   unusable   too few blocks could be located in poppler's text to judge
+
+`proven` exists because poppler is not independent of the failure it is being
+asked to judge. Its reading order largely follows the PDF's content stream --
+the same stream order an engine follows when it emits two lines the wrong way
+round -- so on exactly the pages where the defect comes from stream order,
+poppler agrees with the emission and refutes a correct finding. Measured over
+this corpus, 23 of the 28 refuted single-column pages were provably out of
+printed order by the geometry alone, which took precision from 0.61 to 0.78.
+That is a floor either way: the proof only inspects pairs adjacent in emission
+order, so a block moved several positions is not caught and stays `refuted`.
 
 Unflagged pages are scored the same way as a control: a page poppler reorders
 that the check stayed silent on is a miss, and the two rates together say
@@ -120,27 +133,58 @@ def evaluate(version_dir: Path) -> list[dict]:
             rows.append({"document": version_dir.parent.name, "page": page,
                          "flagged": page in flagged, "verdict": "unusable"})
             continue
+        verdict = "confirmed" if scored["moves"] else "refuted"
+        if verdict == "refuted" and _inverted_single_column(blocks):
+            verdict = "proven"
         rows.append({
             "document": version_dir.parent.name, "page": page,
             "flagged": page in flagged,
             "located": scored["located"], "moves": scored["moves"],
-            "verdict": "confirmed" if scored["moves"] else "refuted",
+            "verdict": verdict,
         })
     return rows
+
+
+def _inverted_single_column(blocks: list[dict]) -> bool:
+    """Whether a one-column page emits a block that sits entirely below its
+    predecessor -- printed order, established without a model or a threshold.
+
+    Only pairs adjacent in emission order, and only bands that do not overlap at
+    all, so nothing here rests on a judgement about what shares a line."""
+    from pdf2md.reading_order import _flow_blocks, _top, column_starts
+    from pdf2md.schema import BBox, Block, BlockType
+
+    flow_input = [
+        Block(id=b["id"], type=BlockType(b["type"]), text=b.get("text") or "",
+              page=b["page"], bbox=BBox(**b["bbox"]))
+        for b in blocks if b.get("bbox")
+    ]
+    emitted = {b["id"]: i for i, b in enumerate(blocks)}
+    flow = _flow_blocks(flow_input, emitted)
+    if len(column_starts([b.bbox for b in flow])) != 1:
+        return False
+    order = sorted(flow, key=lambda b: emitted[b.id])
+    return any(
+        _top(a.bbox) < min(b.bbox.y0, b.bbox.y1) for a, b in zip(order, order[1:])
+    )
 
 
 def report(rows: list[dict], quiet: bool) -> None:
     grid: Counter = Counter()
     for row in rows:
         grid[(row["flagged"], row["verdict"])] += 1
-    print(f"{'':16s} {'poppler reorders':>17s} {'poppler agrees':>15s} {'unusable':>9s}")
+    print(f"{'':16s} {'poppler reorders':>17s} {'geometry proves':>16s} "
+          f"{'poppler agrees':>15s} {'unusable':>9s}")
     for flagged, label in ((True, "check flagged"), (False, "check silent")):
         print(f"{label:16s} {grid[(flagged, 'confirmed')]:>17d} "
+              f"{grid[(flagged, 'proven')]:>16d} "
               f"{grid[(flagged, 'refuted')]:>15d} {grid[(flagged, 'unusable')]:>9d}")
-    judged = grid[(True, "confirmed")] + grid[(True, "refuted")]
+    upheld = grid[(True, "confirmed")] + grid[(True, "proven")]
+    judged = upheld + grid[(True, "refuted")]
     missed = grid[(False, "confirmed")] + grid[(True, "confirmed")]
     if judged:
-        print(f"\nprecision on flagged pages: {grid[(True, 'confirmed')] / judged:.2f}")
+        print(f"\nprecision on flagged pages: {upheld / judged:.2f}"
+              f"   (poppler alone: {grid[(True, 'confirmed')] / judged:.2f})")
     if missed:
         print(f"recall over pages poppler reorders: "
               f"{grid[(True, 'confirmed')] / missed:.2f}")
