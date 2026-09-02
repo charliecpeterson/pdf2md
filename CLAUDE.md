@@ -210,6 +210,14 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
                 eval_engine_text_agreement.py (and on block text, for the prose checks — note
                 that word-level engine disagreement is a weak defect proxy for prose, so read the
                 flagged-where-they-agree cell, not the recall figure),
+                eval_recall_precision.py and eval_reading_order_precision.py (poppler as an
+                independent adjudicator, for the two checks with no labelled set: pdftotext over
+                the same region for recall, and its reading order — no `-layout` — for block
+                order. Both refuse rather than guess: recall skips a page whose font makes
+                poppler drop ligatures, since a reader that loses characters is biased toward
+                refuting, and the order harness cannot see blocks under four words at all, which
+                is exactly the fragment class, so read its single-column figure with that in
+                mind),
                 benchmark.py. qa.py also reports the verification signals (flagged tables,
                 reading-order and split-line pages, low-recall and accent-damaged blocks) as
                 drift, never as invariants: a document is not worse for having its defects
@@ -325,12 +333,29 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   can't help there either: a cell holding eleven rows of content overruns its box, so the
   wrapped-cell guard excludes it. So the cell's own contents are the only evidence left,
   and four or more whitespace-separated values in one cell stands on its own.
-- **Recall is not claimed where two prose blocks claim one region.** The metric compares a
-  block's text against the glyphs in its box, which assumes the box is that block's alone.
-  Across 951 prose blocks the median overlap with a neighbour is zero and the 97th
-  percentile 0.085, so `_AMBIGUOUS_REGION_SHARE = 0.15` is far outside normal; past it the
-  block gets an informational region-boundary note instead of a recall action. This is the
-  honest form of the admission `quality.py` already makes about region-boundary accuracy.
+- **Recall is not claimed where a neighbour actually accounts for the missing words.**
+  The metric compares a block's text against the glyphs in its box, which assumes the box
+  is that block's alone. Across 951 prose blocks the median overlap with a neighbour is
+  zero and the 97th percentile 0.085, so `_AMBIGUOUS_REGION_SHARE = 0.15` is far outside
+  normal. Overlap alone is not enough to excuse a loss, though: the guard's claim is that
+  a missing word may belong to the neighbour, and `_record_neighbour_attribution` checks
+  it. Of 63 findings the overlap once silenced, 20 had every missing word present in an
+  overlapping block and 16 had none of them anywhere -- and poppler, reading the same
+  regions independently, corroborated 19 of the 24 it could judge, the same rate as the
+  findings the check does raise. Suppressing those was hiding content, not deferring on
+  it, so `missing_in_neighbour` now gates the note. This is the honest form of the
+  admission `quality.py` already makes about region-boundary accuracy.
+- **A block of one or two characters is a shattered fragment, not content.** Docling
+  breaks a display equation into per-glyph `paragraph` blocks -- one Atkins page yields
+  `A`, `d`, `G`, `dx`, `=m`, `p`, `,` as fourteen of them -- and emits them after the
+  prose they sit above. Three checks had to learn this separately. `reading_order`
+  excludes them from the flow (`_MIN_FLOW_CHARS`), via `_flow_blocks` so the order and
+  split-line checks cannot disagree about what a block is again: 20 order findings and 26
+  split-line findings cleared, and 3 order findings *revealed* where fragments had been
+  padding the ordered run. `record_block_recall` skips them when the source region is as
+  small as the output (`_FRAGMENT_TOKENS`, `_FRAGMENT_CHARS`) -- both sides must be tiny,
+  so a region holding a hundred words that emits two characters is still a catastrophic
+  loss, which is what keeps table blocks measured against their markup.
 - **A scan carrying someone else's OCR is detected and treated as a scan.** This is the one
   condition under which the whole verification layer inverts: the text layer exists, so
   nothing routes the page down the scanned path, and every glyph check then verifies the
@@ -374,7 +399,12 @@ scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs te
   same signal to decide what the finding may *claim*. Measured over the equations
   in bundles converted with formula enrichment on, 52 of 61 `suspect` verdicts came
   from a layer already marked unfit, so the finding reads "equation not verifiable"
-  at medium content impact rather than asserting the extraction is wrong. Agreement
+  and rides as informational rather than asserting the extraction is wrong. It is
+  informational because nothing is withheld: all 494 equations on formula-enabled
+  documents emit their LaTeX, and the 277 that are image-backed carry the `$$` block
+  under the crop. What is missing is a verdict, for a reason belonging to the page.
+  Raised as an action it was 231 entries across the corpora, 78 in one 25-page maths
+  paper. Agreement
   from an unfit layer still counts (9 equations verify that way), which is why the
   cross-check keeps running against it -- the asymmetry is the whole point.
   `_UNTERMINATED_ENVIRONMENT` also drops a runaway `\begin{array} { c c c ...`
