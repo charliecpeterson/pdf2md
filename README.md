@@ -916,17 +916,29 @@ out/<source-name>-<doc_id[:8]>/
   caption elements are no longer separately addressable. A failed or looping read gets
   a visible marker and the page raster. Use the MinerU engine when element structure and
   equation-level crops matter.
-- **Chart data is withheld far more often than it is wrong, and that is deliberate.**
+- **Chart data is withheld often, and what does ship is right about six times in ten.**
   Design rule 4 says a structured value ships only when its gate passes; for figures
-  that trade is now measured, on two small hand-labelled sets. Of figures whose printed
-  axes carry enough scale to recover numbers at all, roughly half are extracted (24 of
-  50 labelled figures were recoverable; 12 shipped). Of the numbers that do ship, 33 of
-  42 anchor points read by hand off the printed charts are matched, and 11 of 12
-  extractions land on at least one. Nothing in the labelled set invents data on a figure
-  that was never recoverable. The gaps are known and named rather than mysterious: bar
-  and category-axis charts, figures embedded as bitmaps, dual-axis figures, and second
-  panels whose range differs from the first. If you need a figure's numbers, the crop is
-  beside the data and is the authority. `scripts/eval_figure_axes.py` and
+  that trade is measured, on two small hand-labelled sets. Of figures whose printed axes
+  carry enough scale to recover numbers at all, about half are extracted: 23 of 50
+  labelled figures were recoverable and 11 shipped. Nothing in that set invents data on
+  a figure that was never recoverable.
+  Of the numbers that do ship, **45 of 73 anchor points (62%)** read by hand off the
+  printed charts are matched, and 18 of 19 extractions land on at least one. That
+  average hides the thing worth knowing, so here is the split by the confidence printed
+  beside every extraction:
+
+  | confidence | figures | anchor points matched |
+  |---|---|---|
+  | below 0.60 | 10 | 18/41 (44%) |
+  | 0.60 and above | 9 | 27/32 (84%) |
+
+  So below 0.60, rather more than half the shipped numbers are not on the printed
+  chart, usually because the figure emits one curve where the page draws three or four.
+  Treat a low-confidence chart extraction as a hint and read the crop. The gaps are
+  known and named rather than mysterious: bar and category-axis charts, figures embedded
+  as bitmaps, dual-axis figures whose tick text is outlined, and second panels whose
+  range differs from the first. If you need a figure's numbers, the crop is beside the
+  data and is the authority. `scripts/eval_figure_axes.py` and
   `scripts/eval_figure_values.py` reproduce both measurements.
 - **Reader agreement is not ground truth.** OCR candidates can contain a plausible
   wrong digit that two readers share. The crop remains authoritative unless a cell
