@@ -415,3 +415,51 @@ which `tests/fixtures/subplots.pdf` caught immediately.
 On cjk-sample the effect is exactly one figure: `#/pictures/8` goes from
 `extracted` at 0.667 to `data_withheld` at 0.0, and the document's two other
 extractions are untouched.
+
+## Bezier flattening, measured on the corpus (2026-09-03)
+
+Ran because the change touches every curve in the corpus while its evidence was
+one figure plus a labelled set that held at 21/23 — and held partly *because*
+those curves are densely drawn, the case where the old behaviour was already
+nearly right. Predictions were written first.
+
+**It fires and it does not break anything measured.** Points per extraction
+median 40 → 50, total 7,503 → 8,227. Accounting intact, nothing dropped. Both
+label sets are unchanged: values 35/42 anchors with zero extractions matching no
+anchor, axes precision 1.00 and recall 0.48.
+
+**Two directional predictions were wrong.** I expected extractions down a little
+and withheld up; extractions went 59 → 64 and withheld 15 → 11. The grid guard
+removes gridline paths, which lets some figures fall through to `_bar_series`
+instead of shipping junk, and 23 figures moved from `vector_archetype_unmatched`
+to `no_chart_geometry` because flattening changes what `_is_rect` accepts as a
+frame. No data is lost either way — both statuses mean nothing was extracted.
+
+**And it exposed a real interaction, which is why the run was worth doing.**
+`_tick_range_fraction` counts the share of *points* inside the tick range, so
+drawing a curve more densely dilutes its out-of-range points. Atkins
+#/pictures/96 kept byte-identical data — x -1243..1693, y -859..1950, against a
+printed axis of 0..450 and 0..600 — while its point count went 226 → 426, and its
+confidence drifted 0.486 → 0.511, straight through the emission floor. A figure
+verified wrong by eye now ships.
+
+Two redesigns were tried and both reverted, and the reason is worth recording
+because it bounds what this check can ever do:
+
+- **Per-series extent instead of per-point count** convicts Atkins
+  #/pictures/948, whose mapping is right (y ticks 0..40, data 0.35..43.07). Its
+  calibration comes from a *partial* tick set — 2 of the 5 printed ticks parse —
+  so the tick span understates the axis and any extent test reads good data as
+  out of range.
+- **A span-ratio test** fails the same figure for the same reason.
+
+The premise of the check is that the tick span approximates the axis range, and
+that premise breaks whenever ticks parse partially, which is common. So it cannot
+be made both density-independent and safe with the information it has. The four
+other figures that newly crossed the floor (0.507-0.552) look plausible, so
+raising `PLOT_DATA_MIN_CONFIDENCE` would withhold three or four good figures to
+catch one bad one, on one verified case.
+
+Left as is, with #/pictures/96 recorded as a known bad extraction. Settling it
+needs labelled values for the marginal band rather than a third guess at the
+statistic.
