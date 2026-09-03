@@ -722,6 +722,29 @@ diagnostic. The next work, if its prerequisite evidence appears, is:
   structure rather than remain review evidence.
 - Which chart-capable model and raster corpus are stable enough for the consensus
   A/B to answer a product question rather than measure endpoint failures.
+- **Detect-and-report versus correct.** olmOCR-bench scores emitted output, so it
+  can only reward correction, and two of the weakest subsets are exactly where
+  this project deliberately declines to correct: reading order (findings go to
+  review at 0.90 precision, emission keeps the engine's order, `order` 53.5%) and
+  tables (the glyph grid is written beside the table, never as it, `table`
+  63.4%). Auditability and score pull in opposite directions here. This should be
+  decided deliberately rather than drifted into, and it should not be decided by
+  a benchmark: the reason the grid stays beside the table is that an independent
+  reading is evidence, not truth. Recorded here because the measurement made the
+  tension concrete, not because the answer is obvious.
+- **Where the accounting invariant stops.** Measured over the whole benchmark,
+  every block pdf2md detected reached the output -- all 21 genuine text losses
+  were never detected as blocks at all (see `olmocr-bench-predictions.md`). The
+  guarantee is airtight and begins after the engine. Whether a page that yields
+  zero blocks while carrying ink should be visible as a flag rather than a
+  vacuously-satisfied `total_blocks: 0` is the open part; it affected 1 of 1,403
+  pages here, so there is no urgency, only a boundary.
+- **MinerU on scanned subsets.** Staged and blocked on installation. `old_scans`
+  is 21.5% and its `present` tests 12.2%, which is the OCR ceiling of the default
+  reader; this repo already measured Docling at 21% against MinerU's 99% on a
+  scanned data table. `scripts/run_olmocr_bench.py` now takes `--system`, so the
+  side-by-side runs as soon as a MinerU environment exists on the benchmark
+  machine.
 
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 

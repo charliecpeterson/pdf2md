@@ -284,3 +284,46 @@ So the honest figure for what inline emission could reach is a **range, 549 to
 Upper bound if every inline case converted: math 20.8% -> ~58%. That assumes
 each recovered expression then renders and matches, which some will not, so it
 is a ceiling and not a forecast.
+
+## `present`: the OCR ceiling, and the invariant holds
+
+`present` tests exist in only two subsets, both OCR-hard, which is most of the
+explanation before any measurement: `long_tiny_text` (442) and `old_scans` (279).
+Run per-test with olmOCR's own class, the split reconciles with the score exactly:
+
+| subset | pass rate |
+|---|---|
+| long_tiny_text | 268/442 (60.6%) |
+| old_scans | 34/279 (**12.2%**) |
+| overall | 302/721 (41.9%) |
+
+Poppler then adjudicates the 419 failures, refusing where there is no text layer
+to read, because on a scan its silence is not evidence:
+
+| | tests | share |
+|---|---|---|
+| no text layer, poppler cannot judge | 348 | 83.1% |
+| not in the layer either (OCR-only text) | 42 | 10.0% |
+| **poppler has it, we do not** | **21** | **5.0%** |
+| present in ours, test still failed | 8 | 1.9% |
+
+So 41.9% is the OCR ceiling showing up a third time, not a dropping defect.
+
+**All 21 genuine losses were never detected as a block.** Not one was detected
+and then lost, across 14 PDFs. The accounting invariant holds perfectly over the
+whole benchmark: every block pdf2md detected reached the output.
+
+### The boundary that finding draws
+
+The invariant guarantees that every *detected* block lands somewhere. It cannot
+see content the engine never proposed, and that is where all 21 losses live. The
+guarantee is airtight within its scope, and its scope begins after the engine.
+
+One page makes this concrete. `headers_footers/b4c3c4ac...page_3` produced the
+run's only empty candidate: 55 characters of text layer, Docling detected **zero
+blocks**, and the coverage report reads `total_blocks: 0` -- which satisfies
+"every block accounted for" vacuously. Here the outcome is defensible, since the
+page holds only a title, a collection number and a page number, all furniture.
+But nothing in the bundle would have said otherwise if it had held a paragraph.
+It is 1 of 1,403, so this is a boundary worth knowing rather than a defect worth
+fixing today.
