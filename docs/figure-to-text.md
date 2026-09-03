@@ -463,3 +463,41 @@ catch one bad one, on one verified case.
 Left as is, with #/pictures/96 recorded as a known bad extraction. Settling it
 needs labelled values for the marginal band rather than a third guess at the
 statistic.
+
+
+## The marginal confidence band, labelled (2026-09-03)
+
+Built to settle whether the emission floor is in the right place, after Bezier
+flattening pushed a figure verified wrong by eye (#/pictures/96) from 0.486 to
+0.511, through the floor. Ten of the corpus's 64 extractions sit below 0.60; the
+eight not already labelled were read off their crops and added, taking the set to
+20 figures and 75 anchors.
+
+**Scoring changed first, because the old rule was wrong.** An anchor used to match
+when *any* emitted point was near it, and #/pictures/96 scored 2 of 2 that way: a
+series sprawling over x -1243..1693 against a printed axis of 0..450 covers every
+anchor by coincidence. The rule now asks each series for its own point nearest in
+x and compares only that one -- does this curve pass through the place the page
+says it does. Numbers from before this change are not comparable with numbers
+after it.
+
+| band | figures | anchors matched |
+|---|---|---|
+| confidence < 0.60 | 10 | **18/41 (44%)** |
+| confidence >= 0.60 | 9 | **27/32 (84%)** |
+
+So the floor is in the wrong place: below 0.60 rather more than half the shipped
+numbers are not on the printed chart, and most of the misses are a figure
+emitting one curve where the page draws three or four.
+
+It is not a clean separator in either direction, which is why this is a decision
+rather than an obvious edit. Raising the floor to 0.60 would withhold
+grasp2018 #/pictures/7 (0.530, 3/3) and 2207.10841v3 #/pictures/1 (0.595, 5/7),
+both good; and it would keep wires-2020 #/pictures/47 (0.600, 1/5), which is the
+dual-axis figure whose ticks are outlined so the colour fix cannot reach it.
+
+The trade at a 0.60 floor: withhold 10 figures carrying 18 correct anchors and 23
+wrong ones, keep 9 carrying 27 correct and 5 wrong. Given design rule 4 -- a
+structured value ships only when its gate passes, and the crop is beside it
+either way -- that trade looks right, but it changes what the tool publishes and
+so is left to a decision rather than taken here.

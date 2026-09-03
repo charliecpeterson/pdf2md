@@ -46,13 +46,26 @@ def _near(value: float, target: float, axis: dict, tol: float) -> bool:
 
 
 def score(row: dict, series: list) -> tuple[int, int, list]:
+    """An anchor matches when some SERIES passes through it.
+
+    Not when some point does. "Any point near the anchor" rewards sprawl: Atkins
+    #/pictures/96 emits 426 points spanning x -1243..1693 against a printed axis of
+    0..450, which is verifiably wrong, and it scored 2 of 2 because a series that
+    covers everything covers the anchors too. Asking each series for its own nearest
+    point in x, and comparing only that one, is the question actually meant -- does
+    this curve pass through the place the page says it does."""
     matched, misses = 0, []
     for anchor in row["anchors"]:
-        hit = any(
-            _near(x, anchor["x"], row["x_axis"], _X_TOL)
-            and _near(y, anchor["y"], row["y_axis"], _Y_TOL)
-            for s in series for x, y in s
-        )
+        hit = False
+        for one in series:
+            near_x = [(x, y) for x, y in one
+                      if _near(x, anchor["x"], row["x_axis"], _X_TOL)]
+            if not near_x:
+                continue
+            x, y = min(near_x, key=lambda p: abs(p[0] - anchor["x"]))
+            if _near(y, anchor["y"], row["y_axis"], _Y_TOL):
+                hit = True
+                break
         matched += hit
         if not hit:
             misses.append(anchor)

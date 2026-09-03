@@ -438,5 +438,305 @@
    }
   ],
   "note": "six panels, log y; anchors from panels (a), (d), (f)"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/1107",
+  "page": 854,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 0.507,
+  "x_axis": {
+   "min": 0,
+   "max": 50,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 0,
+   "max": 1,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 50,
+    "y": 0.92
+   },
+   {
+    "x": 50,
+    "y": 0.83
+   },
+   {
+    "x": 50,
+    "y": 0.68
+   },
+   {
+    "x": 10,
+    "y": 0.68
+   }
+  ],
+  "note": "three curves (5/10/20); kb(E)/kb vs E/E* [marginal band: shipped at confidence 0.507]"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/1095",
+  "page": 843,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 0.509,
+  "x_axis": {
+   "min": 0,
+   "max": 3,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 0,
+   "max": 1,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 3,
+    "y": 0.94
+   },
+   {
+    "x": 0.28,
+    "y": 0.77
+   },
+   {
+    "x": 3,
+    "y": 0.06
+   },
+   {
+    "x": 0.05,
+    "y": 1.0
+   }
+  ],
+  "note": "three curves [A],[I],[P] over ka*t [marginal band: shipped at confidence 0.509]"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/96",
+  "page": 98,
+  "method": "vector-path/ocr-axes",
+  "kind": "line",
+  "confidence": 0.511,
+  "x_axis": {
+   "min": 0,
+   "max": 450,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 0,
+   "max": 600,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 300,
+    "y": 425
+   },
+   {
+    "x": 300,
+    "y": 196
+   }
+  ],
+  "note": "Joule-Thomson inversion; the two anchors are the marked upper/lower inversion temperatures at p=300 [marginal band: shipped at confidence 0.511]"
+ },
+ {
+  "document": "peterson-074105-1c304960",
+  "source_sha256": "1c304960a10aa0ed809a48a79413e9458cd568656da2c946115f7f9682b6ba4f",
+  "block_id": "#/pictures/7",
+  "page": 4,
+  "method": "vector-path/ocr-axes",
+  "kind": "line",
+  "confidence": 0.513,
+  "x_axis": {
+   "min": 1,
+   "max": 4,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 0.8,
+   "max": 100,
+   "kind": "log"
+  },
+  "anchors": [
+   {
+    "x": 1,
+    "y": 95
+   },
+   {
+    "x": 1,
+    "y": 75
+   },
+   {
+    "x": 1,
+    "y": 1.95
+   },
+   {
+    "x": 1,
+    "y": 8.3
+   },
+   {
+    "x": 4,
+    "y": 1.7
+   }
+  ],
+  "note": "log-y scatter with grouping ellipses; y cannot be negative [marginal band: shipped at confidence 0.513]"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/806",
+  "page": 616,
+  "method": "vector-path/ocr-axes",
+  "kind": "line",
+  "confidence": 0.552,
+  "x_axis": {
+   "min": -10,
+   "max": 10,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 0,
+   "max": 1,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": -10,
+    "y": 0.53
+   },
+   {
+    "x": 10,
+    "y": 0.49
+   },
+   {
+    "x": -10,
+    "y": 0.68
+   },
+   {
+    "x": 10,
+    "y": 0.68
+   }
+  ],
+  "note": "three stacked panels; anchors from the two whose y runs 0..1 [marginal band: shipped at confidence 0.552]"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/132",
+  "page": 144,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 0.584,
+  "x_axis": {
+   "min": 0,
+   "max": 100,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 1,
+   "max": 3,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 100,
+    "y": 1.28
+   },
+   {
+    "x": 100,
+    "y": 1.53
+   },
+   {
+    "x": 100,
+    "y": 1.7
+   },
+   {
+    "x": 0,
+    "y": 1.0
+   }
+  ],
+  "note": "two panels of ~8 fugacity curves; anchors from the left panel [marginal band: shipped at confidence 0.584]"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/115",
+  "page": 122,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 0.593,
+  "x_axis": {
+   "min": 1,
+   "max": 30,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 0,
+   "max": 15,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 30,
+    "y": 3.4
+   },
+   {
+    "x": 30,
+    "y": 6.8
+   },
+   {
+    "x": 30,
+    "y": 10.2
+   },
+   {
+    "x": 30,
+    "y": 13.6
+   }
+  ],
+  "note": "four curves, dS/nR = n*ln(Tf/Ti): analytic ground truth at x=30 [marginal band: shipped at confidence 0.593]"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/1098",
+  "page": 845,
+  "method": "vector-path/ocr-axes",
+  "kind": "line",
+  "confidence": 0.599,
+  "x_axis": {
+   "min": 0,
+   "max": 3,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 0,
+   "max": 1,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 0,
+    "y": 1.0
+   },
+   {
+    "x": 3,
+    "y": 0.05
+   },
+   {
+    "x": 3,
+    "y": 0.96
+   },
+   {
+    "x": 0.2,
+    "y": 0.08
+   }
+  ],
+  "note": "three curves [A],[I],[P] over ka*t [marginal band: shipped at confidence 0.599]"
  }
 ]
