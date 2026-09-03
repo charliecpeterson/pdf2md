@@ -120,6 +120,46 @@ def _latex_tokens(latex: str) -> set[str]:
     return set(_TOKEN.findall(_STRUCT.sub(" ", s)))
 
 
+# Docling's formula model runs to a generation cap and pads the remainder with a
+# repeating unit, so a correct equation ends in thousands of characters of filler:
+# `\quad \ \ \ ...`, `& & & &`, or `\Gamma _ { \Gamma _ {` nested 492 deep. Measured
+# over 2,766 equations across the working corpus and the olmOCR-bench bundles the two
+# populations are bimodal and separate cleanly. The longest repeating tail on
+# legitimate LaTeX is 75 characters (a fraction table, and `f ( \mathbf r ^ { \prime
+# } ) d \mathbf r ^ { \prime }`); nothing at all lands in 100-199; the 85 degenerate
+# equations run from 257 to 7,013. 200 sits in that empty band with a 2.7x margin.
+# Trimming recovers real content rather than withholding it -- one paper's CBS
+# extrapolation formula is the first 80 characters of a 4,070-character block.
+_MAX_TAIL_REPEAT = 200
+# Long enough to catch a repeated `& & & & \\ ` alignment unit, short enough that the
+# scan stays linear in practice. The widest degenerate period measured is 40.
+_TAIL_PERIOD = 40
+
+
+def _tail_run(latex: str) -> int:
+    """Length of the longest suffix that repeats with some period <= _TAIL_PERIOD."""
+    longest = 0
+    for period in range(1, min(_TAIL_PERIOD, len(latex) // 2) + 1):
+        i = len(latex) - 1 - period
+        while i >= 0 and latex[i] == latex[i + period]:
+            i -= 1
+        longest = max(longest, len(latex) - 1 - i)
+    return longest
+
+
+def trim_runaway_repetition(latex: str) -> tuple[str, int]:
+    """Drop a runaway repeating tail, returning the kept LaTeX and characters cut.
+
+    What survives can still be unusable -- eight corpus equations trim down to a bare
+    `\\begin{array} {`, which is the verdict _UNTERMINATED_ENVIRONMENT already reaches
+    about an unterminated spec. Judging that is the caller's job; this only cuts.
+    """
+    run = _tail_run(latex)
+    if run < _MAX_TAIL_REPEAT:
+        return latex, 0
+    return latex[: len(latex) - run].rstrip(), run
+
+
 def assess_equation(latex: str, text_layer: str) -> tuple[float, str | None] | None:
     """Return (confidence, reading), or None when the text layer is too sparse to
     judge. `reading` is the cleaned text-layer string when the extraction is

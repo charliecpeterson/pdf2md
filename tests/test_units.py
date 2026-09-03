@@ -1460,6 +1460,37 @@ def test_rejoin_split_word():
     assert rejoin_split_word("Lo wdin", vocabulary("unrelated")) == "Lo wdin"
 
 
+def test_runaway_repetition_is_trimmed_but_legitimate_tails_are_kept():
+    """The generation cap pads a correct formula with a repeating unit.
+
+    Thresholds come from 2,766 equations across two corpora: the longest tail on
+    legitimate LaTeX is 75 characters, nothing lands in 100-199, and degeneration
+    runs from 257 up. Both directions are pinned, because a guard tested only on
+    the cases it should catch is how one ships that eats real content.
+    """
+    from pdf2md.confidence import trim_runaway_repetition
+
+    formula = r"E _ { n } = E _ { C B S } + A ( n + 1 ) e ^ { - 6 . 5 7 \sqrt { n } }"
+    padded = formula + r" \quad" + r" \ " * 900
+    kept, cut = trim_runaway_repetition(padded)
+    assert kept == formula + r" \quad"
+    assert cut == len(padded) - len(kept)
+
+    # An unterminated column spec trims to nothing usable, which is the same verdict
+    # _UNTERMINATED_ENVIRONMENT already reaches about it.
+    array = r"\begin{array} {" + " c" * 2000
+    kept, cut = trim_runaway_repetition(array)
+    assert kept == r"\begin{array} {"
+    assert cut == 4000
+
+    # Legitimate: a fraction table whose repeating tail is far below the threshold.
+    fractions = " ".join(rf"\frac {{ 1 }} {{ {n} }} &" for n in range(2, 10))
+    assert trim_runaway_repetition(fractions) == (fractions, 0)
+
+    short = r"f ( \mathbf r ^ { \prime } ) \, d \mathbf r ^ { \prime }"
+    assert trim_runaway_repetition(short) == (short, 0)
+
+
 def test_assess_equation():
     from pdf2md.confidence import assess_equation
 

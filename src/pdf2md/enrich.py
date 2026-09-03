@@ -20,7 +20,12 @@ from pathlib import Path
 import pypdfium2 as pdfium
 import pypdfium2.raw as pdfium_c
 
-from pdf2md.confidence import SCRAMBLED_ABOVE, assess_equation, is_clean
+from pdf2md.confidence import (
+    SCRAMBLED_ABOVE,
+    assess_equation,
+    is_clean,
+    trim_runaway_repetition,
+)
 from pdf2md.conservation import numeric_accounting, numeric_conservation, semantic_output
 from pdf2md.logging import get_logger
 from pdf2md.legibility import is_garbage
@@ -243,6 +248,10 @@ def enrich_blocks(blocks: list[Block], glyphs) -> None:
             b.text = religatured(b.text, glyphs.vocab)
             b.text = apply_scripts(b.text, pc.scored_region(b.bbox))
         elif b.type is BlockType.EQUATION and b.bbox is not None:
+            # Before the cross-check, or it scores the padding rather than the formula.
+            b.text, runaway = trim_runaway_repetition(b.text)
+            if runaway:
+                b.extra["runaway_trimmed"] = runaway
             if pc is not None:
                 tl = pc.text_region(b.bbox)
                 assessed = assess_equation(b.text, tl)
