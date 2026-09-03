@@ -1775,3 +1775,4 @@ def test_each_panel_is_checked_against_its_own_ticks():
     lower_series = [[(0.0, 100.0), (5.0, 50.0), (10.0, 0.0)]]
     assert _tick_range_fraction(lower_series, bottom) == 1.0
     assert _tick_range_fraction(lower_series, top) < 1.0
+

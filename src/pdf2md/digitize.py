@@ -1187,8 +1187,6 @@ def vector_ocr_digitize_page(
     if not series:
         return None
     confidence = round(min(confs) * 0.9, 3)  # OCR-read ticks: haircut vs the text layer
-    if confidence < _PANEL_FLOOR:
-        return None  # not printable; leave the figure to the crop (or the VLM tier)
     npts = sum(len(s) for s in series)
     multi = len(confs) > 1
     note = ("vector curve paths with OCR-read axes (tick text is outlined to paths; "
@@ -1197,6 +1195,12 @@ def vector_ocr_digitize_page(
             + f"{len(series)} series / {npts} points (min fit R^2={min(r2s):.3f})"
             + (f"; {skipped} weakly-calibrated panel(s) skipped" if skipped else "")
             + " — verify the axis ranges against the image")
+    # A candidate below the floor is returned rather than dropped, so the figure
+    # records that one existed and was withheld. Returning None instead left it
+    # reading as "the axis calibration failed", which is a different and untrue
+    # statement -- the tick-range check moved six Atkins figures into that lie
+    # before this, among them #/pictures/96, whose data ran to x -1243..1693
+    # against a printed axis of 0..450.
     return Digitization(series, "vector-path/ocr-axes", confidence, note,
                         x_kind=cals[0].x_kind, y_kind=cals[0].y_kind,
                         kind=_dominant_kind(kinds),
