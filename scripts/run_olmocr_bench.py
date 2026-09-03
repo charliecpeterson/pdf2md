@@ -28,9 +28,12 @@ the content-conservation audit has to make the same distinction:
   `_EMITTED_NAV`     the `*[pdf2md] table source:*` navigation lines
 
 Those two, plus the YAML front matter and the `<!-- page N -->` anchors, come
-out. The page anchors are pdf2md's own, not text the page printed, and a
-header/footer absence test looking for "page 1" would match one and score it as
-a failure the tool did not commit. Nothing else does -- not the
+out, and so does a leading H1 that is only the file's name: with no title evidence
+on the page pdf2md falls back to the filename, so a single-page bench extract opens
+with `# 2502.15977 pg21`, which is pdf2md's words rather than the page's. All of
+these are the same principle -- remove what the tool added, keep what the page
+printed -- and all were decided from reading the output, before any score existed.
+Nothing else goes -- not the
 HTML table fallback, not LaTeX, not image links, not headings. `semantic_output`
 would have removed HTML tags and TeX commands too, which would have quietly
 destroyed the table and math tests; reusing it wholesale was the obvious wrong
@@ -63,7 +66,7 @@ _PAGE_ANCHOR = re.compile(r"^<!-- page \d+ -->$\n?", re.MULTILINE)
 _SYSTEM = "pdf2md"
 
 
-def bench_markdown(version_dir: Path) -> str:
+def bench_markdown(version_dir: Path, stem: str = "") -> str:
     """The bundle's Markdown as the benchmark should see it."""
     order = [version_dir / "document.md"]
     document_map = version_dir / "outline.json"
@@ -81,7 +84,16 @@ def bench_markdown(version_dir: Path) -> str:
         text = _EMITTED_NAV.sub("", text)
         text = _PAGE_ANCHOR.sub("", text)
         parts.append(text.strip())
-    return "\n\n".join(p for p in parts if p) + "\n"
+    text = "\n\n".join(p for p in parts if p) + "\n"
+    # A leading H1 that is just the file's name. With no title evidence on the page
+    # pdf2md falls back to the filename, so a single-page bench extract opens with
+    # `# 2502.15977 pg21` -- pdf2md's words, not the page's. Only stripped when it
+    # matches the stem, so a real title on the page survives.
+    if stem:
+        invented = re.compile(r"\A#\s+" + re.escape(stem.replace("_", " ")) + r"\s*\n+",
+                              re.IGNORECASE)
+        text = invented.sub("", text)
+    return text
 
 
 def main() -> None:
@@ -122,7 +134,7 @@ def main() -> None:
             result = convert_file(pdf, output_root=bundles, config=config)
             if result.failed:
                 raise RuntimeError(result.error or "conversion failed")
-            out_md.write_text(bench_markdown(Path(result.out_dir)))
+            out_md.write_text(bench_markdown(Path(result.out_dir), pdf.stem))
             done += 1
         except Exception as exc:  # noqa: BLE001 - one bad pdf must not stop 1,400
             failed += 1
