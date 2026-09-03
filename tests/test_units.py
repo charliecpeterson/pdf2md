@@ -1863,3 +1863,26 @@ def test_a_grid_of_rectangles_is_not_a_data_curve():
 
     curve = [(50.0 + 10 * i, 100.0 + 7 * i + (i % 3)) for i in range(20)]
     assert _axis_aligned(curve) is False
+
+
+def test_a_second_axis_the_ocr_tier_cannot_assign_is_withheld():
+    from pdf2md.digitize import _fit_right_axis
+
+    # The vector tier tells which curve belongs to which scale by the colour of the
+    # tick labels. A figure reaches the OCR tier precisely because its tick text is
+    # outlined to paths, so there are no text objects and no colours -- and on
+    # wires-2020 #/pictures/47 all five bar colours appear on both scales anyway.
+    # Detecting the axis is what lets that tier withhold instead of shipping the
+    # right-hand bars out by a factor of ten.
+    frame = [(100.0, 100.0), (400.0, 100.0), (400.0, 400.0), (100.0, 400.0)]
+    right = [(0.0, 430.0, 100.0), (1.0, 430.0, 250.0), (2.0, 430.0, 400.0)]
+    assert _fit_right_axis(right, frame) is not None
+
+    # A neighbouring panel's y axis sits in the same band and is not a second scale.
+    # wires-2020 #/pictures/26 is two parity plots side by side and was withheld for
+    # it, though it matches 3 of its 4 labelled anchors.
+    neighbour = [(420.0, 100.0), (700.0, 100.0), (700.0, 400.0), (420.0, 400.0)]
+    assert _fit_right_axis(right, frame, [neighbour]) is None
+
+    # One stray number to the right is not an axis.
+    assert _fit_right_axis([(7.0, 430.0, 250.0)], frame) is None

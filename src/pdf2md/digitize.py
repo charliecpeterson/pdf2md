@@ -394,21 +394,41 @@ def _right_axis_ticks(page, frame):
     return out
 
 
-def _second_y_axis(page, frame):
-    """`(position -> value, kind, tick colour)` for a right-hand y axis, or None.
+def _fit_right_axis(ticks, frame, others=()):
+    """`(position -> value, kind)` for a right-hand y axis, or None.
 
-    None unless at least two right-side ticks fit a line cleanly: a stray number
-    beside a plot is not an axis, and inventing a second scale is worse than missing
-    one."""
-    ticks = _right_axis_ticks(page, frame)
-    if len(ticks) < 2:
+    `ticks` are `(value, page_x, page_y)`. None unless at least two of them sit in
+    the band right of the frame and fit a line cleanly: a stray number beside a plot
+    is not an axis, and inventing a second scale is worse than missing one. Shared by
+    both tiers -- the vector one reads the ticks off text objects, the OCR one off the
+    rendered crop -- because the geometry question is the same."""
+    fx0, fx1, fy0, fy1 = _fbox(frame)
+    fw, fh = fx1 - fx0, fy1 - fy0
+    lefts = [_fbox(o)[0] for o in others if _fbox(o)[0] > fx1]
+    mine = [(v, py) for v, px, py in ticks
+            if fx1 + 2 < px <= fx1 + 0.4 * fw + 2
+            and fy0 - 0.05 * fh <= py <= fy1 + 0.05 * fh
+            # A tick nearer some other frame's left edge than this frame's right one
+            # is that frame's y axis, not a second scale on this one. Side-by-side
+            # panels put the next panel's axis squarely in this band: wires-2020
+            # #/pictures/26 is two parity plots and was withheld for it, though it
+            # scores 3 of 4 labelled anchors.
+            and not any(abs(px - l) < px - fx1 for l in lefts)]
+    if len(mine) < 2:
         return None
-    pairs, _flipped = restore_signs(sorted(((v, p) for v, p, _c in ticks), key=lambda t: t[1]))
+    pairs, _flipped = restore_signs(sorted(mine, key=lambda t: t[1]))
     fy, r2, kind = fit_axis(pairs)
-    if r2 < 0.98:
+    return (fy, kind) if r2 >= 0.98 else None
+
+
+def _second_y_axis(page, frame):
+    """A right-hand y calibration and the colour its ticks are drawn in, or None."""
+    ticks = _right_axis_ticks(page, frame)
+    fitted = _fit_right_axis([(v, _fbox(frame)[1] + 3, p) for v, p, _c in ticks], frame)
+    if fitted is None:
         return None
     colours = Counter(c for _v, _p, c in ticks if c is not None)
-    return fy, kind, (colours.most_common(1)[0][0] if colours else None)
+    return fitted[0], fitted[1], (colours.most_common(1)[0][0] if colours else None)
 
 
 def _traces_the_frame(poly, frame) -> bool:
@@ -620,8 +640,11 @@ def _panel_series(pg, panels, polys, forms, colours=None):
         if not series:  # no markers either -> try bars on a common baseline
             series = _bar_series(mine, frame, cal.fx, cal.fy)
             kind = "bar"
-        if not series:
+        if not series and not theirs:
             continue
+        # `theirs` alone is a panel: when every curve belongs to the right axis,
+        # `mine` is empty and the left-scale readers find nothing, which used to
+        # drop the panel before the right-scale series were ever added.
         # A mapping can be arithmetically perfect and still send the data nowhere
         # near the ticks it was built from. Two ticks always fit a line exactly, so
         # r2 cannot object to that; this can. Per panel, because each panel has its
@@ -769,6 +792,21 @@ def vector_ocr_digitize_page(
     panels = [(fr, cal) for fr in frames if (cal := _fit_ticks(fr, ticks)) is not None]
     if not panels:
         return None
+    # A second y axis this tier cannot assign. The vector tier tells which curve
+    # belongs to which scale by colour, taken from the PDF's text objects -- but a
+    # figure reaches THIS tier precisely because its tick text is outlined to paths,
+    # so there are no text objects and no colours to compare. wires-2020
+    # #/pictures/47 is the case: grouped bars where all five colours appear on both
+    # scales anyway, split only by which category group they sit in. Shipping them on
+    # one scale puts the right-axis bars out by a factor of ten, which is what it did
+    # -- 1 of 5 labelled anchors. Withheld rather than half-right.
+    if any(_fit_right_axis(ticks, fr, frames) is not None for fr, _cal in panels):
+        return Digitization(
+            [], "vector-path/ocr-axes", 0.0,
+            "a second y axis was read to the right of the plot, and this tier has no "
+            "colour to tell which series belongs to which scale — read the values off "
+            "the image",
+        )
     forms = (
         geometry.forms
         if geometry is not None and geometry.forms is not None

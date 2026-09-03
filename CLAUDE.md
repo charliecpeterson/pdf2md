@@ -393,6 +393,20 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   every candidate path in the labelled figures the distribution is bimodal — 45 at or
   below 0.3, 12 at 1.0, nothing between 0.6 and 1.0 — so the rule sits in an empty band.
   Bars are axis-aligned too; removing them here is what lets them reach `_bar_series`.
+- **The tier that cannot see colour cannot assign a second axis, so it withholds.**
+  A figure reaches `vector_ocr_digitize_page` precisely because its tick text is
+  outlined to paths — which is also why it has no text objects and no colours to match
+  a curve to a scale. `_fit_right_axis` (shared with the vector tier) detects the axis
+  from the OCR'd ticks, and the tier then returns an empty candidate with a note rather
+  than mapping everything on the left scale: wires-2020 #/pictures/47 was shipping its
+  right-hand bars out by a factor of ten (1 of 5 labelled anchors), and Atkins
+  #/pictures/1248 both its E/V and P/(W cm⁻²) curves on the E/V scale. 2 of 15 OCR-tier
+  extractions withheld. **A tick nearer another frame's left edge than this frame's
+  right edge is that frame's axis** — side-by-side panels put the next panel's y axis
+  squarely in the band, and without that exclusion wires-2020 #/pictures/26 (two parity
+  plots, 3 of 4 anchors) was withheld too. Colour cannot always resolve it even when
+  available: #/pictures/47 uses the same five bar colours on both scales, split only by
+  category group, which is why withholding rather than guessing is the rule.
 - **A figure with two y scales is drawn so a reader can tell which curve is which, and
   colour is how.** `_fit_ticks` looks only left of the frame and `_neighborhood` reaches
   barely past its right edge — both deliberate, to keep a neighbouring subplot's labels
