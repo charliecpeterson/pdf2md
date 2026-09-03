@@ -24,7 +24,7 @@ recovery, the glyph-verified table pass.
 |---|---|---|---|
 | baseline | 1,403 | **>95%** | one test per page that some content is present; anything else is a plumbing failure, and at 135 files converted it was already passing on essentially all of them |
 | present | 721 | tracks Docling | pdf2md emits the engine's text; the repairs help only where a font is broken |
-| **absent** | 823 | **poor, and by design** | see below |
+| **absent** | 823 | **poor** | see below — a detection gap, not a design choice |
 | order | 1,061 | tracks Docling | pdf2md *reports* a reading-order defect, it does not reorder. The check measured at 0.90 precision changes review output, not emission |
 | table | 1,020 | tracks Docling, marginally better | the glyph grid is evidence written beside the table, never the emitted table. Only the ligature and refill repairs reach the cells a scorer reads |
 | math | 3,385 | tracks Docling where formula enrichment ran | pdf2md emits Docling's LaTeX; its own contribution is to *flag* a suspect equation, not to improve it |
