@@ -1776,3 +1776,24 @@ def test_each_panel_is_checked_against_its_own_ticks():
     assert _tick_range_fraction(lower_series, bottom) == 1.0
     assert _tick_range_fraction(lower_series, top) < 1.0
 
+
+
+def test_a_path_that_only_traces_the_axes_box_is_not_data():
+    from pdf2md.digitize import _data_series, _traces_the_frame
+
+    frame = [(100.0, 100.0), (500.0, 100.0), (500.0, 400.0), (100.0, 400.0)]
+    # GRASP2018 #/pictures/3 draws its border as two triangles, which `_is_rect`
+    # does not catch. They span the full plot width, are not flat, sit inside the
+    # tick range by construction and calibrate perfectly -- so the figure shipped
+    # its own axes box as data at confidence 0.9 while the hundred printed scatter
+    # points went missing.
+    triangle = [(100.0, 100.0), (500.0, 100.0), (100.0, 400.0)]
+    assert _traces_the_frame(triangle, frame) is True
+
+    # A real trace crosses the interior, even when its ends touch the border.
+    curve = [(100.0, 400.0), (200.0, 250.0), (300.0, 180.0), (500.0, 120.0)]
+    assert _traces_the_frame(curve, frame) is False
+
+    ident = (lambda v: v)
+    assert _data_series([triangle], frame, ident, ident) == []
+    assert len(_data_series([curve], frame, ident, ident)) == 1

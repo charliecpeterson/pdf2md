@@ -435,13 +435,36 @@ def _calibrate_groups(frame, groups):
     return _fit_ticks(frame, ticks)
 
 
+# How far off the frame's own edge a vertex may sit and still count as on it.
+# The border is drawn on the edge; a data point that merely touches it arrives
+# with company, which is what `_traces_the_frame` requires.
+_ON_FRAME_PT = 0.75
+
+
+def _traces_the_frame(poly, frame) -> bool:
+    """Whether every vertex of `poly` sits on the frame's border.
+
+    `_is_rect` catches a border drawn as one rectangle. GRASP2018 #/pictures/3
+    draws it as two triangles instead, and those sailed through every guard:
+    they span the full plot width, they are not flat, they sit inside the tick
+    range by construction, and their calibration is perfect. The figure shipped
+    the axes box as its data at confidence 0.9, with the hundred printed scatter
+    points absent. Nothing but the vertices themselves says so."""
+    x0, x1, y0, y1 = _fbox(frame)
+    return all(
+        min(abs(x - x0), abs(x - x1)) <= _ON_FRAME_PT
+        or min(abs(y - y0), abs(y - y1)) <= _ON_FRAME_PT
+        for x, y in poly
+    )
+
+
 def _data_series(polys, frame, fx, fy) -> list[list[tuple[float, float]]]:
     """Curves that span most of the plot width: the actual data traces, not markers
     (small) or gridlines (flat). Each vertex is mapped to data coordinates."""
     fw = max(x for x, _ in frame) - min(x for x, _ in frame)
     out = []
     for p in polys:
-        if _is_rect(p):
+        if _is_rect(p) or _traces_the_frame(p, frame):
             continue
         xext = max(x for x, _ in p) - min(x for x, _ in p)
         yext = max(y for _, y in p) - min(y for _, y in p)
