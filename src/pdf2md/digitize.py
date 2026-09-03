@@ -44,6 +44,8 @@ from pdf2md.schema import BBox, Digitization
 _NUMBER = re.compile(r"-?\d+(?:\.\d+)?")
 # How much better a log fit must be than a linear one to be believed.
 _LOG_MARGIN = 0.01
+# Share of a path's segments that must run along or up before it reads as a grid.
+_AXIS_ALIGNED_SHARE = 0.9
 
 
 @runtime_checkable
@@ -426,13 +428,38 @@ def _traces_the_frame(poly, frame) -> bool:
     )
 
 
+def _axis_aligned(poly) -> bool:
+    """Whether the path only ever runs along or up -- a grid, not a curve.
+
+    A drawn grid is one path of closed rectangles: Atkins Fig. 3.4's is
+    `(421.2, 703.1) -> (458.4, 703.1) -> (458.4, 665.4) -> (421.2, 665.4) -> ...`.
+    `_is_rect` misses it because it is many rectangles rather than one, and it spans
+    the plot and is not flat, so nothing else stopped it either -- that figure shipped
+    its gridlines as a 60-point series at confidence 0.999.
+
+    A *share* rather than all of them, because concatenating disjoint subpaths into one
+    point list leaves a jump between each rectangle and the next: 57 of that path's 59
+    segments are axis-aligned and the 2 that are not are those jumps. Measured over
+    every candidate path in the labelled figures, the distribution is bimodal -- 45 at
+    or below 0.3 and 12 at 1.0, with nothing at all between 0.6 and 1.0 -- so the rule
+    sits in an empty band rather than on a judgement call.
+
+    Bars are axis-aligned too. Removing them here is what lets them reach
+    `_bar_series`, which reads them from the rectangles properly."""
+    segments = [(abs(b[0] - a[0]), abs(b[1] - a[1])) for a, b in zip(poly, poly[1:])]
+    if len(segments) < 2:
+        return False
+    aligned = sum(1 for dx, dy in segments if dx < 1e-6 or dy < 1e-6)
+    return aligned / len(segments) >= _AXIS_ALIGNED_SHARE
+
+
 def _data_series(polys, frame, fx, fy) -> list[list[tuple[float, float]]]:
     """Curves that span most of the plot width: the actual data traces, not markers
     (small) or gridlines (flat). Each vertex is mapped to data coordinates."""
     fw = max(x for x, _ in frame) - min(x for x, _ in frame)
     out = []
     for p in polys:
-        if _is_rect(p) or _traces_the_frame(p, frame):
+        if _is_rect(p) or _traces_the_frame(p, frame) or _axis_aligned(p):
             continue
         xext = max(x for x, _ in p) - min(x for x, _ in p)
         yext = max(y for _, y in p) - min(y for _, y in p)

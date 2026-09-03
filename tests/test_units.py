@@ -1837,3 +1837,29 @@ def test_a_log_axis_must_beat_a_line_by_more_than_a_rounding_error():
     decades = [(1e-5, 100.0), (1e-4, 200.0), (1e-3, 300.0), (1e-2, 400.0)]
     _map, _r2, kind = fit_axis(decades)
     assert kind == "log"
+
+
+def test_a_bezier_curve_is_read_on_the_curve_not_at_its_controls():
+    from pdf2md.figure_geometry import _BEZIER_STEPS, _segment_points
+
+    # pdfium reports a cubic as three BEZIERTO segments -- two control points and the
+    # endpoint -- and taking all three put the controls, which are not on the curve,
+    # into the series. Atkins Fig. 3.4 draws ln(Vf/Vi) as a few long Beziers and came
+    # back with (2.95, 1.86) where the printed curve passes through (2.95, 1.08).
+    assert _BEZIER_STEPS >= 4
+
+
+def test_a_grid_of_rectangles_is_not_a_data_curve():
+    from pdf2md.digitize import _axis_aligned
+
+    # One path holding many closed rectangles, with a jump between each: 57 of its 59
+    # segments run along or up, and the 2 that do not are the jumps. Requiring all of
+    # them let Atkins Fig. 3.4 ship its gridlines as a 60-point series at 0.999.
+    grid = []
+    for row in range(4):
+        y0, y1 = 100.0 + 40 * row, 140.0 + 40 * row
+        grid += [(50.0, y1), (250.0, y1), (250.0, y0), (50.0, y0), (50.0, y1)]
+    assert _axis_aligned(grid) is True
+
+    curve = [(50.0 + 10 * i, 100.0 + 7 * i + (i % 3)) for i in range(20)]
+    assert _axis_aligned(curve) is False

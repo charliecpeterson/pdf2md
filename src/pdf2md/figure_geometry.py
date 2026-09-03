@@ -47,17 +47,54 @@ def _walk(page):
         yield o, parent
 
 
+_BEZIER_STEPS = 8  # points emitted along each cubic; a curve read at its control
+                   # points can miss the curve entirely, at 8 it is visually exact
+
+
 def _segment_points(obj, container=_IDENT) -> list[tuple[float, float]]:
-    """Path segment vertices, transformed by the object matrix — and the enclosing form
-    chain's — into page points."""
+    """Path vertices in page points, with cubic Beziers flattened onto the curve.
+
+    pdfium reports a cubic as three BEZIERTO segments -- two control points and the
+    endpoint -- and taking all three as data puts the control points, which are not
+    on the curve, into the series. On a curve drawn as a few long Beziers that is the
+    whole reading: Atkins Fig. 3.4 is `ln(Vf/Vi)` and came back with (2.95, 1.86)
+    where the printed curve passes through (2.95, 1.08). A curve drawn as many short
+    Beziers hides the error, which is why it did not show up in the aggregate.
+
+    Transformed by the object matrix and the enclosing form chain's."""
     a, b, c, d, e, f = _compose(container, _mat(obj))
-    pts = []
+
+    def page_point(x, y):
+        return (a * x + c * y + e, b * x + d * y + f)
+
+    raw = []
     for i in range(C.FPDFPath_CountSegments(obj)):
         seg = C.FPDFPath_GetPathSegment(obj, i)
         x, y = ctypes.c_float(), ctypes.c_float()
         C.FPDFPathSegment_GetPoint(seg, ctypes.byref(x), ctypes.byref(y))
-        pts.append((a * x.value + c * y.value + e,
-                    b * x.value + d * y.value + f))
+        raw.append((C.FPDFPathSegment_GetType(seg), x.value, y.value))
+
+    pts: list[tuple[float, float]] = []
+    i = 0
+    while i < len(raw):
+        kind, x, y = raw[i]
+        if (kind == C.FPDF_SEGMENT_BEZIERTO and i + 2 < len(raw)
+                and raw[i + 1][0] == C.FPDF_SEGMENT_BEZIERTO
+                and raw[i + 2][0] == C.FPDF_SEGMENT_BEZIERTO and pts):
+            (x0, y0) = pts[-1]
+            (c1x, c1y), (c2x, c2y) = page_point(x, y), page_point(raw[i + 1][1], raw[i + 1][2])
+            (x3, y3) = page_point(raw[i + 2][1], raw[i + 2][2])
+            for step in range(1, _BEZIER_STEPS + 1):
+                t = step / _BEZIER_STEPS
+                u = 1.0 - t
+                pts.append((
+                    u * u * u * x0 + 3 * u * u * t * c1x + 3 * u * t * t * c2x + t * t * t * x3,
+                    u * u * u * y0 + 3 * u * u * t * c1y + 3 * u * t * t * c2y + t * t * t * y3,
+                ))
+            i += 3
+            continue
+        pts.append(page_point(x, y))
+        i += 1
     return pts
 
 

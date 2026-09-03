@@ -375,6 +375,24 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   findings the check does raise. Suppressing those was hiding content, not deferring on
   it, so `missing_in_neighbour` now gates the note. This is the honest form of the
   admission `quality.py` already makes about region-boundary accuracy.
+- **A curve read at its Bezier control points can miss the curve entirely.** pdfium
+  reports a cubic as three BEZIERTO segments — two control points and the endpoint —
+  and `_segment_points` appended all three as if they were data. A curve drawn as many
+  short Beziers hides the error, which is why the aggregate never showed it; a curve
+  drawn as a few long ones is all error. Atkins Fig. 3.4 is `ln(Vf/Vi)` and came back
+  with (2.95, 1.86) where the printed curve passes through (2.95, 1.08). Flattening at
+  `_BEZIER_STEPS` = 8 tracks it to within 0.01-0.08 across the range.
+- **A drawn grid is one path of many closed rectangles, which `_is_rect` does not
+  catch.** It spans the plot and is not flat, so nothing else stopped it either: that
+  same figure shipped its gridlines as a 60-point series at confidence 0.999, and only
+  after the frame guard removed a bogus panel that had been holding its confidence
+  under the floor — a fix making a different defect visible. `_axis_aligned` requires a
+  *share* (`_AXIS_ALIGNED_SHARE` = 0.9) rather than all segments, because concatenating
+  disjoint subpaths leaves a jump between each rectangle and the next: 57 of that path's
+  59 segments are axis-aligned and the 2 that are not are those jumps. Measured over
+  every candidate path in the labelled figures the distribution is bimodal — 45 at or
+  below 0.3, 12 at 1.0, nothing between 0.6 and 1.0 — so the rule sits in an empty band.
+  Bars are axis-aligned too; removing them here is what lets them reach `_bar_series`.
 - **A figure with two y scales is drawn so a reader can tell which curve is which, and
   colour is how.** `_fit_ticks` looks only left of the frame and `_neighborhood` reaches
   barely past its right edge — both deliberate, to keep a neighbouring subplot's labels
