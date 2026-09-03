@@ -124,8 +124,13 @@ def main() -> None:
     done = failed = 0
     started = time.perf_counter()
     for i, pdf in enumerate(pdfs, 1):
-        rel = pdf.relative_to(pdf_root).with_suffix(".md")
-        out_md = target / rel
+        rel = pdf.relative_to(pdf_root)
+        # The scorer resolves a candidate by regex, not by a plain stem:
+        #   ^{pdf stem}_pg\d+_repeat\d+\.md$   (benchmark.py, evaluate_candidate)
+        # Every bench pdf is a single-page extract, so the page is always 1 and one
+        # generation is repeat1. Getting this wrong scores a flat 0.0% on every test
+        # including the baselines, which is what it looked like the first time.
+        out_md = target / rel.with_name(f"{rel.stem}_pg1_repeat1.md")
         if out_md.is_file():
             done += 1
             continue
