@@ -1,0 +1,434 @@
+[
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/1225",
+  "page": 961,
+  "method": "vector-path/ocr-axes",
+  "kind": "line",
+  "confidence": 0.619,
+  "x_axis": {
+   "min": 5,
+   "max": 11,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": -5,
+   "max": 0,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 8,
+    "y": 0.0
+   },
+   {
+    "x": 5,
+    "y": -4.68
+   },
+   {
+    "x": 9,
+    "y": -2.15
+   },
+   {
+    "x": 11,
+    "y": -4.25
+   }
+  ],
+  "note": "log(relative rate) vs Group; two curves over bars"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/234",
+  "page": 220,
+  "method": "vector-path/ocr-axes",
+  "kind": "line",
+  "confidence": 0.898,
+  "x_axis": {
+   "min": 0,
+   "max": 1,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 298,
+   "max": 398,
+   "kind": "nonlinear"
+  },
+  "anchors": [
+   {
+    "x": 0.3,
+    "y": 330
+   },
+   {
+    "x": 0.8,
+    "y": 330
+   }
+  ],
+  "note": "phase diagram; y ticks 298/320/330/350/390/398 are NOT evenly spaced in value"
+ },
+ {
+  "document": "grasp2018-manual-bf0e2756",
+  "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+  "block_id": "#/pictures/3",
+  "page": 188,
+  "method": "vector-path/ocr-axes",
+  "kind": "line",
+  "confidence": 0.9,
+  "x_axis": {
+   "min": 100.0,
+   "max": 1000000000000.0,
+   "kind": "log"
+  },
+  "y_axis": {
+   "min": 0,
+   "max": 1,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 2300.0,
+    "y": 0.94
+   },
+   {
+    "x": 60000.0,
+    "y": 0.3
+   }
+  ],
+  "note": "scatter, log x; ~100 printed points"
+ },
+ {
+  "document": "wires-comput-mol-sci-2020-bannwarth-extended-tight-binding-quant-602cf4b7",
+  "source_sha256": "602cf4b7a5af4f40471323f431275616ca266a7cb8a658dc46c72e2ed6c6c00f",
+  "block_id": "#/pictures/47",
+  "page": 27,
+  "method": "vector-path/ocr-axes",
+  "kind": "bar",
+  "confidence": 0.6,
+  "x_axis": {
+   "min": 0,
+   "max": 6,
+   "kind": "categorical"
+  },
+  "y_axis": {
+   "min": 0,
+   "max": 24,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 0,
+    "y": 24.3
+   },
+   {
+    "x": 0,
+    "y": 19.8
+   },
+   {
+    "x": 0,
+    "y": 14.2
+   },
+   {
+    "x": 3,
+    "y": 23.1
+   },
+   {
+    "x": 3,
+    "y": 4.6
+   }
+  ],
+  "note": "grouped bars, DUAL y axes (left MAD deg 0-24, right MAD A 0-2.4)"
+ },
+ {
+  "document": "wires-comput-mol-sci-2020-bannwarth-extended-tight-binding-quant-602cf4b7",
+  "source_sha256": "602cf4b7a5af4f40471323f431275616ca266a7cb8a658dc46c72e2ed6c6c00f",
+  "block_id": "#/pictures/26",
+  "page": 17,
+  "method": "vector-path/ocr-axes",
+  "kind": "line",
+  "confidence": 0.891,
+  "x_axis": {
+   "min": -1.5,
+   "max": 2,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": -1.5,
+   "max": 2,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": -1.5,
+    "y": -1.5
+   },
+   {
+    "x": 2.0,
+    "y": 2.0
+   },
+   {
+    "x": 0.0,
+    "y": 0.0
+   },
+   {
+    "x": 10.5,
+    "y": 10.5
+   }
+  ],
+  "note": "two parity panels; left diag -1.5..2, right diag 0..10.5 (different ranges)"
+ },
+ {
+  "document": "grasp2018-manual-bf0e2756",
+  "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+  "block_id": "#/pictures/6",
+  "page": 264,
+  "method": "vector-path/ocr-axes",
+  "kind": "line",
+  "confidence": 0.9,
+  "x_axis": {
+   "min": 25,
+   "max": 60,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": -100000000000.0,
+   "max": 600000000000.0,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 60,
+    "y": 505000000000.0
+   },
+   {
+    "x": 60,
+    "y": 80000000000.0
+   },
+   {
+    "x": 46,
+    "y": 0.0
+   },
+   {
+    "x": 26,
+    "y": 20000000000.0
+   }
+  ],
+  "note": "A(s-1) vs Z; branching curves"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/262",
+  "page": 231,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 0.666,
+  "x_axis": {
+   "min": 0,
+   "max": 1,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 10,
+   "max": 40,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 0,
+    "y": 12.0
+   },
+   {
+    "x": 1,
+    "y": 40.0
+   }
+  ],
+  "note": "solid-liquid phase diagram, both curves meet at both ends"
+ },
+ {
+  "document": "atkins-physicalchemistry-8th-f07700d0",
+  "source_sha256": "f07700d05bb2289658e58810042a38362dafd207f4a7b837b4e494976ef2ea42",
+  "block_id": "#/pictures/156",
+  "page": 169,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 1.0,
+  "x_axis": {
+   "min": 0,
+   "max": 1,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 14,
+   "max": 18,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 0,
+    "y": 18.0
+   },
+   {
+    "x": 1,
+    "y": 14.0
+   }
+  ],
+  "note": "DUAL y axes: water on left 14-18, ethanol on right 54-58"
+ },
+ {
+  "document": "2207-10841v3-416d6513",
+  "source_sha256": "416d651377c4cce7ec6c91680afba2764f1d4e549525bc657d147faf6c5e0ef0",
+  "block_id": "#/pictures/1",
+  "page": 17,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 0.595,
+  "x_axis": {
+   "min": 1.0,
+   "max": 2.0,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 1e-06,
+   "max": 0.05,
+   "kind": "log"
+  },
+  "anchors": [
+   {
+    "x": 1.0,
+    "y": 0.045
+   },
+   {
+    "x": 1.0,
+    "y": 0.013
+   },
+   {
+    "x": 1.0,
+    "y": 0.003
+   },
+   {
+    "x": 1.0,
+    "y": 0.00095
+   },
+   {
+    "x": 1.0,
+    "y": 0.00029
+   },
+   {
+    "x": 1.0,
+    "y": 5.2e-05
+   },
+   {
+    "x": 1.0,
+    "y": 3e-06
+   }
+  ],
+  "note": "two panels, log y, 7 series each at R/Re=1.0"
+ },
+ {
+  "document": "grasp2018-manual-bf0e2756",
+  "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+  "block_id": "#/pictures/7",
+  "page": 265,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 0.527,
+  "x_axis": {
+   "min": 25,
+   "max": 60,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 0,
+   "max": 2500000.0,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 60,
+    "y": 2170000.0
+   },
+   {
+    "x": 60,
+    "y": 830000.0
+   },
+   {
+    "x": 26,
+    "y": 375000.0
+   }
+  ],
+  "note": "E(cm-1) vs Z, four rising curves"
+ },
+ {
+  "document": "grasp2018-manual-bf0e2756",
+  "source_sha256": "bf0e2756389dfaa7fcec6bb67b5217d8aa4e9902b969e44234e5a7255c037687",
+  "block_id": "#/pictures/5",
+  "page": 262,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 1.0,
+  "x_axis": {
+   "min": 25,
+   "max": 60,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": -400000.0,
+   "max": 600000.0,
+   "kind": "linear"
+  },
+  "anchors": [
+   {
+    "x": 60,
+    "y": 512000.0
+   },
+   {
+    "x": 60,
+    "y": -245000.0
+   },
+   {
+    "x": 26,
+    "y": 15000.0
+   }
+  ],
+  "note": "A_J(MHz) vs Z; branching curves"
+ },
+ {
+  "document": "2207-10841v3-416d6513",
+  "source_sha256": "416d651377c4cce7ec6c91680afba2764f1d4e549525bc657d147faf6c5e0ef0",
+  "block_id": "#/pictures/0",
+  "page": 14,
+  "method": "vector-path",
+  "kind": "line",
+  "confidence": 0.669,
+  "x_axis": {
+   "min": 0,
+   "max": 5,
+   "kind": "linear"
+  },
+  "y_axis": {
+   "min": 0.0005,
+   "max": 3,
+   "kind": "log"
+  },
+  "anchors": [
+   {
+    "x": 0.03,
+    "y": 1.3
+   },
+   {
+    "x": 5.0,
+    "y": 0.0006
+   },
+   {
+    "x": 0.5,
+    "y": 0.8
+   },
+   {
+    "x": 0.7,
+    "y": 1.0
+   }
+  ],
+  "note": "six panels, log y; anchors from panels (a), (d), (f)"
+ }
+]
