@@ -88,6 +88,15 @@ src/pdf2md/
   transcribe.py opt-in multi-pass: re-transcribe image-backed equation crops with local math-OCR (Surya). Transcriber seam + SuryaTranscriber.
   describe.py   opt-in (--describe): describe figure/table/equation crops with a vision model over an
                 OpenAI-compatible API (ollama/vLLM/remote). Describer seam + OpenAIVisionDescriber.
+  figure_geometry.py shapes read off a PDF page — drawn paths, the frames around them, and
+                stamped marker forms. No notion of what a coordinate means; digitize.py maps
+                them to data and judges the mapping. Split out so that dependency runs one way,
+                because every figure defect found so far has lived on that boundary.
+  digitize_vlm.py tier 2: estimate a raster plot's data with a vision model (vlm_digitize,
+                vlm_digitize_consensus, pixel_fit). Shares nothing with the vector tier but the
+                Digitization it returns — different input, different failure mode, its own
+                consensus and round-trip check. Approximate by construction; the crop stays
+                authoritative.
   digitize.py   figure data recovery. VectorPathDigitizer reads born-digital chart data from the
                 drawn vector paths (default on; near-lossless): lines, scatter (multi-series, split
                 by marker style), bars on a common baseline (Digitization.kind), and MULTI-PANEL
@@ -144,6 +153,33 @@ src/pdf2md/
                 TableData.grid_audit; becomes a CoverageFlag in emit. `corroborated` in that
                 payload — the ink established the arrangement is wrong — is also what makes enrich
                 keep the region's printed lines verbatim (TableData.printed_lines).
+  document_metadata.py agent-facing document identity, semantic sections and references, with
+                source observations kept separate from parser and registry evidence.
+  doi_metadata.py optional DOI registry enrichment via CSL-JSON content negotiation; the raw
+                response stays in the bundle and conflicts are recorded, not resolved.
+  table_verify.py attaches independent-reader and external-reference evidence to extracted table
+                cells. The OCR candidate is never rewritten; each JSONL record keeps the raw
+                engine value beside the second reading.
+  table_artifacts.py writes the inspectable table candidates and normalized repeated-panel data
+                (candidate/CSV/JSON/glyph-grid/printed-lines files and their audit headers).
+  table_resolution.py chooses the consumer-facing value for a cell without discarding evidence:
+                external references and reader agreement decide, format rules only diagnose.
+  table_reference.py loads and compares semantic external references for table cells; a missing
+                key is `no_reference`, never a disagreement.
+  table_review.py local review sheets for calibrating numeric table cells — deterministic
+                sampling, crops linked in place, completed sheets read back.
+  row_locator.py locates table panels, rows and columns from projections alone, with no OCR
+                tokens: the independent geometry check behind the raster row audit.
+  line_reader.py conservative PP-OCRv6 evidence for table row keys. The recognizer runs in a
+                separate environment; this emits hash-pinned inputs and accepts only matching
+                returns.
+  consensus.py  agreement scoring for repeated model reads of one crop, with different
+                strategies for re-read prose and for re-read numbers.
+  scan_deskew.py conservatively deskews textless pages before OCR; only a strong projection
+                angle triggers a raster replacement, and geometry maps back.
+  search.py     literal offline search over completed passage bundles, reading the stable
+                passage interface rather than inventing an index.
+  doctor.py     environment diagnostics for the engines and optional features.
   metadata.py   ranked local bibliographic evidence from embedded fields, front-page and
                 repeated headings, running titles, early bookmarks, and meaningful filenames.
                 Selected, alternate, penalized, and rejected candidates remain inspectable.
@@ -188,45 +224,20 @@ src/pdf2md/
   document_map.py outline.json hierarchy, file/passage ranges, hotspots, and source map.
   symbol_index.py conservative, section-local symbol definitions quoted from the source.
 
-scripts/        dev harnesses (not shipped): qa.py (labels-free regression vs tests/qa_baseline.json),
-                eval_equations.py (labelled equation accuracy vs tests/equation_labels.json),
-                eval_accuracy.py (labelled per-archetype facts vs tests/accuracy_labels.json + profile.json),
-                eval_digitize.py (synthetic vector-chart digitization accuracy, self-generated truth),
-                eval_raster.py (raster pre-scan gate/calibration accuracy on synthetic scans,
-                self-generated truth; optional live-VLM half with a model argument),
-                eval_figure_labels.py (labelled --figure-labels accuracy vs tests/figure_labels_labels.json),
-                agent_benchmark.py (paired bundle-vs-source-page QA with citations, assets, and token counts),
-                benchmark_digitize_bundle.py (replay chart work from a completed bundle without re-running the parser),
-                eval_digitize_ocr_gate.py (geometry-only recall/cost gate for outlined-axis OCR),
-                eval_table_rebuild.py (glyph-grid rebuild vs the source-checked cells in
-                tests/glyph_table_labels.json; scores positional exactness and row containment),
-                eval_table_audit.py (row/grid findings vs tests/table_audit_labels.json, whose
-                labels were established from the source text and from two independent line-finding
-                mechanisms agreeing, never from running the audit; precision is the number that
-                matters and --check gates on it).
-                eval_engine_table_agreement.py (two engines' table grids for one source, and
-                whether the row/grid audit flags the tables they disagree about — engine
-                disagreement is unlabelled but plentiful, which is what the thirteen-table label
-                set is not; also scores the shipped <block>.glyph.md against the second engine,
-                because nothing else ever has),
-                eval_engine_order_agreement.py (the same trick on block order: match blocks
-                across engines by box overlap and ask whether reading_order flags the pages the
-                two order differently),
-                eval_engine_text_agreement.py (and on block text, for the prose checks — note
-                that word-level engine disagreement is a weak defect proxy for prose, so read the
-                flagged-where-they-agree cell, not the recall figure),
-                eval_recall_precision.py and eval_reading_order_precision.py (poppler as an
-                independent adjudicator, for the two checks with no labelled set: pdftotext over
-                the same region for recall, and its reading order — no `-layout` — for block
-                order. Both refuse rather than guess: recall skips a page whose font makes
-                poppler drop ligatures, since a reader that loses characters is biased toward
-                refuting, and the order harness cannot see blocks under four words at all, which
-                is exactly the fragment class, so read its single-column figure with that in
-                mind),
-                benchmark.py. qa.py also reports the verification signals (flagged tables,
-                reading-order and split-line pages, low-recall and accent-damaged blocks) as
-                drift, never as invariants: a document is not worse for having its defects
-                noticed.
+scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md` is the tour and
+                the gate-vs-probe convention; the ones worth knowing by name:
+                qa.py (labels-free regression vs tests/qa_baseline.json, and the staleness report),
+                eval_table_audit.py (row/grid findings vs tests/table_audit_labels.json; --check
+                gates on precision), eval_figure_axes.py (is a figure recoverable at all, vs
+                tests/figure_axes_labels.json), eval_figure_values.py (are the emitted numbers on
+                the printed chart, vs tests/figure_values_labels.json),
+                eval_recall_precision.py / eval_reading_order_precision.py /
+                eval_table_rows_precision.py (poppler as an independent adjudicator for the three
+                checks with no labelled set — each documents the blind spot that makes it refuse
+                rather than guess), eval_equations.py, eval_accuracy.py, agent_benchmark.py.
+                qa.py reports the verification signals (flagged tables, reading-order and
+                split-line pages, low-recall and accent-damaged blocks) as drift, never as
+                invariants: a document is not worse for having its defects noticed.
 ```
 
 ## Conventions

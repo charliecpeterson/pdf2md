@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from pdf2md.digitize import vlm_digitize_consensus
+from pdf2md.digitize_vlm import vlm_digitize_consensus
 from pdf2md.schema import Digitization
 
 

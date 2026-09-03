@@ -25,7 +25,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 from pdf2md.calibrate import AMBIGUITY_MAX, analyze_raster
-from pdf2md.digitize import pixel_fit, vlm_digitize
+from pdf2md.digitize_vlm import pixel_fit, vlm_digitize
 from pdf2md.labels import load_figure_ocr
 
 W, H = 840, 640
@@ -123,7 +123,7 @@ def main():
                    f"{err if err is None else round(err, 2)!s:>10}{scan.skew:>6.1f}")
             if model and not gated and scan.calibration:
                 if consensus > 1:
-                    from pdf2md.digitize import vlm_digitize_consensus
+                    from pdf2md.digitize_vlm import vlm_digitize_consensus
                     d = vlm_digitize_consensus(path, describer, scan.calibration,
                                                votes=consensus)
                 else:

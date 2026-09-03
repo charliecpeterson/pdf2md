@@ -17,7 +17,8 @@ import time
 
 import pypdfium2 as pdfium
 
-from pdf2md.digitize import VectorPathDigitizer, _fbox, _is_rect
+from pdf2md.digitize import VectorPathDigitizer
+from pdf2md.figure_geometry import _fbox, _is_rect
 from pdf2md.logging import Progress
 from pdf2md.schema import BBox
 

@@ -16,10 +16,9 @@ from pdf2md.calibrate import AMBIGUITY_MAX, analyze_raster
 from pdf2md.confidence import plot_data_accepted
 from pdf2md.config import Config
 from pdf2md.describe import Describer, clean_vlm_text, vision_cache_key
-from pdf2md.digitize import (
-    VectorPathDigitizer,
+from pdf2md.digitize import VectorPathDigitizer, vector_ocr_digitize_page
+from pdf2md.digitize_vlm import (
     pixel_fit,
-    vector_ocr_digitize_page,
     vlm_digitize,
     vlm_digitize_consensus,
     write_estimate_composite,

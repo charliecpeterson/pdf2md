@@ -157,7 +157,7 @@ def test_vision_cache_key_covers_prompt_and_generation_inputs(tmp_path):
 
 
 def test_vlm_digitize_caches_complete_inference_identity(tmp_path):
-    from pdf2md.digitize import vlm_digitize
+    from pdf2md.digitize_vlm import vlm_digitize
 
     crop = tmp_path / "plot.png"
     crop.write_bytes(b"plot pixels")

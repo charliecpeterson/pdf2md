@@ -404,7 +404,7 @@ def test_mixed_panel_kind_ties_are_deterministic():
 def test_vlm_digitize_parses_series_json():
     from pathlib import Path
 
-    from pdf2md.digitize import _extract_json, vlm_digitize
+    from pdf2md.digitize_vlm import _extract_json, vlm_digitize
 
     # tolerates a code fence and stray prose around the JSON
     raw = ('Sure:\n```json\n{"x_axis":"t","y_axis":"v",'
@@ -440,7 +440,7 @@ def test_vlm_digitize_salvages_malformed_looping_reply():
     salvage them, once, and say so in the note."""
     from pathlib import Path
 
-    from pdf2md.digitize import vlm_digitize
+    from pdf2md.digitize_vlm import vlm_digitize
 
     class Fake:
         def __init__(self, reply):
@@ -460,7 +460,7 @@ def test_vlm_digitize_anchored_to_pixel_calibration():
     from pathlib import Path
 
     from pdf2md.calibrate import RasterCalibration
-    from pdf2md.digitize import vlm_digitize
+    from pdf2md.digitize_vlm import vlm_digitize
 
     class Fake:
         def __init__(self, reply):
@@ -729,7 +729,7 @@ def test_figure_labels_caches_reads(tmp_path):
 
 
 def test_render_estimate_draws_the_series():
-    from pdf2md.digitize import _render_estimate
+    from pdf2md.digitize_vlm import _render_estimate
 
     # the round-trip reconstruction: renders the estimate to a plot image (no matplotlib)
     img = _render_estimate([[(0.0, 0.0), (1.0, 1.0), (2.0, 4.0)]])
@@ -741,7 +741,7 @@ def test_render_estimate_draws_the_series():
 def test_pixel_fit_rewards_shape_match_over_mismatch(tmp_path):
     from PIL import Image, ImageDraw
 
-    from pdf2md.digitize import pixel_fit
+    from pdf2md.digitize_vlm import pixel_fit
 
     # a plot whose only ink is a diagonal running top-left -> bottom-right (image y is down)
     img = Image.new("L", (100, 100), 255)
