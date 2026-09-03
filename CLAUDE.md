@@ -375,6 +375,22 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   findings the check does raise. Suppressing those was hiding content, not deferring on
   it, so `missing_in_neighbour` now gates the note. This is the honest form of the
   admission `quality.py` already makes about region-boundary accuracy.
+- **A figure with two y scales is drawn so a reader can tell which curve is which, and
+  colour is how.** `_fit_ticks` looks only left of the frame and `_neighborhood` reaches
+  barely past its right edge — both deliberate, to keep a neighbouring subplot's labels
+  out of the fit — so a right-hand axis was invisible and every series got the left
+  scale. Atkins Fig. 5.1 shipped its ethanol curve, truly 52.3 to 58.1, as 13.6 to 19.7
+  at **confidence 1.0**. `_right_axis_ticks` reads text *objects* (only an object carries
+  a colour) in a band bounded by the frame's own width, `_second_y_axis` fits them, and
+  `_panel_series` routes a series to the right calibration when its stroke colour matches
+  the right ticks' colour: on that figure the right ticks, the word "Ethanol" and its
+  curve are all `(113, 45, 125)`. All four anchors now match within 0.12 on a 4-unit
+  axis, and the range check is measured before the right-axis series join, or they would
+  be convicted for being on the axis they belong to. Watch the adjacent trap: `fit_axis`
+  preferred a log fit that beat linear by `1e-6`, and 54/56/58 came back "log" because
+  log10 is locally linear over a narrow range and the printed ticks are 5% unevenly
+  spaced. `_LOG_MARGIN` is 0.01 — a real log axis fits a line terribly, so the margin
+  costs nothing.
 - **A sign the engine detached still belongs to its number, and a range does not.**
   `merged_cells` skips a cell whose whitespace-separated parts are not all numbers,
   and the engine renders a page's `−3383.702155` as `- 3383.702155` — a lone `-` is

@@ -61,7 +61,33 @@ def _segment_points(obj, container=_IDENT) -> list[tuple[float, float]]:
     return pts
 
 
-def _polylines(page, region: tuple[float, float, float, float]) -> list[list[tuple[float, float]]]:
+def stroke_colour(obj) -> tuple[int, int, int] | None:
+    """A path's stroke colour, or None when pdfium will not say.
+
+    A chart with two y axes is drawn so a reader can tell which curve belongs to
+    which scale, and colour is how: on Atkins Fig. 5.1 the left ticks, the word
+    "Water" and the water curve are all (0, 102, 165), while the right ticks,
+    "Ethanol" and its curve are all (113, 45, 125). That is the assignment, stated
+    by the document itself."""
+    r, g, b, a = (ctypes.c_uint() for _ in range(4))
+    if not C.FPDFPageObj_GetStrokeColor(obj.raw if hasattr(obj, "raw") else obj, r, g, b, a):
+        return None
+    return (r.value, g.value, b.value)
+
+
+def fill_colour(obj) -> tuple[int, int, int] | None:
+    """The fill colour of a text object -- what a tick label is drawn in."""
+    r, g, b, a = (ctypes.c_uint() for _ in range(4))
+    if not C.FPDFPageObj_GetFillColor(obj.raw if hasattr(obj, "raw") else obj, r, g, b, a):
+        return None
+    return (r.value, g.value, b.value)
+
+
+def coloured_polylines(page, region: tuple[float, float, float, float]):
+    """`(points, stroke colour)` for every path whose centre is inside `region`.
+
+    `_polylines` is this without the colours; both walk in one order so a caller
+    that wants both gets them aligned by construction rather than by index."""
     x0, x1, y0, y1 = region
     out = []
     for obj, container in _walk(page):
@@ -71,8 +97,12 @@ def _polylines(page, region: tuple[float, float, float, float]) -> list[list[tup
         cx = sum(p[0] for p in pts) / len(pts) if pts else 0
         cy = sum(p[1] for p in pts) / len(pts) if pts else 0
         if x0 <= cx <= x1 and y0 <= cy <= y1:  # inside the figure's bbox
-            out.append(pts)
+            out.append((pts, stroke_colour(obj)))
     return out
+
+
+def _polylines(page, region: tuple[float, float, float, float]) -> list[list[tuple[float, float]]]:
+    return [pts for pts, _ in coloured_polylines(page, region)]
 
 
 def _is_rect(p: list[tuple[float, float]]) -> bool:

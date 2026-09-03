@@ -19,6 +19,7 @@ import ctypes
 from dataclasses import dataclass
 import math
 import re
+from collections import Counter
 from pathlib import Path
 from typing import NamedTuple, Protocol, runtime_checkable
 
@@ -35,10 +36,14 @@ from pdf2md.figure_geometry import (
     _page_forms,
     _polylines,
     _walk,
+    coloured_polylines,
+    fill_colour,
 )
 from pdf2md.schema import BBox, Digitization
 
 _NUMBER = re.compile(r"-?\d+(?:\.\d+)?")
+# How much better a log fit must be than a linear one to be believed.
+_LOG_MARGIN = 0.01
 
 
 @runtime_checkable
@@ -254,7 +259,12 @@ def fit_axis(ticks):
     lin_map, lin_r2 = _linfit(vals, pos)
     if (vals > 0).all():
         log_map, log_r2 = _linfit(np.log10(vals), pos)
-        if log_r2 > lin_r2 + 1e-6:
+        # A real log axis fits terribly as a line -- decades apart, its linear r2
+        # collapses -- so the log fit wins by a mile or not at all. A margin of 1e-6
+        # let it win by a rounding error instead: the right-hand axis of Atkins
+        # Fig. 5.1 reads 54, 56, 58, which is arithmetic, and came back "log" because
+        # its printed ticks are 5% unevenly spaced and log10 is locally linear.
+        if log_r2 > lin_r2 + _LOG_MARGIN:
             return (lambda p: 10.0 ** log_map(p)), log_r2, "log"
     return lin_map, lin_r2, "linear"
 
@@ -339,6 +349,64 @@ def _calibrate_groups(frame, groups):
 # The border is drawn on the edge; a data point that merely touches it arrives
 # with company, which is what `_traces_the_frame` requires.
 _ON_FRAME_PT = 0.75
+
+
+def _right_axis_ticks(page, frame):
+    """Numeric tick labels drawn to the RIGHT of a frame, with the colour they carry.
+
+    `_fit_ticks` looks only left, and `_neighborhood` reaches barely past the frame's
+    right edge -- both deliberate, to keep a neighbouring subplot's labels out of the
+    fit. The cost was that a second y axis is invisible, so every series on a dual-axis
+    figure got the left scale: Atkins Fig. 5.1 shipped its ethanol curve, truly 53.9 to
+    58.2, as 13.6 to 19.7 at confidence 1.0.
+
+    Bounded by the frame's own width, so this cannot reach a neighbouring panel either.
+    Reads text OBJECTS rather than charboxes because only an object carries a colour,
+    and colour is what says which curve belongs to this axis."""
+    fx0, fx1, fy0, fy1 = _fbox(frame)
+    fw, fh = fx1 - fx0, fy1 - fy0
+    tp = page.get_textpage()
+    out = []
+    for o, container in _walk(page):
+        if o.type != C.FPDF_PAGEOBJ_TEXT:
+            continue
+        text = _textobj_str(o, tp)
+        if not text.strip():
+            continue
+        l, b, r, t = o.get_pos()
+        ma, mb, mc, md, me, mf = container
+        corners = [(ma * x + mc * y + me, mb * x + md * y + mf)
+                   for x, y in ((l, b), (r, b), (l, t), (r, t))]
+        mx = sum(x for x, _ in corners) / 4
+        my = sum(y for _, y in corners) / 4
+        if not (fx1 + 2 < mx <= fx1 + 0.4 * fw + 2):
+            continue
+        if not (fy0 - 0.05 * fh <= my <= fy1 + 0.05 * fh):
+            continue
+        # One text object is one label here, so the superscript reasoning in
+        # `_token_value` (which needs per-char heights) has nothing to work with;
+        # a plain numeral is all a right-hand tick ever is in the cases measured.
+        stripped = text.strip().replace("\u2212", "-")
+        if _NUMBER.fullmatch(stripped):
+            out.append((float(stripped), my, fill_colour(o)))
+    return out
+
+
+def _second_y_axis(page, frame):
+    """`(position -> value, kind, tick colour)` for a right-hand y axis, or None.
+
+    None unless at least two right-side ticks fit a line cleanly: a stray number
+    beside a plot is not an axis, and inventing a second scale is worse than missing
+    one."""
+    ticks = _right_axis_ticks(page, frame)
+    if len(ticks) < 2:
+        return None
+    pairs, _flipped = restore_signs(sorted(((v, p) for v, p, _c in ticks), key=lambda t: t[1]))
+    fy, r2, kind = fit_axis(pairs)
+    if r2 < 0.98:
+        return None
+    colours = Counter(c for _v, _p, c in ticks if c is not None)
+    return fy, kind, (colours.most_common(1)[0][0] if colours else None)
 
 
 def _traces_the_frame(poly, frame) -> bool:
@@ -475,7 +543,7 @@ def _tick_range_fraction(series, cal) -> float:
     return min(counts) / len(xs) if counts else 1.0
 
 
-def _panel_series(pg, panels, polys, forms):
+def _panel_series(pg, panels, polys, forms, colours=None):
     """Extract each calibrated panel's series. Returns (series, per-series names,
     kinds, per-panel confidences, r2s, used calibrations, in-tick-range fractions,
     skipped); a panel whose own
@@ -503,6 +571,19 @@ def _panel_series(pg, panels, polys, forms):
             skipped += 1
             continue
         mine = [p for p, w in zip(polys, poly_of) if w == i]
+        mine_colours = ([c for c, w in zip(colours, poly_of) if w == i]
+                        if colours is not None else [None] * len(mine))
+        # A figure with two y scales is drawn so a reader can tell which curve
+        # belongs to which, and colour is how: on Atkins Fig. 5.1 the right ticks,
+        # the word "Ethanol" and its curve are all (113, 45, 125). Without this the
+        # ethanol curve shipped on the water scale -- 13.6 to 19.7 for a quantity
+        # that runs 53.9 to 58.2 -- at confidence 1.0.
+        second = _second_y_axis(pg, frame) if colours is not None else None
+        right_colour = second[2] if second else None
+        theirs = ([p for p, c in zip(mine, mine_colours) if c == right_colour]
+                  if right_colour else [])
+        if theirs:
+            mine = [p for p, c in zip(mine, mine_colours) if c != right_colour]
         series = _data_series(mine, frame, cal.fx, cal.fy)
         kind = "line"
         if not series:  # no connecting line -> try scatter markers
@@ -519,9 +600,14 @@ def _panel_series(pg, panels, polys, forms):
         # r2 cannot object to that; this can. Per panel, because each panel has its
         # own axes -- checking every panel's series against the first panel's ticks
         # convicts a perfectly good second panel with a different y range.
-        inside = _tick_range_fraction(series, cal)
+        # Measured before the right axis's series join, because they are mapped with
+        # a different y scale and comparing them to this axis's ticks would convict
+        # them for being on the axis they belong to.
+        inside = _tick_range_fraction(series, cal) if series else 1.0
         if inside < 1.0:
             confidence = round(confidence * inside, 3)
+        if theirs:
+            series += _data_series(theirs, frame, cal.fx, second[0])
         used += 1
         confs.append(confidence)
         r2s.append(cal.r2)
@@ -727,8 +813,9 @@ class VectorPathDigitizer:
             return None, geometry
         forms = _page_forms(page, region)
         geometry.forms = forms
+        polys_with_colour = coloured_polylines(page, region)
         series, names, kinds, confs, r2s, cals, insides, skipped = _panel_series(
-            page, panels, polys, forms
+            page, panels, polys, forms, colours=[c for _pts, c in polys_with_colour]
         )
         if not series:
             return None, geometry

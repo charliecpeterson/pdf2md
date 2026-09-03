@@ -1797,3 +1797,43 @@ def test_a_path_that_only_traces_the_axes_box_is_not_data():
     ident = (lambda v: v)
     assert _data_series([triangle], frame, ident, ident) == []
     assert len(_data_series([curve], frame, ident, ident)) == 1
+
+
+def test_a_second_y_axis_gets_its_own_scale():
+    from pathlib import Path
+
+    import pypdfium2 as pdfium
+
+    from pdf2md.digitize import VectorPathDigitizer
+    from pdf2md.schema import BBox
+
+    # Two y scales, left 14..18 and right 54..58, drawn the way a real dual-axis
+    # figure is: each axis's tick labels in the colour of the curve that belongs to
+    # it. Without reading the right axis at all, every series was mapped with the
+    # left scale -- Atkins Fig. 5.1 reported its ethanol curve, truly 53.9 to 58.2,
+    # as 13.6 to 19.7 at confidence 1.0.
+    pdf_path = Path(__file__).parent / "fixtures" / "dual_axis.pdf"
+    doc = pdfium.PdfDocument(str(pdf_path))
+    w, h = doc[0].get_size()
+    result, _geometry = VectorPathDigitizer().digitize_page_with_geometry(
+        doc[0], BBox(x0=0, y0=0, x1=w, y1=h)
+    )
+    doc.close()
+
+    assert result is not None and len(result.series) == 2
+    spans = sorted((min(y for _x, y in s), max(y for _x, y in s)) for s in result.series)
+    assert [round(v, 1) for v in spans[0]] == [14.0, 18.0]
+    assert [round(v, 1) for v in spans[1]] == [54.0, 58.0]
+
+
+def test_a_log_axis_must_beat_a_line_by_more_than_a_rounding_error():
+    from pdf2md.digitize import fit_axis
+
+    # 54/56/58 is arithmetic, but log10 is locally linear over so narrow a range, so
+    # with a 1e-6 margin the log fit won on unevenly printed ticks and the axis came
+    # back "log". A real log axis fits a line terribly, so the margin costs nothing.
+    _map, _r2, kind = fit_axis([(54.0, 549.3), (56.0, 627.9), (58.0, 702.7)])
+    assert kind == "linear"
+    decades = [(1e-5, 100.0), (1e-4, 200.0), (1e-3, 300.0), (1e-2, 400.0)]
+    _map, _r2, kind = fit_axis(decades)
+    assert kind == "log"

@@ -265,15 +265,23 @@
   },
   "anchors": [
    {
-    "x": 0,
+    "x": 0.0,
     "y": 18.0
    },
    {
-    "x": 1,
+    "x": 1.0,
     "y": 14.0
+   },
+   {
+    "x": 1.0,
+    "y": 58.05
+   },
+   {
+    "x": 0.07,
+    "y": 52.3
    }
   ],
-  "note": "DUAL y axes: water on left 14-18, ethanol on right 54-58"
+  "note": "DUAL y axes: water on left 14-18, ethanol on right 54-58. The last two anchors are on the right scale; without them this figure scored 2/2 while its ethanol curve was reported on the water scale."
  },
  {
   "document": "2207-10841v3-416d6513",
