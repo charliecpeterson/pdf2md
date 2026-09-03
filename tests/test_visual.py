@@ -208,3 +208,55 @@ def test_clean_figure_structure_includes_adjacent_graphical_abstract_components(
     }
     assert graphic.bbox == BBox(106, 713, 551, 477)
     assert blocks == [title, equation, subtitle, graphic_block]
+
+
+def _dg(confidence, series=((( 1.0, 2.0),),), note="a note"):
+    from pdf2md.schema import Digitization
+
+    return Digitization(series=[list(s) for s in series], method="vector-path",
+                        confidence=confidence, note=note)
+
+
+def test_extraction_status_covers_every_outcome():
+    from pdf2md.visual import extraction_status
+
+    # The decision that determines whether numbers reach the reader. It used to sit
+    # three levels into a loop needing a PDF, an engine and a vision model to enter,
+    # and two defects lived in it unseen.
+    assert extraction_status(_dg(0.9)) == ("extracted", "a note")
+
+    status, note = extraction_status(_dg(0.2))
+    assert status == "data_withheld" and "0.20 is below the emission floor" in note
+
+    # A candidate with no series at all is refused, and says why in its own words.
+    assert extraction_status(_dg(0.9, series=())) == ("digitization_refused", "a note")
+
+    assert extraction_status(None, had_error=True, error_note="boom") == (
+        "digitization_failed", "boom")
+    assert extraction_status(None, had_error=True)[1] == "figure reader failed"
+    assert extraction_status(None, page_missing=True) == (
+        "digitization_failed", "source page was unavailable")
+
+    # Frames found: the note must name which of the two causes applies, because
+    # "calibration failed" and "there was no series" are different claims and the
+    # OCR-axes tier used to report the first while meaning neither.
+    status, note = extraction_status(None, frames=4, series_geometry=True)
+    assert status == "vector_archetype_unmatched"
+    assert note.startswith("4 vector plot frame(s) detected") and "calibration that failed" in note
+    assert "no series to recover" in extraction_status(None, frames=2, series_geometry=False)[1]
+    assert "did not produce accepted data" in extraction_status(None, frames=1)[1]
+
+    assert extraction_status(None, raster_source=True)[0] == "raster_source"
+    assert extraction_status(None, raster_source=False)[0] == "no_chart_geometry"
+    assert extraction_status(None)[0] == "no_chart_geometry"
+
+
+def test_a_withheld_candidate_is_never_reported_as_a_calibration_failure():
+    from pdf2md.visual import extraction_status
+
+    # The OCR-axes tier returned None below the emission floor, so the figure said
+    # its axis calibration had failed when in fact a candidate existed and was judged
+    # unprintable. Those are different statements and only one was true.
+    status, note = extraction_status(_dg(0.1), frames=3, series_geometry=True)
+    assert status == "data_withheld"
+    assert "calibration" not in note

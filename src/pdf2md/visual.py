@@ -51,6 +51,64 @@ _FURNITURE_COMPACT = (
 )
 
 
+def extraction_status(
+    digitization,
+    *,
+    had_error: bool = False,
+    error_note: str = "",
+    page_missing: bool = False,
+    frames: int | None = None,
+    series_geometry: bool | None = None,
+    raster_source: bool | None = None,
+) -> tuple[str, str]:
+    """What became of one figure's data, and why, from the facts the reader gathered.
+
+    Pulled out of the digitize loop because it is the most consequential branch in the
+    figure path -- it decides whether numbers reach the reader at all -- and it was the
+    least reachable, buried three levels into a loop that needs a PDF, an engine and a
+    vision model to enter. Two defects lived here unnoticed: the OCR-axes tier returned
+    None below the emission floor, so a withheld candidate reported as a failed
+    calibration, and a tick-range check then pushed six more figures into that same
+    untrue statement.
+
+    Everything it needs is passed in, `raster_source` as a tri-state (True/False, or
+    None when the probe was not worth running), so the probe stays lazy in the caller
+    and the decision stays testable.
+    """
+    if digitization is not None and digitization.series:
+        if plot_data_accepted(digitization):
+            return "extracted", digitization.note
+        return "data_withheld", (
+            f"candidate confidence {digitization.confidence:.2f} is below the emission floor"
+        )
+    if digitization is not None:
+        return "digitization_refused", digitization.note
+    if had_error:
+        return "digitization_failed", error_note or "figure reader failed"
+    if page_missing:
+        return "digitization_failed", "source page was unavailable"
+    if frames is not None:
+        # One message for every unmatched figure said only that something had failed,
+        # which is the least useful thing to record about the largest population in the
+        # corpus: 840 of 1,855 figures land here. `has_series_geometry` already
+        # separates the two causes and the OCR-axis gate has usually just asked it, so
+        # naming which one costs nothing.
+        cause = {
+            True: "the frames hold line, scatter or bar geometry, so it is the axis "
+                  "calibration that failed",
+            False: "no line, scatter or bar geometry was found inside them, so there is "
+                   "no series to recover",
+            None: "axis calibration or the supported line, scatter, and bar readers did "
+                  "not produce accepted data",
+        }[series_geometry]
+        return "vector_archetype_unmatched", f"{frames} vector plot frame(s) detected, but {cause}"
+    if raster_source:
+        return "raster_source", (
+            "an embedded raster image overlaps the figure; no vector plot data is present"
+        )
+    return "no_chart_geometry", "no supported plot frame or embedded raster chart was detected"
+
+
 def _bounds(bbox: BBox) -> tuple[float, float, float, float]:
     return (
         min(bbox.x0, bbox.x1),
@@ -476,69 +534,31 @@ def _digitize_figures(
                         had_error = True
                         error_note = str(exc)
                         log.warning("vlm digitize failed for %s: %s", fig.block_id, exc)
-                if fig.digitization is not None and fig.digitization.series:
-                    recovered += 1
-                    d = fig.digitization
-                    if plot_data_accepted(d):
-                        fig.data_extraction_status = "extracted"
-                        fig.data_extraction_note = d.note
-                    else:
-                        fig.data_extraction_status = "data_withheld"
-                        fig.data_extraction_note = (
-                            f"candidate confidence {d.confidence:.2f} is below the emission floor"
-                        )
-                    log.info("digitized %s: %s, %d series, confidence %.2f",
-                             fig.block_id, d.method, len(d.series), d.confidence)
-                elif fig.digitization is not None:
-                    fig.data_extraction_status = "digitization_refused"
-                    fig.data_extraction_note = fig.digitization.note
-                elif had_error:
-                    failed += 1
-                    fig.data_extraction_status = "digitization_failed"
-                    fig.data_extraction_note = error_note or "figure reader failed"
-                elif page is None:
-                    failed += 1
-                    fig.data_extraction_status = "digitization_failed"
-                    fig.data_extraction_note = "source page was unavailable"
-                elif geometry is not None:
-                    # One message for every unmatched figure said only that
-                    # something had failed, which is the least useful thing to
-                    # record about the largest population in the corpus: 840 of
-                    # 1,855 figures land here. `has_series_geometry` already
-                    # separates the two causes, and the OCR-axis gate has
-                    # usually just asked it, so naming which one costs nothing.
-                    fig.data_extraction_status = "vector_archetype_unmatched"
-                    cause = {
-                        True: "the frames hold line, scatter or bar geometry, so it is the "
-                              "axis calibration that failed",
-                        False: "no line, scatter or bar geometry was found inside them, so "
-                               "there is no series to recover",
-                        None: "axis calibration or the supported line, scatter, and bar "
-                              "readers did not produce accepted data",
-                    }[series_geometry]
-                    fig.data_extraction_note = (
-                        f"{len(geometry.frames)} vector plot frame(s) detected, but {cause}"
-                    )
-                else:
+                raster_source = None
+                if (fig.digitization is None and not had_error and page is not None
+                        and geometry is None):
                     try:
                         raster_source = digitizer.has_raster_image(page, fig.bbox)
                     except Exception as exc:  # noqa: BLE001 - keep figure failures isolated
-                        failed += 1
-                        fig.data_extraction_status = "digitization_failed"
-                        fig.data_extraction_note = str(exc)
-                        log.warning("figure source inspection failed for %s: %s", fig.block_id, exc)
-                    else:
-                        if raster_source:
-                            fig.data_extraction_status = "raster_source"
-                            fig.data_extraction_note = (
-                                "an embedded raster image overlaps the figure; no vector "
-                                "plot data is present"
-                            )
-                        else:
-                            fig.data_extraction_status = "no_chart_geometry"
-                            fig.data_extraction_note = (
-                                "no supported plot frame or embedded raster chart was detected"
-                            )
+                        had_error, error_note = True, str(exc)
+                        log.warning("figure source inspection failed for %s: %s",
+                                    fig.block_id, exc)
+                fig.data_extraction_status, fig.data_extraction_note = extraction_status(
+                    fig.digitization,
+                    had_error=had_error,
+                    error_note=error_note,
+                    page_missing=page is None,
+                    frames=None if geometry is None else len(geometry.frames),
+                    series_geometry=series_geometry,
+                    raster_source=raster_source,
+                )
+                if fig.data_extraction_status in ("extracted", "data_withheld"):
+                    recovered += 1
+                    d = fig.digitization
+                    log.info("digitized %s: %s, %d series, confidence %.2f",
+                             fig.block_id, d.method, len(d.series), d.confidence)
+                elif fig.data_extraction_status == "digitization_failed":
+                    failed += 1
                 completed += 1
                 if progress is not None:
                     progress.count(
