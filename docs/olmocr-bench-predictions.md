@@ -30,17 +30,26 @@ recovery, the glyph-verified table pass.
 | math | 3,385 | tracks Docling where formula enrichment ran | pdf2md emits Docling's LaTeX; its own contribution is to *flag* a suspect equation, not to improve it |
 
 **The `absent` class is the interesting one, and I expect pdf2md to do badly at
-it.** Those tests check that running heads, page numbers and footers are *not* in
-the output. pdf2md's foundational rule is the opposite: every detected block
-lands somewhere, and `CoverageReport.accounted_for` is the check that it did.
-Headers and footers are emitted as blocks like any other content. That is not an
-oversight the benchmark has caught, it is the accounting invariant doing exactly
-what it says, and it costs real points here.
+it** — but not for the reason I first wrote down, and the correction matters more
+than the prediction.
 
-If that reading is right, the honest summary is that olmOCR-bench and pdf2md
-disagree about what a converter is for — one wants a clean reading copy, the
-other wants a complete audited one — and the score should be reported with that
-stated rather than folded into an average.
+My first version said this was the accounting invariant costing points: every
+detected block lands somewhere, so headers and footers are emitted like any other
+content. **That is wrong.** `emit.py` has had `_BOILERPLATE = {PAGE_HEADER,
+PAGE_FOOTER}` all along, and a block of either type returns
+`(None, CoverageStatus.EMITTED, None)` — intentionally stripped from the Markdown
+while still accounted for, and recorded with `intentional_omission: True`. The
+invariant explicitly permits omission with a record. The design already does the
+right thing.
+
+The real reason is narrower and duller: **Docling never assigns those labels.**
+Zero `page_header` or `page_footer` blocks across all 36 documents of the working
+corpus, and converting four pages of the benchmark's own `headers_footers` subset
+gives 40 paragraphs, 2 figures, 2 headings, 1 table — no furniture at all. The
+machinery is correct and never fires.
+
+So a poor `absent` score is an engine detection gap, not a design principle, and
+it should not be defended as one.
 
 ## What would change my mind
 
