@@ -722,3 +722,172 @@ diagnostic. The next work, if its prerequisite evidence appears, is:
   structure rather than remain review evidence.
 - Which chart-capable model and raster corpus are stable enough for the consensus
   A/B to answer a product question rather than measure endpoint failures.
+
+## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
+
+Status: scoped, not built. The measurement that motivates it is in
+`docs/olmocr-bench-predictions.md`; the feasibility probe below is new.
+
+### What is missing
+
+pdf2md emits no inline mathematics. Across the 1,403 olmOCR-bench candidates,
+484 carry `$$` display blocks and 709 carry HTML `<sub>`/`<sup>`, while 19 carry
+inline `$...$` -- and those 19 are incidental dollar signs. `scripts.py` recovers
+inline sub/superscripts from glyph geometry and renders them as HTML, which is
+legitimate Markdown and invisible to any consumer looking for LaTeX delimiters.
+
+Between 549 and 1,254 of the 2,680 failing math tests (the range is the matching
+threshold; see the predictions doc) are expressions sitting in prose blocks that
+a delimiter would expose. It is the largest identified bucket.
+
+### The hard part is span detection, not emission
+
+Wrapping is trivial. Knowing *what* to wrap is the problem: `scripts.py` detects
+**scripts**, not **mathematics**. It cannot tell `H<sub>2</sub>O` from `x_m`, and
+the bench references are whole expressions spanning operators and several
+symbols (`0 \leq k \leq 2^{N}-1`), so wrapping the script alone would not match.
+
+### Feasibility probe: can font names find the span?
+
+`Char` in `scripts.py` is `(text, left, bottom, right, top)` -- geometry only,
+because pdfium's font *size* is unreliable for subset fonts. Font *name* is a
+different call, and `FPDFText_GetFontInfo` is exposed by pypdfium2.
+
+**Gate 1, symbol fonts: passed, and more broadly than expected.** Surveyed all 40
+corpus PDFs, sampling ten pages spread through each document (the first draft
+sampled the first six pages and reported Atkins as having no mathematics at all,
+which is front matter, not a fact about the book). A font counts as mathematical
+when its own characters are predominantly maths -- Greek, operators, arrows,
+letterlike, or the PUA slots subset fonts use -- rather than by matching its name.
+
+| | documents |
+|---|---|
+| distinguishable maths font | 22 |
+| maths present, no such font | 7 |
+| no maths on sampled pages (unanswerable) | 11 |
+
+**22 of the 29 answerable documents, 76%.** An earlier note here claimed the
+signal was TeX-only, from three samples. That was wrong: the list spans MathType
+(`MTSY`, `MTSYN`, `MTMI-ACS`), ACS (`TimesTenGreek-*`), Adobe
+(`MinionMathItalic`, `MnSymbol`) and Advanced Type subsets (`AdvOT*`) as well as
+TeX (`CMSY`, `CMMI`, `txsy`, `rntxmi`). Commercial publishers do set mathematics
+in dedicated fonts. The seven failures concentrate in `dolg-ecp` (136 maths
+chars), `eurasian-chem` (45) and `ptuk-arabic` (11); the other four have one to
+three maths characters and are too small to mean anything.
+
+**Gate 2, variable fonts: open, and the obvious test does not work.** A symbol
+font tells you an expression is nearby. Delimiting it needs the *variables*
+distinguishable too, because a span runs across letters. Inspection of three
+documents shows this varies independently of gate 1: ACS `cr2001383` sets
+variables in `AdvOT02ce3bbb.I` (`ZcZgijrijgijrij...`, clearly maths italic),
+while Springer `s00214-006-0175-4` has `MTSYN` carrying only `+--+-+` with every
+variable in the body `TimesTen-Roman`, and `copernicus` likewise.
+
+A first attempt to measure this -- a non-body font that is mostly ASCII letters
+and covers a small share of the document -- is recorded here as **invalid**: it
+matched `ArialMT`, `CMR10` and `SFTT1000`, which are captions, headers and
+monospace, not mathematics. Any test for "is this font maths italic" by
+composition alone will do the same, because maths italic and caption text are
+both mostly letters.
+
+The principled test is co-occurrence: a maths-italic font is one whose glyphs sit
+adjacent, on the same line, to glyphs from a maths symbol font. That is also
+essentially the span algorithm itself, so gate 2 cannot be settled much more
+cheaply than by building a prototype of the detector.
+
+### Gate 2 prototype: two attempts, both defective, gate still open
+
+Attempt 1 (composition: a non-body font that is mostly ASCII letters) is recorded
+above as invalid -- it matched `ArialMT`, `CMR10` and `SFTT1000`.
+
+Attempt 2 was the co-occurrence detector: seed at a maths-symbol character, grow
+along the printed line while neighbours look mathematical, stop at body-font
+prose. Run on `s00214`, `copernicus` and `cr2001383` it produced median span
+lengths of 1 to 3 characters -- essentially the seed symbol and an adjacent digit,
+never a delimited expression. Adding the PDF font descriptor's own italic bit
+(0x40, exposed through `FPDFText_GetFontInfo`, and a far better signal than
+composition) made the medians *shorter*, not longer.
+
+That result is not trustworthy either, because the prototype's line
+reconstruction is wrong: grouping characters by `round(bottom / 3)` merges text
+from different columns and different text objects, and the over-grown spans show
+it plainly (`'Annua0l.0R7eorts1.9i2n62.08.7070'`, characters from two columns
+interleaved). A span detector built on a broken notion of "line" cannot answer
+whether spans are delimitable.
+
+One thing the inventory did settle: variables *are* distinguishable more often
+than the page-5 sample suggested. `s00214` carries `TimesTen-Italic` (207 chars,
+italic bit set) and `MTMI` (MathType Math Italic) across the full document,
+holding exactly the variables (`n`, `J`, `c`, `E`). The earlier reading that its
+variables sit in the body font came from sampling a page of tables.
+
+**Gate 2 is therefore open, not failed.** Two attempts have failed for two
+different instrument defects, which is the point at which to stop iterating on
+the same theory. The next attempt should not rebuild line reconstruction: use
+`scripts._lines`, which already solves this in production and is the reason the
+script overlay works. If a third attempt on this theory also fails, the theory --
+that fonts can delimit an inline maths span -- should be abandoned rather than
+refined again.
+
+### Gate 2, attempt 3: theory abandoned
+
+Rebuilt on `scripts._lines` as planned, so line reconstruction is now the same
+one production uses and the column interleaving is gone. Success was fixed before
+running: median span >= 5 characters, prose contamination under 5%.
+
+| document | spans | median | contaminated | criterion |
+|---|---|---|---|---|
+| s00214 (Springer) | 744 | 10 | 0% | PASS |
+| cr2001383 (ACS) | 184 | 1 | 0% | FAIL |
+| 054111 (JCP, TeX) | 174 | 4 | 0% | FAIL |
+
+**The one PASS is the finding, and it passes for the wrong reason.** Its spans are
+`'-25762.358998-25762.368882-25762.369223'` -- rows of a numeric table. Minus signs
+live in the maths font and digits qualify as mathematical, so a span seeded on a
+minus grows across an entire table row. The criterion measured span length and
+prose contamination and never asked whether a span is inline *mathematics*; had
+the spans not been printed, this would have been recorded as a success.
+
+So the detector finds numeric tabular data, not inline mathematics, and where
+real inline mathematics exists it yields 1-4 character fragments (`'^|Φ'`,
+`'{|χ'`, `'1,3Σ,Π,Δ,Φ'`). Wrapping its output in `$...$` would put maths
+delimiters around table rows: worse than the current omission, which is merely
+invisible.
+
+**Theory abandoned, as pre-registered after the second failure.** Fonts identify
+that mathematics is present (gate 1, 76% of documents) but cannot delimit where
+an expression starts and ends. Three attempts, three different instrument
+defects -- an invalid composition test, broken line reconstruction, and a success
+criterion that measured the wrong property.
+
+Inline-maths emission is not dead, but the font route is. Any future attempt
+needs a different source of span boundaries -- Docling's own inline-formula
+labels if a version ever emits them, or an explicit model -- and should not
+revisit font signals without new evidence.
+
+### Smallest version worth building
+
+1. ~~Measure how many documents expose a distinguishable maths font.~~ Done:
+   22/29, 76%, across many publishers. Gate passed.
+2. Settle gate 2 by prototyping the co-occurrence detector on the documents whose
+   variables are known to be in the body font (`s00214`, `copernicus`) as well as
+   ones where they are not (`cr2001383`). If a span cannot be delimited on the
+   former, the feature is publisher-dependent no matter how good gate 1 looked.
+3. Only then: add font name to `Char`, emit `$...$` over detected spans, and
+   convert the existing script markup to `_{}`/`^{}` inside them.
+3. Validate by construction, not by score: take the recovered spans and check
+   they render equivalently to the source crop, reusing the `--render-check`
+   machinery in `confidence.py` that already does exactly this comparison for
+   display equations.
+
+### What would stop this
+
+- Gate 2 failing on documents whose variables sit in the body font. Symbol
+  detection without delimitation cannot emit `$...$` correctly, and a span that
+  ends in the wrong place damages prose. The honest options would then be to do
+  nothing, or to emit inline maths only where both signals exist and say so in
+  the output rather than silently varying by publisher.
+- Emitting `$...$` changes output for every document, so it needs the same
+  before/after corpus measurement the runaway-repetition guard got. A
+  mis-detected span damages prose, which is worse than the current omission:
+  today's HTML scripts are always correct, merely invisible to LaTeX consumers.

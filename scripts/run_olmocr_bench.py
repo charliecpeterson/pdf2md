@@ -105,12 +105,16 @@ def main() -> None:
     parser.add_argument("--engine", default="docling")
     parser.add_argument("--no-formula", action="store_true",
                         help="skip formula enrichment; much faster, and the math tests will show it")
+    parser.add_argument("--force-ocr", action="store_true",
+                        help="re-OCR pages and suppress the glyph layer (for scanned subsets)")
+    parser.add_argument("--system", default=_SYSTEM,
+                        help="candidate directory name, so two configs can be scored side by side")
     args = parser.parse_args()
 
     pdf_root = args.bench_dir / "bench_data" / "pdfs"
     if not pdf_root.is_dir():
         raise SystemExit(f"no pdfs under {pdf_root} — download the dataset first")
-    target = args.bench_dir / "bench_data" / _SYSTEM
+    target = args.bench_dir / "bench_data" / args.system
     bundles = args.out or (args.bench_dir / "bench_data" / "_pdf2md_bundles")
 
     pdfs = sorted(p for p in pdf_root.rglob("*.pdf")
@@ -120,7 +124,8 @@ def main() -> None:
     print(f"{len(pdfs)} pdfs -> {target}")
 
     config = Config(engine=args.engine,
-                    do_formula_enrichment=not args.no_formula)
+                    do_formula_enrichment=not args.no_formula,
+                    force_ocr=args.force_ocr)
     done = failed = 0
     started = time.perf_counter()
     for i, pdf in enumerate(pdfs, 1):
