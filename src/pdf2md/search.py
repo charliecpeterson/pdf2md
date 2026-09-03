@@ -122,7 +122,7 @@ def _source_link(version_dir: Path, source: dict) -> str:
 def _load_passages(version_dir: Path) -> list[dict]:
     path = version_dir / "passages.jsonl"
     records = []
-    for line_number, line in enumerate(path.read_text().splitlines(), start=1):
+    for line_number, line in enumerate(path.read_text().split("\n"), start=1):
         if not line.strip():
             continue
         try:

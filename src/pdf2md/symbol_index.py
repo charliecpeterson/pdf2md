@@ -165,7 +165,7 @@ def build_symbol_index(document_id: str, passages: list[dict]) -> dict:
 def write_symbol_index(version_dir: Path, document_id: str, passages_path: Path) -> Path:
     passages = [
         json.loads(line)
-        for line in passages_path.read_text().splitlines()
+        for line in passages_path.read_text().split("\n")
         if line.strip()
     ]
     path = version_dir / "symbols.json"

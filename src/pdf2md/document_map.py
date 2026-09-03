@@ -292,7 +292,7 @@ def write_document_map(
 ) -> Path:
     passages = [
         json.loads(line)
-        for line in passages_path.read_text().splitlines()
+        for line in passages_path.read_text().split("\n")
         if line.strip()
     ]
     path = version_dir / "outline.json"

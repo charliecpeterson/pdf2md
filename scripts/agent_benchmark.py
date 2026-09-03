@@ -241,12 +241,12 @@ def _retrieval_records(version_dir: Path, retrieval: str) -> list[dict[str, Any]
     if retrieval == "chunks":
         return [
             json.loads(line)
-            for line in (version_dir / "chunks.jsonl").read_text().splitlines()
+            for line in (version_dir / "chunks.jsonl").read_text().split("\n")
             if line.strip()
         ]
     passage_path = version_dir / "passages.jsonl"
     passages = (
-        [json.loads(line) for line in passage_path.read_text().splitlines() if line.strip()]
+        [json.loads(line) for line in passage_path.read_text().split("\n") if line.strip()]
         if passage_path.is_file()
         else _passages_from_provenance(version_dir)
     )

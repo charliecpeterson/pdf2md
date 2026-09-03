@@ -9,6 +9,7 @@ from jsonschema import Draft202012Validator
 from pdf2md.passages import build_passages, load_passage_schema, write_passages
 from pdf2md.passage_split import split_passage_text
 from pdf2md.passage_tokenizer import load_passage_tokenizer
+from pdf2md.search import _load_passages
 from pdf2md.schema import (
     BBox,
     Block,
@@ -458,3 +459,39 @@ def test_an_unrepeatable_table_header_degrades_instead_of_aborting():
     assert sum(len(part.split()) for part in parts) >= len(text.split()) - 8
     for part in parts:
         assert len(part.split()) <= 20 or "\n" not in part
+
+
+def test_a_passage_holding_a_c1_line_separator_stays_one_jsonl_record(tmp_path):
+    """U+0085 ends a line for str.splitlines but not for JSON Lines.
+
+    Production writes with ensure_ascii=False, so a NEL in the source text reaches
+    the file raw. A reader splitting with splitlines() cuts the record in half and
+    the halves do not parse. Two olmOCR-bench pages died this way.
+    """
+    nel = chr(0x85)
+    blocks = [
+        Block("#/p1", BlockType.PARAGRAPH, "before" + nel + "after the separator", 1,
+              BBox(0, 10, 10, 0)),
+        Block("#/p2", BlockType.PARAGRAPH, "second passage", 1,
+              BBox(20, 10, 30, 0)),
+    ]
+    doc = _document(blocks)
+    passages_path, _, count = write_passages(
+        tmp_path,
+        doc,
+        {"title": "Example Book", "authors": ["A. Author"]},
+        [tmp_path / "document.md"],
+        {},
+        emission_index={
+            block.id: {"markdown": "document.md", "text": block.text}
+            for block in blocks
+        },
+    )
+
+    raw = passages_path.read_text()
+    assert count == 2
+    assert nel in raw
+    assert raw.count(nel) == 2
+    assert len(raw.splitlines()) == 2 + raw.count(nel)
+    assert len([line for line in raw.split("\n") if line.strip()]) == 2
+    assert len(_load_passages(tmp_path)) == 2
