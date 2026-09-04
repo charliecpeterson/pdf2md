@@ -881,6 +881,47 @@ The general rule this suggests: an adapter for an external tool should be tested
 against captured output of that tool, because the hand-built fixture and the code
 share an author and therefore share their mistakes.
 
+## The low-recall count is size-sensitive, 2026-09-04
+
+Running the corpus gate against Marker showed the 545-page relativistic QC book
+flagging 496 low-recall blocks against Docling's 43 -- ten times worse from the
+engine that reads better everywhere else. The headline is misleading, and the
+word-level numbers say so:
+
+| | Docling | Marker |
+|---|---|---|
+| blocks measured | 3,749 | 4,646 |
+| words compared | 154,541 | 162,646 |
+| words matched | 153,601 | 160,177 |
+| **word recall** | **99.39%** | **98.48%** |
+| low-recall *blocks* | 43 | 496 |
+
+Marker reads about 8,000 more words of the same book and matches 0.9 points fewer
+of them. That is a real difference and a small one; the block count magnifies it
+by a factor of eleven.
+
+The mechanism is block size. `record_block_recall` is a per-block ratio, so the
+same word-level accuracy trips it far more often on small blocks -- one word
+missing from three is 67% recall, while one missing from fifty is 98%.
+
+| | Docling | Marker |
+|---|---|---|
+| median block | 25 words | 19 words |
+| blocks missing >= 1 word | 294 | 919 |
+| median size of those | 53 words | 20 words |
+| **flagged blocks of 1-5 words** | **0** | **194** |
+
+Docling produces no small flagged blocks at all; Marker produces 194.
+
+**The metric is not being changed.** Flagging a three-word block that lost a word
+is not wrong -- the word is genuinely missing -- and adjusting a measurement so a
+newly adopted engine scores better is the way a regression harness stops working.
+What changes is the reading: `low_recall` is a count of *blocks*, comparable
+across runs of one engine and not across engines with different block
+granularity. The word-level pair (`glyph_recall_words_total` /
+`glyph_recall_words_matched`, both already in profile.json) is the cross-engine
+comparison, and it says 98.48% against 99.39%.
+
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
 Status: scoped, not built. The measurement that motivates it is in
