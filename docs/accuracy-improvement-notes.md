@@ -922,6 +922,45 @@ granularity. The word-level pair (`glyph_recall_words_total` /
 `glyph_recall_words_matched`, both already in profile.json) is the cross-engine
 comparison, and it says 98.48% against 99.39%.
 
+## Marker is not deterministic, and what that costs, 2026-09-04
+
+Two runs of the 545-page book, same input, same code, same vLLM server:
+
+| | run 1 | run 2 |
+|---|---|---|
+| blocks | 6,511 | 6,518 |
+| text sha256 | `193285459bf1b114` | `433a04584526c6e2` |
+| low_recall blocks | 485 | 468 |
+| words compared | 163,450 | 163,247 |
+
+An earlier note here said Marker was deterministic. That was measured on a
+ten-page paper, which does reproduce exactly (111 blocks, identical text hash,
+twice), and generalized from one small document. On a 545-page book it does not:
+the drift is roughly 0.1% of blocks and about +/-20 low-recall blocks.
+
+That is consistent with a VLM decoding long generations -- the longer the run, the
+more chances to diverge -- and it has three consequences worth stating.
+
+**Run-to-run differences below about +/-40 low-recall blocks on this document are
+noise.** The book's readings across the session (458, 410, 551, 496, 485, 468)
+therefore do not form a trend, and no fix should be credited or blamed for
+movement inside that band.
+
+**The equation fix stands on inspection, not on the count.** `unbalanced_eq` went
+1 -> 3 -> 1, which this noise floor can no longer distinguish. What justified the
+fix was reading the output directly: 66 equation blocks carried stray `$$` from a
+regex that stripped only an enclosing pair. Had the count been the only evidence,
+it would not have been enough.
+
+**Gating is the real cost.** `qa.py --check` fails when a hard invariant rises, and
+every hard invariant is a "must be zero" count. With a non-deterministic engine a
+count can move without anything changing, so the gate becomes flaky against
+Marker in a way it is not against Docling. Adopting Marker as a default would
+need either a fixed seed (if Marker exposes one), a tolerance on the gate -- which
+weakens it for every engine -- or accepting that the corpus gate is run manually
+and read by a person rather than enforced in CI. None of those is free, and the
+choice is not obvious.
+
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
 Status: scoped, not built. The measurement that motivates it is in
