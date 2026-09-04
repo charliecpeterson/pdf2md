@@ -103,6 +103,8 @@ def main() -> None:
     parser.add_argument("--only", default="", help="only this subset directory, e.g. multi_column")
     parser.add_argument("--out", type=Path, default=None, help="pdf2md bundles (default: a temp dir)")
     parser.add_argument("--engine", default="docling")
+    parser.add_argument("--mineru-executable", default="mineru",
+                        help="MinerU CLI, which lives outside the project environment")
     parser.add_argument("--no-formula", action="store_true",
                         help="skip formula enrichment; much faster, and the math tests will show it")
     parser.add_argument("--force-ocr", action="store_true",
@@ -125,7 +127,8 @@ def main() -> None:
 
     config = Config(engine=args.engine,
                     do_formula_enrichment=not args.no_formula,
-                    force_ocr=args.force_ocr)
+                    force_ocr=args.force_ocr,
+                    mineru_executable=args.mineru_executable)
     done = failed = 0
     started = time.perf_counter()
     for i, pdf in enumerate(pdfs, 1):
