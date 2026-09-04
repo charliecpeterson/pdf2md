@@ -421,11 +421,30 @@ Marker's tables are *emitted* at a higher rate than Docling's (85% against 80%)
 with 1% empty grids against 8%. So the gap is in the grid's content, not in
 whether a grid is emitted at all.
 
-The untested hypothesis is header handling: `build_gfm` treats the first row as
-the header, while Marker's own markdown preserves its `<thead>`. On a table whose
-first printed row is a spanning title, the two disagree about which row is the
-header and therefore about every cell's neighbours -- which is exactly what a
-table test checks. That is worth measuring before it is believed.
+The header hypothesis was measured and **refuted**: only 12 of 351 grids have a
+header row holding one value across many columns, far too few to move 1,022
+tests.
+
+What the gap actually is: of the 115 table tests Marker standalone passes and
+pdf2md-on-Marker fails, **105 sit on a page where pdf2md cropped every table and
+emitted no grid at all**. Ten more emit a grid whose content disagrees.
+
+So it is crop substitution -- the explanation dismissed earlier for the right
+observation and the wrong inference. The crop *rate* is identical under both
+engines (15%), which is why it looked neutral; the *cost* is not. Publishing an
+image instead of a Docling grid that was wrong anyway loses little. Publishing an
+image instead of a Marker grid that was right loses the test.
+
+**This is a policy, not a defect.** pdf2md crops a table it cannot verify -- no
+cells, a scanned page, a glyph-unbacked region -- because the image is
+authoritative and an unverified grid is not. The benchmark rewards publishing the
+grid regardless. The gap is the price of that conservatism, and it now has a
+number: 105 tests, about 10 points of `table_tests`.
+
+It also belongs with the detect-versus-correct decision in
+`accuracy-improvement-notes.md`, as the same tension in its withhold-versus-publish
+form. Worth noting one asymmetry before deciding: a better engine makes the
+policy *more* expensive, because there is more good grid being withheld.
 
 One conversion failed (`long_tiny_text/20_pg49_pg1.pdf`, Marker exit code 1),
 leaving 2 empty candidates out of 1,403: that one and the zero-block furniture
