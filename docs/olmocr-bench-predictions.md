@@ -381,3 +381,52 @@ wins every subset and runs at about 1.0 s/pdf against Docling's 5.8 and MinerU's
 The single largest gap is `arxiv_math`, 19.5% against 81.3% over 2,927 tests, and
 it is the inline-mathematics omission recorded above: Marker emits inline `$...$`
 in 653 of 1,403 candidates where pdf2md emits it in 19.
+
+## pdf2md on Marker, measured
+
+The adapter's first full run scored 60.6%, which was three defects in the adapter
+rather than a fact about pdf2md (see `accuracy-improvement-notes.md`). After the
+fixes:
+
+| subset | +Docling | +Marker, buggy | **+Marker, fixed** | Marker alone |
+|---|---|---|---|---|
+| arxiv_math | 19.5% | 20.4% | **81.2%** | 81.3% |
+| baseline | 97.2% | 99.9% | 99.8% | 99.9% |
+| headers_footers | 88.9% | 95.8% | **95.7%** | 95.5% |
+| long_tiny_text | 60.6% | 64.7% | **64.3%** | 63.6% |
+| multi_column | 63.0% | 68.6% | 69.5% | 74.9% |
+| old_scans | 21.5% | 42.8% | **42.8%** | 42.2% |
+| old_scans_math | 29.3% | 59.0% | 57.9% | 70.3% |
+| table_tests | 63.4% | 33.8% | 61.1% | 70.2% |
+| **overall** | **55.4%** | 60.6% | **71.5%** | 74.7% |
+
+**pdf2md keeps most of Marker's reading quality**: 71.5% against 74.7%, having
+started from 55.4% on Docling. It is slightly *ahead* of Marker standalone on
+three subsets (headers_footers, long_tiny_text, old_scans), which is the
+verification layer earning its place rather than merely not getting in the way.
+
+`arxiv_math` at 81.2% against Marker's own 81.3% means the inline-mathematics fix
+transferred essentially completely -- and it closes, from the engine side, the gap
+Idea 8 could not close from the font side. 652 of 1,403 candidates now carry
+inline `$...$` against Marker's 653, where the Docling run had 19.
+
+### What is still missing, and what it is not
+
+Three subsets remain below Marker standalone: table_tests (-9.1), old_scans_math
+(-12.4), multi_column (-5.4).
+
+For tables the obvious explanation is wrong. pdf2md publishes a crop instead of
+the cells for 15% of tables, but it does that under Docling too (15%), and
+Marker's tables are *emitted* at a higher rate than Docling's (85% against 80%)
+with 1% empty grids against 8%. So the gap is in the grid's content, not in
+whether a grid is emitted at all.
+
+The untested hypothesis is header handling: `build_gfm` treats the first row as
+the header, while Marker's own markdown preserves its `<thead>`. On a table whose
+first printed row is a spanning title, the two disagree about which row is the
+header and therefore about every cell's neighbours -- which is exactly what a
+table test checks. That is worth measuring before it is believed.
+
+One conversion failed (`long_tiny_text/20_pg49_pg1.pdf`, Marker exit code 1),
+leaving 2 empty candidates out of 1,403: that one and the zero-block furniture
+page Docling also produces.
