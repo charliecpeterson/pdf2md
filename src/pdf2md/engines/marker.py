@@ -20,6 +20,7 @@ server started by hand (`scripts/start_surya_vllm.sh`).
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import tempfile
@@ -66,6 +67,8 @@ _TYPES = {
     "ChemicalBlock": BlockType.OTHER,
 }
 _FIGURE_TYPES = {"Figure", "Picture", "Diagram", "FigureGroup", "PictureGroup"}
+# A whole block wrapped as display maths: the delimiters are emit's to add.
+_DISPLAY_MATH = re.compile(r"\A\$\$(.+)\$\$\Z", re.DOTALL)
 _TABLE_TYPES = {"Table", "TableGroup", "Form"}
 
 
@@ -132,6 +135,7 @@ def _translate(document: dict[str, Any], marker_version: str = "unknown") -> Eng
     tables: list[TableData] = []
     figures: list[FigureRef] = []
     page_sizes: dict[int, tuple[float, float]] = {}
+    empty = 0
 
     for index, page in enumerate(document.get("children") or [], start=1):
         width, height = _page_size(page)
@@ -167,11 +171,29 @@ def _translate(document: dict[str, Any], marker_version: str = "unknown") -> Eng
                 ))
                 continue
 
+            text = _text(html)
+            if _TYPES.get(kind) is BlockType.EQUATION:
+                # A display equation is the whole block, and emit adds the `$$`
+                # fences itself (emit.py). Leaving the adapter's own delimiters on
+                # double-wraps all 1,895 of them and leaves the LaTeX unbalanced.
+                text = _DISPLAY_MATH.sub(r"\1", text).strip()
+            if not text:
+                # Marker marks a region and sometimes transcribes nothing into it (a
+                # detected PageHeader it did not read, most often). That is a layout
+                # region, not content, and admitting it as an empty block makes the
+                # coverage audit report content dropped where the engine never
+                # offered any -- 163 such blocks across seven documents, against
+                # none from Docling. Tables and figures are handled above and keep
+                # their empty text, because their content is the crop.
+                empty += 1
+                continue
             blocks.append(Block(
-                block_id, _TYPES.get(kind, BlockType.OTHER), _text(html), index, bbox,
+                block_id, _TYPES.get(kind, BlockType.OTHER), text, index, bbox,
                 engine="marker",
             ))
 
+    if empty:
+        log.info("marker: skipped %d region(s) it transcribed no text into", empty)
     return EngineResult(
         blocks,
         tables,

@@ -272,12 +272,25 @@ def test_real_output_keeps_inline_maths_delimited():
     assert joined.count("$") % 2 == 0
 
 
-def test_real_output_labels_page_furniture_and_crops_figures():
-    result = _translate(_fixture("marker_table_and_figure.json"))
+def test_real_output_detects_page_furniture_and_transcribes_none_of_it():
+    """Marker marks every header and footer region and reads none of them.
+
+    Measured over the benchmark: 1,540 PageHeader and 1,028 PageFooter regions,
+    every one with empty html. So its advantage on the `absent` class comes from
+    not reading furniture at all, not from labelling it for emit to strip -- and
+    those regions must not reach the output as empty blocks.
+    """
+    raw = _fixture("marker_table_and_figure.json")
+    furniture = [b for pg in raw["children"] for b in pg.get("children") or []
+                 if b["block_type"] in ("PageHeader", "PageFooter")]
+    assert furniture, "this fixture is chosen for its furniture"
+    assert all(not (b.get("html") or "").strip() for b in furniture)
+
+    result = _translate(raw)
 
     kinds = [b.type for b in result.blocks]
-    assert BlockType.PAGE_HEADER in kinds
-    assert BlockType.PAGE_FOOTER in kinds
+    assert BlockType.PAGE_HEADER not in kinds
+    assert BlockType.PAGE_FOOTER not in kinds
     assert len(result.figures) == 1
     assert len(result.tables) == 1
     assert result.tables[0].gfm.count("\n") >= 3
@@ -295,3 +308,46 @@ def test_real_output_geometry_is_inside_the_page():
             assert 0 <= block.bbox.x0 <= width + 1, f"{name}: {block.id}"
             assert 0 <= block.bbox.y1 <= height + 1, f"{name}: {block.id}"
             assert block.bbox.y0 >= block.bbox.y1, f"{name}: {block.id} not bottom-left"
+
+
+def test_a_region_marker_transcribed_nothing_into_is_not_a_block():
+    """Admitting it makes the coverage audit report content dropped where the
+    engine never offered any: 163 such blocks across seven documents, against none
+    from Docling, and every one of them empty. A table or figure still passes,
+    because its content is the crop rather than its text."""
+    document = _page([
+        _block("PageHeader", "", [10, 10, 500, 24]),
+        _block("Text", "", [10, 40, 500, 60]),
+        _block("Text", "<p>real content</p>", [10, 70, 500, 100]),
+        _block("Figure", "", [10, 110, 300, 400]),
+        _block("Table", "<table><tr><td>v</td></tr></table>", [10, 410, 300, 500]),
+    ])
+
+    result = _translate(document)
+
+    assert [b.type for b in result.blocks] == [
+        BlockType.PARAGRAPH, BlockType.FIGURE, BlockType.TABLE,
+    ]
+    assert result.blocks[0].text == "real content"
+    assert len(result.figures) == 1
+    assert len(result.tables) == 1
+
+
+def test_a_display_equation_block_carries_bare_latex():
+    """emit adds the `$$` fences, so the adapter must not.
+
+    Marker wraps a display equation in <math display="block">, which becomes `$$`
+    here; leaving it double-wrapped all 1,895 equations in the corpus and tripped
+    the unbalanced-LaTeX invariant. Inline maths inside prose keeps its delimiters,
+    because there the block is not the equation.
+    """
+    document = _page([
+        _block("Equation", '<math display="block">E = mc^2</math>', [10, 10, 500, 60]),
+        _block("Text", "<p>where <math>m</math> is mass</p>", [10, 70, 500, 100]),
+    ])
+
+    blocks = _translate(document).blocks
+
+    assert blocks[0].type is BlockType.EQUATION
+    assert blocks[0].text == "E = mc^2"
+    assert blocks[1].text == "where $m$ is mass"
