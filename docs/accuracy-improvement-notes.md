@@ -955,11 +955,38 @@ it would not have been enough.
 **Gating is the real cost.** `qa.py --check` fails when a hard invariant rises, and
 every hard invariant is a "must be zero" count. With a non-deterministic engine a
 count can move without anything changing, so the gate becomes flaky against
-Marker in a way it is not against Docling. Adopting Marker as a default would
-need either a fixed seed (if Marker exposes one), a tolerance on the gate -- which
-weakens it for every engine -- or accepting that the corpus gate is run manually
-and read by a person rather than enforced in CI. None of those is free, and the
-choice is not obvious.
+Marker in a way it is not against Docling.
+
+### A seed does not fix it
+
+The obvious remedy was tested and failed. Surya already decodes at temperature 0
+with `SURYA_FULLPAGE_REGEN` off, so the variation is not sampling. Re-running the
+book twice against a server started with `--seed 0` and MTP speculative decoding
+removed:
+
+| | run 1 | run 2 |
+|---|---|---|
+| blocks | 6,541 | 6,535 |
+| text sha256 | `3fc4dfe377eed7d7` | `acf8dea29e197867` |
+| low_recall | 455 | 407 |
+
+Still different, and the low-recall spread is wider than the unseeded pair, not
+narrower. What remains is vLLM's continuous batching: floating-point reductions
+depend on which requests share a batch, and a seed does not control that. Across
+every run of this document in the session the count spans 407 to 551, so the
+noise band is at least +/-70 rather than the +/-40 estimated earlier.
+
+The one untested lever is `--max-num-seqs 1`, which removes batching and would
+probably be deterministic. It is also not a configuration anyone would run in
+production, since it serialises every request, so it is a diagnostic rather than
+an answer.
+
+**So the must-be-zero invariants cannot be enforced against Marker.** That is an
+architectural cost, not a setup detail, and it is the strongest argument against
+making Marker the default: pdf2md's regression harness assumes a deterministic
+engine, and this one is not. The remaining choices are a tolerance on the gate
+(which weakens it for Docling too), or accepting that the corpus gate is run
+manually and read by a person. Neither is free.
 
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
