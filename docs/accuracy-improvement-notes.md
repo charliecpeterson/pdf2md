@@ -739,12 +739,67 @@ diagnostic. The next work, if its prerequisite evidence appears, is:
   zero blocks while carrying ink should be visible as a flag rather than a
   vacuously-satisfied `total_blocks: 0` is the open part; it affected 1 of 1,403
   pages here, so there is no urgency, only a boundary.
-- **MinerU on scanned subsets.** Staged and blocked on installation. `old_scans`
+- **Routing rather than switching engines.** MinerU is measured at +35.5 points on
+  scanned mathematics and +14.8 on scanned prose, at 60.6 s/pdf against Docling's
+  5.8 -- ten times the cost, paid on every document if the engine is switched
+  globally. The detection needed to pay it only where it helps already exists:
+  `GlyphIndex.scanned_overlay` and the textless-page check identify the case
+  today, and the pipeline already warns and names `--engine mineru` when it sees
+  one. Making that automatic is deliberately NOT done here, because it changes
+  the reproducibility contract: one flag would no longer determine the output,
+  the run fingerprint would have to cover the routing decision, and a bundle's
+  engine would vary per document. An explicit `--engine auto` that records its
+  choice in provenance is the shape that keeps the contract; whether that is
+  wanted is a product decision, not an implementation detail.
+- ~~**MinerU on scanned subsets.** Staged and blocked on installation.~~ Done;
+  results in `olmocr-bench-predictions.md`. Superseded by the routing question
+  above. `old_scans`
   is 21.5% and its `present` tests 12.2%, which is the OCR ceiling of the default
   reader; this repo already measured Docling at 21% against MinerU's 99% on a
   scanned data table. `scripts/run_olmocr_bench.py` now takes `--system`, so the
   side-by-side runs as soon as a MinerU environment exists on the benchmark
   machine.
+
+## Marker evaluation, blocked on infrastructure 2026-09-03
+
+Intent was to bound the headroom before anyone writes an engine adapter: run
+Marker's own CLI over the same 1,403 bench PDFs on the same machine with the same
+scorer, and compare per subset. Marker publishes 76.0% overall and 83.5% on
+born-digital, against pdf2md's measured 61.8% (55.4% before the MinerU swap), so
+the born-digital subsets -- `multi_column` 63.0%, `table_tests` 63.4%,
+`arxiv_math` 19.5% -- are where an adapter would have to pay off.
+
+`marker-pdf` installs cleanly into its own environment. It does not run here.
+Current Marker drives Surya through a vLLM backend that spawns a **Docker
+container with the nvidia runtime**:
+
+```
+SpawnError: docker run failed: docker: Error response from daemon:
+unknown or invalid runtime name: nvidia
+```
+
+Docker works on the box but exposes only `runc`; `SURYA_INFERENCE_BACKEND`
+accepts just `vllm` or `llamacpp`, with no in-process transformers path, and
+`vllm` is not importable in the environment.
+
+Three ways forward, none of them appropriate to take unilaterally:
+
+1. Install `nvidia-container-toolkit` and register the nvidia runtime. Needs
+   root on the benchmark machine.
+2. Install `vllm` into the Marker environment so the backend spawns locally
+   rather than in a container. Multi-gigabyte and CUDA-version sensitive.
+3. Pin an older `marker-pdf` that runs Surya in-process. Cheapest, but it
+   measures a different Marker than the one publishing 76.0%, which defeats the
+   purpose of the comparison.
+
+The environment is left in place (`~/marker-env` on the benchmark machine) so
+whichever route is chosen starts from a working install. `run_marker_bench.py`
+in scratch already handles the candidate naming the scorer requires.
+
+Worth noting what this does not block: the MinerU result stands on its own, and
+the born-digital gap it leaves is partly known to be ours rather than an
+engine's -- `arxiv_math` at 19.5% is dragged by the inline-maths omission that
+Idea 8 documents, which no engine swap fixes.
 
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
