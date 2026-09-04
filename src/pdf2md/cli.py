@@ -691,6 +691,10 @@ def doctor(
     config: Path = typer.Option(
         None, "--config", "-c", exists=True, dir_okay=False, help="TOML config to inspect."
     ),
+    engine: str = typer.Option(
+        None, "--engine",
+        help="Check readiness for this engine (docling, mineru, marker) without a config file.",
+    ),
     probe_vlm: bool = typer.Option(
         False, "--probe-vlm", help="Contact the configured vision endpoint and list models."
     ),
@@ -702,6 +706,8 @@ def doctor(
     from pdf2md.doctor import inspect_environment
 
     cfg = _load_config(config)
+    if engine:
+        cfg = _replace_config(cfg, engine=engine)
     report = inspect_environment(cfg, probe_vlm=probe_vlm)
     if json_output:
         typer.echo(json.dumps(report, indent=2))

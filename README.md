@@ -17,9 +17,11 @@ errors can reverse the result of a citation check while looking plausible to the
 
 [Docling](https://github.com/docling-project/docling) is the default parser.
 [MinerU](https://github.com/opendatalab/mineru) is the measured high-accuracy
-option for scans and difficult tables or equations. pdf2md supplies the common
-document model, logical-section splitting, bibliographic front matter, source
-crops, born-digital chart digitization, and per-document coverage audit.
+option for scans and difficult tables or equations, and
+[Marker](https://github.com/datalab-to/marker) is the best-reading option where a
+GPU inference server is available. pdf2md supplies the common document model,
+logical-section splitting, bibliographic front matter, source crops, born-digital
+chart digitization, and per-document coverage audit.
 
 Checking a claim in a converted paper:
 
@@ -72,6 +74,7 @@ the source crops make every uncertain claim inspectable.
 |---|---|---|
 | General PDF structure | Docling layout, reading order, tables, formulas, and bounding boxes | Default production path for born-digital documents. |
 | Scans and difficult tables/equations | MinerU native structure through a separate CLI environment | Production option selected by the labelled bake-off; not run as a blanket second parser. |
+| Best measured reading quality | Marker's JSON block tree through a separate CLI environment | Opt-in. Reads better than Docling on every olmOCR-bench subset (71.5% against 55.4% through pdf2md) and is the only engine here that emits inline mathematics as LaTeX. Needs a GPU inference server, and its output is not reproducible run to run, so the `qa.py --check` invariants cannot be enforced against it. |
 | Page rendering and exact PDF evidence | PDFium through pypdfium2 for glyphs, page rasters, crops, outlines, and vector objects | Production evidence layer, independent of the parser adapter. |
 | Clean scanned prose | RapidOCR followed by conservative punctuation repair and English word re-splitting | Default offline fallback. Word splitting is disabled for non-English scans. |
 | Whole-page OCR | OCR-focused VLM through an OpenAI-compatible endpoint | Opt-in. It can improve page text but collapses table, equation, and caption structure into one Markdown block. |
@@ -128,6 +131,21 @@ with Docling's dependencies:
 uv venv env/mineru --python 3.11
 uv pip install --python env/mineru/bin/python 'mineru[all]'
 ```
+
+Marker likewise, and it additionally needs an inference server. Its Surya backend
+tries to spawn a Docker container with the `nvidia` runtime, which many hosts do
+not register even with the container toolkit installed; starting the server by
+hand avoids that entirely:
+
+```bash
+uv venv env/marker --python 3.12
+uv pip install --python env/marker/bin/python marker-pdf
+
+scripts/start_surya_vllm.sh                              # --gpus all, no nvidia runtime needed
+export SURYA_INFERENCE_URL=http://127.0.0.1:8000/v1
+```
+
+`pdf2md doctor --engine marker` reports which half is missing.
 
 CUDA formula enrichment also needs the development headers for the selected
 Python (`python3-devel` or the versioned equivalent on Linux) because PyTorch/Triton
@@ -202,6 +220,9 @@ uv run pdf2md convert book.pdf --no-formula --no-scripts
 
 # Scanned book or textbook, best structured quality (MinerU stays in its own environment)
 uv run pdf2md convert scan.pdf --engine mineru --mineru-executable env/mineru/bin/mineru
+
+# Best reading quality, including inline mathematics (Marker, needs the server above)
+uv run pdf2md convert paper.pdf --engine marker --marker-executable env/marker/bin/marker_single
 
 # Endpoint-only alternative: accurate page Markdown, but no separate equation/table blocks
 uv run pdf2md convert scan.pdf --ocr-page-vlm --vlm-ocr-model glm-ocr:q8_0
@@ -284,6 +305,8 @@ Grouped by what they touch. All are flags to `convert`.
 
 **Scanned-document OCR** (vision flags need the `describe` extra + an endpoint)
 - `--engine mineru` — use MinerU's native structure for scans and difficult tables/equations
+- `--engine marker` — use Marker, the best-reading option; needs `--marker-executable` and a
+  running inference server (see Installation)
 - `--mineru-executable PATH` — MinerU CLI in its separate environment
 - `--table-ocr-executable PATH` — compare numeric table cells with Tesseract; never replaces values
 - `--table-reference CSV` — compare normalized cells with a semantic external reference

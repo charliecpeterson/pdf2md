@@ -222,6 +222,26 @@ def _flatten(children: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
+def _failure(returncode: int, detail: str) -> str:
+    """Say what actually went wrong when Marker cannot reach an inference server.
+
+    Marker's Surya spawns a Docker container with the `nvidia` runtime, which many
+    hosts do not register even with the container toolkit installed. Unexplained,
+    that arrives as a SpawnError at the bottom of a traceback about docker.
+    """
+    if "unknown or invalid runtime name: nvidia" in detail or "SpawnError" in detail:
+        return (
+            "Marker could not start its inference server: docker has no `nvidia` "
+            "runtime registered. Start a server yourself and point Marker at it "
+            "(scripts/start_surya_vllm.sh, then export "
+            "SURYA_INFERENCE_URL=http://127.0.0.1:8000/v1), or register the runtime "
+            "with `sudo nvidia-ctk runtime configure --runtime=docker`. "
+            "`pdf2md doctor --engine marker` reports which of these is missing.\n"
+            f"Marker exit code {returncode}: {detail[-600:]}"
+        )
+    return f"Marker failed with exit code {returncode}: {detail}"
+
+
 class MarkerEngine:
     name = "marker"
 
@@ -254,7 +274,7 @@ class MarkerEngine:
             )
             if result.returncode != 0:
                 detail = (result.stderr or result.stdout or "")[-2000:]
-                raise RuntimeError(f"Marker failed with exit code {result.returncode}: {detail}")
+                raise RuntimeError(_failure(result.returncode, detail))
             produced = [p for p in output.rglob("*.json") if not p.name.endswith("_meta.json")]
             if len(produced) != 1:
                 raise RuntimeError(

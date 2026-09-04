@@ -5,10 +5,13 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from importlib import metadata
 import json
+import os
 from pathlib import Path
 import platform
 import shutil
+import subprocess
 import sys
+import urllib.request
 from urllib import error, request
 
 from pdf2md.config import Config
@@ -44,6 +47,45 @@ def _executable(name: str, command: str, *, required: bool, fix: str) -> Check:
         "error" if required else "optional",
         f"not found on PATH: {command}",
         fix,
+    )
+
+
+def _marker_backend(config: Config) -> Check:
+    """Marker needs an inference server, and says so unhelpfully when it lacks one.
+
+    Its Surya backend spawns a Docker container with the `nvidia` runtime, which
+    many hosts do not register even with the container toolkit installed; the
+    failure surfaces as a SpawnError deep in a traceback. Pointing
+    SURYA_INFERENCE_URL at a server started by hand avoids the spawn entirely.
+    """
+    if config.engine != "marker":
+        return Check("Marker inference backend", "skipped", "engine is not marker")
+    url = os.environ.get("SURYA_INFERENCE_URL")
+    if url:
+        try:
+            with urllib.request.urlopen(f"{url.rstrip('/')}/models", timeout=5) as response:
+                if response.status == 200:
+                    return Check("Marker inference backend", "ok", f"serving at {url}")
+        except Exception as exc:  # noqa: BLE001 - any failure means unusable
+            return Check(
+                "Marker inference backend", "error",
+                f"SURYA_INFERENCE_URL set to {url} but unreachable: {type(exc).__name__}",
+                "Start the server (scripts/start_surya_vllm.sh) or unset the variable.",
+            )
+    runtimes = ""
+    if shutil.which("docker"):
+        probe = subprocess.run(["docker", "info", "--format", "{{.Runtimes}}"],
+                               capture_output=True, text=True, check=False)
+        runtimes = probe.stdout
+    if "nvidia" in runtimes:
+        return Check("Marker inference backend", "ok",
+                     "docker has the nvidia runtime; Marker will spawn its own server")
+    return Check(
+        "Marker inference backend", "error",
+        "no SURYA_INFERENCE_URL, and docker has no `nvidia` runtime registered",
+        "Start a server with scripts/start_surya_vllm.sh and export "
+        "SURYA_INFERENCE_URL=http://127.0.0.1:8000/v1, or register the runtime "
+        "with `sudo nvidia-ctk runtime configure --runtime=docker`.",
     )
 
 
@@ -162,6 +204,13 @@ def inspect_environment(
         _package("rapidocr", required=True, fix="Run `uv sync`."),
         _package("onnxruntime", required=True, fix="Run `uv sync`."),
         _formula_headers(config),
+        _executable(
+            "Marker",
+            config.marker_executable,
+            required=config.engine == "marker",
+            fix="Install marker-pdf separately and set marker_executable to its CLI path.",
+        ),
+        _marker_backend(config),
         _executable(
             "MinerU",
             config.mineru_executable,

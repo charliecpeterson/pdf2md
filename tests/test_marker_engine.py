@@ -369,3 +369,21 @@ def test_an_equation_block_holding_several_display_spans_keeps_none_of_them():
 
     assert "$" not in text
     assert "a = 1" in text and "b = 2" in text
+
+
+def test_a_missing_inference_server_is_explained_not_buried():
+    """The real failure arrives as a SpawnError under a docker traceback.
+
+    A user seeing that has no way to know the fix is an environment variable, so
+    the adapter names it and points at doctor.
+    """
+    from pdf2md.engines.marker import _failure
+
+    spawn = _failure(1, "SpawnError: docker run failed: docker: Error response from "
+                        "daemon: unknown or invalid runtime name: nvidia")
+    assert "SURYA_INFERENCE_URL" in spawn
+    assert "nvidia-ctk" in spawn
+    assert "doctor" in spawn
+
+    other = _failure(2, "some other failure")
+    assert other == "Marker failed with exit code 2: some other failure"
