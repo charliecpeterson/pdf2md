@@ -327,3 +327,45 @@ page holds only a title, a collection number and a page number, all furniture.
 But nothing in the bundle would have said otherwise if it had held a paragraph.
 It is 1 of 1,403, so this is a boundary worth knowing rather than a defect worth
 fixing today.
+
+## MinerU on the scanned subsets, measured
+
+MinerU 3.4.5 installed in its own environment (it is deliberately not a project
+dependency) and both scanned subsets reconverted into a separate candidate
+directory -- 98 `old_scans` pages and 36 `old_scans_math` -- so the remaining
+1,269 candidates stay byte-identical and the comparison isolates the engine.
+Verified before scoring: 0 failures, all 134 candidates differ from the Docling
+ones, and provenance records `mineru 3.4.5`. The
+`--force-ocr` run earlier produced byte-identical output, so "did the flag
+actually change anything" is now a standing check rather than an assumption.
+
+| | Docling | MinerU | change |
+|---|---|---|---|
+| **old_scans_math** | 29.3% (134/458) | **64.8% (297/458)** | **+35.5** |
+| **old_scans** | 21.5% (113/526) | **36.3% (191/526)** | **+14.8** |
+| math (class) | 20.8% | 25.6% | +4.8 |
+| present (class) | 41.9% | 48.4% | +6.5 |
+| order (class) | 53.5% | 56.6% | +3.1 |
+| baseline | 97.2% | 97.8% | +0.6 |
+| absent (class) | 89.6% | 89.4% | -0.2 |
+| **overall** | **55.4%** | **61.8%** | **+6.4** |
+
+Only the two scanned subsets were reconverted, so every other subset is
+unchanged by construction and the class-level moves are their contribution.
+
+**The two scanned subsets move very differently, and that is the finding.**
+Scanned mathematics gains 35.5 points; scanned prose gains 14.8. The note
+carried forward from Phase 6/7 has Docling at 21% against MinerU's 99% on a 1972
+scanned numeric data table, and the first read here -- taken from `old_scans`
+alone -- was that the 99% does not transfer. With both subsets measured that is
+too flat. MinerU's advantage is largest on scanned *technical* content, which is
+exactly the kind of document the original measurement used, and roughly half as
+large on ordinary scanned prose. The prior generalizes along the axis it was
+established on, not to scans in general.
+
+Cost: 60.6 s/pdf against Docling's 5.8 s/pdf on an RTX 4090, a little over ten
+times slower. That is the trade for +6.4 points overall and +35.5 on scanned
+mathematics.
+
+`absent` moving down 0.2 is consistent with MinerU emitting more page furniture
+than Docling, which is the same behaviour that helps it elsewhere.
