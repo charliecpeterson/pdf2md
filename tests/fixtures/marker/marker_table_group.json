@@ -1,0 +1,682 @@
+{
+ "children": [
+  {
+   "id": "/page/0/Page/418",
+   "block_type": "Page",
+   "html": "<content-ref src='/page/0/PageHeader/0'></content-ref><content-ref src='/page/0/PageHeader/1'></content-ref><content-ref src='/page/0/PageHeader/2'></content-ref><content-ref src='/page/0/SectionHeader/3'></content-ref><content-ref src='/page/0/SectionHeader/4'></content-ref><content-ref src='/page/0/Text/5'></content-ref><content-ref src='/page/0/SectionHeader/6'></content-ref><content-ref src='/page/0/Text/7'></content-ref><content-ref src='/page/0/Text/8'></content-ref><content-ref src='/page/0/Text/9'></content-ref><content-ref src='/page/0/TableGroup/417'></content-ref><content-ref src='/page/0/Text/12'></content-ref><content-ref src='/page/0/Text/13'></content-ref><content-ref src='/page/0/Text/14'></content-ref><content-ref src='/page/0/TableGroup/418'></content-ref>",
+   "polygon": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     596.0,
+     0.0
+    ],
+    [
+     596.0,
+     842.0
+    ],
+    [
+     0.0,
+     842.0
+    ]
+   ],
+   "bbox": [
+    0.0,
+    0.0,
+    596.0,
+    842.0
+   ],
+   "children": [
+    {
+     "id": "/page/0/PageHeader/0",
+     "block_type": "PageHeader",
+     "html": "",
+     "polygon": [
+      [
+       68.53999999999999,
+       33.68
+      ],
+      [
+       87.612,
+       33.68
+      ],
+      [
+       87.612,
+       45.467999999999996
+      ],
+      [
+       68.53999999999999,
+       45.467999999999996
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      33.68,
+      87.612,
+      45.467999999999996
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/PageHeader/1",
+     "block_type": "PageHeader",
+     "html": "",
+     "polygon": [
+      [
+       72.02400207519531,
+       33.68
+      ],
+      [
+       357.59999999999997,
+       33.68
+      ],
+      [
+       357.59999999999997,
+       47.35137939453125
+      ],
+      [
+       72.02400207519531,
+       47.35137939453125
+      ]
+     ],
+     "bbox": [
+      72.02400207519531,
+      33.68,
+      357.59999999999997,
+      47.35137939453125
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/PageHeader/2",
+     "block_type": "PageHeader",
+     "html": "",
+     "polygon": [
+      [
+       154.364,
+       45.467999999999996
+      ],
+      [
+       438.656,
+       45.467999999999996
+      ],
+      [
+       438.656,
+       58.33660888671875
+      ],
+      [
+       154.364,
+       58.33660888671875
+      ]
+     ],
+     "bbox": [
+      154.364,
+      45.467999999999996,
+      438.656,
+      58.33660888671875
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/SectionHeader/3",
+     "block_type": "SectionHeader",
+     "html": "<h2><i>Methodology:</i></h2>",
+     "polygon": [
+      [
+       68.53999999999999,
+       71.57000000000001
+      ],
+      [
+       128.736,
+       71.57000000000001
+      ],
+      [
+       128.736,
+       85.7513427734375
+      ],
+      [
+       68.53999999999999,
+       85.7513427734375
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      71.57000000000001,
+      128.736,
+      85.7513427734375
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/3"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/SectionHeader/4",
+     "block_type": "SectionHeader",
+     "html": "<h2><i>Measures:</i></h2>",
+     "polygon": [
+      [
+       68.53999999999999,
+       84.2
+      ],
+      [
+       115.02799999999999,
+       84.2
+      ],
+      [
+       115.02799999999999,
+       97.2913818359375
+      ],
+      [
+       68.53999999999999,
+       97.2913818359375
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      84.2,
+      115.02799999999999,
+      97.2913818359375
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/4"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/5",
+     "block_type": "Text",
+     "html": "<p block-type=\"Text\">To test these hypotheses, a structured questionnaire was designed focusing on job satisfaction, internal  marketing and brand orientation affecting employees internal brand equity. The first set of items for job  satisfaction was derived from the existing measurement scales developed by Hackman and Oldham\"s (1974).  The scale items relating to internal marketing were derived from Caruana and Calleya(1998) and Tsai (2008).  The scale items for both brand orientation and internal brand equity were adopted from, Baumgrth and Schmidt (2009). To assess the content and face validity, the questionnaire was submitted to three marketing professionals  who assessed each item for representativeness, specificity, and clarity. The final questionnaire was divided into  two parts. The first part contained questions regarding respondents\" demographics, and the second part focused  on measurement scales. All variables in the second part of the questionnaire were closed-ended five-point  scales, with 1 indicating \"\"strongly disagree\"\" and 5 indicating \"\"strongly agree\"\".</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       95.146
+      ],
+      [
+       525.9100341796875,
+       95.146
+      ],
+      [
+       525.9100341796875,
+       212.26129150390625
+      ],
+      [
+       68.53999999999999,
+       212.26129150390625
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      95.146,
+      525.9100341796875,
+      212.26129150390625
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/4"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/SectionHeader/6",
+     "block_type": "SectionHeader",
+     "html": "<h2><i>Sampling and Data collection:</i></h2>",
+     "polygon": [
+      [
+       68.53999999999999,
+       222.288
+      ],
+      [
+       195.488,
+       222.288
+      ],
+      [
+       195.488,
+       235.2913818359375
+      ],
+      [
+       68.53999999999999,
+       235.2913818359375
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      222.288,
+      195.488,
+      235.2913818359375
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/6"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/7",
+     "block_type": "Text",
+     "html": "<p block-type=\"Text\">The sample for this study was managers and marketing experts of food and pharmaceutical companies  which have central offices in Tehran. The reason for selecting these kinds of companies is the competitive  nature of the food and pharmaceutical industry and abundance of companies in comparison with other  industries. A convenience sampling technique was used and a total number of 120 manager and marketing  experts were selected from 60 companies. Because the focus of analysis in this study is companies (not  individuals), responses were collected and combined so that the analysis was performed in accordance with the  number of companies (n=60).</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       233.234
+      ],
+      [
+       525.8809814453125,
+       233.234
+      ],
+      [
+       525.8809814453125,
+       315.84136962890625
+      ],
+      [
+       68.53999999999999,
+       315.84136962890625
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      233.234,
+      525.8809814453125,
+      315.84136962890625
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/6"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/8",
+     "block_type": "Text",
+     "html": "<p block-type=\"Text\">The survey instrument was a self-administrated questionnaire including 43 items. 3 items were used to  identify demographic characteristics of respondents. From the respondents\" profile, 54.2% were men and 45.8%  were women. The age of the respondents ranged from 20 to more than 50years old, with the most common age  groups consisting of 20-30-year olds (52.5% of respondents) and 30-40-year olds (40.8% of respondents).  Furthermore, 23.3% of respondents were managers, 49.2% were experts and 25.8% had different occupations. 1.2. Analysis and results</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       314.066
+      ],
+      [
+       525.8642578125,
+       314.066
+      ],
+      [
+       525.8642578125,
+       384.851318359375
+      ],
+      [
+       68.53999999999999,
+       384.851318359375
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      314.066,
+      525.8642578125,
+      384.851318359375
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/6"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/9",
+     "block_type": "Text",
+     "html": "<p block-type=\"Text\">Means standard deviation and correlation among research variable is reported in Table1. The brand  orientation has the highest mean (4.39) and job satisfaction with the mean of 3.18 has the lowest. As the results  shows, internal marketing has strong positive correlation with both internal brand equity (r=.78, p&lt;.01) and  brand orientation (r=.77, p&lt;.01). Correlation results show that there is positive relation between internal brand  equity and brand orientation.</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       382.26800000000003
+      ],
+      [
+       525.9126586914062,
+       382.26800000000003
+      ],
+      [
+       525.9126586914062,
+       442.3313293457031
+      ],
+      [
+       68.53999999999999,
+       442.3313293457031
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      382.26800000000003,
+      525.9126586914062,
+      442.3313293457031
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/6"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/TableGroup/417",
+     "block_type": "TableGroup",
+     "html": "<content-ref src='/page/0/Caption/10'></content-ref><content-ref src='/page/0/Table/11'></content-ref>",
+     "polygon": [
+      [
+       68.53999999999999,
+       451.31199999999995
+      ],
+      [
+       519.712,
+       451.31199999999995
+      ],
+      [
+       519.712,
+       511.6466369628906
+      ],
+      [
+       68.53999999999999,
+       511.6466369628906
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      451.31199999999995,
+      519.712,
+      511.6466369628906
+     ],
+     "children": [
+      {
+       "id": "/page/0/Caption/10",
+       "block_type": "Caption",
+       "html": "<p><b>Table 1: </b>Means, Standard deviation and correlations.</p>",
+       "polygon": [
+        [
+         68.53999999999999,
+         451.31199999999995
+        ],
+        [
+         243.25999450683594,
+         451.31199999999995
+        ],
+        [
+         243.25999450683594,
+         463.0266418457031
+        ],
+        [
+         68.53999999999999,
+         463.0266418457031
+        ]
+       ],
+       "bbox": [
+        68.53999999999999,
+        451.31199999999995,
+        243.25999450683594,
+        463.0266418457031
+       ],
+       "children": null,
+       "section_hierarchy": {
+        "2": "/page/0/SectionHeader/6"
+       },
+       "images": {}
+      },
+      {
+       "id": "/page/0/Table/11",
+       "block_type": "Table",
+       "html": "<table><thead><tr><th>Variable</th><th>Mean</th><th>JS</th><th>BO</th><th>IBE MI</th><th>S.D.</th></tr></thead><tbody><tr><td></td><td></td><td>0.31 *</td><td>0.77 **</td><td>0.78 **</td><td>0.658</td></tr><tr><td>IM</td><td>4.11</td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td>0.302 *</td><td>0.709 **</td><td></td><td>0.514</td></tr><tr><td>IBE</td><td>4.20</td><td></td><td></td><td></td><td></td></tr><tr><td>BO</td><td>4.39</td><td>0.200</td><td></td><td></td><td>0.569</td></tr><tr><td>JS</td><td>3.18</td><td></td><td></td><td></td><td>0.561</td></tr></tbody></table>",
+       "polygon": [
+        [
+         68.53999999999999,
+         460.574
+        ],
+        [
+         519.712,
+         460.574
+        ],
+        [
+         519.712,
+         511.6466369628906
+        ],
+        [
+         68.53999999999999,
+         511.6466369628906
+        ]
+       ],
+       "bbox": [
+        68.53999999999999,
+        460.574,
+        519.712,
+        511.6466369628906
+       ],
+       "children": [],
+       "section_hierarchy": {
+        "2": "/page/0/SectionHeader/6"
+       },
+       "images": null
+      }
+     ],
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/6"
+     },
+     "images": null
+    },
+    {
+     "id": "/page/0/Text/12",
+     "block_type": "Text",
+     "html": "<p block-type=\"Text\">Notes: IM= Internal Marketing; IBE= Internal Brand Equity; BO= Brand Orientation; JS= Job Satisfaction;**p&lt;0.01; *&lt;0.05</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       508.568
+      ],
+      [
+       474.416,
+       508.568
+      ],
+      [
+       474.416,
+       521.2546997070312
+      ],
+      [
+       68.53999999999999,
+       521.2546997070312
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      508.568,
+      474.416,
+      521.2546997070312
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/6"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/13",
+     "block_type": "Text",
+     "html": "<p block-type=\"Text\">In order to examine the proposed hypotheses, partial-least-squares regression (PLS) was employed. The  number of usable questionnaires was the key factor for choosing PLS as the method for testing the model. PLS  path models are categorized as inner and outer models. While the inner model specifies the relationship between  latent variables, the outer model shows the relationship between a latent variable and its related observed  variable. Furthermore, the outer model can be used for testing the hypothesis. As a result, the output of the PLS  which is the outer model is provided in figure 1.</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       530.46
+      ],
+      [
+       525.887451171875,
+       530.46
+      ],
+      [
+       525.887451171875,
+       601.7113189697266
+      ],
+      [
+       68.53999999999999,
+       601.7113189697266
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      530.46,
+      525.887451171875,
+      601.7113189697266
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/6"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/14",
+     "block_type": "Text",
+     "html": "<p block-type=\"Text\">The standardized path coefficients (\u03b2) support that brand orientation is an antecedent of internal brand  equity and positively affects internal brand equity (\u03b2=.23, t=2.06). The results of the analysis indicate that job  satisfaction has no significant relationship with internal brand equity (\u03b2=-.039, t=-.579). The argument that  internal marketing is an antecedent and positively related to internal brand equity is supported by the findings  (\u03b2<b>=</b>.63, t=5.27). Also, the argument that job satisfaction is an antecedent and that it is positively related to internal branding is supported in the findings (\u03b2=1.57, t=2.44). And finally results revealed that the path  between internal marketing and brand orientation was indeed positive with strong relationship (\u03b2=.85, t=12.19).</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       599.5039999999999
+      ],
+      [
+       525.8118286132812,
+       599.5039999999999
+      ],
+      [
+       525.8118286132812,
+       682.2513732910156
+      ],
+      [
+       68.53999999999999,
+       682.2513732910156
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      599.5039999999999,
+      525.8118286132812,
+      682.2513732910156
+     ],
+     "children": null,
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/6"
+     },
+     "images": {}
+    },
+    {
+     "id": "/page/0/TableGroup/418",
+     "block_type": "TableGroup",
+     "html": "<content-ref src='/page/0/Caption/15'></content-ref><content-ref src='/page/0/Table/16'></content-ref>",
+     "polygon": [
+      [
+       68.53999999999999,
+       687.914
+      ],
+      [
+       519.712,
+       687.914
+      ],
+      [
+       519.712,
+       758.8726425170898
+      ],
+      [
+       68.53999999999999,
+       758.8726425170898
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      687.914,
+      519.712,
+      758.8726425170898
+     ],
+     "children": [
+      {
+       "id": "/page/0/Caption/15",
+       "block_type": "Caption",
+       "html": "<p><b>Table 2:</b> Path coefficient of the research model.</p>",
+       "polygon": [
+        [
+         68.53999999999999,
+         687.914
+        ],
+        [
+         226.48000000000002,
+         687.914
+        ],
+        [
+         226.48000000000002,
+         700.6766357421875
+        ],
+        [
+         68.53999999999999,
+         700.6766357421875
+        ]
+       ],
+       "bbox": [
+        68.53999999999999,
+        687.914,
+        226.48000000000002,
+        700.6766357421875
+       ],
+       "children": null,
+       "section_hierarchy": {
+        "2": "/page/0/SectionHeader/6"
+       },
+       "images": {}
+      },
+      {
+       "id": "/page/0/Table/16",
+       "block_type": "Table",
+       "html": "<table>\n<thead>\n<tr>\n<th>Hypothesis</th>\n<th>Path</th>\n<th><math>\\beta</math></th>\n<th>t-value</th>\n<th>Result</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>H1</td>\n<td>BRDORT\u2192INTERDVU</td>\n<td>.236</td>\n<td>2.069</td>\n<td>Supported</td>\n</tr>\n<tr>\n<td>H2</td>\n<td>INTMRK\u2192INTERDVU</td>\n<td>.635</td>\n<td>5.276</td>\n<td>Supported</td>\n</tr>\n<tr>\n<td>H3</td>\n<td>INTMRK\u2192BRDORT</td>\n<td>.859</td>\n<td>12.195</td>\n<td>Supported</td>\n</tr>\n<tr>\n<td>H4</td>\n<td>JOBSAT\u2192INTERDVU</td>\n<td>-0.039</td>\n<td>-0.579</td>\n<td>Not supported</td>\n</tr>\n<tr>\n<td>H5</td>\n<td>JOBSAT\u2192BRDORT</td>\n<td>.157</td>\n<td>.2444</td>\n<td>Supported</td>\n</tr>\n</tbody>\n</table>",
+       "polygon": [
+        [
+         68.53999999999999,
+         698.0179999999999
+        ],
+        [
+         519.712,
+         698.0179999999999
+        ],
+        [
+         519.712,
+         758.8726425170898
+        ],
+        [
+         68.53999999999999,
+         758.8726425170898
+        ]
+       ],
+       "bbox": [
+        68.53999999999999,
+        698.0179999999999,
+        519.712,
+        758.8726425170898
+       ],
+       "children": [],
+       "section_hierarchy": {
+        "2": "/page/0/SectionHeader/6"
+       },
+       "images": null
+      }
+     ],
+     "section_hierarchy": {
+      "2": "/page/0/SectionHeader/6"
+     },
+     "images": null
+    }
+   ],
+   "section_hierarchy": {
+    "2": "/page/0/SectionHeader/6"
+   },
+   "images": null
+  }
+ ],
+ "block_type": "Document"
+}

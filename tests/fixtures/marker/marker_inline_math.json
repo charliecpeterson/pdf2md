@@ -1,0 +1,681 @@
+{
+ "children": [
+  {
+   "id": "/page/0/Page/715",
+   "block_type": "Page",
+   "html": "<content-ref src='/page/0/PageHeader/0'></content-ref><content-ref src='/page/0/PictureGroup/715'></content-ref><content-ref src='/page/0/Text/3'></content-ref><content-ref src='/page/0/Text/4'></content-ref><content-ref src='/page/0/Text/5'></content-ref><content-ref src='/page/0/Text/6'></content-ref><content-ref src='/page/0/Equation/7'></content-ref><content-ref src='/page/0/Text/8'></content-ref><content-ref src='/page/0/Equation/9'></content-ref><content-ref src='/page/0/Text/10'></content-ref><content-ref src='/page/0/Text/11'></content-ref><content-ref src='/page/0/Equation/12'></content-ref><content-ref src='/page/0/Text/13'></content-ref><content-ref src='/page/0/Equation/14'></content-ref><content-ref src='/page/0/Text/15'></content-ref><content-ref src='/page/0/Text/16'></content-ref><content-ref src='/page/0/Text/17'></content-ref><content-ref src='/page/0/Equation/18'></content-ref>",
+   "polygon": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     596.0,
+     0.0
+    ],
+    [
+     596.0,
+     842.0
+    ],
+    [
+     0.0,
+     842.0
+    ]
+   ],
+   "bbox": [
+    0.0,
+    0.0,
+    596.0,
+    842.0
+   ],
+   "children": [
+    {
+     "id": "/page/0/PageHeader/0",
+     "block_type": "PageHeader",
+     "html": "",
+     "polygon": [
+      [
+       96.552,
+       47.99399999999999
+      ],
+      [
+       523.884,
+       47.99399999999999
+      ],
+      [
+       523.884,
+       59.90252685546875
+      ],
+      [
+       96.552,
+       59.90252685546875
+      ]
+     ],
+     "bbox": [
+      96.552,
+      47.99399999999999,
+      523.884,
+      59.90252685546875
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/PictureGroup/715",
+     "block_type": "PictureGroup",
+     "html": "<content-ref src='/page/0/Picture/1'></content-ref><content-ref src='/page/0/Caption/2'></content-ref>",
+     "polygon": [
+      [
+       141.84799999999998,
+       64.7077
+      ],
+      [
+       450.57599999999996,
+       64.7077
+      ],
+      [
+       450.57599999999996,
+       238.641845703125
+      ],
+      [
+       141.84799999999998,
+       238.641845703125
+      ]
+     ],
+     "bbox": [
+      141.84799999999998,
+      64.7077,
+      450.57599999999996,
+      238.641845703125
+     ],
+     "children": [
+      {
+       "id": "/page/0/Picture/1",
+       "block_type": "Picture",
+       "html": "",
+       "polygon": [
+        [
+         193.99800000000002,
+         64.7077
+        ],
+        [
+         397.234,
+         64.7077
+        ],
+        [
+         397.234,
+         215.6783
+        ],
+        [
+         193.99800000000002,
+         215.6783
+        ]
+       ],
+       "bbox": [
+        193.99800000000002,
+        64.7077,
+        397.234,
+        215.6783
+       ],
+       "children": null,
+       "section_hierarchy": {},
+       "images": {
+        "/page/0/Picture/1": "<base64 image elided for the fixture>"
+       }
+      },
+      {
+       "id": "/page/0/Caption/2",
+       "block_type": "Caption",
+       "html": "<p></p><p>FIGURE 3. The decorated fan of an action of <math>Q(1)^2</math> on <math>\\mathbb{P}^{2|2}</math></p>",
+       "polygon": [
+        [
+         141.84799999999998,
+         222.288
+        ],
+        [
+         450.57599999999996,
+         222.288
+        ],
+        [
+         450.57599999999996,
+         238.641845703125
+        ],
+        [
+         141.84799999999998,
+         238.641845703125
+        ]
+       ],
+       "bbox": [
+        141.84799999999998,
+        222.288,
+        450.57599999999996,
+        238.641845703125
+       ],
+       "children": null,
+       "section_hierarchy": {},
+       "images": {}
+      }
+     ],
+     "section_hierarchy": {},
+     "images": null
+    },
+    {
+     "id": "/page/0/Text/3",
+     "block_type": "Text",
+     "html": "<p><b>Example 4.28.</b> Let us use Proposition 4.26 and Corollary 4.27 to classify toric supervarieties with supertorus <math>Q(1)^n</math> and underlying variety <math>\\mathbb{P}^n \\cong X_\\Sigma</math> for the complete fan whose rays are <math>\\rho_i = \\mathbb{R}_+ x_i</math> for <math>i = 1, \\dots, n</math> and <math>\\rho_0 = \\mathbb{R}_+(-x_1 - \\dots - x_n)</math>.</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       255.126
+      ],
+      [
+       524.48,
+       255.126
+      ],
+      [
+       524.48,
+       298.0982666015625
+      ],
+      [
+       68.53999999999999,
+       298.0982666015625
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      255.126,
+      524.48,
+      298.0982666015625
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/4",
+     "block_type": "Text",
+     "html": "<p>For <math>i = 1, \\dots, n</math>, the ray <math>\\rho_i</math> must be decorated by a subspace <math>V_{\\rho_i}</math> such that <math>[V_{\\rho_i}, V_{\\rho_i}] \\subseteq \\mathbb{C}x_i</math>. Hence <math>V_{\\rho_i} = \\mathbb{C}\\theta_i</math> or 0. Likewise, unless <math>V_{\\rho_0} = 0</math>, we have <math>V_{\\rho_0} = \\mathbb{C}(\\theta_1 \\pm \\theta_2 \\pm \\dots \\pm \\theta_n)</math> for some <math>2^{n-1}</math> choices of <math>\\pm</math>.</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       296.38399999999996
+      ],
+      [
+       523.884,
+       296.38399999999996
+      ],
+      [
+       523.884,
+       338.9216003417969
+      ],
+      [
+       68.53999999999999,
+       338.9216003417969
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      296.38399999999996,
+      523.884,
+      338.9216003417969
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/5",
+     "block_type": "Text",
+     "html": "<p>It is straightforward to verify that condition (b) of the definition of a large-orbit decorated fan holds regardless of which subspaces are chosen. We therefore obtain a collection of <math>2^n(1+2^{n-1})</math> toric supervarieties which are not equivariantly isomorphic. Many, however, are isomorphic via toric morphisms (to be defined in the following section).</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       337.642
+      ],
+      [
+       524.48,
+       337.642
+      ],
+      [
+       524.48,
+       395.382080078125
+      ],
+      [
+       68.53999999999999,
+       395.382080078125
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      337.642,
+      524.48,
+      395.382080078125
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/6",
+     "block_type": "Text",
+     "html": "<p>Notice that if all but one of these decorations is nonzero, then the decorated fair describes a supervariety isomorphic to projective superspace <math>\\mathbb{P}^{n|n}</math>. For instance, if <math>V_{\\rho_i} = \\mathbb{C}\\theta_i</math> and <math>V_{\\rho_0} = 0</math>, then the coordinate superalgebras of the affine charts can be written as</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       394.05600000000004
+      ],
+      [
+       524.48,
+       394.05600000000004
+      ],
+      [
+       524.48,
+       438.2959289550781
+      ],
+      [
+       68.53999999999999,
+       438.2959289550781
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      394.05600000000004,
+      524.48,
+      438.2959289550781
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Equation/7",
+     "block_type": "Equation",
+     "html": "<p block-type=\"Equation\"><math display=\"block\">\\mathbb{C}[t_1, \\dots, t_n, t_1\\xi_1, \\dots, t_n\\xi_n]</math></p>",
+     "polygon": [
+      [
+       235.42,
+       442.05
+      ],
+      [
+       357.19183349609375,
+       442.05
+      ],
+      [
+       357.19183349609375,
+       457.7034912109375
+      ],
+      [
+       235.42,
+       457.7034912109375
+      ]
+     ],
+     "bbox": [
+      235.42,
+      442.05,
+      357.19183349609375,
+      457.7034912109375
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/8",
+     "block_type": "Text",
+     "html": "<p>and</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       463.1
+      ],
+      [
+       91.18799999999999,
+       463.1
+      ],
+      [
+       91.18799999999999,
+       476.8105773925781
+      ],
+      [
+       68.53999999999999,
+       476.8105773925781
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      463.1,
+      91.18799999999999,
+      476.8105773925781
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Equation/9",
+     "block_type": "Equation",
+     "html": "<p block-type=\"Equation\"><math display=\"block\">\\mathbb{C}[t_i^{-1}t_1, \\dots, t_i^{-1}, \\dots, t_i^{-1}t_n\\xi_1, \\dots, \\xi_i, \\dots, t_i^{-1}t_n\\xi_n].</math></p>",
+     "polygon": [
+      [
+       184.76,
+       475.7299999999999
+      ],
+      [
+       407.2987976074219,
+       475.7299999999999
+      ],
+      [
+       407.2987976074219,
+       494.34747314453125
+      ],
+      [
+       184.76,
+       494.34747314453125
+      ]
+     ],
+     "bbox": [
+      184.76,
+      475.7299999999999,
+      407.2987976074219,
+      494.34747314453125
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/10",
+     "block_type": "Text",
+     "html": "<p>Figure 3 depicts the corresponding decorated fan for <math>n = 2</math>,</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       495.09599999999995
+      ],
+      [
+       376.60736083984375,
+       495.09599999999995
+      ],
+      [
+       376.60736083984375,
+       509.8631591796875
+      ],
+      [
+       68.53999999999999,
+       509.8631591796875
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      495.09599999999995,
+      376.60736083984375,
+      509.8631591796875
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/11",
+     "block_type": "Text",
+     "html": "<p>If instead we change the decoration of <math>\\rho_0</math> to <math>\\theta_1 + \\dots + \\theta_n</math>, then the resulting affine charts have coordinate superalgebras</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       507.72599999999994
+      ],
+      [
+       524.48,
+       507.72599999999994
+      ],
+      [
+       524.48,
+       537.7581481933594
+      ],
+      [
+       68.53999999999999,
+       537.7581481933594
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      507.72599999999994,
+      524.48,
+      537.7581481933594
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Equation/12",
+     "block_type": "Equation",
+     "html": "<p block-type=\"Equation\"><math display=\"block\">\\mathbb{C}[t_1, \\dots, t_n, t_1\\xi_1, \\dots, t_n\\xi_n]</math></p>",
+     "polygon": [
+      [
+       235.42,
+       543.09
+      ],
+      [
+       357.1917724609375,
+       543.09
+      ],
+      [
+       357.1917724609375,
+       558.7864685058594
+      ],
+      [
+       235.42,
+       558.7864685058594
+      ]
+     ],
+     "bbox": [
+      235.42,
+      543.09,
+      357.1917724609375,
+      558.7864685058594
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/13",
+     "block_type": "Text",
+     "html": "<p>and</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       564.14
+      ],
+      [
+       91.18799999999999,
+       564.14
+      ],
+      [
+       91.18799999999999,
+       577.8945617675781
+      ],
+      [
+       68.53999999999999,
+       577.8945617675781
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      564.14,
+      91.18799999999999,
+      577.8945617675781
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Equation/14",
+     "block_type": "Equation",
+     "html": "<p block-type=\"Equation\"><math display=\"block\">\\mathbb{C}[t_i^{-1}t_1(1+\\xi_i\\xi_1), \\dots, t_i^{-1}, \\dots, t_i^{-1}t_n(1+\\xi_i\\xi_n), t_i^{-1}t_1(\\xi_i-\\xi_1), \\dots, t_i^{-1}\\xi_i, \\dots, t_i^{-1}t_n(\\xi_i-\\xi_n)],</math></p>",
+     "polygon": [
+      [
+       82.248,
+       580.9799999999999
+      ],
+      [
+       510.77199999999993,
+       580.9799999999999
+      ],
+      [
+       510.77199999999993,
+       600.3124542236328
+      ],
+      [
+       82.248,
+       600.3124542236328
+      ]
+     ],
+     "bbox": [
+      82.248,
+      580.9799999999999,
+      510.77199999999993,
+      600.3124542236328
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/15",
+     "block_type": "Text",
+     "html": "<p>so the supervariety is decidedly not isomorphic to projective superspace. Figure 4(B) depicts corresponding decorated fan for <math>n = 1</math>.</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       602.872
+      ],
+      [
+       524.48,
+       602.872
+      ],
+      [
+       524.48,
+       632.2171173095703
+      ],
+      [
+       68.53999999999999,
+       632.2171173095703
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      602.872,
+      524.48,
+      632.2171173095703
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/16",
+     "block_type": "Text",
+     "html": "<p>In general, when <math>T = Q(1)^n</math>, there are finitely many possible decorations for each ray. Namely, for <math>\\rho = \\mathbb{R}_+(a_1x_1 + \\dots + a_nx_n)</math>, there are <math>2^{d-1}</math> many possible \u201csquare root subspaces\u201d <math>\\mathbb{C}(\\sqrt{a_1}\\theta_1 \\pm \\dots \\pm \\sqrt{a_n}\\theta_n)</math>, where <math>d</math> is the number of indices <math>i = 1, \\dots, n</math> for which <math>a_i \\neq 0</math>.</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       639.078
+      ],
+      [
+       524.48,
+       639.078
+      ],
+      [
+       524.48,
+       696.6242218017578
+      ],
+      [
+       68.53999999999999,
+       696.6242218017578
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      639.078,
+      524.48,
+      696.6242218017578
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Text/17",
+     "block_type": "Text",
+     "html": "<p>The prior example admitted no issues of compatibility between different rays of the same cone. This is not ordinarily the case; if <math>\\rho_1 = \\mathbb{R}_+(a_1x_1 + \\dots + a_nx_n)</math> and <math>\\rho_2 = \\mathbb{R}_+(b_1x_1 + \\dots + b_nx_n)</math>, compatibility is less common if the linear matroid on the <math>n</math> vectors</p>",
+     "polygon": [
+      [
+       68.53999999999999,
+       693.808
+      ],
+      [
+       524.48,
+       693.808
+      ],
+      [
+       524.48,
+       738.4672012329102
+      ],
+      [
+       68.53999999999999,
+       738.4672012329102
+      ]
+     ],
+     "bbox": [
+      68.53999999999999,
+      693.808,
+      524.48,
+      738.4672012329102
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Equation/18",
+     "block_type": "Equation",
+     "html": "<p block-type=\"Equation\"><math display=\"block\">\\begin{pmatrix} a_1 \\\\ b_1 \\end{pmatrix}, \\dots, \\begin{pmatrix} a_n \\\\ b_n \\end{pmatrix}</math></p>",
+     "polygon": [
+      [
+       255.088,
+       741.802
+      ],
+      [
+       337.6839294433594,
+       741.802
+      ],
+      [
+       337.6839294433594,
+       773.9613647460938
+      ],
+      [
+       255.088,
+       773.9613647460938
+      ]
+     ],
+     "bbox": [
+      255.088,
+      741.802,
+      337.6839294433594,
+      773.9613647460938
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    }
+   ],
+   "section_hierarchy": {},
+   "images": null
+  }
+ ],
+ "block_type": "Document"
+}

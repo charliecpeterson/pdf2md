@@ -1,0 +1,232 @@
+{
+ "children": [
+  {
+   "id": "/page/0/Page/11",
+   "block_type": "Page",
+   "html": "<content-ref src='/page/0/PageHeader/6'></content-ref><content-ref src='/page/0/Figure/7'></content-ref><content-ref src='/page/0/Text/8'></content-ref><content-ref src='/page/0/Table/9'></content-ref><content-ref src='/page/0/PageFooter/10'></content-ref><content-ref src='/page/0/PageFooter/11'></content-ref>",
+   "polygon": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     613.0,
+     0.0
+    ],
+    [
+     613.0,
+     792.0
+    ],
+    [
+     0.0,
+     792.0
+    ]
+   ],
+   "bbox": [
+    0.0,
+    0.0,
+    613.0,
+    792.0
+   ],
+   "children": [
+    {
+     "id": "/page/0/PageHeader/6",
+     "block_type": "PageHeader",
+     "html": "",
+     "polygon": [
+      [
+       11.646999999999998,
+       10.296
+      ],
+      [
+       587.867,
+       10.296
+      ],
+      [
+       587.867,
+       23.759999999999998
+      ],
+      [
+       11.646999999999998,
+       23.759999999999998
+      ]
+     ],
+     "bbox": [
+      11.646999999999998,
+      10.296,
+      587.867,
+      23.759999999999998
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Figure/7",
+     "block_type": "Figure",
+     "html": "",
+     "polygon": [
+      [
+       20.229,
+       26.928000000000004
+      ],
+      [
+       386.803,
+       26.928000000000004
+      ],
+      [
+       386.803,
+       251.06400000000002
+      ],
+      [
+       20.229,
+       251.06400000000002
+      ]
+     ],
+     "bbox": [
+      20.229,
+      26.928000000000004,
+      386.803,
+      251.06400000000002
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {
+      "/page/0/Figure/7": "<base64 image elided for the fixture>"
+     }
+    },
+    {
+     "id": "/page/0/Text/8",
+     "block_type": "Text",
+     "html": "<p>The number of species found in SD #15 was lower than that of SD #7 (5 and 13, respectively) and showed two species with a higher number of clones per species: <i>Staphylococcus kloosii</i>/carnosus (6) and <i>Bradyrhizobium</i> sp. (4) (Table 1.0). We suggest that the high number of clones per species, identified in SD#15, represent lower diversity. In contrast, in SD#7, we identified a lower number of clones per species, but the representative genera was richer. In conclusion, the number of clones per species was inversely proportional to the identified bacterial diversity. Fifty percent (50%) of the bacteria identified in SD#7 are associated with human health issues. These include: <i>Pseudomonas</i>, <i>Rahnella aquatilis</i>, <i>Serratia fonticola</i>, <i>Sphingomonas</i>, <i>Shigella flexneri</i>, and <i>Corynebacterium mucifaciens</i>. In contrast, only one of the species, <i>Corynebacterium mucifaciens</i>, identified in SD #15 is pathogenic to humans. The other four species identified from SD#15 are part of normal or resident microbiota of animals (<i>Staphylococcus kloosii</i>; <i>Propionibacterium acnes</i>), soil (uncultured soil bacterium) or plants (<i>Bradyrhizobium</i>). Interestingly, by comparing the identified species, it is clear that all the species identified in the light dust event sample (SD#15) were also present in the heavy dust event sample (SD#7).</p>",
+     "polygon": [
+      [
+       11.646999999999998,
+       270.86400000000003
+      ],
+      [
+       587.867,
+       270.86400000000003
+      ],
+      [
+       587.867,
+       432.432
+      ],
+      [
+       11.646999999999998,
+       432.432
+      ]
+     ],
+     "bbox": [
+      11.646999999999998,
+      270.86400000000003,
+      587.867,
+      432.432
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/Table/9",
+     "block_type": "Table",
+     "html": "<table border=\"1\">\n<thead>\n<tr>\n<th colspan=\"4\">Sahara Dust Sample #7</th>\n</tr>\n<tr>\n<th>No. of Clones</th>\n<th>Matching organism(s)</th>\n<th>GenBank Accession number</th>\n<th>% homology</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>1</td>\n<td><i>Arctic sea ke bacterium ARK9973/Morine sediment bacterium OC-12 Bradyrhizobium</i> sp.</td>\n<td>DQ453581</td>\n<td>99 a</td>\n</tr>\n<tr>\n<td>2</td>\n<td><i>Corynebacterium mucifaciens</i></td>\n<td>DQ453573, DQ453583</td>\n<td>99</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Modestobacter</i> sp. Elin 165 a</td>\n<td>DQ453589</td>\n<td>99</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Morganella morganii</i></td>\n<td>DQ453582</td>\n<td>97 a</td>\n</tr>\n<tr>\n<td>2</td>\n<td><i>Propionibacterium acnes</i></td>\n<td>DQ453569, DQ453572</td>\n<td>100</td>\n</tr>\n<tr>\n<td>2</td>\n<td><i>Pseudomonas</i> sp.a</td>\n<td>DQ45376, DQ45379</td>\n<td>98</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Rahnella aquatilis isolate</i> k</td>\n<td>DQ453577</td>\n<td>99 a</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Serratia fonticola</i></td>\n<td>DQ453570</td>\n<td>100</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Shigella</i> sp./<i>Escherichia</i> sp</td>\n<td>DQ453578</td>\n<td>99</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Sphingomonas</i> sp.</td>\n<td>DQ453585</td>\n<td>100</td>\n</tr>\n<tr>\n<td>4</td>\n<td><i>Staphylococcus kloosii</i>/carnosus</td>\n<td>DQ453571, DQ453584, DQ453586, DQ453588</td>\n<td>97-99</td>\n</tr>\n<tr>\n<td>3</td>\n<td><i>Uncultured bacterium clone MP104-0/</i></td>\n<td>DQ453574, DQ453575, DQ453580</td>\n<td>99</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Sphingomonas</i> sp'</td>\n<td>DQ453587</td>\n<td>93 a</td>\n</tr>\n</tbody>\n</table>\n<br/>\n<table border=\"1\">\n<thead>\n<tr>\n<th colspan=\"4\">Sahara Dust Sample #15</th>\n</tr>\n<tr>\n<th>No. of Clones</th>\n<th>Matching organism(s)</th>\n<th>GenBank Accession number</th>\n<th>% homology</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>4</td>\n<td><i>Bradyrhizobium</i> sp.</td>\n<td>DQ453590, DQ453598, DQ453601, DQ453593</td>\n<td>99</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Corynebacterium mucifaciens</i></td>\n<td>DQ453596</td>\n<td>99</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Propionibacterium acnes</i></td>\n<td>DQ453597</td>\n<td>98</td>\n</tr>\n<tr>\n<td>6</td>\n<td><i>Staphylococcus kloosii</i>/carnosus</td>\n<td>DQ453594, DQ453599, DQ453600, DQ453592, DQ453602, DQ453603</td>\n<td>99</td>\n</tr>\n<tr>\n<td>1</td>\n<td><i>Uncultured bacterium clone mw5</i></td>\n<td>DQ453595</td>\n<td>99</td>\n</tr>\n<tr>\n<td>8</td>\n<td>No Insert</td>\n<td>False Positives</td>\n<td></td>\n</tr>\n</tbody>\n</table>",
+     "polygon": [
+      [
+       11.646999999999998,
+       441.93600000000004
+      ],
+      [
+       396.611,
+       441.93600000000004
+      ],
+      [
+       396.611,
+       736.5600000000001
+      ],
+      [
+       11.646999999999998,
+       736.5600000000001
+      ]
+     ],
+     "bbox": [
+      11.646999999999998,
+      441.93600000000004,
+      396.611,
+      736.5600000000001
+     ],
+     "children": [],
+     "section_hierarchy": {},
+     "images": null
+    },
+    {
+     "id": "/page/0/PageFooter/10",
+     "block_type": "PageFooter",
+     "html": "",
+     "polygon": [
+      [
+       11.646999999999998,
+       765.8639999999999
+      ],
+      [
+       273.39799999999997,
+       765.8639999999999
+      ],
+      [
+       273.39799999999997,
+       780.1200000000001
+      ],
+      [
+       11.646999999999998,
+       780.1200000000001
+      ]
+     ],
+     "bbox": [
+      11.646999999999998,
+      765.8639999999999,
+      273.39799999999997,
+      780.1200000000001
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    },
+    {
+     "id": "/page/0/PageFooter/11",
+     "block_type": "PageFooter",
+     "html": "",
+     "polygon": [
+      [
+       533.923,
+       765.8639999999999
+      ],
+      [
+       588.4799999999999,
+       765.8639999999999
+      ],
+      [
+       588.4799999999999,
+       779.328
+      ],
+      [
+       533.923,
+       779.328
+      ]
+     ],
+     "bbox": [
+      533.923,
+      765.8639999999999,
+      588.4799999999999,
+      779.328
+     ],
+     "children": null,
+     "section_hierarchy": {},
+     "images": {}
+    }
+   ],
+   "section_hierarchy": {},
+   "images": null
+  }
+ ],
+ "block_type": "Document"
+}

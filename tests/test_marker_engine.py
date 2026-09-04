@@ -7,6 +7,9 @@ a Document whose children are pages, each page carrying blocks with `html`,
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pytest
 
 from pdf2md.engines.marker import _flatten, _text, _translate
@@ -230,3 +233,65 @@ def test_a_table_cell_holding_maths_keeps_it():
     gfm = _translate(document).tables[0].gfm
 
     assert "$\\beta$" in gfm
+
+
+# Hand-built fixtures encode the author's model of Marker, which is exactly what
+# was wrong: the TableGroup fixture above originally carried real table markup in
+# its `html`, so it passed while production received `<content-ref>` stubs and
+# emitted an empty grid. These drive the translator from output a real
+# `marker_single --output_format json` run produced, with base64 images elided.
+_FIXTURES = Path(__file__).parent / "fixtures" / "marker"
+
+
+def _fixture(name: str) -> dict:
+    return json.loads((_FIXTURES / name).read_text())
+
+
+def test_real_output_table_group_yields_the_table_not_a_content_ref():
+    result = _translate(_fixture("marker_table_group.json"))
+
+    assert len(result.tables) == 2
+    for table in result.tables:
+        assert table.gfm, "a TableGroup whose html is content-refs must still yield a grid"
+        assert "content-ref" not in table.gfm
+    assert "| Variable | Mean |" in result.tables[0].gfm.replace("  ", " ")
+    # The caption is a sibling of the table inside the group, and must survive it.
+    captions = [b.text for b in result.blocks if b.type is BlockType.CAPTION]
+    assert any(c.startswith("Table 1:") for c in captions)
+
+
+def test_real_output_keeps_inline_maths_delimited():
+    result = _translate(_fixture("marker_inline_math.json"))
+
+    prose = [b.text for b in result.blocks if b.type is BlockType.PARAGRAPH]
+    delimited = [t for t in prose if "$" in t]
+    assert delimited, "this page is mathematics; none of it reached the output as maths"
+    joined = "\n".join(delimited)
+    assert "$" in joined and "<math>" not in joined
+    # Every delimiter opened is closed: an odd count means a span leaked into prose.
+    assert joined.count("$") % 2 == 0
+
+
+def test_real_output_labels_page_furniture_and_crops_figures():
+    result = _translate(_fixture("marker_table_and_figure.json"))
+
+    kinds = [b.type for b in result.blocks]
+    assert BlockType.PAGE_HEADER in kinds
+    assert BlockType.PAGE_FOOTER in kinds
+    assert len(result.figures) == 1
+    assert len(result.tables) == 1
+    assert result.tables[0].gfm.count("\n") >= 3
+
+
+def test_real_output_geometry_is_inside_the_page():
+    """A sign error here is invisible in a hand-built fixture and fatal in production."""
+    for name in ("marker_inline_math.json", "marker_table_group.json",
+                 "marker_table_and_figure.json"):
+        result = _translate(_fixture(name))
+        for block in result.blocks:
+            if block.bbox is None:
+                continue
+            width, height = result.page_sizes[block.page]
+            assert 0 <= block.bbox.x0 <= width + 1, f"{name}: {block.id}"
+            assert 0 <= block.bbox.y1 <= height + 1, f"{name}: {block.id}"
+            assert block.bbox.y0 >= block.bbox.y1, f"{name}: {block.id} not bottom-left"

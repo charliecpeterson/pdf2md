@@ -828,6 +828,59 @@ SURYA_INFERENCE_URL=http://127.0.0.1:8000/v1 marker <in> --output_format markdow
 runs Marker per subset, not over the whole tree, because `old_scans` uses bare
 numeric stems that collide with other subsets in one flat output directory.
 
+## What an engine swap costs the table audit, measured 2026-09-04
+
+Only the Docling adapter supplies `raw_tables`; MinerU and Marker hand back tables
+as markup, because neither exposes positioned cells (Marker's JSON renderer
+flattens `TableCell` into the table's HTML). The question is what that costs the
+verification layer, in tables rather than in principle.
+
+| | Docling | MinerU |
+|---|---|---|
+| tables | 329 | 8 |
+| with `cell_glyph_check` | 285 (87%) | **0 (0%)** |
+| with `grid_audit` | 329 (100%) | **8 (100%)** |
+| grid_audit raising a finding | 69 (21%) | 2 (25%) |
+| corroborated (ink contradicts the grid) | 33 (10%) | 0 (0%) |
+
+**The loss is narrower than it looked.** An earlier note here said that without
+engine cells `check_table_cells`, `glyph_grid` and `row_accounting` all go inert.
+That is wrong: `grid_audit` runs at 100% under both engines, because
+`row_accounting` and `raster_row_findings` project the region's own ink and never
+needed the engine's cells. What actually dies is the per-cell glyph verification,
+`cell_glyph_check`, from 87% of tables to none.
+
+So an engine swap costs one component of the table audit, not the audit. The
+MinerU column is 8 tables -- only the two scanned subsets ran through it -- so
+read its percentages as a presence check, not a rate.
+
+### The build item this sizes
+
+`table_rebuild.glyph_grid` already reads a region into columns from whitespace
+corridors with no engine cells at all. Given a table bbox, which every engine
+supplies, pdf2md could derive its own cell geometry and restore `cell_glyph_check`
+whatever the engine -- turning positioned cells from an engine requirement into a
+pdf2md capability. Worth doing if Marker is adopted; not worth doing for a defect
+that affects one component of the audit if it is not.
+
+## Test fixtures from real engine output 2026-09-04
+
+Three defects in the Marker adapter reached a 4.5-hour benchmark run and none was
+caught by its unit tests, for one reason: every fixture encoded the author's model
+of Marker rather than Marker. The hand-built `TableGroup` carried real table
+markup in its `html`, so it passed, while production received
+`<content-ref src=.../>` stubs and emitted an empty grid.
+
+`tests/fixtures/marker/` now holds three real `marker_single --output_format json`
+outputs (an inline-mathematics page, a table-group page, a table-and-figure page)
+with base64 images elided, and the tests drive `_translate` from those. Verified
+by reintroducing each defect in turn: the group bug and the mathematics bug are
+each caught by a real-output test as well as a hand-built one.
+
+The general rule this suggests: an adapter for an external tool should be tested
+against captured output of that tool, because the hand-built fixture and the code
+share an author and therefore share their mistakes.
+
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
 Status: scoped, not built. The measurement that motivates it is in
