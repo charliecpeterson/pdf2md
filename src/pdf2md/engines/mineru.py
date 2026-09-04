@@ -16,7 +16,6 @@ import tempfile
 import threading
 from collections import deque
 from contextlib import nullcontext
-from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -25,7 +24,7 @@ from pdf2md.engines.base import EngineResult
 from pdf2md.logging import Progress, get_logger
 from pdf2md.scan_deskew import PreparedScan, deskew_scanned_pdf, restore_source_geometry
 from pdf2md.schema import BBox, Block, BlockType, FigureLabels, FigureRef, TableData
-from pdf2md.tables import GridCell, build_gfm
+from pdf2md.tables import html_to_gfm
 
 log = get_logger("engines.mineru")
 _TASK_TIMEOUT_SECONDS = 6 * 60 * 60
@@ -104,66 +103,6 @@ def _capture_output(
             if counter is not None:
                 label, completed, total, unit = counter
                 progress.count(label, completed, total, unit=unit)
-
-
-class _TableParser(HTMLParser):
-    def __init__(self) -> None:
-        super().__init__()
-        self.rows: list[list[tuple[str, int, int, bool]]] = []
-        self._row: list[tuple[str, int, int, bool]] | None = None
-        self._text: list[str] | None = None
-        self._row_span = 1
-        self._col_span = 1
-        self._header = False
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag == "tr":
-            self._row = []
-        elif tag in {"td", "th"} and self._row is not None:
-            values = dict(attrs)
-            self._text = []
-            self._row_span = int(values.get("rowspan") or 1)
-            self._col_span = int(values.get("colspan") or 1)
-            self._header = tag == "th"
-        elif tag == "eq" and self._text is not None:
-            self._text.append("$")
-
-    def handle_data(self, data: str) -> None:
-        if self._text is not None:
-            self._text.append(data)
-
-    def handle_endtag(self, tag: str) -> None:
-        if tag == "eq" and self._text is not None:
-            self._text.append("$")
-        elif tag in {"td", "th"} and self._text is not None and self._row is not None:
-            text = " ".join("".join(self._text).split()).replace("|", r"\|")
-            self._row.append((text, self._row_span, self._col_span, self._header))
-            self._text = None
-        elif tag == "tr" and self._row is not None:
-            self.rows.append(self._row)
-            self._row = None
-
-
-def _table_markup(html: str) -> tuple[str, bool]:
-    parser = _TableParser()
-    parser.feed(html)
-    occupied: set[tuple[int, int]] = set()
-    cells: list[GridCell] = []
-    max_col = 0
-    for row, source_cells in enumerate(parser.rows):
-        col = 0
-        for text, row_span, col_span, header in source_cells:
-            while (row, col) in occupied:
-                col += 1
-            cells.append(GridCell(text, row, col, row_span, col_span, header))
-            for covered_row in range(row, row + row_span):
-                for covered_col in range(col, col + col_span):
-                    if (covered_row, covered_col) != (row, col):
-                        occupied.add((covered_row, covered_col))
-            col += col_span
-        max_col = max(max_col, col)
-    spanning = any(cell.row_span > 1 or cell.col_span > 1 for cell in cells)
-    return build_gfm(cells, len(parser.rows), max_col), spanning
 
 
 def _spans(value: Any) -> Iterator[dict[str, Any]]:
@@ -247,7 +186,7 @@ def _translate_middle(document: dict[str, Any], mineru_version: str = "unknown")
                     (span for span in _spans(item) if span.get("type") == "table"), None
                 )
                 html = str((table_span or {}).get("html") or "")
-                gfm, spanning = _table_markup(html) if html else ("", False)
+                gfm, spanning = html_to_gfm(html) if html else ("", False)
                 table_id = block_id(page, "table")
                 blocks.append(Block(table_id, BlockType.TABLE, "", page, bbox, engine="mineru"))
                 tables.append(TableData(

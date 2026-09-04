@@ -318,7 +318,7 @@ def test_invalid_engine_is_a_cli_error_without_running_conversion(tmp_path):
     result = CliRunner().invoke(app, ["convert", str(source), "--engine", "unknown"])
 
     assert result.exit_code == 2
-    assert "engine must be 'docling' or 'mineru'" in result.output
+    assert "engine must be 'docling', 'mineru' or 'marker'" in result.output
     assert "Traceback" not in result.output
 
 

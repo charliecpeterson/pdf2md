@@ -300,3 +300,69 @@ def _shifted_panel_rows(
             for panel_index in range(boundary - 1, len(layout.starts))
         }
     return refusals
+
+
+class _SpanningTableParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.rows: list[list[tuple[str, int, int, bool]]] = []
+        self._row: list[tuple[str, int, int, bool]] | None = None
+        self._text: list[str] | None = None
+        self._row_span = 1
+        self._col_span = 1
+        self._header = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "tr":
+            self._row = []
+        elif tag in {"td", "th"} and self._row is not None:
+            values = dict(attrs)
+            self._text = []
+            self._row_span = int(values.get("rowspan") or 1)
+            self._col_span = int(values.get("colspan") or 1)
+            self._header = tag == "th"
+        elif tag == "eq" and self._text is not None:
+            self._text.append("$")
+
+    def handle_data(self, data: str) -> None:
+        if self._text is not None:
+            self._text.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "eq" and self._text is not None:
+            self._text.append("$")
+        elif tag in {"td", "th"} and self._text is not None and self._row is not None:
+            text = " ".join("".join(self._text).split()).replace("|", r"\|")
+            self._row.append((text, self._row_span, self._col_span, self._header))
+            self._text = None
+        elif tag == "tr" and self._row is not None:
+            self.rows.append(self._row)
+            self._row = None
+
+
+def html_to_gfm(html: str) -> tuple[str, bool]:
+    """Render an engine's table HTML as GFM, and say whether any cell spans.
+
+    Shared by every adapter whose engine hands back a table as markup rather than
+    positioned cells (MinerU, Marker). Spans are resolved by walking an occupancy
+    set, because a rowspan pushes later cells right on the rows it covers.
+    """
+    parser = _SpanningTableParser()
+    parser.feed(html)
+    occupied: set[tuple[int, int]] = set()
+    cells: list[GridCell] = []
+    max_col = 0
+    for row, source_cells in enumerate(parser.rows):
+        col = 0
+        for text, row_span, col_span, header in source_cells:
+            while (row, col) in occupied:
+                col += 1
+            cells.append(GridCell(text, row, col, row_span, col_span, header))
+            for covered_row in range(row, row + row_span):
+                for covered_col in range(col, col + col_span):
+                    if (covered_row, covered_col) != (row, col):
+                        occupied.add((covered_row, covered_col))
+            col += col_span
+        max_col = max(max_col, col)
+    spanning = any(cell.row_span > 1 or cell.col_span > 1 for cell in cells)
+    return build_gfm(cells, len(parser.rows), max_col), spanning

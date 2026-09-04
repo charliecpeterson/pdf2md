@@ -13,8 +13,9 @@ class Config:
     # Parser backend. Docling remains the default for born-digital documents;
     # MinerU is the measured high-accuracy path for scans and difficult tables or
     # equations, installed in its own environment.
-    engine: str = "docling"        # docling | mineru
+    engine: str = "docling"        # docling | mineru | marker
     mineru_executable: str = "mineru"
+    marker_executable: str = "marker_single"
     # Fine-deskew textless raster pages before MinerU layout detection. The gate
     # refuses weak, sub-degree, and out-of-range angles; original page geometry is
     # restored afterward so crops remain tied to the source PDF.
@@ -177,9 +178,9 @@ class Config:
     passage_max_tokens: int = 512
 
     def __post_init__(self) -> None:
-        if self.engine not in {"docling", "mineru"}:
-            raise ValueError("engine must be 'docling' or 'mineru'")
-        if self.engine == "mineru" and self.ocr_page_vlm:
+        if self.engine not in {"docling", "mineru", "marker"}:
+            raise ValueError("engine must be 'docling', 'mineru' or 'marker'")
+        if self.engine in {"mineru", "marker"} and self.ocr_page_vlm:
             raise ValueError(
                 "--ocr-page-vlm cannot be combined with the MinerU engine; "
                 "page replacement would discard MinerU's equation and table structure"

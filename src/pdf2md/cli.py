@@ -60,8 +60,12 @@ def convert(
         rich_help_panel="Input and output",
     ),
     engine: str = typer.Option(
-        None, "--engine", help="Parser backend: docling (default) or mineru.",
+        None, "--engine", help="Parser backend: docling (default), mineru or marker.",
         rich_help_panel="Input and output",
+    ),
+    marker_executable: str = typer.Option(
+        None, "--marker-executable",
+        help="Path to the Marker CLI when --engine marker uses a separate environment.",
     ),
     mineru_executable: str = typer.Option(
         None, "--mineru-executable",
@@ -228,6 +232,8 @@ def convert(
         cfg = _replace_config(cfg, passage_max_tokens=passage_max_tokens)
     if mineru_executable:
         cfg = _replace_config(cfg, mineru_executable=mineru_executable)
+    if marker_executable:
+        cfg = _replace_config(cfg, marker_executable=marker_executable)
     if table_ocr_executable:
         cfg = _replace_config(cfg, table_ocr_executable=table_ocr_executable)
     if table_reference:

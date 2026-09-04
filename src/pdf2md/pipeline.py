@@ -243,6 +243,10 @@ def _get_engine(engine: Engine | None, config: Config) -> Engine:
         return MinerUEngine(
             config.mineru_executable, deskew_scans=config.deskew_scans
         )
+    if config.engine == "marker":
+        from pdf2md.engines.marker import MarkerEngine
+
+        return MarkerEngine(config.marker_executable)
     from pdf2md.engines.docling import DoclingEngine
 
     return DoclingEngine(

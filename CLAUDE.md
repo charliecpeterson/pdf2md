@@ -532,6 +532,14 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   `build_structure` (which consumes the block list). When it's on, `_get_engine` skips Docling's
   slow `force_full_page_ocr` even under `--force-ocr` — the VLM re-transcribes, so that OCR would
   just be discarded. A failed transcription emits a visible page marker and retains the page image.
+- **Marker runs outside the project environment, and supplies no `raw_tables`.** Its JSON
+  renderer recurses into a block only when the block's class does not derive directly from
+  `Block`, and `TableCell` does, so cells are flattened into the table's HTML and never
+  appear as children. Tables therefore arrive as markup (`html_to_gfm`, shared with MinerU)
+  and the per-cell glyph verification in `enrich`/`table_audit` has nothing to attach to --
+  the same trade the MinerU adapter makes. Marker's Surya also drives a vLLM backend that
+  wants a Docker container with the `nvidia` runtime registered; where it is not, start the
+  server by hand (`scripts/start_surya_vllm.sh`) and set `SURYA_INFERENCE_URL`.
 - **MinerU runs outside the project environment.** Select it with `--engine mineru` and point
   `--mineru-executable` at that environment's CLI. The adapter consumes native middle JSON,
   then pdf2md renders source crops and applies the normal coverage and chart-safety gates.

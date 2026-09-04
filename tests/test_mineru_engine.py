@@ -12,23 +12,10 @@ from pdf2md.engines.mineru import MinerUEngine
 from pdf2md.engines.mineru import (
     _capture_output,
     _progress_counter,
-    _table_markup,
     _translate_middle,
 )
 from pdf2md.logging import Progress
 from pdf2md.schema import BlockType
-
-
-def test_table_markup_preserves_cells_math_and_spans():
-    gfm, spanning = _table_markup(
-        '<table><tr><th>A</th><th>B</th></tr>'
-        '<tr><td rowspan="2">1</td><td><eq>g_J</eq></td></tr>'
-        '<tr><td>x</td></tr></table>'
-    )
-
-    assert spanning is True
-    assert "| A | B |" in gfm
-    assert "| 1 | $g_J$ |" in gfm
 
 
 def test_translate_middle_preserves_order_equations_tables_and_figures():

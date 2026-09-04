@@ -7,6 +7,7 @@ from __future__ import annotations
 from pdf2md.schema import BBox, RawCell, RawTable
 from pdf2md.scripts import Char
 from pdf2md.table_rebuild import check_table_cells, content_norm, locate, rebuild_grid
+from pdf2md.tables import html_to_gfm
 
 
 def ch(text: str, l: float, r: float, b: float, t: float) -> Char:
@@ -178,3 +179,15 @@ def test_glyph_unbacked_tables_needs_majority_unbacked():
         table("#/d", {"exact": 3, "engine_without_glyphs": 4}),
     ]
     assert glyph_unbacked_tables(tables) == {"#/a", "#/d"}
+
+
+def test_engine_table_html_renders_cells_math_and_spans():
+    gfm, spanning = html_to_gfm(
+        '<table><tr><th>A</th><th>B</th></tr>'
+        '<tr><td rowspan="2">1</td><td><eq>g_J</eq></td></tr>'
+        '<tr><td>x</td></tr></table>'
+    )
+
+    assert spanning is True
+    assert "| A | B |" in gfm
+    assert "| 1 | $g_J$ |" in gfm
