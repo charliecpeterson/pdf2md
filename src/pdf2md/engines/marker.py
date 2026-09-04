@@ -20,7 +20,6 @@ server started by hand (`scripts/start_surya_vllm.sh`).
 from __future__ import annotations
 
 import json
-import re
 import shutil
 import subprocess
 import tempfile
@@ -67,8 +66,6 @@ _TYPES = {
     "ChemicalBlock": BlockType.OTHER,
 }
 _FIGURE_TYPES = {"Figure", "Picture", "Diagram", "FigureGroup", "PictureGroup"}
-# A whole block wrapped as display maths: the delimiters are emit's to add.
-_DISPLAY_MATH = re.compile(r"\A\$\$(.+)\$\$\Z", re.DOTALL)
 _TABLE_TYPES = {"Table", "TableGroup", "Form"}
 
 
@@ -176,7 +173,10 @@ def _translate(document: dict[str, Any], marker_version: str = "unknown") -> Eng
                 # A display equation is the whole block, and emit adds the `$$`
                 # fences itself (emit.py). Leaving the adapter's own delimiters on
                 # double-wraps all 1,895 of them and leaves the LaTeX unbalanced.
-                text = _DISPLAY_MATH.sub(r"\1", text).strip()
+                # Every delimiter goes, not just an enclosing pair: 66 blocks hold
+                # several <math display="block"> spans, and stripping only the
+                # outer pair strands the inner ones (`\tag{2.17}$$$$t = ...`).
+                text = text.replace("$$", "\n").strip()
             if not text:
                 # Marker marks a region and sometimes transcribes nothing into it (a
                 # detected PageHeader it did not read, most often). That is a layout

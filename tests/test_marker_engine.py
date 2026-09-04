@@ -351,3 +351,21 @@ def test_a_display_equation_block_carries_bare_latex():
     assert blocks[0].type is BlockType.EQUATION
     assert blocks[0].text == "E = mc^2"
     assert blocks[1].text == "where $m$ is mass"
+
+
+def test_an_equation_block_holding_several_display_spans_keeps_none_of_them():
+    """66 blocks in the corpus hold more than one <math display="block">.
+
+    Stripping only an enclosing pair strands the inner delimiters and produces
+    `\\tag{2.17}$$$$t = ...`, which is why unbalanced_eq rose rather than fell.
+    """
+    document = _page([
+        _block("Equation",
+               '<math display="block">a = 1</math><math display="block">b = 2</math>',
+               [10, 10, 500, 80]),
+    ])
+
+    text = _translate(document).blocks[0].text
+
+    assert "$" not in text
+    assert "a = 1" in text and "b = 2" in text
