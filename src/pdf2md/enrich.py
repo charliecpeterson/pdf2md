@@ -66,6 +66,10 @@ from pdf2md.tables import GridCell, build_gfm, build_html, gfm_rows, html_tables
 
 log = get_logger("enrich")
 
+# Inline mathematics an engine emitted as LaTeX, which the script overlay must
+# leave alone. Deliberately narrow: a lone `$` in prose (a price) is not maths.
+_INLINE_MATH = re.compile(r"\$[^$\n]+\$")
+
 
 def religatured(text: str, vocab) -> str:
     """Repair words the text layer fractured — ligature splits ('di ff erent') and
@@ -246,7 +250,12 @@ def enrich_blocks(blocks: list[Block], glyphs) -> None:
             # Rejoin split ligatures (validated against the page vocabulary), then
             # overlay scripts; both align to the same glyphs.
             b.text = religatured(b.text, glyphs.vocab)
-            b.text = apply_scripts(b.text, pc.scored_region(b.bbox))
+            # LaTeX spells its own scripts, so the geometric overlay has nothing to
+            # add and everything to break: it rewrote `$Q(1)^n$` as
+            # `$Q(1)^<sup>n</sup>$`, which is neither valid LaTeX nor valid markup.
+            # Only engines that emit inline mathematics reach this (Docling does not).
+            if not _INLINE_MATH.search(b.text):
+                b.text = apply_scripts(b.text, pc.scored_region(b.bbox))
         elif b.type is BlockType.EQUATION and b.bbox is not None:
             # Before the cross-check, or it scores the padding rather than the formula.
             b.text, runaway = trim_runaway_repetition(b.text)

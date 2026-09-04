@@ -136,11 +136,12 @@ def test_a_figure_becomes_a_figure_ref_with_its_printed_text_as_labels():
     assert figure.bbox.y0 == 600.0 and figure.bbox.y1 == 300.0
 
 
-def test_a_group_is_replaced_by_its_members_but_a_table_group_is_not():
-    """A group carries both its members and its own assembled HTML.
+def test_a_group_is_replaced_by_its_members_including_a_table_group():
+    """A group's own html is content-refs, never the content.
 
-    Emitting both would duplicate the content; a table or figure group is instead
-    the unit pdf2md crops, so it stays whole.
+    Reading a TableGroup as the unit handed the table converter
+    `<content-ref src=.../>` and produced an empty grid, losing 240 table tests
+    that Marker itself passes. The group is always replaced by its members.
     """
     document = _page([
         _block("ListGroup", "<ul><li>one</li><li>two</li></ul>", [10, 10, 100, 60],
@@ -148,18 +149,29 @@ def test_a_group_is_replaced_by_its_members_but_a_table_group_is_not():
                    _block("ListItem", "<li>one</li>", [10, 10, 100, 30], "/page/0/ListItem/1"),
                    _block("ListItem", "<li>two</li>", [10, 35, 100, 60], "/page/0/ListItem/2"),
                ]),
-        _block("TableGroup", "<table><tr><td>v</td></tr></table>", [10, 70, 100, 120],
-               children=[_block("Table", "<table><tr><td>v</td></tr></table>",
-                                [10, 70, 100, 120], "/page/0/Table/3")]),
+        _block("TableGroup",
+               "<content-ref src='/page/0/Caption/2'></content-ref>"
+               "<content-ref src='/page/0/Table/3'></content-ref>",
+               [10, 70, 100, 130],
+               children=[
+                   _block("Caption", "<p><b>Table 1:</b> Results.</p>",
+                          [10, 70, 100, 85], "/page/0/Caption/2"),
+                   _block("Table",
+                          "<table><tr><th>k</th></tr><tr><td>v</td></tr></table>",
+                          [10, 90, 100, 130], "/page/0/Table/3"),
+               ]),
     ])
 
     result = _translate(document)
 
     assert [b.type for b in result.blocks] == [
-        BlockType.LIST, BlockType.LIST, BlockType.TABLE,
+        BlockType.LIST, BlockType.LIST, BlockType.CAPTION, BlockType.TABLE,
     ]
     assert [b.text for b in result.blocks[:2]] == ["one", "two"]
+    assert result.blocks[2].text == "Table 1: Results."
     assert len(result.tables) == 1
+    assert "| k |" in result.tables[0].gfm
+    assert "| v |" in result.tables[0].gfm
 
 
 def test_an_unknown_block_type_lands_on_other_rather_than_vanishing():
@@ -185,3 +197,36 @@ def test_block_html_reduces_to_visible_text(html, expected):
 def test_flatten_leaves_a_childless_block_alone():
     item = _block("Text", "<p>x</p>", [0, 0, 1, 1])
     assert _flatten([item]) == [item]
+
+
+def test_inline_maths_keeps_its_delimiters():
+    """Marker wraps LaTeX in <math>; stripping the tag alone loses the mathematics.
+
+    Without the delimiters `$Q(1)^n$` reaches the output as `Q(1)^n`, which no
+    reader can tell from prose -- and the glyph script overlay then rewrote it as
+    `Q(1)^<sup>n</sup>`. That cost nearly all of Marker's arxiv_math advantage.
+    """
+    document = _page([
+        _block("Text",
+               "<p>supertorus <math>Q(1)^n</math> and variety "
+               "<math>\\mathbb{P}^n</math>.</p>",
+               [10, 10, 500, 60]),
+        _block("Text", '<p><math display="block">E = mc^2</math></p>', [10, 70, 500, 120]),
+    ])
+
+    texts = [b.text for b in _translate(document).blocks]
+
+    assert texts[0] == "supertorus $Q(1)^n$ and variety $\\mathbb{P}^n$."
+    assert texts[1] == "$$E = mc^2$$"
+
+
+def test_a_table_cell_holding_maths_keeps_it():
+    html = (
+        "<table><thead><tr><th>Path</th><th><math>\\beta</math></th></tr></thead>"
+        "<tbody><tr><td>JS-BO</td><td>0.31</td></tr></tbody></table>"
+    )
+    document = _page([_block("Table", html, [10, 10, 500, 200])])
+
+    gfm = _translate(document).tables[0].gfm
+
+    assert "$\\beta$" in gfm

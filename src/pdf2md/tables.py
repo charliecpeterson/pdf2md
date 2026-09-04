@@ -302,6 +302,11 @@ def _shifted_panel_rows(
     return refusals
 
 
+# A cell holding mathematics: MinerU spells it <eq>, Marker <math>. Both carry
+# LaTeX that has to keep its delimiters or the cell reads as prose.
+_CELL_MATH = {"eq", "math"}
+
+
 class _SpanningTableParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
@@ -321,7 +326,7 @@ class _SpanningTableParser(HTMLParser):
             self._row_span = int(values.get("rowspan") or 1)
             self._col_span = int(values.get("colspan") or 1)
             self._header = tag == "th"
-        elif tag == "eq" and self._text is not None:
+        elif tag in _CELL_MATH and self._text is not None:
             self._text.append("$")
 
     def handle_data(self, data: str) -> None:
@@ -329,7 +334,7 @@ class _SpanningTableParser(HTMLParser):
             self._text.append(data)
 
     def handle_endtag(self, tag: str) -> None:
-        if tag == "eq" and self._text is not None:
+        if tag in _CELL_MATH and self._text is not None:
             self._text.append("$")
         elif tag in {"td", "th"} and self._text is not None and self._row is not None:
             text = " ".join("".join(self._text).split()).replace("|", r"\|")

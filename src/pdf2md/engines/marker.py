@@ -81,13 +81,23 @@ class _TextParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.parts: list[str] = []
+        self._math: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag == "br":
             self.parts.append("\n")
+        elif tag == "math":
+            # Marker carries LaTeX inside <math>; dropping the tag without adding
+            # delimiters leaves mathematics that no reader can tell from prose, and
+            # the script overlay then rewrites `^n` into HTML inside the LaTeX.
+            delim = "$$" if dict(attrs).get("display") == "block" else "$"
+            self._math.append(delim)
+            self.parts.append(delim)
 
     def handle_endtag(self, tag: str) -> None:
-        if tag in self._BREAKS:
+        if tag == "math" and self._math:
+            self.parts.append(self._math.pop())
+        elif tag in self._BREAKS:
             self.parts.append("\n")
 
     def handle_data(self, data: str) -> None:
@@ -172,16 +182,18 @@ def _translate(document: dict[str, Any], marker_version: str = "unknown") -> Eng
 
 
 def _flatten(children: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Group blocks carry their members as children and their own assembled HTML.
+    """Replace every group by its members.
 
-    Taking both would emit the content twice, so a group is replaced by its members
-    -- except a table or figure group, which is the unit pdf2md crops and renders.
+    A group's own `html` is not its content: Marker fills it with
+    `<content-ref src='/page/0/Table/11'></content-ref>` stubs and puts the real
+    markup on the child. Treating a TableGroup as the unit therefore handed the
+    table converter a reference and produced an empty grid -- 240 table tests that
+    Marker itself passes.
     """
     out: list[dict[str, Any]] = []
     for item in children:
-        kind = str(item.get("block_type") or "")
         nested = item.get("children") or []
-        if nested and kind not in _TABLE_TYPES and kind not in _FIGURE_TYPES:
+        if nested:
             out.extend(_flatten(nested))
         else:
             out.append(item)
