@@ -760,46 +760,73 @@ diagnostic. The next work, if its prerequisite evidence appears, is:
   side-by-side runs as soon as a MinerU environment exists on the benchmark
   machine.
 
-## Marker evaluation, blocked on infrastructure 2026-09-03
+## Marker measured, and it changes the engine picture 2026-09-03
 
-Intent was to bound the headroom before anyone writes an engine adapter: run
-Marker's own CLI over the same 1,403 bench PDFs on the same machine with the same
-scorer, and compare per subset. Marker publishes 76.0% overall and 83.5% on
-born-digital, against pdf2md's measured 61.8% (55.4% before the MinerU swap), so
-the born-digital subsets -- `multi_column` 63.0%, `table_tests` 63.4%,
-`arxiv_math` 19.5% -- are where an adapter would have to pay off.
+Ran Marker's own CLI over all 1,403 bench PDFs on the benchmark machine with the
+same scorer and candidate naming as the pdf2md runs, so the per-subset numbers
+are directly comparable. **74.7% +/- 1.1%**, against Marker's published 76.0% --
+close enough to say the harness reproduces their result rather than measuring
+something else.
 
-`marker-pdf` installs cleanly into its own environment. It does not run here.
-Current Marker drives Surya through a vLLM backend that spawns a **Docker
-container with the nvidia runtime**:
+| subset | pdf2md (Docling) | pdf2md, MinerU on scans | Marker |
+|---|---|---|---|
+| arxiv_math | 19.5% | 19.5% | **81.3%** |
+| baseline | 97.2% | 97.8% | **99.9%** |
+| headers_footers | 88.9% | 88.9% | **95.5%** |
+| long_tiny_text | 60.6% | 60.6% | 63.6% |
+| multi_column | 63.0% | 63.0% | **74.9%** |
+| old_scans | 21.5% | 36.3% | **42.2%** |
+| old_scans_math | 29.3% | 64.8% | 70.3% |
+| table_tests | 63.4% | 63.4% | **70.2%** |
+| **overall** | **55.4%** | **61.8%** | **74.7%** |
+
+Marker wins every subset, including both scanned ones where MinerU was the
+answer an hour ago. It is also **faster than either**: about 1.0 s/pdf in batch
+mode against Docling's 5.8 and MinerU's 60.6, which inverts the cost argument
+that motivated selective routing.
+
+### The arxiv_math gap is the inline-maths gap
+
+81.3% against 19.5% over 2,927 tests is not a small quality edge, and the cause
+is measurable: Marker emits inline `$...$` in **653 of 1,403 candidates against
+pdf2md's 19**. Idea 8 below shelved inline-maths emission because fonts cannot
+delimit a span. Marker does not need a span detector -- its block text already
+carries the delimiters -- so a Marker adapter would carry inline mathematics
+through the engine seam for free and close the largest single gap on the board
+without pdf2md solving the detection problem at all.
+
+### What this does not say
+
+The comparison is Marker standalone against pdf2md's whole pipeline, and the
+benchmark scores markdown text fidelity only. It says nothing about the coverage
+audit, provenance, figure extraction, table evidence or review output, which are
+the reasons this project exists and which Marker does not provide. The reading is
+not "use Marker instead"; it is that Marker is a markedly better *engine* than
+Docling on every axis this benchmark measures, and the engine seam exists exactly
+so that can be swapped underneath the verification layer.
+
+Feasibility was checked earlier: Marker's JSON is a per-page block tree with
+`polygon` in PDF points, block types including `PageHeader`, `PageFooter` and
+`TableCell`, and `TableCell` inherits the polygon while adding `row_id`,
+`col_id`, `rowspan`, `colspan` and `is_header` -- a richer contract than
+`RawCell` needs. Code is Apache-2.0; weights are AI Pubs Open Rail-M, free for
+research and personal use.
+
+### Running it again
+
+Marker's Surya drives a vLLM backend that spawns a Docker container with
+`--runtime nvidia`, which is not a registered runtime on the benchmark machine
+even though the toolkit is installed and `docker run --gpus all` works. Rather
+than needing root, start the server directly and point Surya at it:
 
 ```
-SpawnError: docker run failed: docker: Error response from daemon:
-unknown or invalid runtime name: nvidia
+bash ~/scratch/start_surya_vllm.sh          # --gpus all instead of --runtime nvidia
+SURYA_INFERENCE_URL=http://127.0.0.1:8000/v1 marker <in> --output_format markdown ...
 ```
 
-Docker works on the box but exposes only `runc`; `SURYA_INFERENCE_BACKEND`
-accepts just `vllm` or `llamacpp`, with no in-process transformers path, and
-`vllm` is not importable in the environment.
-
-Three ways forward, none of them appropriate to take unilaterally:
-
-1. Install `nvidia-container-toolkit` and register the nvidia runtime. Needs
-   root on the benchmark machine.
-2. Install `vllm` into the Marker environment so the backend spawns locally
-   rather than in a container. Multi-gigabyte and CUDA-version sensitive.
-3. Pin an older `marker-pdf` that runs Surya in-process. Cheapest, but it
-   measures a different Marker than the one publishing 76.0%, which defeats the
-   purpose of the comparison.
-
-The environment is left in place (`~/marker-env` on the benchmark machine) so
-whichever route is chosen starts from a working install. `run_marker_bench.py`
-in scratch already handles the candidate naming the scorer requires.
-
-Worth noting what this does not block: the MinerU result stands on its own, and
-the born-digital gap it leaves is partly known to be ours rather than an
-engine's -- `arxiv_math` at 19.5% is dragged by the inline-maths omission that
-Idea 8 documents, which no engine swap fixes.
+`scripts/run_marker_bench.py` does the batch conversion and candidate naming. It
+runs Marker per subset, not over the whole tree, because `old_scans` uses bare
+numeric stems that collide with other subsets in one flat output directory.
 
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 

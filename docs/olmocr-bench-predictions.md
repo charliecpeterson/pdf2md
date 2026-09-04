@@ -369,3 +369,15 @@ mathematics.
 
 `absent` moving down 0.2 is consistent with MinerU emitting more page furniture
 than Docling, which is the same behaviour that helps it elsewhere.
+
+## Where pdf2md stands against Marker
+
+Marker run standalone over the same 1,403 PDFs, same machine, same scorer:
+**74.7%** against pdf2md's 55.4% (61.8% with MinerU on the scanned subsets). It
+wins every subset and runs at about 1.0 s/pdf against Docling's 5.8 and MinerU's
+60.6. Details and the adapter argument are in
+`accuracy-improvement-notes.md`.
+
+The single largest gap is `arxiv_math`, 19.5% against 81.3% over 2,927 tests, and
+it is the inline-mathematics omission recorded above: Marker emits inline `$...$`
+in 653 of 1,403 candidates where pdf2md emits it in 19.
