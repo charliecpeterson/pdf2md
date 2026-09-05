@@ -988,6 +988,44 @@ engine, and this one is not. The remaining choices are a tolerance on the gate
 (which weakens it for Docling too), or accepting that the corpus gate is run
 manually and read by a person. Neither is free.
 
+## The glyph grid cannot witness character corruption, 2026-09-04
+
+A reviewer found a table in Kyte & Doolittle 1982 where every decimal point was
+missing -- the journal sets them as middle dots and the scan drops them, so
+isoleucine's 4·5 reads as 45. The obvious systematic check is to diff the
+engine's grid against the glyph-truth grid pdf2md already writes beside it, and
+report where two readings of one region disagree about a number.
+
+**It does not work, and the reason is structural.** Both readings come from the
+same glyph layer. Where that layer is corrupt they are corrupt identically: the
+glyph grid for that table also reads `45`, and contains no middle dot anywhere.
+The glyph grid is an independent witness about *arrangement* -- which is what it
+was built for, and why it could establish that the loss was in the PDF rather
+than the parser -- and that independence does not transfer to characters.
+
+For character-level damage in a scanned document there is no cheap on-disk second
+witness. poppler reads the same layer; another engine reads the same layer. The
+only genuinely independent reading is a fresh one off the image, which is what
+`--force-ocr` and `--engine mineru` do, and which is why the document-level
+verdict names them rather than offering a comparison.
+
+`scripts/probe_value_witness.py` records the attempt. Two guards it needed are
+worth keeping in mind for anything similar: the witness must be refused where its
+own columns merged (`SLWe+ .1,6-T9-rIphl8,7,` is not evidence about `8,7`), and a
+value is only comparable where its cell holds nothing but the value.
+
+### A lone sign is usually a convention, not damage
+
+Measured over the corpus: 29 rows carry a cell holding only `-`. 24 are in
+otherwise complete rows, which is the standard "no data" mark, and 5 sit beside an
+empty cell. None has a detached sign (`- 4.5`) elsewhere in the row, which is the
+combination the damaged Kyte row shows.
+
+So the signature exists and is absent from healthy tables, on one positive
+example. That is not enough to calibrate a detector -- it is the header-dictionary
+mistake inverted, too narrow rather than too broad -- and it is recorded here
+rather than built.
+
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
 Status: scoped, not built. The measurement that motivates it is in

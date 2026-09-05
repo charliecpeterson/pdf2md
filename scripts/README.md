@@ -41,3 +41,8 @@ finding is nowhere written down is the one thing here with no reason to exist.
 Check `git log --oneline -- docs/ CLAUDE.md` for the commit that cites it. If the
 number it produced is still quoted anywhere, keep the harness: a quoted number
 whose derivation has been deleted is worse than no number.
+
+- `probe_value_witness.py` — probe. Asked whether the engine grid and the glyph-truth
+  grid can be diffed to find wrong *values*. They cannot: both read the same glyph
+  layer, so character corruption appears identically in each. Recorded in
+  `docs/accuracy-improvement-notes.md`.
