@@ -1917,3 +1917,30 @@ def test_a_second_axis_the_ocr_tier_cannot_assign_is_withheld():
 
     # One stray number to the right is not an axis.
     assert _fit_right_axis([(7.0, 430.0, 250.0)], frame) is None
+
+
+def test_an_exponent_sign_stays_with_its_exponent():
+    """`10⁻⁷` was emitted as `10 - <sup>7</sup>`, which reads as ten minus seven.
+
+    Two causes, both measured over 147,868 corpus cells: the engine writes a minus
+    as ASCII where the glyph layer has U+2212, so the exact-match alignment flagged
+    the digit and not the sign; and the engine's space between them split what was
+    left into two script runs. 168 cells carried the sign outside its superscript
+    against 2 with it inside.
+    """
+    from pdf2md.scripts import apply_scripts
+
+    scored = [("−", None), ("9", None), (".", None), ("7", None), ("×", None),
+              ("1", None), ("0", None), ("−", "sup"), ("7", "sup")]
+
+    assert apply_scripts("- 9.7 × 10 - 7", scored) == "- 9.7 × 10 <sup>- 7</sup>"
+
+
+def test_separate_scripts_are_not_merged_across_a_space():
+    """Bridging only applies between two runs carrying the same flag, so `x¹ y²`
+    stays two scripts rather than becoming one."""
+    from pdf2md.scripts import apply_scripts
+
+    scored = [("x", None), ("1", "sup"), ("y", None), ("2", "sup")]
+
+    assert apply_scripts("x 1 y 2", scored) == "x <sup>1</sup> y <sup>2</sup>"

@@ -91,6 +91,17 @@ def _esc(ch: str) -> str:
     return {"&": "&amp;", "<": "&lt;", ">": "&gt;"}.get(ch, ch)
 
 
+# The engine writes a minus as ASCII where the glyph layer has U+2212, so an exact
+# comparison drops the flag on the sign and keeps it on the digit: `10⁻⁷` is emitted
+# as `10 - <sup>7</sup>`, which reads as ten minus seven. Measured over two corpora
+# this happened 168 times against 2 correct ones, concentrated in three documents.
+_DASHES = "-\u2212\u2013\u2011\u2010\u2014"
+
+
+def _same_char(a: str, b: str) -> bool:
+    return a == b or (a in _DASHES and b in _DASHES)
+
+
 def _align(text: str, scored: list[tuple[str, str | None]]) -> list[str | None]:
     """One flag per character of `text`, transferred from `scored` by matching
     non-space characters in order (tolerant of whitespace/ligature drift)."""
@@ -101,12 +112,12 @@ def _align(text: str, scored: list[tuple[str, str | None]]) -> list[str | None]:
             continue
         while si < n and not scored[si][0].strip():
             si += 1
-        if si < n and scored[si][0] == ch:
+        if si < n and _same_char(scored[si][0], ch):
             flags[ti] = scored[si][1]
             si += 1
         else:  # resync: small look-ahead, else leave unmatched and don't consume
             for k in range(si + 1, min(si + 4, n)):
-                if scored[k][0] == ch:
+                if _same_char(scored[k][0], ch):
                     flags[ti] = scored[k][1]
                     si = k + 1
                     break
@@ -142,7 +153,26 @@ def apply_scripts(text: str, scored: list[tuple[str, str | None]], *, escape: bo
     return _join(text, _unsplit_numbers(text, _align(text, scored)), escape)
 
 
+def _bridge_script_gaps(text: str, flags: list[str | None]) -> list[str | None]:
+    """Carry a script flag across a space the engine inserted inside one group.
+
+    The glyph layer has `10⁻⁷` with no space; the engine writes `10 - 7`, so the
+    sign and the exponent arrive as two script runs with a space between them and
+    render as `<sup>-</sup> <sup>7</sup>`. Only a single space between two runs of
+    the same flag is bridged, so a genuine gap between separate scripts is left
+    alone.
+    """
+    out = list(flags)
+    for i, ch in enumerate(text):
+        if ch != " " or out[i] is not None or not 0 < i < len(text) - 1:
+            continue
+        if out[i - 1] is not None and out[i - 1] == out[i + 1]:
+            out[i] = out[i - 1]
+    return out
+
+
 def _join(text: str, flags: list[str | None], escape: bool) -> str:
+    flags = _bridge_script_gaps(text, flags)
     out: list[str] = []
     open_f: str | None = None
     for ch, f in zip(text, flags):

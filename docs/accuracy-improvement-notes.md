@@ -1068,6 +1068,36 @@ The new value detectors fire on 21 tables across 8 documents, and the
 unfit-layer verdict on 10 of 28. Neither is silent and neither is noisy, which is
 the rate wanted from checks that did not exist a day ago.
 
+## Exponent signs were leaving their exponents, 2026-09-04
+
+Looked for flattened scientific notation -- `1.2 × 10⁻⁵` reaching a grid as
+`10-5`, the middle-dot failure again. It is not there: 26 cells in 147,868 across
+two corpora match a bare `10-n`, and they are ambiguous (`b /(10 - 3 b 7 )` is a
+formula fragment, `10-20` could be a range). No detector was built.
+
+The *correctly* marked cells gave up something better. `- 9.7 × 10 - <sup>7</sup>`
+recovers the exponent digit and leaves its sign outside, which reads as ten minus
+seven. Measured: **168 cells carry the sign outside the superscript against 2 with
+it inside**, concentrated in three documents.
+
+Two causes, both in the script overlay rather than the detection. The glyph
+scoring is right -- scoring the table's own region gives `−9.7×10[−:sup][7:sup]`,
+both flagged. But `_align` compared characters with exact equality, and the engine
+writes a minus as ASCII where the glyph layer has U+2212, so the digit matched and
+took its flag while the sign did not. Folding the dash variants fixes that and
+exposes the second cause: the engine's space between sign and digit split them
+into two script runs, rendering `<sup>-</sup> <sup>7</sup>`. `_bridge_script_gaps`
+carries a flag across a single space between two runs of the same flag, and only
+that, so `x¹ y²` stays two scripts.
+
+Re-converting the worst document: 28 cells outside the superscript before, 0
+after, 28 correctly inside.
+
+Worth noting how this was found. The search was for a defect I had predicted, and
+the prediction was wrong; the real defect was visible in the control group -- the
+cells the check called healthy. Looking at what passed is what turned up a
+systematic error affecting 168 values.
+
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
 Status: scoped, not built. The measurement that motivates it is in
