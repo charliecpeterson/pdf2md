@@ -45,6 +45,8 @@ src/pdf2md/
   config.py     frozen Config dataclass loaded from TOML (no Pydantic).
   logging.py    NullHandler in the library; CLI installs the only handler.
   run_metrics.py sequential stage timings and work counts stored with provenance.
+  logging.py    ... `Progress.heartbeat` takes a callable, so a long blocking stage that can
+                count its own progress reports the count instead of only that it is alive.
   cli.py        Typer surface (convert / enrich / coverage / compare-runs / list /
                 review-tables / prune / version / doctor / models / line-reader).
   models.py     model warm-up and offline/reproducible local snapshots.

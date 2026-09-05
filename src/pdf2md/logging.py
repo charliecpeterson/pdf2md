@@ -8,6 +8,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 import logging
 import threading
+from typing import Callable
 import time
 
 _ROOT = "pdf2md"
@@ -74,14 +75,27 @@ class Progress:
 
     @contextmanager
     def heartbeat(
-        self, message: str, *, interval_seconds: float = 60.0
+        self,
+        message: "str | Callable[[], str]",
+        *,
+        interval_seconds: float = 60.0,
     ) -> Iterator[None]:
-        """Report elapsed time while a blocking stage exposes no useful counters."""
+        """Report elapsed time while a blocking stage runs.
+
+        `message` may be a callable, evaluated at each beat, so a stage that can
+        count its own progress reports the count rather than only that it is still
+        alive. An eleven-hour parse reporting "per-page progress unavailable" is
+        indistinguishable from a hung one, and was nearly killed twice on that
+        basis.
+        """
         stopped = threading.Event()
 
         def report() -> None:
             while not stopped.wait(interval_seconds):
-                self.stage(message)
+                try:
+                    self.stage(message() if callable(message) else message)
+                except Exception:  # noqa: BLE001 - a heartbeat must never raise
+                    self.stage("still working")
 
         thread = threading.Thread(target=report, daemon=True)
         thread.start()

@@ -224,6 +224,24 @@ class DoclingEngine:
             format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=opts)}
         )
 
+    def pages_seen(self) -> int | None:
+        """Pages docling has read off the PDF and fed into its pipeline, or None.
+
+        Read from the pipeline's own page-size map. The producer fills it as it
+        reads pages, and blocks on a bounded queue when the stages are saturated,
+        so it tracks processing to within the queue's depth rather than racing to
+        the end of the document. Best effort by construction: if docling's
+        internals move, the heartbeat loses its count and nothing else.
+        """
+        try:
+            for pipeline in self._converter.initialized_pipelines.values():
+                seen = getattr(pipeline, "_page_sizes_by_no", None)
+                if seen:
+                    return len(seen)
+        except Exception:  # noqa: BLE001 - introspection is never load-bearing
+            return None
+        return None
+
     def convert(self, pdf_path: Path) -> EngineResult:
         log.info("docling converting %s", pdf_path)
         conversion = self._converter.convert(str(pdf_path))

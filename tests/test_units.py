@@ -1944,3 +1944,59 @@ def test_separate_scripts_are_not_merged_across_a_space():
     scored = [("x", None), ("1", "sup"), ("y", None), ("2", "sup")]
 
     assert apply_scripts("x 1 y 2", scored) == "x <sup>1</sup> y <sup>2</sup>"
+
+
+def test_the_source_read_heartbeat_counts_pages_when_the_engine_can():
+    """An 1,085-page parse reported "per-page progress unavailable" for 10h48m
+    while working correctly, and was nearly killed twice on that suspicion.
+
+    An engine that can say how far it has read reports a count and a rate; one
+    that cannot says which it is, rather than leaving the reader to guess whether
+    silence means slow or hung.
+    """
+    from pdf2md.pipeline import _read_heartbeat
+
+    class Counting:
+        seen = 0
+
+        def pages_seen(self):
+            Counting.seen += 100
+            return Counting.seen
+
+    message = _read_heartbeat(Counting(), "docling", 1085)
+    assert callable(message)
+    first = message()
+    assert "100/1085" in first and "s/page" in first and "min left" in first
+    assert "200/1085" in message()
+
+    class Blind:
+        pass
+
+    assert "no page counter" in _read_heartbeat(Blind(), "mineru", 99)
+
+
+def test_the_heartbeat_reports_before_the_first_page_lands():
+    """Model load happens before any page is read, and a zero count there would
+    divide by zero rather than say what is happening."""
+    from pdf2md.pipeline import _read_heartbeat
+
+    class NotYet:
+        def pages_seen(self):
+            return 0
+
+    assert "no pages read yet" in _read_heartbeat(NotYet(), "docling", 1085)()
+
+
+def test_the_heartbeat_does_not_claim_zero_minutes_left_while_still_working():
+    """The counter follows pages into the pipeline, so it reaches the total while
+    the last stages drain -- measured at about a minute on a 545-page book. Saying
+    "0 min left" there is the original problem in miniature."""
+    from pdf2md.pipeline import _read_heartbeat
+
+    class Finished:
+        def pages_seen(self):
+            return 545
+
+    message = _read_heartbeat(Finished(), "docling", 545)()
+    assert "all 545 pages read" in message
+    assert "min left" not in message

@@ -11,6 +11,7 @@ import hashlib
 import json
 import shutil
 import subprocess
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from functools import cache
@@ -234,6 +235,43 @@ def _run_inputs(source_sha256: str, config: Config, engine: Engine | None) -> di
     }
 
 
+def _read_heartbeat(engine: Engine, engine_name: str, source_pages: int) -> object:
+    """The message the source-read stage beats with, counting pages where it can.
+
+    An engine that can say how far it has read gets a live count and a rate; one
+    that cannot says so. This exists because an 1,085-page parse reported
+    "per-page progress unavailable" for 10 hours 48 minutes while working
+    correctly, and was nearly killed twice on the suspicion it had hung.
+    """
+    seen = getattr(engine, "pages_seen", None)
+    if not callable(seen):
+        return (f"still reading {source_pages}-page source with {engine_name}; "
+                "this engine reports no page counter")
+    started = time.monotonic()
+
+    def message() -> str:
+        done = seen()
+        elapsed = time.monotonic() - started
+        if not done:
+            return (f"still reading {source_pages}-page source with {engine_name}; "
+                    "no pages read yet (model load or first page)")
+        if done >= source_pages:
+            # The counter follows pages fed into the pipeline, so it reaches the
+            # end while the last stages are still draining. Saying "0 min left"
+            # there would be the old problem in miniature.
+            return (f"all {source_pages} pages read with {engine_name}; "
+                    f"finishing the last of them")
+        rate = elapsed / done
+        left = max(0.0, (source_pages - done) * rate)
+        return (
+            f"read {done}/{source_pages} pages with {engine_name} "
+            f"({rate:.1f}s/page, ~{left / 60:.0f} min left; the count follows pages "
+            f"into the pipeline, so the estimate runs ahead)"
+        )
+
+    return message
+
+
 def _get_engine(engine: Engine | None, config: Config) -> Engine:
     if engine is not None:
         return engine
@@ -353,10 +391,7 @@ def convert_file(
             source_pages,
             engine_name,
         )
-        heartbeat = (
-            f"still reading {source_pages}-page source with {engine_name}; "
-            "per-page progress unavailable"
-        )
+        heartbeat = _read_heartbeat(engine, engine_name, source_pages)
     try:
         with collapse_repeated_warnings(
             _OCR_LOGGERS,
