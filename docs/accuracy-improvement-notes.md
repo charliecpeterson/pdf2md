@@ -1147,6 +1147,44 @@ The guard is the separator. A damaged number carries a sign or a decimal point -
 nothing else. Corpus false-positive rate is unchanged at 0.8%, and the guard would
 not have been found without running an engine that extracts enough to expose it.
 
+## How this session's emit changes were verified, 2026-09-05
+
+Two emit changes landed: repeated panels emitted as separate grids, and a cropped
+table publishing its grid under the image rather than behind a link. Both were
+checked, and not the way intended.
+
+**The intended check was the corpus gate, and it was abandoned as
+disproportionate.** Reconverting the affected documents means parsing a
+1,085-page textbook, which sat in Docling for **10 hours 48 minutes** at 297% CPU
+and 7.9 GB resident -- genuinely working, this machine having no CUDA -- with a
+545-page book and a 63 MB scan queued behind it. That is on the order of a day of
+machine time to confirm invariants that structurally cannot move: the panel split
+leaves a block `EMITTED`, the crop change leaves it `CROPPED`, and neither can
+create a dropped, illegible or unbalanced block. The batch was killed.
+
+**What was checked instead, and what it caught.** Both changes were applied to
+*stored* table cells across 962 corpus tables without reconverting anything, which
+took seconds and found a real bug in each:
+
+- The panel split latched onto a data row where `H` recurred across an Atkins
+  substituent table, discarded four rows and emitted two-row nonsense. Guarded by
+  requiring the repeated row to be the grid's own header.
+- The crop change published nothing for spanning tables, because its header-only
+  guard counted pipe rows and a spanning table renders as HTML. That was every
+  table the change was written for.
+
+`qa.py --check` then passes on the bundles that are current, and says so honestly:
+36 of 37 predate the build. That staleness line is the useful part of the result.
+
+**The reusable technique** is applying a changed emit rule to stored cells to size
+its blast radius before reconverting. It turned "which documents does this touch?"
+from a day of compute into one pass, and both bugs were in tables the change
+touched that no synthetic fixture resembled.
+
+**And the honest limit**: the invariant claim is argued, not measured, on every
+document except the three carrying a current signature. It is recorded that way
+rather than as a passed gate.
+
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
 Status: scoped, not built. The measurement that motivates it is in
