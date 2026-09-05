@@ -232,3 +232,27 @@ def test_an_ordinary_table_is_not_split_into_panels():
     ])
 
     assert panel_tables(TableData("#/t", 1, BBox(0, 10, 10, 0), gfm=gfm)) is None
+
+
+def test_a_repeated_data_value_does_not_split_a_table_into_panels():
+    """An Atkins substituent table split on a data row where `H` recurred.
+
+    `R2 | R3 | R5 | R6 | E/V` is one table with five columns. The panel detector
+    found `H` repeating across a data row four rows down, treated that row as the
+    panel header, discarded everything above it and emitted two two-row "panels"
+    titled `CH3` and `H`. Panels repeat a *header*, so the repeated row has to be
+    the grid's own first row.
+    """
+    from pdf2md.schema import BBox, TableData
+    from pdf2md.tables import panel_tables
+
+    gfm = "\n".join([
+        "| R 2 | R 3 | R 5 | R 6 | E /V |",
+        "|---|---|---|---|---|",
+        "| CH 3 | H | CH 3 | H | 0.021 |",
+        "| CH 3 | CH 3 | H | H | 0.045 |",
+        "| H | H | H | H | 0.078 |",
+        "| CH 3 | CH 3 | CH 3 | CH 3 | 0.011 |",
+    ])
+
+    assert panel_tables(TableData("#/t", 435, BBox(0, 10, 10, 0), gfm=gfm)) is None

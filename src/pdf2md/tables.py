@@ -104,6 +104,13 @@ def panel_tables(table: TableData) -> str | None:
     usable = [p for p in panels if len(p["rows"]) >= _MIN_PANEL_ROWS]
     if len(usable) < 2 or len(usable) != len(panels):
         return None
+    # Panels repeat a *header*, so the repeated row has to be the grid's own first
+    # row. Without this an Atkins substituent table split on a data row where `H`
+    # happened to recur across every column: it discarded the four rows above the
+    # match and emitted two-row "panels" titled `CH3` and `H`, which is a real
+    # table turned into nonsense.
+    if any(p["source_data_start"] > 1 for p in usable):
+        return None
 
     out = []
     for index, panel in enumerate(usable, start=1):
