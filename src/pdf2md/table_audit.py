@@ -78,7 +78,13 @@ _MIN_ROW_LANES = 2
 # How much of its own region a grid has to span before it is read as the whole
 # table rather than a fragment of one.
 _MIN_REGION_SPAN = 0.5
-# Findings that read only the emitted cells; the source can corroborate them.
+# Findings that read only the emitted cells; the source can corroborate them, and
+# they stand at medium until it does. `stray_glyphs_in_numeric_column` and
+# `decimal_separator_lost` are deliberately absent: they claim the characters in a
+# cell are wrong, not that the arrangement is, and the ink agrees with them because
+# it carries the same wrong characters. Row accounting has nothing to say about a
+# `4·5` the text layer rendered as `45`, so waiting for it would silence them
+# permanently.
 _TEXT_ONLY_KINDS = frozenset({"merged_cells", "shifted_values", "header_absorbed_data"})
 
 
@@ -508,6 +514,116 @@ def _rejoin_signs(parts: list[str]) -> list[str]:
     return joined
 
 
+# A cell in a numeric column that carries digits but is not a number. Pre-1990
+# journals set the decimal point as a middle dot, and a scanner that loses it
+# turns `4·5` into `45`; the same scan turns `-0·7` into `-@7` and `1·9`
+# into `I.9`. Both survive every structural check -- the cell is in the right
+# place and its digits are all present -- and both change the value.
+_FOOTNOTE_TAIL = re.compile(r"(?<=\d)\s*[a-z]\Z")
+_HAS_DIGIT = re.compile(r"\d")
+# A corrupted number is short and mostly numeric: `-@7` is one stray in three
+# characters. A contents-page cell (`PART 2`, `1.2 The gas laws ... 23`) is neither,
+# and a cell of bare digits (`200 202`) is two values merged, which `merged_cells`
+# already owns. Without both guards this fired on 18% of corpus tables.
+_MAX_CORRUPT_CHARS = 12
+_MAX_STRAY_SHARE = 0.5
+_NUMERIC_CHARS = frozenset("0123456789.,+-\u2212\u2013\u2011 ")
+# A published value often travels with a wrapper or a unit -- `[0.071 V]`, `(3.2)`,
+# `1.5 eV`. Neither is a corruption, and both have to come off before the rest of
+# the cell is judged, or the check convicts ordinary typesetting.
+# The stray has to be a character a reader confuses with a digit, which is the
+# failure this detects. Without that, "a cell in a numeric column that is not a
+# number" convicts `> 1000`, `Br 2` and `146(i)` -- ordinary typesetting rather
+# than damage.
+_DIGIT_CONFUSABLE = frozenset("OoDQIlij|ZzSsGbBgq@%xX")
+_VALUE_WRAPPER = re.compile(r"\A[\[({]\s*(.*?)\s*[\])}]\Z", re.DOTALL)
+_TRAILING_UNIT = re.compile(r"(?<=[\d.])\s+[A-Za-zÅ°%/·\u00b5\u03bc][\w/·^\-]*\Z")
+# How much of a numeric column must share one decimal precision before a cell
+# lacking it reads as a lost separator rather than a differently-typeset value.
+_DECIMAL_MAJORITY = 0.7
+_MIN_DECIMAL_CELLS = 6
+# A value that lost its separator is bigger than its neighbours by about the power
+# of ten it should have carried -- `45` against a column whose median is 2.5 is 18x,
+# where 10x is expected. A page number in a column of section numbers (`111` against
+# 1.5, 74x) is not, and that distinction is what keeps a textbook contents page out.
+_LOST_SEPARATOR_TOLERANCE = 3.0
+
+
+def _decimal_places(cell: str) -> int | None:
+    if not _NUMBER.fullmatch(cell):
+        return None
+    return len(cell.partition(".")[2])
+
+
+def _magnitude(cell: str) -> float | None:
+    try:
+        return abs(float(cell.replace("\u2212", "-").replace("\u2013", "-").replace("\u2011", "-")))
+    except ValueError:
+        return None
+
+
+def _stray_glyph_cells(rows: list[list[str]], numeric: set[int]) -> list[tuple[int, int, str]]:
+    """Cells in a numeric column that carry digits and are not numbers.
+
+    A trailing footnote letter is stripped first, because `4.5a` is a value with a
+    marker and not a corrupted one.
+    """
+    out = []
+    for index, row in enumerate(rows):
+        for col in numeric:
+            if col >= len(row):
+                continue
+            cell = row[col].strip()
+            if not cell or not _HAS_DIGIT.search(cell):
+                continue
+            stripped = _VALUE_WRAPPER.sub(r"\1", cell.strip()).strip()
+            stripped = _TRAILING_UNIT.sub("", stripped).strip()
+            stripped = _FOOTNOTE_TAIL.sub("", stripped).strip()
+            if not stripped or _NUMBER.fullmatch(stripped) or len(stripped) > _MAX_CORRUPT_CHARS:
+                continue
+            strays = [ch for ch in stripped if ch not in _NUMERIC_CHARS]
+            if (strays and all(ch in _DIGIT_CONFUSABLE for ch in strays)
+                    and len(strays) / len(stripped) <= _MAX_STRAY_SHARE):
+                out.append((index, col, cell))
+    return out
+
+
+def _lost_separator_columns(rows: list[list[str]], numeric: set[int]) -> list[dict[str, Any]]:
+    """Numeric columns where a few cells lack the decimal precision the rest share.
+
+    Two conditions, because either alone is ordinary: most of the column carries
+    exactly one precision, and the cells missing it are larger than the rest by
+    about the power of ten they should have carried. A column of integers has the
+    first and not the second; a column mixing 4.5 and 12 has neither.
+    """
+    out = []
+    for col in sorted(numeric):
+        cells = [row[col].strip() for row in rows if col < len(row) and row[col].strip()]
+        places = [(cell, _decimal_places(cell)) for cell in cells]
+        numbered = [(cell, n) for cell, n in places if n is not None]
+        if len(numbered) < _MIN_DECIMAL_CELLS:
+            continue
+        precise = [(cell, n) for cell, n in numbered if n > 0]
+        plain = [cell for cell, n in numbered if n == 0]
+        if not precise or not plain or len(plain) >= len(precise):
+            continue
+        common = max({n for _, n in precise}, key=lambda n: sum(1 for _, m in precise if m == n))
+        share = sum(1 for _, n in precise if n == common) / len(numbered)
+        if share < _DECIMAL_MAJORITY:
+            continue
+        typical = sorted(m for m in (_magnitude(c) for c, _ in precise) if m)
+        if not typical:
+            continue
+        middle = typical[len(typical) // 2]
+        expected = 10 ** common
+        low, high = expected / _LOST_SEPARATOR_TOLERANCE, expected * _LOST_SEPARATOR_TOLERANCE
+        suspect = [c for c in plain
+                   if low <= (_magnitude(c) or 0) / middle <= high]
+        if suspect:
+            out.append({"column": col, "places": common, "cells": suspect})
+    return out
+
+
 def grid_findings(header: list[str], rows: list[list[str]]) -> list[TableFinding]:
     """Structure the emitted cells give away on their own, no source needed."""
     findings: list[TableFinding] = []
@@ -572,6 +688,30 @@ def grid_findings(header: list[str], rows: list[list[str]]) -> list[TableFinding
             f"{len(shifted)} row(s) carry a single value in a non-leading column with "
             f"every other cell empty, the signature of a value that lost its row",
             tuple(shifted),
+        ))
+
+    stray = _stray_glyph_cells(rows, numeric)
+    if stray:
+        shown = ", ".join(repr(cell) for _, _, cell in stray[:4])
+        findings.append(TableFinding(
+            "stray_glyphs_in_numeric_column",
+            "high",
+            f"{len(stray)} cell(s) in numeric column(s) carry digits but are not "
+            f"numbers ({shown}) — the value is present and its characters are wrong, "
+            f"which no structural check can see",
+            tuple(sorted({index for index, _, _ in stray})),
+        ))
+
+    lost = _lost_separator_columns(rows, numeric)
+    for entry in lost:
+        shown = ", ".join(repr(cell) for cell in entry["cells"][:4])
+        findings.append(TableFinding(
+            "decimal_separator_lost",
+            "high",
+            f"column {entry['column']} is mostly values with {entry['places']} decimal "
+            f"place(s), and {len(entry['cells'])} cell(s) have none while being far "
+            f"larger than the rest ({shown}) — the signature of a decimal separator "
+            f"the text layer dropped, endemic to middle-dot typesetting",
         ))
 
     absorbed = _absorbed_header_columns(header, rows, numeric, _column_values(rows))

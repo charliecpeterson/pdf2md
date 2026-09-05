@@ -161,6 +161,59 @@ def _heading_plan(blocks: list[Block], title: str) -> tuple[set[str], dict[str, 
     return skip, text
 
 
+# A text layer unfit to judge one equation is unfit to transcribe any value on the
+# same page, and the per-equation note says so one equation at a time. Promoting it
+# to a document-level verdict is what routes a reader to --force-ocr, because the
+# damage that matters most is in the tables, where the characters are wrong and
+# every structural check reads clean.
+_UNFIT_LAYER_SHARE = 0.5
+_MIN_UNFIT_REGIONS = 3
+# A table whose cells carry wrong characters is itself evidence the layer is unfit,
+# and on most papers it is the only evidence there is: the equation signal needs
+# equations, and the paper that motivated this has one. Counting both is what lets
+# a single unfit equation on page 4 warn about the numeric table on page 6.
+_CORRUPT_CELL_KINDS = frozenset({"stray_glyphs_in_numeric_column", "decimal_separator_lost"})
+
+
+def _unfit_text_layer(doc: Document) -> CoverageFlag | None:
+    """One verdict for the document when its own text layer cannot be trusted.
+
+    The signal already exists per equation (`extra['ordered']`, set from `is_clean`
+    and the reading-disorder measure); nothing aggregated it, so a reader saw
+    "equation not verifiable" on page 4 and had no reason to distrust a numeric
+    table on page 6 that had been transcribed from the same layer.
+    """
+    judged = [b for b in doc.blocks if "text_layer" in b.extra]
+    unfit = [b for b in judged if not b.extra.get("ordered")]
+    corrupt = [
+        t for t in doc.tables
+        if any(f.get("kind") in _CORRUPT_CELL_KINDS
+               for f in (t.grid_audit or {}).get("findings") or [])
+    ]
+    if judged and len(unfit) < _UNFIT_LAYER_SHARE * len(judged) and not corrupt:
+        return None
+    regions = len(unfit) + len(corrupt)
+    if regions < _MIN_UNFIT_REGIONS:
+        return None
+    pages = sorted({b.page for b in unfit} | {t.page for t in corrupt})
+    shown = ", ".join(str(p) for p in pages[:6]) + ("..." if len(pages) > 6 else "")
+    return CoverageFlag(
+        "#/document",
+        pages[0],
+        f"the embedded text layer is unfit to read: {len(unfit)} unverifiable "
+        f"equation region(s) and {len(corrupt)} table(s) whose cells carry wrong "
+        f"characters, pages {shown}. Values transcribed from it are unreliable "
+        f"even where the grid is structurally sound — a lost decimal point or a "
+        f"digit read as a letter passes every arrangement check. Re-run with "
+        f"--force-ocr for a fresh transcription, or --engine mineru where available; "
+        f"the source crops beside each table are authoritative either way",
+        "",
+        disposition="action_required",
+        severity="high",
+        content_impact="high",
+    )
+
+
 def emit_document(
     doc: Document, structure, version_dir: Path, meta: dict, engine_versions: dict,
     page_rasters: dict[int, str] | None = None,
@@ -231,6 +284,10 @@ def emit_document(
                 severity="high",
                 content_impact="high",
             ))
+
+    verdict = _unfit_text_layer(doc)
+    if verdict is not None:
+        ctx.flags.append(verdict)
     return written, ctx.flags
 
 

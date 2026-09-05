@@ -30,7 +30,11 @@ def build_review_queue(doc: Document) -> dict:
             "disposition": flag.disposition,
             "severity": flag.severity,
             "content_impact": flag.content_impact,
-            "content_type": block.type.value if block else "unknown",
+            # A verdict about the document as a whole has no block to name.
+            "content_type": (
+                block.type.value if block
+                else "document" if flag.block_id == "#/document" else "unknown"
+            ),
             "block_id": flag.block_id,
             "page": flag.page,
             "reason": flag.reason,

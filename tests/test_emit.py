@@ -1048,3 +1048,58 @@ def test_post_emission_findings_reach_the_artifact_the_reader_opens(tmp_path):
     record = json.loads((tmp_path / table.json_path).read_text())
     assert any("unexplained loss: 2 number(s)" in w
                for w in record["post_emission_warnings"])
+
+
+def test_a_document_whose_text_layer_is_unfit_says_so_once_and_names_the_remedy():
+    """The per-equation note fires one equation at a time and routes nobody.
+
+    Kyte & Doolittle 1982 has one equation and three tables whose cells carry
+    wrong characters; the reader saw "equation not verifiable" on one page and had
+    no reason to distrust a numeric table on another transcribed from the same
+    layer. Tables with character-level findings count as evidence of the same
+    unfitness, which is what makes the verdict reachable on a paper with one
+    equation.
+    """
+    from pdf2md.emit import _unfit_text_layer
+    from pdf2md.schema import BBox, Block, BlockType, TableData
+
+    blocks = [
+        Block("#/eq", BlockType.EQUATION, "E = mc^2", 4, BBox(0, 10, 10, 0),
+              extra={"text_layer": "scrambled", "ordered": False}),
+    ]
+    tables = [
+        TableData(f"#/t{page}", page, BBox(0, 10, 10, 0), gfm="| a |",
+                  grid_audit={"findings": [{"kind": "decimal_separator_lost"}]})
+        for page in (6, 16, 17)
+    ]
+    from pdf2md.schema import Document
+    from pdf2md.structure import build_structure
+
+    structure = build_structure(blocks, None, title="Doc", page_count=20)
+    doc = Document("a" * 64, "/source.pdf", "a" * 64, 20, 1, structure.root,
+                   blocks=blocks, tables=tables)
+
+    flag = _unfit_text_layer(doc)
+
+    assert flag is not None
+    assert flag.block_id == "#/document"
+    assert flag.disposition == "action_required" and flag.severity == "high"
+    assert "--force-ocr" in flag.reason
+    assert "6, 16, 17" in flag.reason
+
+
+def test_a_clean_document_gets_no_unfit_verdict():
+    from pdf2md.emit import _unfit_text_layer
+    from pdf2md.schema import BBox, Block, BlockType
+
+    blocks = [
+        Block(f"#/eq{n}", BlockType.EQUATION, "x", n, BBox(0, 10, 10, 0),
+              extra={"text_layer": "clean", "ordered": True})
+        for n in (1, 2, 3, 4)
+    ]
+    from pdf2md.schema import Document
+    from pdf2md.structure import build_structure
+
+    structure = build_structure(blocks, None, title="Doc", page_count=4)
+    doc = Document("a" * 64, "/source.pdf", "a" * 64, 4, 1, structure.root, blocks=blocks)
+    assert _unfit_text_layer(doc) is None

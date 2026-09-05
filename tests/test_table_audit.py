@@ -459,3 +459,60 @@ def test_a_collapsed_column_of_negatives_is_caught_but_a_range_is_not():
     assert "merged_cells" not in {
         f.kind for f in grid_findings(["ionic liquid", "lambda", "exp. ref"], ref_rows)
     }
+
+
+def test_a_lost_decimal_separator_is_caught_where_structure_checks_cannot_look():
+    """Kyte & Doolittle set their decimals as middle dots and the scan drops them,
+    so `4·5` reaches the grid as `45`. Every cell is in the right place and every
+    digit is present, so no structural check fires; the value is still wrong by a
+    factor of ten. Two conditions together, because either alone is ordinary: the
+    column mostly carries one decimal place, and the cells lacking it are larger
+    than the rest by about the power of ten they should have carried.
+    """
+    rows = [[name, value] for name, value in [
+        ("Isoleucine", "45"), ("Valine", "4.2"), ("Leucine", "3.8"),
+        ("Phenylalanine", "2.8"), ("Cysteine", "2.5"), ("Methionine", "1.9"),
+        ("Alanine", "1.8"), ("Glycine", "-0.4"), ("Tryptophan", "-0.9"),
+        ("Serine", "-0.8"), ("Tyrosine", "-1.3"), ("Proline", "-1.6"),
+        ("Histidine", "-3.2"), ("Glutamine", "-35"), ("Aspartic acid", "-35"),
+        ("Lysine", "-3.9"), ("Arginine", "-4.5"),
+    ]]
+
+    kinds = {f.kind: f for f in grid_findings(["Side-chain", "Hydropathy"], rows)}
+
+    assert "decimal_separator_lost" in kinds
+    finding = kinds["decimal_separator_lost"]
+    assert finding.severity == "high"
+    assert "45" in finding.detail and "-35" in finding.detail
+
+
+def test_an_integer_column_and_a_page_number_are_not_lost_separators():
+    """A column of integers has the decimal-place difference and not the magnitude
+    one; a textbook contents page mixes section numbers with page numbers, where
+    the ratio is far past the power of ten a separator would explain."""
+    integers = [["a", "12"], ["b", "7"], ["c", "31"], ["d", "9"], ["e", "44"], ["f", "18"]]
+    assert not [f for f in grid_findings(["k", "n"], integers)
+                if f.kind == "decimal_separator_lost"]
+
+    # Section numbers against a page number: 111 is roughly fifty times the
+    # column's median, far past the ten a lost separator would explain.
+    contents = [["Gas laws", "1.2"], ["Work", "1.5"], ["Entropy", "2.1"],
+                ["Phase", "2.4"], ["Index", "111"], ["Equilibria", "3.1"],
+                ["Kinetics", "3.6"]]
+    assert not [f for f in grid_findings(["Topic", "Section"], contents)
+                if f.kind == "decimal_separator_lost"]
+
+
+def test_digit_confusable_strays_are_caught_and_ordinary_typesetting_is_not():
+    """`0.28O` is an O where a zero belongs. `> 1000`, `Br 2` and `[0.071 V]` are
+    a bound, a species and a value with units -- measured on the corpus, requiring
+    the stray to be digit-confusable is what separates them."""
+    corrupt = [["a", "0.28O"], ["b", "0.301"], ["c", "0.412"], ["d", "0.377"],
+               ["e", "-0o5169"], ["f", "0.208"]]
+    kinds = [f.kind for f in grid_findings(["k", "v"], corrupt)]
+    assert "stray_glyphs_in_numeric_column" in kinds
+
+    ordinary = [["a", "> 1000"], ["b", "3.00"], ["c", "< 3.0"], ["d", "[0.071 V]"],
+                ["e", "146(i)"], ["f", "2.51"], ["g", "4.20"]]
+    assert not [f for f in grid_findings(["k", "v"], ordinary)
+                if f.kind == "stray_glyphs_in_numeric_column"]

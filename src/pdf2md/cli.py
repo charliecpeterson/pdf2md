@@ -830,7 +830,8 @@ def _report(results: list[ConvertResult]) -> None:
             f"  pages: {profile.get('pages', r.page_count)} | "
             f"markdown: {len(r.md_files)} | tables: {profile.get('tables', 0)} | "
             f"figures: {profile.get('figures', 0)} | equations: {profile.get('equations', 0)}\n"
-            f"  action required: {review_counts.get('action_required', 0)} | "
+            f"  action required: {review_counts.get('action_required', 0)}"
+            f"{_worst_item(c)} | "
             f"source-dependent: {review_counts.get('source_dependent', 0)}"
         )
         if r.run_metrics:
@@ -885,6 +886,26 @@ def _read_document_fields(version_dir: Path) -> dict:
         name: (fields.get(name) or {}).get("value")
         for name in ("title", "authors", "year", "doi")
     }
+
+
+def _worst_item(coverage) -> str:
+    """Name the worst review item inline, so the count is a reason to open the file.
+
+    "action required: 7" followed by a path is a number a reader can skip past;
+    "(high: p16 table structure)" is the thing they were about to go hunting for
+    by hand.
+    """
+    flags = getattr(coverage, "flags", None) or []
+    actionable = [f for f in flags if f.disposition == "action_required"]
+    if not actionable:
+        return ""
+    rank = {"high": 0, "medium": 1, "low": 2}
+    worst = min(actionable, key=lambda f: (rank.get(f.severity, 9),
+                                           rank.get(f.content_impact, 9), f.page))
+    reason = worst.reason.split("\u2014")[0].split(",")[0].strip()
+    if len(reason) > 46:  # cut at a word boundary; a chopped identifier reads as a bug
+        reason = reason[:46].rsplit(" ", 1)[0] + "..."
+    return f" ({worst.severity}: p{worst.page} {reason})"
 
 
 def _content_path(result: ConvertResult, profile: dict) -> Path:
