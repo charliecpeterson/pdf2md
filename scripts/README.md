@@ -46,3 +46,6 @@ whose derivation has been deleted is worse than no number.
   grid can be diffed to find wrong *values*. They cannot: both read the same glyph
   layer, so character corruption appears identically in each. Recorded in
   `docs/accuracy-improvement-notes.md`.
+- `probe_value_damage.py` — probe. Value and structural findings per table, split by the
+  document-level text-layer verdict, over the 28 reviewed papers. Recorded in
+  `docs/accuracy-improvement-notes.md`.

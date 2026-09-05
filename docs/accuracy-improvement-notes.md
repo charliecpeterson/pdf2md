@@ -1026,6 +1026,48 @@ example. That is not enough to calibrate a detector -- it is the header-dictiona
 mistake inverted, too narrow rather than too broad -- and it is recorded here
 rather than built.
 
+## Where value accuracy actually drops, 28 papers, 2026-09-04
+
+Converted the 28 papers a reviewer had been working from and counted findings per
+table, splitting value-level damage (`stray_glyphs_in_numeric_column`,
+`decimal_separator_lost`) from structural damage (merged cells, shifted values,
+row counts).
+
+The first split tried was scanned against born-digital, using whether Docling
+OCR'd any page. **That classification is wrong and the reason is the finding.**
+It puts the 1971-1984 J. Mol. Biol. papers in the born-digital pile, and those are
+the worst documents in the corpus for value damage. They are scans carrying
+someone else's OCR as an embedded text layer, so nothing routes them down the
+scanned path -- the case `GlyphIndex.scanned_overlay` exists for, and the case the
+reviewer hit.
+
+Splitting by the document-level verdict added this session instead:
+
+| | documents | tables | value findings / table | structural / table |
+|---|---|---|---|---|
+| text layer judged unfit | 10 | 140 | **0.17** | **1.81** |
+| text layer fit | 18 | 108 | 0.07 | 0.56 |
+
+A document the verdict flags carries 2.4x the value damage and 3.2x the
+structural damage per table. So the verdict is not only a routing convenience; it
+is a measurable predictor of where the numbers are wrong, which is the claim worth
+having about it.
+
+It is not a complete filter: 8 value findings occur in documents whose layer was
+judged fit. And the two populations are not otherwise matched -- the unfit set
+skews older and more table-dense -- so the ratio is an association, not an isolated
+effect of layer quality.
+
+### What this says about the corpus
+
+Damage concentrates hard. The 1972 atomic-data compilation alone carries 197 of
+the 315 structural findings across all 28 papers. Excluding it, the rest of the
+corpus averages well under one structural finding per table.
+
+The new value detectors fire on 21 tables across 8 documents, and the
+unfit-layer verdict on 10 of 28. Neither is silent and neither is noisy, which is
+the rate wanted from checks that did not exist a day ago.
+
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
 Status: scoped, not built. The measurement that motivates it is in
