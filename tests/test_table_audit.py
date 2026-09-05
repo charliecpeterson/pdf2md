@@ -545,3 +545,28 @@ def test_a_percentage_column_and_a_point_group_are_not_stray_glyphs():
                ["d", "0.88"], ["e", "1.02"], ["f", "0.95"]]
     assert [f for f in grid_findings(["k", "v"], damaged)
             if f.kind == "stray_glyphs_in_numeric_column"]
+
+
+def test_spectroscopic_term_symbols_are_not_corrupted_numbers():
+    """`2S`, `4I`, `2D` are term symbols, and an atomic data compilation is full of
+    them. S, I and D are all digit-confusable, so without this the detector raised
+    19 findings on one 1972 compilation, nearly all of them term symbols.
+
+    The separator is what distinguishes them: a damaged number carries a sign or a
+    decimal point, a label is digits then letters and nothing else.
+    """
+    terms = [["Ne", "2S"], ["Na", "1S"], ["Mg", "4I"], ["Al", "2D"],
+             ["Si", "3P"], ["P", "1.234"]]
+    assert not [f for f in grid_findings(["el", "term"], terms)
+                if f.kind == "stray_glyphs_in_numeric_column"]
+
+    # Neither guard may hide these: a sign carries one, a decimal point the other.
+    signed = [["a", "-@7"], ["b", "-0.9"], ["c", "-1.3"],
+              ["d", "-3.2"], ["e", "-0.8"], ["f", "-1.6"]]
+    assert [f for f in grid_findings(["k", "v"], signed)
+            if f.kind == "stray_glyphs_in_numeric_column"]
+
+    decimal = [["a", "0.28O"], ["b", "0.301"], ["c", "0.412"],
+               ["d", "0.377"], ["e", "0.208"], ["f", "0.19"]]
+    assert [f for f in grid_findings(["k", "v"], decimal)
+            if f.kind == "stray_glyphs_in_numeric_column"]

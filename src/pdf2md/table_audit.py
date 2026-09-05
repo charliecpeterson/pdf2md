@@ -603,6 +603,14 @@ def _stray_glyph_cells(rows: list[list[str]], numeric: set[int]) -> list[tuple[i
             if not stripped or _NUMBER.fullmatch(stripped) or len(stripped) > _MAX_CORRUPT_CHARS:
                 continue
             strays = [ch for ch in stripped if ch not in _NUMERIC_CHARS]
+            # `2S`, `(5S)`, `4I` are spectroscopic term symbols, and an atomic data
+            # compilation is full of them. A label is digits followed by letters with
+            # nothing else; a damaged number carries a sign or a separator, which is
+            # what `-@7`, `1.oo` and `0.28O` have and a term symbol does not.
+            if (strays and all(ch.isalpha() for ch in strays)
+                    and not any(ch in ".,+-−–‑" for ch in stripped)
+                    and stripped.rstrip("".join(strays)).isdigit()):
+                continue
             if (strays and all(ch in _DIGIT_CONFUSABLE for ch in strays)
                     and len(strays) / len(stripped) <= _MAX_STRAY_SHARE):
                 out.append((index, col, cell))

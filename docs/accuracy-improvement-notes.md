@@ -1098,6 +1098,47 @@ the prediction was wrong; the real defect was visible in the control group -- th
 cells the check called healthy. Looking at what passed is what turned up a
 systematic error affecting 168 values.
 
+## MinerU on the 1972 compilation, and what a finding count is not, 2026-09-04
+
+The 1972 atomic data compilation carries 197 of the 315 structural findings across
+28 reviewed papers. CLAUDE.md records MinerU recovering 99% of its printed grid
+against Docling's 21%, and the audit agreeing independently: "1 of MinerU's 145
+tables carries a structural finding against 79 of Docling's 82". Re-ran both with
+the audit as it stands today.
+
+| | tables | with a finding | merged_cells | shifted_values | character-level |
+|---|---|---|---|---|---|
+| docling | 82 | 80 (98%) | 68 | 49 | 3 |
+| mineru | 144 | 83 (58%) | 0 | 2 | 32 |
+
+**The structural claim holds and is stark.** merged_cells goes 68 to 0 and
+shifted_values 49 to 2. MinerU extracts 144 tables where Docling manages 82, in
+176 seconds against 560.
+
+**The headline count does not, and the reason is worth keeping.** 83 of MinerU's
+tables now carry a finding rather than 1, because the audit has grown since that
+measurement: `row_count` fires on 83 of them, and it did not exist then. A number
+recorded against one version of a check cannot be compared against another version
+of the same check.
+
+**And the character detectors fire ten times more on the better engine.** 32
+against 3, because MinerU actually extracts the values -- Docling's tables on this
+document are too broken to have readable cells to damage. A finding count is not a
+quality ranking. This is the same shape as `low_recall` counting blocks rather
+than words: the metric measures what it measures, and comparing engines on it
+needs the denominator.
+
+### The term-symbol false positive
+
+Reading those 32 findings showed most were wrong: `2S`, `(3S)`, `1S`, `4I`, `2D`
+are spectroscopic term symbols, and S, I and D are all in the digit-confusable
+set. An atomic data compilation is nothing but term symbols.
+
+The guard is the separator. A damaged number carries a sign or a decimal point --
+`-@7`, `1.oo`, `0.28O` all do -- and a label is digits followed by letters with
+nothing else. Corpus false-positive rate is unchanged at 0.8%, and the guard would
+not have been found without running an engine that extracts enough to expose it.
+
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
 Status: scoped, not built. The measurement that motivates it is in
