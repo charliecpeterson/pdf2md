@@ -1139,3 +1139,31 @@ def test_one_damaged_table_is_its_own_flag_and_not_a_document_verdict():
     doc = Document("a" * 64, "/source.pdf", "a" * 64, 8, 1, structure.root, tables=tables)
 
     assert _unfit_text_layer(doc) is None
+
+
+def test_a_cropped_table_publishes_its_grid_under_the_image(tmp_path):
+    """138 of 140 cropped corpus tables had a grid, published only as a link.
+
+    emit already settled this the other way for audited tables -- the content is
+    present, the reader can check it, and the marker keeps it from being read as
+    unquestioned. The crop stays authoritative and stays first.
+    """
+    from pdf2md.schema import BBox, Block, BlockType, Document, TableData
+    from pdf2md.structure import build_structure
+
+    block = Block("#/t", BlockType.TABLE, "", 3, BBox(0, 100, 200, 10),
+                  extra={"crop_path": "assets/tables_0_p3.png", "ocr": True})
+    table = TableData("#/t", 3, BBox(0, 100, 200, 10), gfm="\n".join([
+        "| Atom | Energy |", "|---|---|", "| He | -2.90 |", "| Be | -14.6 |",
+    ]))
+    structure = build_structure([block], None, title="Doc", page_count=3)
+    doc = Document("a" * 64, "/source.pdf", "a" * 64, 3, 1, structure.root,
+                   blocks=[block], tables=[table])
+
+    emit_document(doc, structure, tmp_path, {"title": "Doc"}, {"test": "1"},
+                  emission_index={})
+
+    body = "\n".join(p.read_text() for p in tmp_path.glob("*.md"))
+    assert "![table](assets/tables_0_p3.png)" in body
+    assert "| He | -2.90 |" in body
+    assert body.index("![table]") < body.index("| He | -2.90 |")

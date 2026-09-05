@@ -518,8 +518,20 @@ def _render_block(
             reason = ("scanned page — the image is the source, the OCR text is unreliable"
                       if b.extra.get("ocr")
                       else "table not extracted as text — the image below is the source")
+        # The crop is authoritative and the grid still gets published under it.
+        # Withholding the grid put 138 of 140 cropped tables behind an artifact
+        # link, and emit already settled this question the other way for audited
+        # tables: the content is present, the reader can check it against the image
+        # sitting directly above, and the marker keeps it from being read as
+        # unquestioned. A grid with nothing but a header is not worth the space.
+        grid = ""
+        if table is not None and table_has_content(table):
+            rendered = panel_tables(table) or render_table(table)
+            if len([r for r in rendered.split("\n") if r.startswith("|")]) >= 3:
+                grid = f"\n\n{rendered}"
         out = (
             f"> **[pdf2md: {reason}]**\n\n![table]({crop})"
+            + grid
             + (_table_candidate_links(table) if table is not None else "")
             + _description(b.extra.get("description"))
         )
