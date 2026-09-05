@@ -37,7 +37,7 @@ from pdf2md.schema import (
 )
 from pdf2md.structure import is_chapter_container
 from pdf2md.table_artifacts import write_table_artifacts
-from pdf2md.tables import render_table, table_has_content
+from pdf2md.tables import panel_tables, render_table, table_has_content
 
 _BOILERPLATE = {BlockType.PAGE_HEADER, BlockType.PAGE_FOOTER}
 
@@ -555,6 +555,23 @@ def _render_block(
         # rides above it so the table is never read as unquestioned.
         flag = _table_audit_flag(b, table)
         marker = f"{flag.marker_text}\n\n" if flag is not None else ""
+        # A table set as repeated side-by-side panels is several tables, and the
+        # merged grid puts a row from one panel beside a row from the next. Where
+        # the split is unambiguous the panels are what a reader reaches first; the
+        # merged grid stays available as the table artifact.
+        panels = panel_tables(table)
+        if panels is not None:
+            note = (
+                "> **[pdf2md: this table is typeset as repeated side-by-side panels "
+                "and is emitted one grid per panel; the merged grid, in which a row "
+                "of one panel sits beside a row of the next, is in the table "
+                "artifact beside this file]**\n\n"
+            )
+            return (
+                marker + note + panels + _table_source_links(table),
+                CoverageStatus.EMITTED,
+                flag,
+            )
         return (
             marker + render_table(table) + _table_source_links(table),
             CoverageStatus.EMITTED,

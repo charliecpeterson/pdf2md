@@ -106,6 +106,14 @@ def convert(
         False, "--force", "-f", help="Re-convert even if cached.",
         rich_help_panel="Input and output",
     ),
+    tables_only: bool = typer.Option(
+        False, "--tables-only",
+        help="Hunting one table: skip formula enrichment, chart digitization and figure "
+             "OCR. Tables, their audits and their crops are unaffected. Measured at "
+             "27% off a 28-page scan (1m40s to 1m13s) — the parse dominates, so this "
+             "trims rather than transforms.",
+        rich_help_panel="Input and output",
+    ),
     no_formula: bool = typer.Option(
         False, "--no-formula", help="Skip formula→LaTeX enrichment (much faster; for books/scans).",
         rich_help_panel="Equations",
@@ -282,6 +290,23 @@ def convert(
         cfg = _replace_config(cfg, ocr_figures=False)
     if no_word_split:
         cfg = _replace_config(cfg, resegment_ocr=False)
+    if tables_only:
+        # Everything a table reader does not need. Table crops, cells and audits are
+        # untouched, so the evidence tables depend on is all still there.
+        #
+        # Measured rather than assumed, and the assumption was wrong: on a 28-page
+        # scan this saves 27% (1m40s -> 1m13s) and every second of it is formula
+        # enrichment, which runs inside Docling's parse. Chart digitization and
+        # figure OCR do not reach the top five stages. The parse is 94 of 100
+        # seconds, and finding a table requires it, so no flag can avoid it.
+        cfg = _replace_config(
+            cfg,
+            do_formula_enrichment=False,
+            digitize_figures=False,
+            digitize_vlm=False,
+            ocr_figures=False,
+            figure_svg=False,
+        )
 
     if path.is_dir():
         results = convert_dir(path, config=cfg, force=force)

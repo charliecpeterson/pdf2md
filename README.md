@@ -304,6 +304,9 @@ Grouped by what they touch. All are flags to `convert`.
   answer can be checked against the source image; ~100–300 KB disk per page)
 
 **Scanned-document OCR** (vision flags need the `describe` extra + an endpoint)
+- `--tables-only` — hunting one table: skip formula enrichment, chart digitization and
+  figure OCR. Table cells, audits and crops are unaffected. Measured at 27% off a 28-page
+  scan; the parse dominates, so it trims rather than transforms
 - `--engine mineru` — use MinerU's native structure for scans and difficult tables/equations
 - `--engine marker` — use Marker, the best-reading option; needs `--marker-executable` and a
   running inference server (see Installation)

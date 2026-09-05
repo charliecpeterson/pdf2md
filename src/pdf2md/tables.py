@@ -81,6 +81,47 @@ def render_table(table: TableData) -> str:
     return _strip_caption(table.gfm)
 
 
+# A table typeset as repeated side-by-side panels has one grid per panel, and
+# reading it as a single wide grid puts a nickel row and a rare-earth row on the
+# same line. The split already existed as a side artifact; this is what makes the
+# panels what a reader reaches first.
+_MIN_PANEL_ROWS = 2
+
+
+def panel_tables(table: TableData) -> str | None:
+    """Per-panel grids for a table set as repeated panels, or None.
+
+    Returns None whenever the split is not clearly better than the merged grid --
+    fewer than two panels, or a panel too thin to be a table on its own -- because
+    a wrong split is worse than a wide one.
+    """
+    if table.has_spanning_cells or not (table.gfm or "").strip():
+        return None
+    rows = gfm_rows(_strip_caption(table.gfm))
+    if len(rows) < 2:
+        return None
+    panels, _ = split_repeated_panels(rows)
+    usable = [p for p in panels if len(p["rows"]) >= _MIN_PANEL_ROWS]
+    if len(usable) < 2 or len(usable) != len(panels):
+        return None
+
+    out = []
+    for index, panel in enumerate(usable, start=1):
+        columns = [str(c).strip() for c in panel["columns"]]
+        body = [[str(c).strip() for c in row] for row in panel["rows"]]
+        width = max([len(columns)] + [len(r) for r in body])
+        columns += [""] * (width - len(columns))
+        cells = [
+            GridCell(text, r, c, 1, 1, False)
+            for r, row in enumerate([columns] + body)
+            for c, text in enumerate(row + [""] * (width - len(row)))
+        ]
+        title = str(panel["title"]).strip()
+        heading = f"*panel {index}{f' — {title}' if title else ''}*"
+        out.append(f"{heading}\n\n{build_gfm(cells, len(body) + 1, width)}")
+    return "\n\n".join(out)
+
+
 def table_has_content(table: TableData) -> bool:
     return bool((table.gfm or "").strip() or table.html or table.preformatted)
 

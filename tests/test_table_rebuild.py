@@ -191,3 +191,44 @@ def test_engine_table_html_renders_cells_math_and_spans():
     assert spanning is True
     assert "| A | B |" in gfm
     assert "| 1 | $g_J$ |" in gfm
+
+
+def test_repeated_side_by_side_panels_emit_one_grid_each():
+    """A table set as three panels per page is three tables.
+
+    Read as one wide grid it puts a nickel row beside a rare-earth row from the
+    next panel, which looks like a table and is not one.
+    """
+    from pdf2md.schema import BBox, TableData
+    from pdf2md.tables import panel_tables
+
+    gfm = "\n".join([
+        "| Ion | r | Ion | r |",
+        "|---|---|---|---|",
+        "| Ni2+ | 0.69 | La3+ | 1.03 |",
+        "| Cu2+ | 0.73 | Ce3+ | 1.01 |",
+        "| Zn2+ | 0.74 | Pr3+ | 0.99 |",
+    ])
+
+    out = panel_tables(TableData("#/t", 2, BBox(0, 10, 10, 0), gfm=gfm))
+
+    assert out is not None
+    assert out.count("*panel ") == 2
+    first, second = out.split("*panel 2")
+    assert "Ni2+" in first and "La3+" not in first
+    assert "La3+" in second and "Ni2+" not in second
+
+
+def test_an_ordinary_table_is_not_split_into_panels():
+    """A wrong split is worse than a wide grid, so the split has to be unambiguous."""
+    from pdf2md.schema import BBox, TableData
+    from pdf2md.tables import panel_tables
+
+    gfm = "\n".join([
+        "| Atom | Energy | Method | Basis |",
+        "|---|---|---|---|",
+        "| He | -2.90 | CCSD | cc-pVTZ |",
+        "| Be | -14.6 | CCSD | cc-pVQZ |",
+    ])
+
+    assert panel_tables(TableData("#/t", 1, BBox(0, 10, 10, 0), gfm=gfm)) is None
