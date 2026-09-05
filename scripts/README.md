@@ -49,3 +49,7 @@ whose derivation has been deleted is worse than no number.
 - `probe_value_damage.py` — probe. Value and structural findings per table, split by the
   document-level text-layer verdict, over the 28 reviewed papers. Recorded in
   `docs/accuracy-improvement-notes.md`.
+- `recount_table_findings.py` — re-applies the current cell-content detectors to
+  already-converted tables. Findings in `provenance.json` were written by whichever
+  version ran at conversion time, so this is how a count gets compared across a change
+  to the check without reconverting.

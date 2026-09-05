@@ -1064,9 +1064,17 @@ Damage concentrates hard. The 1972 atomic-data compilation alone carries 197 of
 the 315 structural findings across all 28 papers. Excluding it, the rest of the
 corpus averages well under one structural finding per table.
 
-The new value detectors fire on 21 tables across 8 documents, and the
-unfit-layer verdict on 10 of 28. Neither is silent and neither is noisy, which is
+The new value detectors fire on 20 tables across 7 documents
+(`stray_glyphs_in_numeric_column`) and 7 across 5 (`decimal_separator_lost`), out
+of 222 tables carrying a grid. Neither is silent and neither is noisy, which is
 the rate wanted from checks that did not exist a day ago.
+
+Those counts are re-derived by applying the current detectors to the stored cells,
+not read from the bundles: the findings written at conversion time predate three
+guards added since (percentage columns, the footnote strip that manufactured its
+own stray, spectroscopic term symbols). A finding count is only meaningful against
+a named version of the check that produced it -- the same trap as the MinerU
+comparison above.
 
 ## Exponent signs were leaving their exponents, 2026-09-04
 
