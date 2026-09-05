@@ -1167,3 +1167,29 @@ def test_a_cropped_table_publishes_its_grid_under_the_image(tmp_path):
     assert "![table](assets/tables_0_p3.png)" in body
     assert "| He | -2.90 |" in body
     assert body.index("![table]") < body.index("| He | -2.90 |")
+
+
+def test_a_cropped_spanning_table_publishes_its_html(tmp_path):
+    """A spanning table renders as HTML, which has no pipe rows.
+
+    The header-only guard counted them, so it dropped every spanning table -- which
+    is most of the cropped ones on a scan, including the table that motivated this.
+    """
+    from pdf2md.schema import BBox, Block, BlockType, Document, TableData
+    from pdf2md.structure import build_structure
+
+    html = "<table><tbody><tr><th>Side-chain</th><th>ΔG</th></tr>" \
+           "<tr><td>Ile</td><td>4.5</td></tr></tbody></table>"
+    block = Block("#/t", BlockType.TABLE, "", 5, BBox(0, 100, 200, 10),
+                  extra={"crop_path": "assets/t.png", "ocr": True})
+    table = TableData("#/t", 5, BBox(0, 100, 200, 10), gfm="| a |\n|---|\n| b |",
+                      html=html, has_spanning_cells=True)
+    structure = build_structure([block], None, title="Doc", page_count=5)
+    doc = Document("a" * 64, "/source.pdf", "a" * 64, 5, 1, structure.root,
+                   blocks=[block], tables=[table])
+
+    emit_document(doc, structure, tmp_path, {"title": "Doc"}, {"test": "1"},
+                  emission_index={})
+
+    body = "\n".join(p.read_text() for p in tmp_path.glob("*.md"))
+    assert "<table>" in body and "Side-chain" in body

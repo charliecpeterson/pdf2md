@@ -527,7 +527,11 @@ def _render_block(
         grid = ""
         if table is not None and table_has_content(table):
             rendered = panel_tables(table) or render_table(table)
-            if len([r for r in rendered.split("\n") if r.startswith("|")]) >= 3:
+            # A spanning table renders as HTML, which has no pipe rows; the
+            # header-only test applies to GFM only, or it silently drops every
+            # spanning table -- which is most of the cropped ones on a scan.
+            pipes = [r for r in rendered.split("\n") if r.startswith("|")]
+            if not pipes or len(pipes) >= 3:
                 grid = f"\n\n{rendered}"
         out = (
             f"> **[pdf2md: {reason}]**\n\n![table]({crop})"
