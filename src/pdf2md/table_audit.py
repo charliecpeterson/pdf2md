@@ -562,13 +562,30 @@ def _magnitude(cell: str) -> float | None:
         return None
 
 
+def _percent_columns(rows: list[list[str]], numeric: set[int]) -> set[int]:
+    """Columns where a trailing `%` is the unit rather than a stray.
+
+    `0.29%` in a column of percentages is a value; a lone `%` in a column that does
+    not otherwise use one is the corruption `-3%` was.
+    """
+    out = set()
+    for col in numeric:
+        cells = [row[col].strip() for row in rows if col < len(row) and row[col].strip()]
+        if cells and sum(c.endswith("%") for c in cells) >= 0.5 * len(cells):
+            out.add(col)
+    return out
+
+
 def _stray_glyph_cells(rows: list[list[str]], numeric: set[int]) -> list[tuple[int, int, str]]:
     """Cells in a numeric column that carry digits and are not numbers.
 
     A trailing footnote letter is stripped first, because `4.5a` is a value with a
-    marker and not a corrupted one.
+    marker and not a corrupted one -- but only when what remains is a clean number.
+    Otherwise the strip manufactures the stray it then reports: `D 4d`, a point
+    group, loses its `d` and is convicted for the `D`.
     """
     out = []
+    percent = _percent_columns(rows, numeric)
     for index, row in enumerate(rows):
         for col in numeric:
             if col >= len(row):
@@ -578,7 +595,11 @@ def _stray_glyph_cells(rows: list[list[str]], numeric: set[int]) -> list[tuple[i
                 continue
             stripped = _VALUE_WRAPPER.sub(r"\1", cell.strip()).strip()
             stripped = _TRAILING_UNIT.sub("", stripped).strip()
-            stripped = _FOOTNOTE_TAIL.sub("", stripped).strip()
+            if col in percent:
+                stripped = stripped.rstrip("%").strip()
+            marked = _FOOTNOTE_TAIL.sub("", stripped).strip()
+            if _NUMBER.fullmatch(marked):
+                continue          # a value carrying a footnote marker
             if not stripped or _NUMBER.fullmatch(stripped) or len(stripped) > _MAX_CORRUPT_CHARS:
                 continue
             strays = [ch for ch in stripped if ch not in _NUMERIC_CHARS]

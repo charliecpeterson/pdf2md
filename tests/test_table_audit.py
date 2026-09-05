@@ -516,3 +516,32 @@ def test_digit_confusable_strays_are_caught_and_ordinary_typesetting_is_not():
                 ["e", "146(i)"], ["f", "2.51"], ["g", "4.20"]]
     assert not [f for f in grid_findings(["k", "v"], ordinary)
                 if f.kind == "stray_glyphs_in_numeric_column"]
+
+
+def test_a_percentage_column_and_a_point_group_are_not_stray_glyphs():
+    """Two false positives found on a 28-paper corpus, both heuristics chaining.
+
+    `%` is in the digit-confusable set because `-3%` is real corruption, so a
+    column of percentages convicted itself. And the footnote strip removed the `d`
+    from the point group `D 4d`, then reported the `D` it had just exposed -- a
+    strip that manufactures the stray it finds.
+    """
+    percentages = [["a", "0.29%"], ["b", "0.084%"], ["c", "0.31%"],
+                   ["d", "1.02%"], ["e", "0.55%"], ["f", "0.77%"]]
+    assert not [f for f in grid_findings(["k", "v"], percentages)
+                if f.kind == "stray_glyphs_in_numeric_column"]
+
+    point_groups = [["Cs", "D 4d"], ["a", "1.234"], ["b", "2.345"],
+                    ["c", "3.456"], ["d", "4.567"], ["e", "5.678"]]
+    assert not [f for f in grid_findings(["k", "v"], point_groups)
+                if f.kind == "stray_glyphs_in_numeric_column"]
+
+    footnoted = [["a", "4.5a"], ["b", "3.2"], ["c", "2.8"],
+                 ["d", "1.9"], ["e", "0.7"], ["f", "5.1"]]
+    assert not grid_findings(["k", "v"], footnoted)
+
+    # The damage these guards must not hide: an o where a zero belongs.
+    damaged = [["a", "1.oo"], ["b", "0.99"], ["c", "1.10"],
+               ["d", "0.88"], ["e", "1.02"], ["f", "0.95"]]
+    assert [f for f in grid_findings(["k", "v"], damaged)
+            if f.kind == "stray_glyphs_in_numeric_column"]

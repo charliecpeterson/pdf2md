@@ -1103,3 +1103,39 @@ def test_a_clean_document_gets_no_unfit_verdict():
     structure = build_structure(blocks, None, title="Doc", page_count=4)
     doc = Document("a" * 64, "/source.pdf", "a" * 64, 4, 1, structure.root, blocks=blocks)
     assert _unfit_text_layer(doc) is None
+
+
+def test_unjudgeable_equations_alone_do_not_impugn_a_document_s_values():
+    """A layer can be unable to judge an equation and fine for tables.
+
+    Six born-digital papers in a 28-paper corpus have every equation unjudgeable --
+    the Wiley and ACS substitution fonts that draw `(14)` as `ð14Þ` -- and no table
+    damage at all. An earlier version of this verdict fired on all six and told
+    those readers to re-run with --force-ocr, which the evidence does not support.
+    """
+    from pdf2md.emit import _unfit_text_layer
+    from pdf2md.schema import BBox, Block, BlockType, Document
+    from pdf2md.structure import build_structure
+
+    blocks = [
+        Block(f"#/eq{n}", BlockType.EQUATION, "x", n, BBox(0, 10, 10, 0),
+              extra={"text_layer": "ð14Þ", "ordered": False})
+        for n in range(1, 15)
+    ]
+    structure = build_structure(blocks, None, title="Doc", page_count=14)
+    doc = Document("a" * 64, "/source.pdf", "a" * 64, 14, 1, structure.root, blocks=blocks)
+
+    assert _unfit_text_layer(doc) is None
+
+
+def test_one_damaged_table_is_its_own_flag_and_not_a_document_verdict():
+    from pdf2md.emit import _unfit_text_layer
+    from pdf2md.schema import BBox, Document, TableData
+    from pdf2md.structure import build_structure
+
+    tables = [TableData("#/t6", 6, BBox(0, 10, 10, 0), gfm="| a |",
+                        grid_audit={"findings": [{"kind": "decimal_separator_lost"}]})]
+    structure = build_structure([], None, title="Doc", page_count=8)
+    doc = Document("a" * 64, "/source.pdf", "a" * 64, 8, 1, structure.root, tables=tables)
+
+    assert _unfit_text_layer(doc) is None

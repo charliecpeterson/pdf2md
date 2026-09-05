@@ -166,8 +166,11 @@ def _heading_plan(blocks: list[Block], title: str) -> tuple[set[str], dict[str, 
 # to a document-level verdict is what routes a reader to --force-ocr, because the
 # damage that matters most is in the tables, where the characters are wrong and
 # every structural check reads clean.
-_UNFIT_LAYER_SHARE = 0.5
-_MIN_UNFIT_REGIONS = 3
+# Two tables, not one: a single damaged table is already its own high-severity
+# flag, and a document-level claim needs a pattern. Measured over 28 papers this
+# fires on the four scans carrying real value damage and on none of the six
+# born-digital papers whose equations are merely unjudgeable.
+_MIN_CORRUPT_TABLES = 2
 # A table whose cells carry wrong characters is itself evidence the layer is unfit,
 # and on most papers it is the only evidence there is: the equation signal needs
 # equations, and the paper that motivated this has one. Counting both is what lets
@@ -178,31 +181,32 @@ _CORRUPT_CELL_KINDS = frozenset({"stray_glyphs_in_numeric_column", "decimal_sepa
 def _unfit_text_layer(doc: Document) -> CoverageFlag | None:
     """One verdict for the document when its own text layer cannot be trusted.
 
-    The signal already exists per equation (`extra['ordered']`, set from `is_clean`
-    and the reading-disorder measure); nothing aggregated it, so a reader saw
-    "equation not verifiable" on page 4 and had no reason to distrust a numeric
-    table on page 6 that had been transcribed from the same layer.
+    Fired by tables whose cells carry wrong characters, because that is evidence
+    about *values*. Unfit equations are reported alongside but cannot fire it: a
+    layer can be unable to judge an equation and perfectly able to carry a table.
+    Measured over 28 papers, six born-digital ones have every equation unjudgeable
+    -- the Wiley and ACS substitution fonts that draw `(14)` as `ð14Þ` -- and no
+    table damage at all. Telling those readers their values are unreliable, and to
+    re-run with --force-ocr, would be wrong on the evidence.
     """
-    judged = [b for b in doc.blocks if "text_layer" in b.extra]
-    unfit = [b for b in judged if not b.extra.get("ordered")]
     corrupt = [
         t for t in doc.tables
         if any(f.get("kind") in _CORRUPT_CELL_KINDS
                for f in (t.grid_audit or {}).get("findings") or [])
     ]
-    if judged and len(unfit) < _UNFIT_LAYER_SHARE * len(judged) and not corrupt:
+    if len(corrupt) < _MIN_CORRUPT_TABLES:
         return None
-    regions = len(unfit) + len(corrupt)
-    if regions < _MIN_UNFIT_REGIONS:
-        return None
-    pages = sorted({b.page for b in unfit} | {t.page for t in corrupt})
+    judged = [b for b in doc.blocks if "text_layer" in b.extra]
+    unfit = [b for b in judged if not b.extra.get("ordered")]
+    pages = sorted({t.page for t in corrupt} | {b.page for b in unfit})
     shown = ", ".join(str(p) for p in pages[:6]) + ("..." if len(pages) > 6 else "")
     return CoverageFlag(
         "#/document",
         pages[0],
-        f"the embedded text layer is unfit to read: {len(unfit)} unverifiable "
-        f"equation region(s) and {len(corrupt)} table(s) whose cells carry wrong "
-        f"characters, pages {shown}. Values transcribed from it are unreliable "
+        f"the embedded text layer is unfit to read: {len(corrupt)} table(s) whose "
+        f"cells carry wrong characters"
+        f"{f', and {len(unfit)} unverifiable equation region(s)' if unfit else ''}, "
+        f"pages {shown}. Values transcribed from it are unreliable "
         f"even where the grid is structurally sound — a lost decimal point or a "
         f"digit read as a letter passes every arrangement check. Re-run with "
         f"--force-ocr for a fresh transcription, or --engine mineru where available; "

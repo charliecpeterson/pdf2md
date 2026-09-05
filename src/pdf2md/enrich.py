@@ -142,14 +142,21 @@ class GlyphIndex:
     def scanned_overlay(self, page_no: int | None) -> bool:
         """Whether the page is a scanned image with a text layer drawn over it.
 
-        Two conditions. One image covers most of the page, and the text drawn over
-        it is *invisible* -- render mode 3, which is what an OCR overlay must use
+        Two conditions. The page's images cover most of it, and the text drawn over
+        them is *invisible* -- render mode 3, which is what an OCR overlay must use
         so it does not obscure the scan it describes. Geometry alone is not
         enough: a full-page figure plate carries labels inside its own bounds and
         looks identical by position. Render mode separates them by construction,
         and measured across 44 documents it does so cleanly -- a 1972 scan is
         900 invisible text objects on a full-page image, a figure plate is 114
-        visible ones."""
+        visible ones.
+
+        Coverage is summed over the images, not required of any one of them. The
+        first version wanted a single covering image, which is how five 1970s-80s
+        Elsevier scans went undetected: their pages are tiled into 22 images each,
+        every one of them small, with 464 invisible text objects drawn over the
+        top. Those were the worst documents in a 28-paper corpus for value damage
+        and the tool never named `--engine mineru` for any of them."""
         if page_no is None:
             return False
         if page_no not in self._overlay:
@@ -164,14 +171,15 @@ class GlyphIndex:
         width, height = page.get_size()
         if width <= 0 or height <= 0:
             return False
-        cover = None
+        covered = 0.0
         for obj in page.get_objects():
             if obj.type != _PDFIUM_IMAGE:
                 continue
             x0, y0, x1, y1 = obj.get_pos()
-            if abs(x1 - x0) * abs(y1 - y0) / (width * height) > _SCAN_IMAGE_COVER:
-                cover = (min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1))
-        if cover is None:
+            covered += abs(x1 - x0) * abs(y1 - y0)
+        # Summed, so tiles count; overlapping tiles can exceed the page, which only
+        # makes a covered page more obviously covered.
+        if covered / (width * height) <= _SCAN_IMAGE_COVER:
             return False
 
         drawn = invisible = 0
