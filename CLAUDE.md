@@ -236,9 +236,10 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
                 tests/figure_axes_labels.json), eval_figure_values.py (are the emitted numbers on
                 the printed chart, vs tests/figure_values_labels.json),
                 eval_recall_precision.py / eval_reading_order_precision.py /
-                eval_table_rows_precision.py (poppler as an independent adjudicator for the three
-                checks with no labelled set — each documents the blind spot that makes it refuse
-                rather than guess), eval_equations.py, eval_accuracy.py, agent_benchmark.py.
+                eval_table_rows_precision.py / eval_symbol_precision.py (poppler as an independent
+                adjudicator for the four checks with no labelled set — each documents the blind
+                spot that makes it refuse rather than guess), eval_equations.py, eval_accuracy.py,
+                agent_benchmark.py.
                 qa.py reports the verification signals (flagged tables, reading-order and
                 split-line pages, low-recall and accent-damaged blocks) as drift, never as
                 invariants: a document is not worse for having its defects noticed.
@@ -386,7 +387,14 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   deliberately out, since `−` emitting as `-` is normalization and a class holding both
   loss and normalization needs a threshold. It is engine-side (the symbols are already
   gone from `base-state.json`), so `record_symbol_loss` reports and never repairs: that a
-  `χ` is missing is certain, where to put it back is not.
+  `χ` is missing is certain, where to put it back is not. Measured against poppler
+  (`eval_symbol_precision.py`): precision **0.97**, 39 of 40 findings corroborated by a
+  second reader, stable across four seeds. The one refutation is a `°` pdfium resolves and
+  poppler does not. The control matters as much -- of 356 unflagged blocks poppler shows a
+  missing symbol in 1, so 0.3% of symbol loss goes unraised, which for a check this narrow
+  was the likelier failure. The record writes `χ (4)`, never `χ×4`: `×` is itself one of
+  the symbols reported, and using it as a separator made two of the harness's own
+  refutations a parsing collision rather than a disagreement.
 - **Recall is not claimed where a neighbour actually accounts for the missing words.**
   The metric compares a block's text against the glyphs in its box, which assumes the box
   is that block's alone. Across 951 prose blocks the median overlap with a neighbour is

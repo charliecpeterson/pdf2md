@@ -641,9 +641,11 @@ def record_symbol_loss(block: Block, pc, emitted: str | None = None) -> None:
         return
     block.extra["glyph_symbols_lost"] = {
         "count": sum(lost.values()),
-        # `χ×4` rather than `χχχχ`: the reader wants the character and how often.
+        # `χ (4)` rather than `χχχχ`: the reader wants the character and how
+        # often. Not `χ×4` -- `×` is itself one of the symbols this reports, and
+        # `× (2)` has to be readable.
         "symbols": " ".join(
-            f"{symbol}×{count}" if count > 1 else symbol
+            f"{symbol} ({count})" if count > 1 else symbol
             for symbol, count in sorted(lost.items())
         ),
     }

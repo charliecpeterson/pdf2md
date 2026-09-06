@@ -756,8 +756,9 @@ def test_a_symbol_the_page_prints_and_the_output_drops_is_recorded():
     record_symbol_loss(block, _Region("where χ is the van der Waals radius of an "
                                       "uncharged χ χ atom"))
 
-    # `χ×3`, not `χχχ`: the reader wants the character and how often.
-    assert block.extra["glyph_symbols_lost"] == {"count": 3, "symbols": "χ×3"}
+    # `χ (3)`, not `χχχ`: the reader wants the character and how often, and not
+    # `χ×3` either -- `×` is one of the symbols this reports.
+    assert block.extra["glyph_symbols_lost"] == {"count": 3, "symbols": "χ (3)"}
 
 
 def test_a_dash_normalized_on_the_way_out_is_not_a_dropped_symbol():
@@ -779,11 +780,11 @@ def test_dropped_symbols_are_raised_apart_from_recall():
 
     block = Block(id="#/a", type=BlockType.PARAGRAPH, text="where is the radius", page=7,
                   extra={"glyph_word_recall": {"matched": 199, "total": 200, "strict": 199},
-                         "glyph_symbols_lost": {"count": 2, "symbols": "Δχ"}})
+                         "glyph_symbols_lost": {"count": 2, "symbols": "Δ χ"}})
 
     marked, _informational = recall_review_flags([block])
 
     assert [f.block_id for f in marked] == ["#/a"]
-    assert "symbols dropped" in marked[0].reason and "Δχ" in marked[0].reason
+    assert "symbols dropped" in marked[0].reason and "Δ χ" in marked[0].reason
     assert marked[0].severity == "medium"
     assert "source page 7" in marked[0].marker_text
