@@ -32,6 +32,14 @@ def _is_substitute(c: str) -> bool:
     )
 
 
+# Below this many characters there is no prose to call illegible: a decorative
+# footer glyph and a lost paragraph both score as garbage, and only length tells
+# them apart. `reading_order` and `enrich` keep their own floors because they ask
+# different questions of a short block (is it part of the flow, is its region as
+# small as its text); this one belongs to the garbage judgement itself.
+MIN_JUDGED_CHARS = 3
+
+
 def score_legibility(text: str) -> float:
     """Fraction of letter-position characters that are real letters, in [0, 1].
     Returns 1.0 when there is no alphabetic content to judge (pure numerals or

@@ -11,6 +11,10 @@ from pdf2md.schema import Block, CoverageFlag, CoverageReport, CoverageStatus
 # pdfium refill (emit sets it; this module tallies it). Shared so the producer and
 # the counter can't drift on the string.
 ILLEGIBLE_REASON = "illegible text layer"
+# A block of a character or two that will not decode is a marginal mark, not
+# prose the reader lost. It still gets a marker and a disposition; what it does
+# not get is the severity of a paragraph gone missing.
+UNDECODABLE_FRAGMENT_REASON = "undecodable fragment"
 
 
 def build_report(doc_id: str, blocks: list[Block], flags: list[CoverageFlag]) -> CoverageReport:

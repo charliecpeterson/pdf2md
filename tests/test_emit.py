@@ -1245,3 +1245,35 @@ def test_footnotes_do_not_promise_a_reference_that_was_never_placed(tmp_path):
     assert "t This is the value" in body       # the page's own marker survives
     definitions = re.findall(r"^\[\^\w+\]:", body, re.M)
     assert not definitions, "a definition with no reference is a note attached to nothing"
+
+
+def test_a_two_character_undecodable_block_is_not_illegible_prose(tmp_path):
+    """A journal's decorative footer glyph is not a lost paragraph.
+
+    `ejic202100500` prints one at the bottom margin of five pages, two characters
+    in a font with no usable encoding. Calling that "illegible text layer" put
+    five high-severity items at the top of an otherwise clean paper's queue --
+    every high item it had."""
+    from pdf2md.schema import Block, BlockType, Document
+    from pdf2md.structure import build_structure
+
+    footer = Block(id="#/texts/66", type=BlockType.PARAGRAPH, text="��", page=1)
+    prose = Block(id="#/texts/0", type=BlockType.PARAGRAPH, text="Real prose here.", page=1)
+    structure = build_structure([prose, footer], None, title="Doc", page_count=1)
+    doc = Document(
+        doc_id="abc123def456789a", source_path="/x/Doc.pdf", source_sha256="abc123def456789a",
+        version=1, page_count=1, sections=structure.root, blocks=[prose, footer],
+        tables=[], figures=[],
+    )
+    md_files, flags = emit_document(doc, structure, tmp_path, {"title": "Doc"},
+                                    {"docling": "2.93.0", "pdf2md": "0.1.0"})
+    text = md_files[0].read_text()
+
+    assert "[pdf2md: undecodable fragment]" in text
+    assert "illegible text layer" not in text
+    assert "�" not in text            # still not emitted as prose
+    assert footer.coverage_status == CoverageStatus.FLAGGED   # still accounted for
+    flag = next(f for f in flags if f.block_id == "#/texts/66")
+    assert flag.disposition == "informational" and flag.severity == "low"
+    report = build_report(doc.doc_id, doc.blocks, flags)
+    assert report.illegible == 0 and report.accounted_for

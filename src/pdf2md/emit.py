@@ -19,8 +19,8 @@ from pdf2md.confidence import (
     RECOVER_BELOW,
     plot_data_accepted,
 )
-from pdf2md.coverage import ILLEGIBLE_REASON
-from pdf2md.legibility import is_garbage
+from pdf2md.coverage import ILLEGIBLE_REASON, UNDECODABLE_FRAGMENT_REASON
+from pdf2md.legibility import MIN_JUDGED_CHARS, is_garbage
 from pdf2md.logging import Progress
 from pdf2md.outline import heading_depth, is_label_heading
 from pdf2md.schema import (
@@ -649,6 +649,20 @@ def _render_block(
         # enrich's pdfium refill couldn't rescue this block (the glyph layer was
         # garbage too). Emit a visible marker so the coverage audit counts it as
         # illegible instead of passing symbol-font noise off as readable prose.
+        #
+        # Unless there is no prose there to lose. A journal's decorative footer
+        # glyph is a two-character block in a font with no usable encoding, and
+        # calling that "illegible text layer" at high severity put five of them
+        # at the top of one clean paper's review queue -- every high item it had.
+        # `reading_order` and `record_block_recall` both already refuse to judge a
+        # block this small; `MIN_JUDGED_CHARS` is the same floor for this one.
+        if len(txt) < MIN_JUDGED_CHARS:
+            return (
+                _marker(b, UNDECODABLE_FRAGMENT_REASON),
+                CoverageStatus.FLAGGED,
+                _flag(b, UNDECODABLE_FRAGMENT_REASON,
+                      disposition="informational", severity="low", content_impact="low"),
+            )
         return _marker(b, ILLEGIBLE_REASON), CoverageStatus.FLAGGED, _flag(b, ILLEGIBLE_REASON)
 
     if b.type == BlockType.HEADING:

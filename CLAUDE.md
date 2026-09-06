@@ -570,6 +570,17 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   verbatim beside the grid: 99.0% of value tokens in the emitted grid against 100.0% in
   the listing, in printed order. Evidence beside the table, never the emitted table —
   the same boundary the glyph grid keeps.
+- **A two-character block that will not decode is a marginal mark, not lost prose.** A
+  journal prints a decorative glyph at the bottom of every page in a font with no usable
+  encoding; `is_garbage` fires on it and `emit` called it `illegible text layer` at high
+  severity, which put five of them at the top of an otherwise clean paper's review queue --
+  every high item ejic202100500 had. Corpus-wide 17 of 79 illegible flags are blocks of two
+  characters or fewer. The block still gets a marker and stays accounted for; what changes
+  is the claim, `undecodable fragment` at informational/low, so `illegible_blocks` counts
+  paragraphs a reader actually lost. Measured on that paper: 6 high items to 1, and the one
+  left is a real recall finding. `legibility.MIN_JUDGED_CHARS` is the floor -- the third
+  check to need one, after `reading_order._MIN_FLOW_CHARS` and `enrich._FRAGMENT_CHARS`,
+  which keep their own because they ask different questions of a short block.
 - **A block of one or two characters is a shattered fragment, not content.** Docling
   breaks a display equation into per-glyph `paragraph` blocks -- one Atkins page yields
   `A`, `d`, `G`, `dx`, `=m`, `p`, `,` as fourteen of them -- and emits them after the
