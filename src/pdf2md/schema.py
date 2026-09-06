@@ -349,6 +349,7 @@ class DocumentProfile:
     #   reason / counts / missing examples); empty when not computed
     quality_scorecard: dict[str, Any] = field(default_factory=dict)
     review_counts: dict[str, int] = field(default_factory=dict)
+    equations_transcribed: int = 0   # equations carrying LaTeX, image-backed or not
 
 
 @dataclass

@@ -222,6 +222,7 @@ def build_profile(
         equation_render_support=dict(render_support),
         equations=len(eqs),
         equations_image_backed=image_backed,
+        equations_transcribed=sum(1 for block in eqs if block.text.strip()),
         code_blocks=by_type.get("code", 0),
         illegible_blocks=illegible,
         ocr_pages=ocr_pages,
@@ -587,6 +588,39 @@ def _scorecard_lines(profile: DocumentProfile) -> list[str]:
         "Evidence sources, calibration status, counts, and notes are in `profile.json`.",
         "",
         *_scanned_table_remedy(dimensions),
+        *_equation_coverage_note(profile, dimensions),
+    ]
+
+
+def _equation_coverage_note(profile: DocumentProfile, dimensions: dict) -> list[str]:
+    """Say what a low equation row means, because the two causes are opposite.
+
+    `Equation text coverage: none (0/11)` reads as "no equation was extracted",
+    and on a formula-enabled document that is never what it means: the row counts
+    only equations whose text alone is usable, so a scan whose every equation
+    carries LaTeX under an authoritative crop scores zero. Measured over the
+    corpus, every formula-enabled document transcribes 100% of its equations --
+    11 of 11, 194 of 194, 66 of 66 -- and what varies is how many the text layer
+    could confirm. The other cause is real and needs the opposite sentence:
+    with enrichment off nothing is transcribed at all."""
+    dimension = dimensions.get("equation_text_coverage") or {}
+    total = dimension.get("denominator") or 0
+    usable = dimension.get("numerator") or 0
+    if not total or usable == total:
+        return []
+    if not profile.equations_transcribed:
+        return [
+            f"None of the {total} equation(s) were transcribed, because formula "
+            "enrichment was off (`--no-formula`). Each one is cropped and its image "
+            "is the record; re-run without that flag for LaTeX.",
+            "",
+        ]
+    return [
+        f"{profile.equations_transcribed} of {total} equation(s) carry LaTeX; the row "
+        f"counts only those whose text stands on its own, and {total - usable} are "
+        "image-backed. For those the source crop is authoritative and the LaTeX rides "
+        "under it, a reading the page's own text layer could not confirm.",
+        "",
     ]
 
 

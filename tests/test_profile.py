@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 
 from pdf2md.profile import (
     _confidence,
+    _equation_coverage_note,
     _scanned_table_remedy,
     _scorecard_lines,
     build_profile,
@@ -614,3 +616,35 @@ def test_a_born_digital_document_is_not_pointed_at_another_engine():
     }
 
     assert _scanned_table_remedy(dimensions) == []
+
+
+def test_a_scanned_document_says_its_equations_were_transcribed_anyway():
+    """`Equation text coverage: none (0/11)` reads as "no equation was extracted".
+
+    On a formula-enabled document that is never what it means: every equation
+    carries LaTeX, and the row counts only the ones whose text stands without
+    the crop. A scan has none of those and all of the LaTeX."""
+    dimensions = {"equation_text_coverage": {"numerator": 0, "denominator": 11}}
+    profile = SimpleNamespace(equations_transcribed=11)
+
+    line = _equation_coverage_note(profile, dimensions)[0]
+
+    assert "11 of 11 equation(s) carry LaTeX" in line
+    assert "11 are image-backed" in line
+
+
+def test_equations_left_untranscribed_say_which_flag_did_it():
+    """The opposite cause needs the opposite sentence."""
+    dimensions = {"equation_text_coverage": {"numerator": 0, "denominator": 1848}}
+    profile = SimpleNamespace(equations_transcribed=0)
+
+    line = _equation_coverage_note(profile, dimensions)[0]
+
+    assert "None of the 1848 equation(s) were transcribed" in line
+    assert "--no-formula" in line
+
+
+def test_full_equation_coverage_says_nothing():
+    dimensions = {"equation_text_coverage": {"numerator": 4, "denominator": 4}}
+
+    assert _equation_coverage_note(SimpleNamespace(equations_transcribed=4), dimensions) == []

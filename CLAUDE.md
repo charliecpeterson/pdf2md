@@ -478,6 +478,15 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   on scanned pages with no layer to count; those go silent rather than being reported,
   because band overlap on its own was never evidence. The PDF is opened lazily, only
   once a page produces a candidate.
+- **`Equation text coverage: none (0/11)` does not mean no equation was extracted.**
+  The row counts only equations whose text stands without the crop, so a scan whose every
+  equation carries LaTeX under an authoritative image scores zero and reads like total
+  loss. Measured over the corpus, *every* formula-enabled document transcribes 100% of its
+  equations -- 11 of 11, 41 of 41, 194 of 194, 66 of 66 -- and what varies is only how many
+  the page's own text layer could confirm. The opposite cause exists and needs the opposite
+  sentence: with `--no-formula` nothing is transcribed at all (0 of 1848 on one book), and
+  the two are indistinguishable from the ratio alone, which is why `DocumentProfile` now
+  carries `equations_transcribed` beside the image-backed count.
 - **The author line is the block under the title, and so is the affiliation.** Local author
   extraction existed but needed an `Affiliations` heading to bound the region, which one
   corpus document in 37 prints, so 30 of 37 reported no authors at all while naming them in
