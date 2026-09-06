@@ -2000,3 +2000,31 @@ def test_the_heartbeat_does_not_claim_zero_minutes_left_while_still_working():
     message = _read_heartbeat(Finished(), "docling", 545)()
     assert "all 545 pages read" in message
     assert "min left" not in message
+
+
+def test_resegmentation_leaves_garbled_ocr_alone():
+    """wordninja splits any alphabetic run, which on a garbled scan manufactures
+    fragments instead of recovering words.
+
+    A 1971 paper whose OCR layer reads `dlolecukzr Biochmistry` was emitted as
+    `d lol ecu kz r  Bio ch mis try` -- worse than the garble it started from, and
+    only reached that state once the page was correctly detected as a scan. A split
+    is kept only when every piece looks like a word.
+    """
+    from pdf2md.normalize import resegment_words
+
+    assert resegment_words("dlolecukzr Biophysics and Biochmistry") == (
+        "dlolecukzr Biophysics and Biochmistry")
+    assert resegment_words("accessibilities are also given") == (
+        "accessibilities are also given")
+
+    # The case the function exists for still works.
+    assert resegment_words("wherethefirst atom is placed") == "where the first atom is placed"
+    assert resegment_words("Thedrawingprogram") == "The drawing program"
+
+
+def test_a_real_short_word_does_not_block_a_good_split():
+    """`a`, `of`, `is` are words; `kz`, `ch`, `li` are fragments."""
+    from pdf2md.normalize import resegment_words
+
+    assert resegment_words("thisisatest") == "this is a test"

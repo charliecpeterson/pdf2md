@@ -204,6 +204,13 @@ def space_after_punct(text: str) -> str:
 
 
 _ALPHA_RUN = re.compile(r"[A-Za-z]{2,}")
+# One- and two-letter words a real split may legitimately produce. Anything shorter
+# than three letters and not in here is a fragment, not a word.
+_SHORT_WORDS = frozenset(
+    "a i o "
+    "am an as at be by do go he if in is it me my no of on or so to up us we "
+    "ah ax ex ha hi id lo ma ok ox pa re ti un ye yo".split()
+)
 
 
 def resegment_words(text: str) -> str:
@@ -216,4 +223,18 @@ def resegment_words(text: str) -> str:
         import wordninja
     except ImportError:
         return text
-    return _ALPHA_RUN.sub(lambda m: " ".join(wordninja.split(m.group())), text)
+    def keep_if_words(match: "re.Match[str]") -> str:
+        """A split is kept only when every piece looks like a word.
+
+        wordninja splits *any* alphabetic run, so on a garbled scan it manufactures
+        fragments rather than recovering words: a 1971 paper whose OCR layer reads
+        `dlolecukzr Biochmistry` came out as `d lol ecu kz r  Bio ch mis try`, worse
+        than the garble it started from. `wherethefirst` still splits, because
+        `where`, `the` and `first` are all words.
+        """
+        pieces = wordninja.split(match.group())
+        if any(len(p) < 3 and p.lower() not in _SHORT_WORDS for p in pieces):
+            return match.group()
+        return " ".join(pieces)
+
+    return _ALPHA_RUN.sub(keep_if_words, text)
