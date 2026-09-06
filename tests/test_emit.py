@@ -182,7 +182,16 @@ def test_emit_writes_accepted_plot_data_and_code_as_linked_files(tmp_path):
     compile((tmp_path / figure.code_path).read_text(), figure.code_path, "exec")
 
 
-def test_emit_does_not_write_rejected_plot_artifacts(tmp_path):
+def test_a_withheld_plot_candidate_is_written_but_never_presented_as_data(tmp_path):
+    """Below the emission floor the candidate used to be computed and discarded.
+
+    On a vector figure the curve geometry is read off the drawn paths and is sound;
+    what is uncertain is the axis calibration, so the shape is right and only the
+    scale is in doubt. A reader who can read one tick off the image can calibrate it
+    by hand. It is written under `.withheld.csv`, carries its own warning, and is
+    still kept out of the markdown body and out of `code/` -- the values must not
+    read as a measurement.
+    """
     from pdf2md.schema import Block, BlockType, Digitization, Document, FigureRef
 
     block = Block("#/figures/1", BlockType.FIGURE, "", 1)
@@ -216,9 +225,17 @@ def test_emit_does_not_write_rejected_plot_artifacts(tmp_path):
 
     markdown = (tmp_path / "document.md").read_text()
     assert "data withheld" in markdown
+    # The numbers stay out of the body: the image above them is authoritative.
     assert "123" not in markdown and "456" not in markdown
-    assert figure.data_path == "" and figure.code_path == ""
-    assert not (tmp_path / "data").exists() and not (tmp_path / "code").exists()
+    assert figure.code_path == "" and not (tmp_path / "code").exists()
+
+    withheld = tmp_path / "data" / "figure_1.withheld.csv"
+    assert withheld.is_file(), "an expensive candidate should not be thrown away"
+    body = withheld.read_text()
+    assert "123" in body and "456" in body
+    assert "withheld" in body and "authoritative" in body
+    assert figure.data_path == "data/figure_1.withheld.csv"
+    assert "figure_1.withheld.csv" in markdown, "the reader is told where it went"
 
 
 def test_emit_shows_figure_outcome_and_emits_associated_caption_once(tmp_path):

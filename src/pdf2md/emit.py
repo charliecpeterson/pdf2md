@@ -624,6 +624,8 @@ def _render_block(
                        fig.caption,
                        fig.labels,
                        artifacts=_write_plot_artifacts(ctx.version_dir, fig),
+                       withheld=(fig.data_path
+                                 if fig.data_path.endswith(".withheld.csv") else ""),
                        status=fig.data_extraction_status,
                        status_note=fig.data_extraction_note,
                    ))
@@ -776,10 +778,11 @@ def _plot_data(
     labels=None,
     *,
     artifacts=None,
+    withheld: str = "",
     status: str = "not_attempted",
     status_note: str = "",
 ) -> str:
-    """Link or inline accepted chart data and explain why rejected data is absent."""
+    """Link or inline accepted chart data, and say where a withheld candidate went."""
     if dig is None:
         marker = ""
         if status and status != "not_attempted":
@@ -794,8 +797,10 @@ def _plot_data(
     if dig.verify_asset:  # round-trip: original vs reconstruction, for a human eyeball check
         head += f"\n\n![original vs reconstruction]({dig.verify_asset})"
     if not plot_data_accepted(dig):
+        where = f" The candidate is in `{withheld}`." if withheld else ""
         return (f"\n\n{head}\n\n> **[pdf2md: data withheld — confidence below "
-                f"{PLOT_DATA_MIN_CONFIDENCE:.2f}; read the values off the image above]**"
+                f"{PLOT_DATA_MIN_CONFIDENCE:.2f}; read the values off the image above."
+                f"{where}]**"
                 + _table_xref(caption, labels))
     if artifacts:
         data_path, code_path = artifacts
@@ -811,20 +816,35 @@ def _write_plot_artifacts(version_dir: Path, figure: FigureRef) -> tuple[str, st
     dig = figure.digitization
     figure.data_path = ""
     figure.code_path = ""
-    if not plot_data_accepted(dig):
+    if dig is None or not dig.series:
         return None
 
     stem = Path(figure.asset_path).stem if figure.asset_path else re.sub(
         r"[^a-zA-Z0-9]+", "_", figure.block_id
     ).strip("_")
-    data_dir = version_dir / "data"
-    code_dir = version_dir / "code"
-    data_dir.mkdir(exist_ok=True)
-    code_dir.mkdir(exist_ok=True)
+    (version_dir / "data").mkdir(exist_ok=True)
     figure.data_path = f"data/{stem}.csv"
     figure.code_path = f"code/{stem}.py"
 
     csv_text = _plot_data_csv(dig).removeprefix("```csv\n").removesuffix("\n```")
+    if not plot_data_accepted(dig):
+        # Below the emission floor the candidate used to be computed and thrown
+        # away, surviving only as a sentence in the markdown. On a vector figure
+        # the curve geometry is read off the drawn paths and is sound; what is
+        # uncertain is the axis calibration, so the shape is right and only the
+        # scale is in doubt. A reader who can read one tick off the image can
+        # calibrate it by hand, which is the difference between usable data and
+        # none. It is written under a different name and never linked as data.
+        figure.data_path = f"data/{stem}.withheld.csv"
+        (version_dir / figure.data_path).write_text(
+            f"# withheld: confidence {dig.confidence:.2f} is below the "
+            f"{PLOT_DATA_MIN_CONFIDENCE:.2f} emission floor. {dig.note}\n"
+            f"# The image beside this file is authoritative; these values are a "
+            f"candidate reading, not a measurement.\n" + csv_text + "\n")
+        figure.code_path = ""
+        return None
+
+    (version_dir / "code").mkdir(exist_ok=True)
     script = _plot_script(dig, figure.caption, figure.labels)
     script_text = script.removeprefix("```python\n").removesuffix("\n```")
     (version_dir / figure.data_path).write_text(csv_text + "\n")
