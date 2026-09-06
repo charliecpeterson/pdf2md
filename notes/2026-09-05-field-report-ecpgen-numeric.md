@@ -67,7 +67,7 @@ Every table ships an engine grid (`tables_N.md`) and a glyph grid
 (`tables_N.glyph.md`). Neither is authoritative. Measured across the whole SI,
 the engine grid holds **566 distinct numbers the glyph grid lacks**, and the
 glyph grid holds **268 the engine grid lacks**. They fail differently: the
-engine grid merges the page footer into 165 of 8,640 data cells, producing
+engine grid mixes text into **318 of its 21,000 data cells (1.51%)**, producing
 values like `Q. Lu and K.A. 5.5680440E+00`; the glyph grid splits numbers across
 column boundaries, turning `2.1999000E-01 1.6203900E-06` into
 `2.1999000E-01 1` and `.6203900E-06`.
@@ -78,8 +78,18 @@ number. A contaminated cell at least fails loudly.
 I argued earlier today that the glyph layer was cleaner and should be preferred.
 That was wrong, and rejecting it was right: I had measured one failure mode
 (cells mixing text and numbers, where glyph scores 0.00% against the engine's
-1.91%) and generalised it into a direction the rest of the evidence does not
+1.51%) and generalised it into a direction the rest of the evidence does not
 support.
+
+**Both figures in this section were corrected on 2026-09-06 by audit.** The
+first version read "1.91%, 165 of 8,640 cells". That denominator silently
+covered only the pipe-format tables: 54 of the 118 engine grids ship as GFM
+pipe tables and the rest as HTML, and a parser handling one format drops the
+other half of the corpus -- the same "assert the selector matched" failure this
+report criticises elsewhere. The full engine grid is 21,000 cells with 318
+mixed. The label was also too narrow: of those 318, **240 are footer merges and
+78 are basis-set labels** such as `Ho f cc-pVDZ-DK3 :` bleeding into a number
+row, so "merges the page footer into" accounted for 75% of what it counted.
 
 **The useful artifact is not a winner, it is the diff.** The set of cells where
 the two grids disagree is small, is computable without judgment, and is exactly
@@ -116,7 +126,7 @@ a strong author candidate — with `Department of Applied Analysis` and
 `University of Waterloo` on the next two lines, about as clear an affiliation
 marker as there is.
 
-Related: **five of eight documents report `Authors: no local candidate
+Related: **seven of ten documents report `Authors: no local candidate
 selected`**, including `054111`, whose author line is in the emitted markdown
 twice (`Qing Lu ; Kirk A. Peterson iD`, and `Qing Lu and Kirk A. Peterson`).
 `cjk-sample` found its five authors locally at high confidence, so the path
