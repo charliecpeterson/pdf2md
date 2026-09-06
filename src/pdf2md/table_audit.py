@@ -449,6 +449,12 @@ def _band_text(chars: list[Char]) -> str:
     return "".join(out)
 
 
+def _bare_value(cell: str) -> str:
+    """A cell's value with the wrapper and unit a publisher put around it removed."""
+    text = _VALUE_WRAPPER.sub(r"\1", cell.strip()).strip()
+    return _TRAILING_UNIT.sub("", text).strip()
+
+
 def _numeric_columns(rows: list[list[str]]) -> set[int]:
     width = max((len(row) for row in rows), default=0)
     numeric: set[int] = set()
@@ -459,7 +465,12 @@ def _numeric_columns(rows: list[list[str]]) -> set[int]:
         ]
         if len(filled) < _MIN_NUMERIC_CELLS:
             continue
-        lone = sum(1 for cell in filled if _NUMBER.fullmatch(cell))
+        # A published value often carries its unit in the cell: a column of
+        # `1.70 A`, `1.55 A` is a column of numbers, and requiring a lone number
+        # left it unclassified -- so neither cell check ever looked at it. That is
+        # how `l-70 A` (a 1 read as l, a decimal point read as a hyphen) reached a
+        # reader unflagged in a 1971 table of van der Waals radii.
+        lone = sum(1 for cell in filled if _NUMBER.fullmatch(_bare_value(cell)))
         if lone >= _NUMERIC_COLUMN_SHARE * len(filled):
             numeric.add(col)
     return numeric

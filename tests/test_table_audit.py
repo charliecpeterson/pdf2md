@@ -570,3 +570,33 @@ def test_spectroscopic_term_symbols_are_not_corrupted_numbers():
                ["d", "0.377"], ["e", "0.208"], ["f", "0.19"]]
     assert [f for f in grid_findings(["k", "v"], decimal)
             if f.kind == "stray_glyphs_in_numeric_column"]
+
+
+def test_a_column_of_values_with_units_is_still_a_numeric_column():
+    """Reader feedback on a 1971 table of van der Waals radii.
+
+    `l-70 A` is 1.70 Å with the 1 read as an l and the decimal point as a hyphen,
+    and it reached the reader unflagged: every cell carries a unit, so the column
+    never qualified as numeric and neither cell check looked at it.
+    """
+    radii = [["Main-chain a-carbon atom", "l-70 A"],
+             ["Main-chain carbonyl oxygen", "l-52 A"],
+             ["Main-chain amide NH group", "1.55 A"],
+             ["Main-chain carbonyl carbon", "1.80 A"],
+             ["All side-chain atoms", "1.80 A"],
+             ["Iron atom in the heme", "0.64 A"]]
+
+    findings = {f.kind: f for f in grid_findings(["Atom", "Radius"], radii)}
+
+    assert "stray_glyphs_in_numeric_column" in findings
+    detail = findings["stray_glyphs_in_numeric_column"].detail
+    assert "l-70 A" in detail and "l-52 A" in detail
+
+
+def test_a_column_of_prose_with_a_stray_number_is_still_not_numeric():
+    """Seeing through units must not turn a text column into a numeric one."""
+    prose = [["Method", "as described in ref 4"], ["Method", "see Table 2"],
+             ["Method", "this work"], ["Method", "estimated"],
+             ["Method", "from 1971 data"], ["Method", "unchanged"]]
+
+    assert not grid_findings(["k", "v"], prose)
