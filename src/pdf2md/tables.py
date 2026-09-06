@@ -126,7 +126,50 @@ def panel_tables(table: TableData) -> str | None:
         title = str(panel["title"]).strip()
         heading = f"*panel {index}{f' — {title}' if title else ''}*"
         out.append(f"{heading}\n\n{build_gfm(cells, len(body) + 1, width)}")
-    return "\n\n".join(out)
+    unplaced = _unplaced_panel_rows(usable)
+    return "\n\n".join(out + unplaced)
+
+
+def _unplaced_panel_rows(panels: list[dict[str, object]]) -> list[str]:
+    """The rows the split declined to assign, published rather than dropped.
+
+    `split_repeated_panels` refuses a row whose panel it cannot determine -- a
+    trailing blank where the neighbouring panel has a value, a row key shifted
+    across the boundary -- which is the right call, and the emitter then rendered
+    only `panel["rows"]` and lost them. On one 118-element table of
+    polarizabilities that was 22 printed numbers gone from the readable grid with
+    no marker, among them `53 | I | 32.90(10) | 4.2049(18)`, while the audit
+    caught it only because whole-document conservation noticed the tokens
+    vanish. 4 of 18 panel tables corpus-wide refuse at least one row.
+
+    They are not folded back into a panel: the split declined for a reason, and
+    guessing here would put a value under the wrong element."""
+    rows = [
+        (index, refusal)
+        for index, panel in enumerate(panels, start=1)
+        for refusal in panel["refused_rows"]
+    ]
+    if not rows:
+        return []
+    rows.sort(key=lambda item: (item[1]["source_row"], item[0]))
+    width = max(len(refusal["cells"]) for _, refusal in rows)
+    header = ["panel", *[f"column {c + 1}" for c in range(width)], "why"]
+    body = [
+        [str(index), *[str(c).strip() for c in refusal["cells"]],
+         *[""] * (width - len(refusal["cells"])), str(refusal["reason"])]
+        for index, refusal in rows
+    ]
+    cells = [
+        GridCell(text, r, c, 1, 1, False)
+        for r, row in enumerate([header] + body)
+        for c, text in enumerate(row)
+    ]
+    return [
+        "> **[pdf2md: the panel split could not place "
+        f"{len(rows)} printed row(s); they are listed below, unassigned, and the "
+        "merged grid in the table artifact holds them in their printed places]**"
+        "\n\n" + build_gfm(cells, len(body) + 1, len(header))
+    ]
 
 
 def table_has_content(table: TableData) -> bool:

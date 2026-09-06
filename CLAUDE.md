@@ -542,6 +542,19 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   so most breaks are read off the page; `_TOKEN_GAP_SHARE` covers the documents that
   position their word spaces instead, and 1.5 sits in the valley of a distribution massed
   below 0.5 and again at 2.0 character widths.
+- **The panel split refuses a row it cannot place, and the emitter dropped it.**
+  `split_repeated_panels` records such a row in `refused_rows` rather than guessing which
+  panel it belongs to -- a trailing blank where the neighbouring panel has a value, a row
+  key shifted across the boundary -- and `panel_tables` rendered only `panel["rows"]`. On
+  ct4c00784's 118-element polarizability table that was 22 printed numbers gone from the
+  readable grid with no marker (`53 | I | 32.90(10) | 4.2049(18)`, `59 | Pr | 216(20)`,
+  `50.0(20) | 4.464(26)`), while `document.md` presented the panels as the table. Nothing
+  else caught it: the block was accounted for, the grid audit was silent, and only
+  whole-document conservation noticed the tokens vanish -- which is what a high-severity
+  `unexplained loss: 5 word(s), 22 number(s)` was reporting. 4 of 18 panel tables corpus-wide
+  refuse at least one row. They are now listed under the panels with the refusal reason,
+  never folded back into a panel: the split declined for a reason, and guessing would put a
+  value under the wrong element. Measured after: 646 source numbers, 0 lost.
 - **A running footer swallowed into a table looks exactly like the table's own title,
   and only the other pages tell them apart.** A spanning cell renders in GFM as the same
   string in every column, so `data/tables/*.csv` writes it as a full row of repeats:

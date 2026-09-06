@@ -286,3 +286,33 @@ def test_a_word_space_the_pdf_only_positions_still_separates():
 
     assert refusal is None and grid is not None
     assert grid.rows == [["alpha", "beta"]]
+
+
+def test_a_row_the_panel_split_cannot_place_is_published_not_dropped():
+    """The split refuses a row it cannot assign, and the emitter dropped it.
+
+    On a 118-element table of polarizabilities that was 22 printed numbers gone
+    from the readable grid with no marker, `53 | I | 32.90(10) | 4.2049(18)`
+    among them, and only whole-document conservation noticed the tokens vanish.
+    """
+    from pdf2md.schema import BBox, TableData
+    from pdf2md.tables import panel_tables
+
+    gfm = "\n".join([
+        "| Z | Sym | a | R | Z | Sym | a | R |",
+        "|---|---|---|---|---|---|---|---|",
+        "| 1 | H | 4.5 | 3.16 | 53 | I | 32.90 | 4.20 |",
+        "| 2 | He | 1.38 | 2.67 | 54 | Xe | 27.30 | 4.10 |",
+        "| 3 | Li | 164 | 5.28 | 55 | Cs | 401 | 4.90 |",
+        "| 4 | Be | 38 | 4.20 | 56 | Ba | 272 |  |",
+    ])
+
+    out = panel_tables(TableData("#/t", 2, BBox(0, 10, 10, 0), gfm=gfm))
+
+    assert out is not None
+    assert "could not place 1 printed row(s)" in out
+    # The refused row's values are in the output, and not inside a panel grid.
+    unplaced = out.split("could not place")[1]
+    assert "272" in unplaced and "Ba" in unplaced
+    assert "ambiguous_trailing_blank" in unplaced
+    assert "272" not in out.split("could not place")[0]
