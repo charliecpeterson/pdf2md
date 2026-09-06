@@ -90,7 +90,7 @@ from pdf2md.reading_order import reading_order_flags
 from pdf2md.structure import build_structure
 from pdf2md.symbol_index import write_symbol_index
 from pdf2md.table_artifacts import annotate_table_artifacts
-from pdf2md.table_audit import raster_row_findings
+from pdf2md.table_audit import raster_row_findings, running_text_findings
 from pdf2md.table_rebuild import glyph_unbacked_tables
 from pdf2md.tables import gfm_rows
 from pdf2md.visual import (
@@ -543,6 +543,7 @@ def convert_file(
     _render_crops(pdf_path, result.figures, crop_blocks, assets, config)
     _attach_table_crops(result.blocks, result.tables, authoritative_tables)
     _audit_scanned_tables(result.tables, vdir)
+    _audit_running_text_rows(result.tables)
 
     ocr_pages = {b.page for b in result.blocks if b.extra.get("ocr")}
     _warn_about_scan_overlays(pdf_path, ocr_pages, config)
@@ -1113,6 +1114,33 @@ def _audit_scanned_tables(tables, version_dir: Path) -> None:
             table.grid_audit["findings"] = [
                 *table.grid_audit.get("findings", []), *found["findings"],
             ]
+
+
+def _audit_running_text_rows(tables) -> None:
+    """Flag the tables whose rows are the page's running header or footer.
+
+    Document scope, so it cannot live in `audit_table`: telling a swallowed
+    running line from a table's own spanning title takes the other pages."""
+    rows = {
+        table.block_id: gfm_rows(table.gfm)
+        for table in tables if (table.gfm or "").strip()
+    }
+    found = running_text_findings(
+        [(table.block_id, table.page, rows[table.block_id])
+         for table in tables if table.block_id in rows]
+    )
+    for table in tables:
+        finding = found.get(table.block_id)
+        if finding is None:
+            continue
+        table.grid_audit = {
+            **table.grid_audit,
+            "findings": [
+                *table.grid_audit.get("findings", []),
+                {"kind": finding.kind, "severity": finding.severity,
+                 "detail": finding.detail, "rows": list(finding.rows)},
+            ],
+        }
 
 
 def _attach_table_crops(blocks, tables, authoritative: set) -> None:

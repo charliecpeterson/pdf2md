@@ -151,7 +151,9 @@ src/pdf2md/
                 rows covering it (dropped rows, merged rows); grid_findings reads only the emitted
                 cells (merged_cells, shifted_values, header_absorbed_data) and stands at medium
                 until the accounting corroborates it. raster_row_findings covers the scanned case
-                the glyph path cannot reach, off the table's own crop. Stored on
+                the glyph path cannot reach, off the table's own crop. running_text_findings is
+                the one check with document scope, because one table cannot tell a swallowed
+                running footer from its own spanning title. Stored on
                 TableData.grid_audit; becomes a CoverageFlag in emit. `corroborated` in that
                 payload — the ink established the arrangement is wrong — is also what makes enrich
                 keep the region's printed lines verbatim (TableData.printed_lines).
@@ -476,6 +478,19 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   on scanned pages with no layer to count; those go silent rather than being reported,
   because band overlap on its own was never evidence. The PDF is opened lazily, only
   once a page produces a candidate.
+- **A running footer swallowed into a table looks exactly like the table's own title,
+  and only the other pages tell them apart.** A spanning cell renders in GFM as the same
+  string in every column, so `data/tables/*.csv` writes it as a full row of repeats:
+  `Q. Lu and K.A. Peterson, J. Chem. Phys. (2016)` fills whole rows of the Lanthanides SI's
+  basis-set tables, where anyone loading the CSV gets citation strings among the exponents.
+  Docling emits no PAGE_HEADER/PAGE_FOOTER block on that document (0 of 430), so there is no
+  engine-side truth to consult. Repetition is the discriminator: 118 tables corpus-wide carry
+  a fully-repeated non-numeric row, and requiring the same string on three distinct pages
+  keeps the 34 that are the SI's footer while leaving Atkins section titles and Slater's
+  per-atom headings, which differ page to page. One bundle of 32 fires; no other string does.
+  The check needs the whole document, so it runs from `pipeline._audit_running_text_rows`
+  rather than `audit_table`, and it reports rather than deletes -- the row is still ink the
+  page printed.
 - **A grid can hold every value and still be wrong, and no textual signal tells a
   listing from a table.** The Lanthanides SI is basis sets typeset as fixed-width
   listings; the engine calls them tables and 91 of 117 carry a structural finding

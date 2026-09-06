@@ -5,7 +5,12 @@ synthetic char layer and cell boxes pin it without a PDF or an engine."""
 from __future__ import annotations
 
 from pdf2md.schema import BBox, RawCell, RawTable
-from pdf2md.table_audit import audit_table, grid_findings, row_accounting
+from pdf2md.table_audit import (
+    audit_table,
+    grid_findings,
+    row_accounting,
+    running_text_findings,
+)
 
 
 def word(text: str, x: float, baseline: float, w: float = 2.0, h: float = 7.0):
@@ -600,3 +605,53 @@ def test_a_column_of_prose_with_a_stray_number_is_still_not_numeric():
              ["Method", "from 1971 data"], ["Method", "unchanged"]]
 
     assert not grid_findings(["k", "v"], prose)
+
+
+FOOTER = "Q. Lu and K.A. Peterson, J. Chem. Phys. (2016)"
+
+
+def _basis_table(block_id: str, page: int) -> tuple[str, int, list[list[str]]]:
+    return (block_id, page, [
+        ["1.0000000E+00", "2.4812000E+03", "3.1259130E+00"],
+        [FOOTER, FOOTER, FOOTER],
+        ["4.1771860E+02", "1.4410950E+02", "6.1448460E+01"],
+    ])
+
+
+def test_a_line_repeated_across_pages_is_the_running_footer_not_a_row():
+    """The Lanthanides SI's citation footer fills whole rows of 43 basis-set
+    tables and reaches their CSVs, where it sits among the exponents."""
+    tables = [_basis_table(f"#/tables/{i}", page)
+              for i, page in enumerate((29, 272, 303, 314))]
+
+    found = running_text_findings(tables)
+
+    assert set(found) == {f"#/tables/{i}" for i in range(4)}
+    finding = found["#/tables/0"]
+    assert finding.kind == "running_text_row" and finding.severity == "high"
+    assert finding.rows == (1,)
+    assert FOOTER in finding.detail and "on 4 pages" in finding.detail
+    assert "row 1 of the CSV" in finding.detail
+
+
+def test_a_spanning_title_row_is_not_a_running_line():
+    """A table's own title renders as the same string in every GFM column too.
+    Atkins section titles and Slater's per-atom headings are 88 of the 118 rows
+    this shape describes corpus-wide; only repetition across pages separates
+    them."""
+    tables = [
+        ("#/tables/0", 4, [["The thermodynamic description of mixtures"] * 3,
+                           ["1.0", "2.0", "3.0"]]),
+        ("#/tables/1", 5, [["The structures of many-electron atoms"] * 3,
+                           ["1.0", "2.0", "3.0"]]),
+    ]
+
+    assert running_text_findings(tables) == {}
+
+
+def test_a_repeated_row_of_numbers_is_data():
+    """A basis set legitimately repeats 1.0000000E+00 down a column."""
+    tables = [(f"#/tables/{i}", page, [["1.0000000E+00"] * 3])
+              for i, page in enumerate((1, 2, 3, 4))]
+
+    assert running_text_findings(tables) == {}

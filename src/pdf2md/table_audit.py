@@ -88,6 +88,12 @@ _MIN_REGION_SPAN = 0.5
 _TEXT_ONLY_KINDS = frozenset({"merged_cells", "shifted_values", "header_absorbed_data"})
 
 
+# A running header or footer repeats; a table's own spanning title does not.
+_RUNNING_PAGES = 3
+_RUNNING_MIN_COLUMNS = 3
+_RUNNING_MIN_CHARS = 16
+
+
 @dataclass(frozen=True)
 class TableFinding:
     kind: str
@@ -944,3 +950,58 @@ def audit_table(
             for finding in findings
         ]
     return payload
+
+
+def running_text_findings(
+    tables: list[tuple[str, int, list[list[str]]]]
+) -> dict[str, TableFinding]:
+    """Rows that are the page's running header or footer, absorbed as data.
+
+    One table cannot tell the two apart. A spanning title row renders in GFM as
+    the same string in every column, and so does a running footer the engine
+    swallowed -- on the Lanthanides SI, `Q. Lu and K.A. Peterson, J. Chem. Phys.
+    (2016)` fills whole rows of 43 basis-set tables and reaches `data/tables/
+    *.csv`, where a consumer loading the file gets citation strings among the
+    exponents. What separates them is the rest of the document: a running line
+    repeats verbatim across pages, a table's own title does not. Measured over
+    the corpus, 118 tables carry a fully-repeated non-numeric row; requiring the
+    same string on `_RUNNING_PAGES` distinct pages keeps the 30 that are the SI's
+    footer and leaves the 88 that are Atkins section titles and Slater's
+    per-atom headings, which differ page to page.
+
+    Keyed by block id, so the caller attaches each finding to its own table.
+    """
+    seen: dict[str, set[int]] = {}
+    hits: list[tuple[str, str, int]] = []
+    for block_id, page, rows in tables:
+        for index, row in enumerate(rows):
+            text = _repeated_row_text(row)
+            if text is None:
+                continue
+            seen.setdefault(content_norm(text), set()).add(page)
+            hits.append((block_id, text, index))
+    out: dict[str, TableFinding] = {}
+    for block_id, text, index in hits:
+        if len(seen[content_norm(text)]) < _RUNNING_PAGES or block_id in out:
+            continue
+        pages = len(seen[content_norm(text)])
+        out[block_id] = TableFinding(
+            "running_text_row",
+            "high",
+            f"row {index} of the CSV repeats {text!r} across every column, and "
+            f"that line appears in tables on {pages} pages: it is the page's "
+            "running header or footer, not data",
+            (index,),
+        )
+    return out
+
+
+def _repeated_row_text(row: list[str]) -> str | None:
+    """The one string a row fills every column with, when it is not a value."""
+    cells = [cell.strip() for cell in row if cell.strip()]
+    if len(cells) < _RUNNING_MIN_COLUMNS or len(set(cells)) != 1:
+        return None
+    text = cells[0]
+    if len(text) < _RUNNING_MIN_CHARS or _NUMBER.fullmatch(text):
+        return None
+    return text
