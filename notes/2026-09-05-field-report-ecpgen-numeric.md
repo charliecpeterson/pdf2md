@@ -7,9 +7,8 @@ putting them into a fit. On 2026-09-05 that path produced a defect that reached
 a shipped artifact, and the same day it repaired one. Both are worth writing
 down.
 
-Run at `068a3fb`, docling default, RTX 4090. Eight documents converted from a
-clean checkout; a 545-page book and a 50-page scan were still running when this
-was written.
+Run at `068a3fb`, docling default, RTX 4090. Ten documents converted from a
+clean checkout.
 
 | document | pp | layout | OCR dep. | tables verified | severity | local authors |
 |---|---|---|---|---|---|---|
@@ -21,10 +20,18 @@ was written.
 | 1972 compilation | 99 | fair | **full (99/99)** | **none (0/82)** | high | none found |
 | GRASP2018 manual | 327 | good | none | partial (46/54) | high | none found |
 | Lanthanides-SI | 346 | fair | none | partial (26/118) | high | found |
+| slater-50page | 50 | good | **full (50/50)** | none (0/4) | **medium** | none found |
+| Intro to Relativistic QC | 545 | excellent | partial (1/545) | partial (30/47) | high | none found |
 
 Speed is not a constraint. 346 pages parsed in 2m22s, 327 in about two minutes,
 a 14-page paper in 25 seconds. Whatever this report asks for, it is not asking
 for less work per page.
+
+The book path works: the 545-page text split into 45 numbered files with an
+`index.md`, at `excellent` layout. Non-Latin script is not a weak spot either —
+`cjk-sample` scored `excellent` layout, `medium` severity (one of only two
+documents here not pinned at `high`), and found its five authors locally at high
+confidence.
 
 ## The case that matters
 
@@ -119,7 +126,34 @@ Worth separating: a wrong title at **high** confidence is worse than no title.
 `front_heading` and `repeated_heading` are not independent evidence — a running
 head *is* a front heading — so two correlated sources should not compound.
 
-### 3. The remedy is known and not surfaced
+### 3. Equations fall off a cliff, and OCR takes them to zero
+
+Not a numeric-table problem, but ECPgen reads formulas out of prior art —
+`notes/35-so-conventions-and-formulas.md` exists because a missing factor of
+`(2l+1)/2` shipped in a card — and this is where the corpus is weakest.
+
+| document | OCR dependence | equation text coverage |
+|---|---|---|
+| 054111 | none | full (4/4) |
+| dolg-ecp | none | 4/9 |
+| GRASP2018 manual | none | 18/41 |
+| Intro to Relativistic QC | 1/545 | 482/1849 (26%) |
+| PhysRev.37.1025 (1931) | none | **1/18 (6%)** |
+| 1972 compilation | **full** | **0/11** |
+| slater-50page | **full** | **0/43** |
+
+Both fully-OCR'd documents return **zero** equations. Born-digital ranges from
+100% down to 6%, and the 6% is the 1931 Condon & Shortley paper — old
+typesetting, not a scan. For a project whose prior art includes Slater 1931 and
+Condon & Shortley, that means formulas are read by eye off the crops, which is
+the one thing the tool is otherwise good at avoiding.
+
+I have not diagnosed this, only measured it. It may be the correct
+conservative behaviour on an unreliable text layer, in which case the honest
+output is the same as for withheld plot data: say the equation was detected,
+say why no LaTeX was produced, and point at the crop.
+
+### 4. The remedy is known and not surfaced
 
 For the 1972 compilation pdf2md gets the diagnosis exactly right, in
 `review.md`: *"the embedded text layer is unfit to read... Re-run with
@@ -151,8 +185,8 @@ extracted.
 
 ## Limits of this assessment
 
-Seven of the eight documents are born-digital; only the 1972 compilation
-exercised OCR at all, so most of that path is untested here. Everything ran on
+Eight of the ten are born-digital; only the 1972 compilation and
+`slater-50page` exercised OCR fully, so most of that path is thinly covered. Everything ran on
 docling — I did not re-derive the MinerU comparison because
 `accuracy-improvement-notes.md` already settles it. One corpus, one domain, and
 the numeric claims all come from a single document family. And I got one call
