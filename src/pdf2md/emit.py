@@ -473,9 +473,17 @@ def _render_blocks(blocks: list[Block], ctx: _Ctx, *, title: str = "", base_dept
             if ctx.emission_index is not None:
                 ctx.emission_index[b.id].update(body_start=start, body_end=end)
     if footnotes:
+        # Not `[^fn1]:` reference syntax. Nothing ever emitted the matching `[^fn1]`
+        # in the body, so every definition rendered as a dangling note attached to
+        # nothing -- four of them in one 1971 paper, including the qualification
+        # that a radius is a crystal radius from Pauling. Placing the reference is
+        # not reliably possible: the printed marker is usually a dagger the scan
+        # read as a `t`. So the page's own marker is kept at the head of the note,
+        # which is what a reader matches against, and no link is promised.
         append_part("---")
-        for index, (block, footnote) in enumerate(footnotes, start=1):
-            start, end = append_part(f"[^fn{index}]: {footnote}")
+        append_part("**Footnotes**")
+        for block, footnote in footnotes:
+            start, end = append_part(f"- {footnote}")
             if ctx.emission_index is not None:
                 ctx.emission_index[block.id].update(body_start=start, body_end=end)
     return "\n\n".join(parts)

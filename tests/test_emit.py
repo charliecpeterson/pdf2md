@@ -754,7 +754,7 @@ def test_emit_structural_facts(tmp_path, sample_document):
     assert "![Figure 1](assets/pictures_0_p2.png)" in text
     assert "| a | b |" in text                  # table, caption stripped
     assert "$$" in text and "E = mc^2" in text  # equation as LaTeX
-    assert "[^fn1]: a footnote" in text         # footnote collected
+    assert "- a footnote" in text               # footnote collected, no dangling ref
     assert "[pdf2md:" in text                   # the empty block emits a marker
 
 
@@ -1193,3 +1193,38 @@ def test_a_cropped_spanning_table_publishes_its_html(tmp_path):
 
     body = "\n".join(p.read_text() for p in tmp_path.glob("*.md"))
     assert "<table>" in body and "Side-chain" in body
+
+
+def test_footnotes_do_not_promise_a_reference_that_was_never_placed(tmp_path):
+    """Four definitions in one 1971 paper rendered as notes attached to nothing.
+
+    `[^fn1]:` is reference syntax, and nothing ever emitted the matching `[^fn1]`
+    in the body, so a reader saw a dangling list at the end of the document --
+    including the qualification that a radius is a crystal radius from Pauling.
+    Placing the reference is not reliably possible: the printed marker is usually a
+    dagger the scan read as a `t`. The page's own marker is kept at the head of the
+    note instead, which is what a reader matches against.
+    """
+    import re
+
+    from pdf2md.schema import BBox, Block, BlockType, Document
+    from pdf2md.structure import build_structure
+
+    blocks = [
+        Block("#/p", BlockType.PARAGRAPH, "Radii are listed in Table 1.", 2,
+              BBox(0, 100, 200, 80)),
+        Block("#/fn", BlockType.FOOTNOTE,
+              "t This is the value for the crystal radii of Fe3+ (Pauling, 1960).", 2,
+              BBox(0, 40, 200, 20)),
+    ]
+    structure = build_structure(blocks, None, title="Doc", page_count=2)
+    doc = Document("a" * 64, "/source.pdf", "a" * 64, 2, 1, structure.root, blocks=blocks)
+
+    emit_document(doc, structure, tmp_path, {"title": "Doc"}, {"test": "1"},
+                  emission_index={})
+    body = "\n".join(p.read_text() for p in tmp_path.glob("*.md"))
+
+    assert "crystal radii" in body
+    assert "t This is the value" in body       # the page's own marker survives
+    definitions = re.findall(r"^\[\^\w+\]:", body, re.M)
+    assert not definitions, "a definition with no reference is a note attached to nothing"
