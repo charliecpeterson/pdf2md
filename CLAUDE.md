@@ -495,7 +495,12 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   10 documents gain a correct author list, none lose or change one. Two books were the only
   false positives, both `VOLUME I` -- a book's front matter is what sits under its title, so
   those words are in the same stoplist as the function words. Slater's real author is one
-  block further down and is not claimed: the run starts where it starts.
+  block further down and is not claimed: the run starts where it starts. **`_author_names`
+  is not a name classifier and must not be used as one** -- it works because of where the
+  line sits, not because the text is provably a name. Run over the 157 title candidates in
+  the corpus it accepts 36, among them `Attention Is All You Need`, `SELF-CONSISTENT FIELD
+  METHODS` and `II. METHODS`, so using it to veto an author-shaped title (`Oleg Borodin*`
+  outranks its paper's real title) would take most correct titles with it.
 - **Repetition is what makes a journal running head *not* the title.** `repeated_heading`
   counted it as support, so `CHARLOTTE FROESE FISCHER` -- the author of a 1972 compilation,
   printed above the text on 30 pages -- was selected as the title at high quality over the
