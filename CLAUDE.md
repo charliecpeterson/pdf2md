@@ -374,6 +374,19 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   can't help there either: a cell holding eleven rows of content overruns its box, so the
   wrapped-cell guard excludes it. So the cell's own contents are the only evidence left,
   and four or more whitespace-separated values in one cell stands on its own.
+- **Word recall cannot see a dropped symbol, and its threshold is not the problem.**
+  A 200-word paragraph that loses one `χ` scores 0.995 and passes the floor, which is
+  correct -- one word in two hundred is not a lost paragraph -- so the signal has to be its
+  own. Over the 28-paper corpus at default settings, 40 blocks across 4 documents drop 87
+  Greek letters and math operators from the emitted prose (σ×15, θ×15, °×13, ρ×11, ∆×8,
+  α×7, ∞×6, χ×5) and only 4 of those blocks were low-recall as well. It changes meaning:
+  `where χ is the van der Waals radius` emits as `where is the van der Waals radius`, and
+  one block emits `Dc MX` for the printed `Δχ MX`, which reads as ordinary text and is
+  worse. The check can be exact because the character class is narrow -- dashes are
+  deliberately out, since `−` emitting as `-` is normalization and a class holding both
+  loss and normalization needs a threshold. It is engine-side (the symbols are already
+  gone from `base-state.json`), so `record_symbol_loss` reports and never repairs: that a
+  `χ` is missing is certain, where to put it back is not.
 - **Recall is not claimed where a neighbour actually accounts for the missing words.**
   The metric compares a block's text against the glyphs in its box, which assumes the box
   is that block's alone. Across 951 prose blocks the median overlap with a neighbour is

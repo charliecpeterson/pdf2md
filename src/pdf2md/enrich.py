@@ -605,6 +605,50 @@ def record_block_recall(block: Block, pc, emitted: str | None = None) -> None:
     block.extra["glyph_word_recall"] = record
 
 
+# Greek letters and mathematical operators. Dashes and quotes are deliberately
+# out: `−` emitting as `-` is normalization, and a class where loss and
+# normalization both live needs a threshold, which is what this check avoids.
+_SYMBOLS = re.compile(r"[\u0370-\u03ff\u1f00-\u1fff]|[\u2200-\u22ff]|[°±×÷µ√]")
+_SYMBOL_DASHES = frozenset("−‑–—-")
+
+
+def record_symbol_loss(block: Block, pc, emitted: str | None = None) -> None:
+    """Symbols the page prints inside this block that the emitted text lacks.
+
+    Word recall is the check that ought to see this and is structurally blind to
+    it: a 200-word paragraph that loses one `χ` scores 0.995 and passes, so of 40
+    blocks dropping a symbol across a 28-paper corpus only 4 crossed the floor.
+    The loss changes meaning -- `where χ is the van der Waals radius` emits as
+    `where is the van der Waals radius` -- and one block emits `Dc MX` for the
+    printed `Δχ MX`, which reads as ordinary text and is worse.
+
+    Exact rather than calibrated, which is why the character class is narrow: a
+    Greek letter or a math operator in the region and not in the output is never
+    the emitter normalizing, the way a dash or a quote mark is. Engine-side --
+    the symbols are already gone from `base-state.json` -- so this reports and
+    never repairs: that a `χ` is missing is certain, where to put it back is not.
+    """
+    content = block.text if emitted is None else emitted
+    source = Counter(
+        c for c in _SYMBOLS.findall(pc.text_region(block.bbox)) if c not in _SYMBOL_DASHES
+    )
+    if not source:
+        return
+    lost = source - Counter(
+        c for c in _SYMBOLS.findall(content) if c not in _SYMBOL_DASHES
+    )
+    if not lost:
+        return
+    block.extra["glyph_symbols_lost"] = {
+        "count": sum(lost.values()),
+        # `χ×4` rather than `χχχχ`: the reader wants the character and how often.
+        "symbols": " ".join(
+            f"{symbol}×{count}" if count > 1 else symbol
+            for symbol, count in sorted(lost.items())
+        ),
+    }
+
+
 def record_recall(blocks: list[Block], tables: list[TableData], glyphs) -> None:
     """Record per-block word recall, after every repair pass has run.
 
@@ -630,6 +674,7 @@ def record_recall(blocks: list[Block], tables: list[TableData], glyphs) -> None:
         if table is not None:
             emitted = semantic_output(table.preformatted or render_table(table))
         record_block_recall(b, pc, emitted)
+        record_symbol_loss(b, pc, emitted)
     _record_neighbour_attribution(blocks, glyphs)
 
 
@@ -753,7 +798,35 @@ def recall_review_flags(blocks: list[Block]) -> tuple[list[CoverageFlag], list[C
                 f"> **[pdf2md: {reason}]**",
                 disposition="informational", severity="low", content_impact="low",
             ))
+    marked += _symbol_loss_flags(blocks)
     return marked, informational
+
+
+def _symbol_loss_flags(blocks: list[Block]) -> list[CoverageFlag]:
+    """Raised separately from recall because recall cannot see it.
+
+    A block that drops one `χ` out of two hundred words scores 0.995 and passes
+    the floor; over a 28-paper corpus 40 blocks lost a symbol and 4 of them were
+    low-recall as well. Nothing about the ratio is wrong -- one word in two
+    hundred is not a loss of the paragraph -- so the signal has to be its own,
+    and it can be, because a Greek letter present in the region and absent from
+    the output admits no innocent reading."""
+    flags = []
+    for b in blocks:
+        record = b.extra.get("glyph_symbols_lost")
+        if not record:
+            continue
+        reason = (
+            f"symbols dropped: the page prints {record['symbols']} in this block "
+            "and the emitted text does not carry them"
+        )
+        flags.append(CoverageFlag(
+            b.id, b.page, reason,
+            f"> **[pdf2md: action required (medium): {reason}; verify against "
+            f"[source page {b.page}](../source.pdf#page={b.page})]**",
+            disposition="action_required", severity="medium", content_impact="medium",
+        ))
+    return flags
 
 
 def _overlapping_regions(blocks: list[Block]) -> dict[str, float]:

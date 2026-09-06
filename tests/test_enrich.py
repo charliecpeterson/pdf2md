@@ -729,3 +729,61 @@ def test_a_reversed_run_still_has_to_be_adjacent():
     record_recall([b], [], _FakeGlyphs({1: _FakePC(text="alphabetagamma xxxx yyyy")}))
     rec = b.extra["glyph_word_recall"]
     assert rec["total"] == 3 and rec["matched"] == 2  # the glued word is not resolved
+
+
+class _Region:
+    """A page whose region reading is fixed, for the symbol check."""
+
+    def __init__(self, text: str) -> None:
+        self._text = text
+
+    def text_region(self, _bbox) -> str:
+        return self._text
+
+
+def test_a_symbol_the_page_prints_and_the_output_drops_is_recorded():
+    """Word recall cannot see this and its threshold is not the problem.
+
+    `where χ is the van der Waals radius` emits as `where is the van der Waals
+    radius`. In a 200-word paragraph that is recall 0.995, which passes; over a
+    28-paper corpus 40 blocks dropped a symbol and 4 crossed the floor."""
+    from pdf2md.enrich import record_symbol_loss
+    from pdf2md.schema import BBox
+
+    block = Block(id="#/a", type=BlockType.PARAGRAPH, page=4, bbox=BBox(0, 10, 10, 0),
+                  text="where is the van der Waals radius of an uncharged atom")
+
+    record_symbol_loss(block, _Region("where χ is the van der Waals radius of an "
+                                      "uncharged χ χ atom"))
+
+    # `χ×3`, not `χχχ`: the reader wants the character and how often.
+    assert block.extra["glyph_symbols_lost"] == {"count": 3, "symbols": "χ×3"}
+
+
+def test_a_dash_normalized_on_the_way_out_is_not_a_dropped_symbol():
+    """`−` emitting as `-` is formatting. A class where loss and normalization
+    both live would need a threshold, which is what this check exists to avoid."""
+    from pdf2md.enrich import record_symbol_loss
+    from pdf2md.schema import BBox
+
+    block = Block(id="#/a", type=BlockType.PARAGRAPH, page=1, bbox=BBox(0, 10, 10, 0),
+                  text="a - b = 4")
+
+    record_symbol_loss(block, _Region("a − b = 4"))
+
+    assert "glyph_symbols_lost" not in block.extra
+
+
+def test_dropped_symbols_are_raised_apart_from_recall():
+    from pdf2md.enrich import recall_review_flags
+
+    block = Block(id="#/a", type=BlockType.PARAGRAPH, text="where is the radius", page=7,
+                  extra={"glyph_word_recall": {"matched": 199, "total": 200, "strict": 199},
+                         "glyph_symbols_lost": {"count": 2, "symbols": "Δχ"}})
+
+    marked, _informational = recall_review_flags([block])
+
+    assert [f.block_id for f in marked] == ["#/a"]
+    assert "symbols dropped" in marked[0].reason and "Δχ" in marked[0].reason
+    assert marked[0].severity == "medium"
+    assert "source page 7" in marked[0].marker_text
