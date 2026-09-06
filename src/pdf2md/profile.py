@@ -619,7 +619,9 @@ def _equation_coverage_note(profile: DocumentProfile, dimensions: dict) -> list[
         f"{profile.equations_transcribed} of {total} equation(s) carry LaTeX; the row "
         f"counts only those whose text stands on its own, and {total - usable} are "
         "image-backed. For those the source crop is authoritative and the LaTeX rides "
-        "under it, a reading the page's own text layer could not confirm.",
+        "under it, a reading the page's own text layer could not confirm. "
+        "`--render-check` judges exactly those: it draws the LaTeX and compares its ink "
+        "against the crop, which is evidence the text layer cannot give.",
         "",
     ]
 

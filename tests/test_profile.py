@@ -631,6 +631,8 @@ def test_a_scanned_document_says_its_equations_were_transcribed_anyway():
 
     assert "11 of 11 equation(s) carry LaTeX" in line
     assert "11 are image-backed" in line
+    # The one check that can judge them is the one the row's reader needs named.
+    assert "--render-check" in line
 
 
 def test_equations_left_untranscribed_say_which_flag_did_it():
