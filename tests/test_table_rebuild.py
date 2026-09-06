@@ -256,3 +256,33 @@ def test_a_repeated_data_value_does_not_split_a_table_into_panels():
     ])
 
     assert panel_tables(TableData("#/t", 435, BBox(0, 10, 10, 0), gfm=gfm)) is None
+
+
+def test_a_lane_edge_falling_mid_number_does_not_cut_it():
+    """The engine's column bound lands inside a printed value.
+
+    A Lanthanides SI table put `2.1999000E-01 1` in one cell and `.6203900E-06`
+    in the next, where the page prints two whole numbers. A split number is
+    worse than a contaminated one: it parses cleanly as a wrong number."""
+    row = [*word("2.1999000E-01", 0, 0, 8), ch(" ", 52, 56, 0, 8),
+           *word("1.6203900E-06", 56, 0, 8)]
+    # The engine's second column starts four points into the second value.
+    lanes = [(-1.0, 60.0), (60.0, 120.0)]
+
+    grid, _evidence, refusal = rebuild_grid(row, lane_bounds=lanes)
+
+    assert refusal is None and grid is not None
+    assert grid.rows == [["2.1999000E-01", "1.6203900E-06"]]
+
+
+def test_a_word_space_the_pdf_only_positions_still_separates():
+    """Not every PDF emits a space glyph between words; some advance the pen.
+    Corpus-wide the gap between two ink characters is massed below half a
+    character width and again at two, so 1.5 sits in the valley."""
+    row = [*word("alpha", 0, 0, 8), *word("beta", 30, 0, 8)]
+    lanes = [(-1.0, 34.0), (34.0, 80.0)]
+
+    grid, _evidence, refusal = rebuild_grid(row, lane_bounds=lanes)
+
+    assert refusal is None and grid is not None
+    assert grid.rows == [["alpha", "beta"]]

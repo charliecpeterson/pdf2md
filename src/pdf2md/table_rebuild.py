@@ -20,6 +20,7 @@ import re
 import statistics
 import unicodedata
 from collections import Counter
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -33,6 +34,8 @@ _BIN = 0.5
 # criterion -- zero-crossing is: intra-cell word gaps only survive when no
 # other row's ink crosses them, which is exactly the column-aligned case.
 _MIN_SEP_PT = 1.0
+# How far apart two ink characters sit before they stop being one token.
+_TOKEN_GAP_SHARE = 1.5
 # The row projection's own bin, and the horizontal corridor below which two
 # ink runs belong to one row. Leading in a dense parameter table runs ~11pt
 # with ~7pt cap height, so a corridor under 0.8pt is intra-row (a subscript's
@@ -111,12 +114,28 @@ def rebuild_grid(
 def _read_into_lanes(
     chars: list[Char], lane_bounds: list[tuple[float, float]], evidence: dict[str, Any]
 ) -> tuple[RebuiltGrid | None, dict[str, Any], str | None]:
-    """Ink bands become rows, top-down (PDF y-up). Each char joins the lane its
-    center falls in. Whitespace glyphs ride along: they're excluded from lane
-    geometry but are real cell content ("Training Cost")."""
+    """Ink bands become rows, top-down (PDF y-up). Each printed token joins the
+    lane its center falls in, whole.
+
+    Per *character* was the obvious reading and it cuts values in half wherever a
+    lane edge lands mid-token, which it does whenever the engine's cell boxes are
+    the wrong shape: `2.1999000E-01 1` and `.6203900E-06` in adjacent cells of one
+    Lanthanides SI table, where the page prints `2.1999000E-01` and
+    `1.6203900E-06`. A split number is worse than a contaminated one because it
+    parses cleanly as a wrong number. 8,484 of 163,276 runs were cut this way
+    across the corpus, in words as much as numbers (`Frozen-core`, `cc-pVnZ-DK3`).
+
+    A token is a run of ink between whitespace glyphs, which these PDFs emit --
+    roughly one space per four ink characters -- so the boundary is read off the
+    page rather than inferred from a gap threshold. Ink-to-ink gaps wide enough to
+    read as a break without one number in the low tens per document, against tens
+    of thousands of runs, so nothing here guesses at a width."""
     bands = row_bands(chars)
     if not bands:
         return None, evidence, "region_has_no_text"
+    char_width = statistics.median(
+        c[3] - c[1] for c in chars if c[0].strip()
+    )
 
     def lane_of(x: float) -> int:
         for i, (lane_lo, lane_hi) in enumerate(lane_bounds):
@@ -126,15 +145,42 @@ def _read_into_lanes(
 
     rows: list[list[str]] = []
     for lo, hi in bands:
-        cells = [""] * len(lane_bounds)
-        group = [c for c in chars if lo <= (c[2] + c[4]) / 2 <= hi]
-        for c in sorted(group, key=lambda c: c[1]):
-            cells[lane_of((c[1] + c[3]) / 2)] += c[0]
-        rows.append([" ".join(cell.split()) for cell in cells])
+        cells: list[list[str]] = [[] for _ in lane_bounds]
+        group = sorted(
+            (c for c in chars if lo <= (c[2] + c[4]) / 2 <= hi), key=lambda c: c[1]
+        )
+        for run in _ink_runs(group, char_width):
+            center = (min(c[1] for c in run) + max(c[3] for c in run)) / 2
+            cells[lane_of(center)].append("".join(c[0] for c in run))
+        rows.append([" ".join(parts) for parts in cells])
 
     evidence.update({"lanes": len(lane_bounds), "rows": len(rows)})
     return RebuiltGrid(rows=rows, lane_bounds=lane_bounds, line_bands=bands,
                        evidence=evidence), evidence, None
+
+
+def _ink_runs(row: list[Char], char_width: float) -> Iterator[list[Char]]:
+    """Split a row's characters into printed tokens.
+
+    A whitespace glyph ends a token; these PDFs emit roughly one space per four
+    ink characters, so most breaks are read off the page rather than inferred.
+    Some documents position their words instead, which is what `char_width` is
+    for: measured over the corpus the gap between consecutive ink characters is
+    massed below half a character width and again at two (a positioned word
+    space), with a valley between at 1.4 to 1.8."""
+    run: list[Char] = []
+    for char in row:
+        if not char[0].strip():
+            if run:
+                yield run
+                run = []
+            continue
+        if run and char[1] - run[-1][3] > _TOKEN_GAP_SHARE * char_width:
+            yield run
+            run = []
+        run.append(char)
+    if run:
+        yield run
 
 
 def row_bands(chars: list[Char]) -> list[tuple[float, float]]:

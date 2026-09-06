@@ -138,7 +138,7 @@ src/pdf2md/
   emit.py       Section tree → .md files + YAML front-matter; sets coverage_status, collects flags.
   tables.py     GFM table render, HTML fallback for spanning cells.
   table_rebuild.py  born-digital glyph-truth for tables: grid rebuild from whitespace corridors
-                (zero-crossing lanes) plus row_bands (the same projection over y, so a subscript
+                (zero-crossing lanes, whole printed tokens per lane) plus row_bands (the same projection over y, so a subscript
                 stays on its baseline) and engine_lane_bounds. glyph_grid/grid_markdown read a
                 region into the engine's columns with measured rows — written as <block>.glyph.md
                 beside the engine's grid, never as the emitted table. check_table_cells is the
@@ -493,6 +493,20 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   is not the tiebreak** -- it looks obvious and costs three documents: journals print `OPEN
   ACCESS`, the journal name, and `Supporting Information for:` above the title, so
   first-heading-wins fixes one paper and breaks three.
+- **A lane edge that lands mid-value cuts the number in half, and half a number
+  parses.** The glyph grid read the region character by character, each joining the lane
+  its own center falls in, so wherever the engine's cell boxes are the wrong shape a value
+  is split across two cells: a Lanthanides SI table shipped `2.1999000E-01 1` beside
+  `.6203900E-06` where the page prints two whole numbers. That is worse than a contaminated
+  cell, which at least fails loudly. Assigning whole printed tokens instead repaired 843 of
+  1,019 cut numeric tokens over 2,050 corpus grids and turned 919 cells from several
+  fragments into one value, with 3 cells changed the other way -- all three a header row's
+  `34` correctly separating into `3` and `4`. Characters lost and gained are both exactly
+  zero, which is the invariant: the change moves ink between lanes and creates none. A token
+  ends at a whitespace glyph, which these PDFs emit at roughly one per four ink characters,
+  so most breaks are read off the page; `_TOKEN_GAP_SHARE` covers the documents that
+  position their word spaces instead, and 1.5 sits in the valley of a distribution massed
+  below 0.5 and again at 2.0 character widths.
 - **A running footer swallowed into a table looks exactly like the table's own title,
   and only the other pages tell them apart.** A spanning cell renders in GFM as the same
   string in every column, so `data/tables/*.csv` writes it as a full row of repeats:
