@@ -317,6 +317,13 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   populations. `strict` is the same
   comparison without diacritic folding; the gap is accent damage (`Co te` for `Côté`),
   which is a real defect but a different one from a missing word and stays informational.
+- **A recovered equation number is the page's own, and read as an invented value.**
+  `emit` renders it as `\tag{N}` but it lives in `Block.extra`, not in the block's text, so
+  the comparison saw a number in the output with no source. 12 of the 17 conservation
+  actions on a 28-paper run at default settings were that and nothing else, which on one
+  paper meant 6 findings where the honest count is 0. The number joins the source side
+  rather than being stripped from the output -- it *is* printed on the page, which is why it
+  was recovered -- so every other number stays strictly compared.
 - **Conservation compares a block against its own rendered markup, so both sides must be
   normalized the same way.** `token_accounting` runs `_semantic_output` over the source as
   well as the output. Without it an HTML table's `td`/`tr`/`tbody` counted as source words
@@ -552,9 +559,17 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   else caught it: the block was accounted for, the grid audit was silent, and only
   whole-document conservation noticed the tokens vanish -- which is what a high-severity
   `unexplained loss: 5 word(s), 22 number(s)` was reporting. 4 of 18 panel tables corpus-wide
-  refuse at least one row. They are now listed under the panels with the refusal reason,
-  never folded back into a panel: the split declined for a reason, and guessing would put a
-  value under the wrong element. Measured after: 646 source numbers, 0 lost.
+  refuse at least one row. They are now listed under the panels, never folded back into a
+  panel: the split declined for a reason, and guessing would put a value under the wrong
+  element. Measured after: 646 source numbers, 0 lost, and the conservation action gone.
+  **Everything added beside a table has to be inside a marker or made of the source's own
+  words**, or the silent loss is simply traded for pdf2md's vocabulary counted as content
+  the page never printed. That caught this change twice: `panel`/`column N`/`why` columns
+  (moved into the marker, which `_PDF2MD_MARKER` strips) and then a repeated column header
+  (dropped -- the merged grid holds one header row for both panels, so a third copy is an
+  addition; GFM demands the row, not its content). `*panel N*` labels are stripped in
+  `conservation.semantic_output` for the same reason, keeping any title after the dash,
+  which is the table's own.
 - **A running footer swallowed into a table looks exactly like the table's own title,
   and only the other pages tell them apart.** A spanning cell renders in GFM as the same
   string in every column, so `data/tables/*.csv` writes it as a full row of repeats:

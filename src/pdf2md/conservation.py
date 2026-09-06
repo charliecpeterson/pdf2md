@@ -30,6 +30,9 @@ _PDF2MD_MARKER = re.compile(r"^> \*\*\[pdf2md:.*(?:\n>.*)*$", re.MULTILINE)
 # Navigation pdf2md emits beside content (links into the bundle's own
 # artifacts). Its labels are not words the source page printed.
 _EMITTED_NAV = re.compile(r"^\*\[pdf2md\][^\n]*$", re.MULTILINE)
+# `*panel 2 — La3+*` heads a split panel. The index is pdf2md's; the title after
+# the dash is the table's own, so only the label goes.
+_PANEL_LABEL = re.compile(r"^\*panel \d+(?: — )?", re.MULTILINE)
 _INTRAWORD_HYPHEN = re.compile(r"([^\W\d_])[-‐‑]\s*([^\W\d_])", re.UNICODE)
 _EXAMPLE_LIMIT = 200
 
@@ -66,6 +69,7 @@ def semantic_output(text: str) -> str:
     """Remove syntax introduced by emission while retaining visible content."""
     text = _PDF2MD_MARKER.sub("", text)
     text = _EMITTED_NAV.sub("", text)
+    text = _PANEL_LABEL.sub("", text)
     text = _MARKDOWN_DESTINATION.sub("", text)
     text = _SCRIPT_TAGS.sub("", text)
     text = _HTML_TAG.sub(" ", text)
@@ -245,6 +249,15 @@ def representation_accounting(
             continue
         table = tables.get(block.id)
         source_text = table.preformatted or render_table(table) if table is not None else block.text
+        if block.type is BlockType.EQUATION and (
+            number := block.extra.get("equation_number")
+        ):
+            # emit renders the recovered number as \tag{N}. It is the page's own
+            # -- read off the printed equation, which is why it was recovered at
+            # all -- but it lives in `extra` rather than in the block's text, so
+            # the comparison read it as a value pdf2md invented. 12 of the 17
+            # conservation actions on a 28-paper run were this and nothing else.
+            source_text = f"{source_text} ({number})"
         source_counts = {
             "words": len(_raw_words(source_text)),
             "numbers": len(_raw_numbers(source_text)),

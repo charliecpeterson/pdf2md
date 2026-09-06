@@ -170,3 +170,30 @@ def test_inline_script_tags_are_not_lost_words():
     delta = token_accounting(source, "the yield of Cu2+ and Zn2+ rose")["words"]
     assert delta["losses"] == Counter()
     assert delta["source"] == 7  # the, yield, of, Cu, and, Zn, rose — no `sup`
+
+
+def test_a_recovered_equation_number_is_not_an_invented_value():
+    """emit renders it as `\\tag{N}`, and it is the page's own.
+
+    The number is read off the printed equation, which is why it was recovered
+    at all, but it lives in `extra` rather than in the block's text -- so the
+    comparison called it a value pdf2md invented. 12 of the 17 conservation
+    actions on a 28-paper run were this and nothing else."""
+    equation = Block(
+        "#/e", BlockType.EQUATION, "B = \\lambda / R ^ { * }", 1,
+        bbox=BBox(0, 10, 10, 0),
+        extra={"equation_number": 8},
+    )
+    emissions = {
+        equation.id: {
+            "markdown": "document.md",
+            "text": "$$B = \\lambda / R ^ { * } \\tag{8}$$",
+        },
+    }
+
+    report = representation_accounting(
+        _document([equation]), _Glyphs(_PageChars({0: "B = lambda / R (8)"})), emissions,
+    )
+
+    assert report["categories"]["unexplained_addition"] == {"words": 0, "numbers": 0}
+    assert report["blocks_with_unexplained_changes"] == 0

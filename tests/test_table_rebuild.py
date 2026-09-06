@@ -311,8 +311,12 @@ def test_a_row_the_panel_split_cannot_place_is_published_not_dropped():
 
     assert out is not None
     assert "could not place 1 printed row(s)" in out
+    # The panel and the reason ride in the marker, which conservation strips: a
+    # `why` column would trade a silent loss for pdf2md's own words counted as
+    # content the page never printed.
+    marker = out.split("could not place")[1].split("]**")[0]
+    assert "1 ambiguous_trailing_blank" in marker and "from panel 2" in marker
     # The refused row's values are in the output, and not inside a panel grid.
-    unplaced = out.split("could not place")[1]
+    unplaced = out.split("]**")[-1]
     assert "272" in unplaced and "Ba" in unplaced
-    assert "ambiguous_trailing_blank" in unplaced
     assert "272" not in out.split("could not place")[0]

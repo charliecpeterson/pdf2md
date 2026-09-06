@@ -6,7 +6,7 @@ by the time it reaches the builders — the adapter handles escaping and scripts
 from __future__ import annotations
 
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from html.parser import HTMLParser
 
@@ -152,23 +152,39 @@ def _unplaced_panel_rows(panels: list[dict[str, object]]) -> list[str]:
     if not rows:
         return []
     rows.sort(key=lambda item: (item[1]["source_row"], item[0]))
-    width = max(len(refusal["cells"]) for _, refusal in rows)
-    header = ["panel", *[f"column {c + 1}" for c in range(width)], "why"]
+    # An empty header, though GFM demands the row: repeating the panel's column
+    # names a third time adds words the source page printed twice, and the merged
+    # grid holds one header row for both panels. The marker says whose columns
+    # these are.
+    width = max(
+        [len(panels[0]["columns"])] + [len(refusal["cells"]) for _, refusal in rows]
+    )
+    header = [""] * width
     body = [
-        [str(index), *[str(c).strip() for c in refusal["cells"]],
-         *[""] * (width - len(refusal["cells"])), str(refusal["reason"])]
-        for index, refusal in rows
+        [str(c).strip() for c in refusal["cells"]]
+        + [""] * (width - len(refusal["cells"]))
+        for _, refusal in rows
     ]
     cells = [
         GridCell(text, r, c, 1, 1, False)
         for r, row in enumerate([header] + body)
         for c, text in enumerate(row)
     ]
+    # The panel each row came from and the reason it was refused ride in the
+    # marker, not in extra columns. Conservation strips a marker and counts what
+    # is beside it, so a `why` column would trade a silent loss for pdf2md's own
+    # words reported as content the page never printed.
+    why = ", ".join(
+        f"{count} {reason}"
+        for reason, count in sorted(Counter(r["reason"] for _, r in rows).items())
+    )
+    from_panels = ", ".join(str(index) for index in sorted({index for index, _ in rows}))
     return [
-        "> **[pdf2md: the panel split could not place "
-        f"{len(rows)} printed row(s); they are listed below, unassigned, and the "
-        "merged grid in the table artifact holds them in their printed places]**"
-        "\n\n" + build_gfm(cells, len(body) + 1, len(header))
+        f"> **[pdf2md: the panel split could not place {len(rows)} printed row(s) "
+        f"({why}; from panel {from_panels}); they are listed below in the panels' "
+        "own columns, unassigned, and the merged grid in the table artifact holds "
+        "them in their printed places]**"
+        "\n\n" + build_gfm(cells, len(body) + 1, width)
     ]
 
 
