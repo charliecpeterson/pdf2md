@@ -542,11 +542,19 @@ def _scorecard_lines(profile: DocumentProfile) -> list[str]:
     def _result(name: str) -> str:
         dimension = dimensions[name]
         ratio = dimension.get("ratio")
-        counts = (
-            f" ({dimension['numerator']}/{dimension['denominator']})"
-            if ratio is not None else ""
-        )
-        return f"{dimension['status']}{counts}"
+        if ratio is not None:
+            return f"{dimension['status']} ({dimension['numerator']}/{dimension['denominator']})"
+        # A severity is the worst item present, so one reading-order glitch in a
+        # reference list reads exactly like a 346-page supplement with contaminated
+        # data cells, and nothing ranks across a stack of papers. The breakdown is
+        # already counted; showing it is what makes the row triageable.
+        counts = dimension.get("counts") or {}
+        if {"high", "medium", "low"} <= counts.keys():
+            parts = ", ".join(f"{counts[k]} {k}" for k in ("high", "medium", "low") if counts[k])
+            total = counts.get("action_required", 0)
+            if parts:
+                return f"{dimension['status']} ({parts}; {total} action items)"
+        return str(dimension["status"])
 
     rows = [
         ("Accounting coverage", _result("accounting_coverage")),

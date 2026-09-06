@@ -6,6 +6,7 @@ import json
 
 from pdf2md.profile import (
     _confidence,
+    _scorecard_lines,
     build_profile,
     write_manifest,
     write_profile,
@@ -562,3 +563,28 @@ def test_profile_carries_token_consistency(tmp_path):
     assert "2 missing (examples in `profile.json`)." in readme
     assert "1 unexplained word loss(es), 0 unexplained number loss(es)" in readme
     assert "0 unexplained word addition(s), and 1 unexplained number addition(s)" in readme
+
+
+def test_the_severity_row_shows_its_mass_not_only_its_worst_item():
+    """A severity is the worst item present, so it saturates.
+
+    Triaging a stack of papers, a document whose single high item is one
+    reading-order glitch in a reference list reads exactly like a 346-page
+    supplement with contaminated data cells. Both say "high" and nothing ranks.
+    The breakdown was already counted and simply not shown.
+    """
+    blocks = [Block("#/p", BlockType.PARAGRAPH, "hello", 1)]
+    structure = build_structure(blocks, None, title="D", page_count=1)
+    doc = Document("x" * 16, "/x.pdf", "x" * 16, 1, 1, structure.root, blocks=blocks)
+    doc.coverage = CoverageReport("x", total_blocks=1, emitted=1, cropped=0, flagged=0,
+                                  dropped=0, illegible=0)
+    review_queue = {"items": [
+        {"disposition": "action_required", "severity": "high"},
+        *[{"disposition": "action_required", "severity": "medium"}] * 3,
+        *[{"disposition": "action_required", "severity": "low"}] * 8,
+        {"disposition": "informational", "severity": "high"},
+    ]}
+    profile = build_profile(doc, review_queue=review_queue)
+
+    line = next(l for l in _scorecard_lines(profile) if "Unresolved error severity" in l)
+    assert "high (1 high, 3 medium, 8 low; 12 action items)" in line
