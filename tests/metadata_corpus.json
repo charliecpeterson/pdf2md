@@ -298,5 +298,33 @@
     ],
     "expected_title": "QUANTUM THEORY OF ATOMIC STRUCTURE",
     "expected_authors": null
+  },
+  {
+    "name": "a title candidate with no letters is not a title",
+    "embedded": {},
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "Abstract",
+        "page": 1
+      },
+      {
+        "type": "heading",
+        "text": "3.3, 3.5",
+        "page": 1
+      },
+      {
+        "type": "heading",
+        "text": "MARCHING CUBES: A HIGH RESOLUTION 3D SURFACE CONSTRUCTION ALGORITHM",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "We present a new algorithm.",
+        "page": 1
+      }
+    ],
+    "expected_title": "MARCHING CUBES: A HIGH RESOLUTION 3D SURFACE CONSTRUCTION ALGORITHM",
+    "expected_authors": null
   }
 ]

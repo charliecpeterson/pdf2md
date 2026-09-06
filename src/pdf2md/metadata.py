@@ -130,6 +130,11 @@ def _title_candidate(value: str | None) -> str | None:
         return None
     if _is_citation_line(title):
         return None
+    if not any(char.isalpha() for char in title):
+        # `3.3, 3.5` is a fragment of a category listing, and it beat
+        # `MARCHING CUBES: A HIGH RESOLUTION 3D SURFACE CONSTRUCTION ALGORITHM`
+        # on the same score because digits sort before letters.
+        return None
     return title
 
 

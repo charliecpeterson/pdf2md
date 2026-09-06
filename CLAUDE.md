@@ -519,8 +519,11 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   running head is exempt by being the document's first heading. Two other shapes reach the
   same ranking as clean text and are now rejected outright rather than scored: a journal's
   own citation line (`Palestine Technical University Research Journal, 2026, 14(02),
-  159-176` -- two of year, `NN(NN)`, trailing page range; 1 of 157 corpus candidates) and an
-  embedded Title that is only an identifier (`doi:`, `PII:`). Measured over 37 bundles, two
+  159-176` -- two of year, `NN(NN)`, trailing page range; 1 of 157 corpus candidates), an
+  embedded Title that is only an identifier (`doi:`, `PII:`), and a candidate with no
+  letters at all (`3.3, 3.5`, a stray CR-category fragment, beat `MARCHING CUBES: A HIGH
+  RESOLUTION 3D SURFACE CONSTRUCTION ALGORITHM` on an equal score because digits sort
+  first). Measured over 37 bundles, two
   titles are fixed, two stay wrong (one at lower confidence), none regress. **Printed order
   is not the tiebreak** -- it looks obvious and costs three documents: journals print `OPEN
   ACCESS`, the journal name, and `Supporting Information for:` above the title, so
