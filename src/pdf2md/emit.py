@@ -57,12 +57,18 @@ def _tidy_math(body: str) -> str:
     return _balance_braces(body)
 
 
-def _equation_latex(text: str) -> str:
+def _equation_latex(text: str, number: str | None = None) -> str:
     body = _balance_delims(_tidy_math(text.strip("$").strip()))
     # Alignment markers (&, \\) are only valid inside an environment; bare $$ makes
     # KaTeX/MathJax throw. Wrap multi-line equations in `aligned`.
     if "&" in body or r"\\" in body:
         body = f"\\begin{{aligned}}\n{body}\n\\end{{aligned}}"
+    # The printed number, recovered in enrich from the layer reading of the
+    # equation's own region. \tag is how LaTeX carries it, so it stays attached to
+    # the equation rather than floating beside it, and the prose's "substituting
+    # into (2)" resolves again.
+    if number and "\\tag" not in body:
+        body = f"{body} \\tag{{{number}}}"
     return f"$$\n{body}\n$$"
 
 
@@ -668,12 +674,13 @@ def _render_block(
             reading = b.extra.get("text_layer")
             if transcribed:
                 by = b.extra.get("transcribed_source")
-                hint = _equation_latex(transcribed)
+                hint = _equation_latex(transcribed, b.extra.get("equation_number"))
                 source = f"re-transcribed from the image ({by})" if by else "re-transcribed from the image"
             elif reading and b.extra.get("ordered") and (b.confidence or 0) >= HINT_MIN_CONF:
                 hint, source = reading, "the image below is the authoritative source"
             elif txt:
-                hint, source = _equation_latex(txt), "the image below is the authoritative source"
+                hint, source = (_equation_latex(txt, b.extra.get("equation_number")),
+                                "the image below is the authoritative source")
             else:  # --no-formula: no LaTeX or text-layer reading, only the crop
                 hint, source = "", "the image below is the authoritative source"
             if crop:
@@ -734,7 +741,8 @@ def _render_block(
                 f"may differ from {_source_page(b.page)}]**"
             )
             return f"{note}\n\n{hint}", CoverageStatus.FLAGGED, _flag(b, "equation extraction unverified")
-        return _equation_latex(txt), CoverageStatus.EMITTED, None
+        return (_equation_latex(txt, b.extra.get("equation_number")),
+                CoverageStatus.EMITTED, None)
     return txt, CoverageStatus.EMITTED, None
 
 

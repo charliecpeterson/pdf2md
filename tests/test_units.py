@@ -2028,3 +2028,28 @@ def test_a_real_short_word_does_not_block_a_good_split():
     from pdf2md.normalize import resegment_words
 
     assert resegment_words("thisisatest") == "this is a test"
+
+
+def test_a_printed_equation_number_stays_with_its_equation():
+    """96 numbered equations across two corpora lost their number.
+
+    It sits inside the equation's own region, so the formula model consumes it and
+    emits LaTeX without it, and the prose's "substituting into (2)" then refers to
+    nothing. \\tag is how LaTeX carries a number, so it stays attached.
+    """
+    from pdf2md.emit import _equation_latex
+
+    assert _equation_latex("A = B + C", "2") == "$$\nA = B + C \\tag{2}\n$$"
+    assert _equation_latex("A = B + C") == "$$\nA = B + C\n$$"
+    # Docling sometimes keeps the number itself; two tags render as two numbers.
+    assert _equation_latex("x \\tag{9}", "2") == "$$\nx \\tag{9}\n$$"
+
+
+def test_the_equation_number_is_read_off_the_layer_not_invented():
+    from pdf2md.enrich import _EQUATION_NUMBER
+
+    assert _EQUATION_NUMBER.search("A = B + C (2)").group(1) == "2"
+    assert _EQUATION_NUMBER.search("rho = 3eZ/4pi (6a)").group(1) == "6a"
+    # A trailing parenthetical that is not a number, and a citation mid-line.
+    assert _EQUATION_NUMBER.search("A = B (see text)") is None
+    assert _EQUATION_NUMBER.search("A = f(2) + g") is None

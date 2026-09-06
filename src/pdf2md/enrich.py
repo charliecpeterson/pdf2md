@@ -69,6 +69,8 @@ log = get_logger("enrich")
 # Inline mathematics an engine emitted as LaTeX, which the script overlay must
 # leave alone. Deliberately narrow: a lone `$` in prose (a price) is not maths.
 _INLINE_MATH = re.compile(r"\$[^$\n]+\$")
+# A printed equation number, trailing its equation: (1), (2), (6a).
+_EQUATION_NUMBER = re.compile(r"\(\s*(\d{1,3}[a-z]?)\s*\)\s*\Z")
 
 
 def religatured(text: str, vocab) -> str:
@@ -271,6 +273,18 @@ def enrich_blocks(blocks: list[Block], glyphs) -> None:
                 b.extra["runaway_trimmed"] = runaway
             if pc is not None:
                 tl = pc.text_region(b.bbox)
+                # The printed number sits inside the equation's own region, so the
+                # formula model consumes it and emits LaTeX without it -- 96 of the
+                # numbered equations across two corpora lost theirs, which breaks
+                # every "substituting into (2)" in the prose. The layer reading of
+                # the same region still has it.
+                #
+                # Only where there is a layer to read. A scanned document has none
+                # by design, so its equations keep their number the other way: they
+                # are image-backed, and the crop shows what the page printed.
+                number = _EQUATION_NUMBER.search(tl.strip())
+                if number and number.group(1) not in b.text:
+                    b.extra["equation_number"] = number.group(1)
                 assessed = assess_equation(b.text, tl)
                 if assessed is not None:
                     b.confidence, reading = assessed
