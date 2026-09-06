@@ -650,7 +650,12 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   Raised as an action it was 231 entries across the corpora, 78 in one 25-page maths
   paper. Agreement
   from an unfit layer still counts (9 equations verify that way), which is why the
-  cross-check keeps running against it -- the asymmetry is the whole point.
+  cross-check keeps running against it -- the asymmetry is the whole point. **A
+  scanned page is the stronger form of the same case and was getting the harsher
+  verdict**, purely because it carries no `text_layer` key to test: there is no layer
+  at all, so nothing can judge the LaTeX, and the finding asked a reader to check the
+  extraction against a reference the page does not have. Over 28 papers at default
+  settings that was 57 of the 120 image-backed equations, every one on a scan.
   `_UNTERMINATED_ENVIRONMENT` also drops a runaway `\begin{array} { c c c ...`
   that never closes (3 of 158 equations): a 4075-character spec reached the token
   set as one 1000-character `cccc...` counted as missing content.

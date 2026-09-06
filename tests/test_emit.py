@@ -1277,3 +1277,26 @@ def test_a_two_character_undecodable_block_is_not_illegible_prose(tmp_path):
     assert flag.disposition == "informational" and flag.severity == "low"
     report = build_report(doc.doc_id, doc.blocks, flags)
     assert report.illegible == 0 and report.accounted_for
+
+
+def test_a_scanned_page_cannot_judge_its_own_equations_either():
+    """No layer at all is the stronger form of an unfit layer.
+
+    A scanned page carries no `text_layer` key to test, so the finding landed in
+    the harsher branch and asked a reader to check the extraction against a
+    reference the page does not have. On 28 papers at default settings that was
+    57 of the 120 image-backed equations, every one of them on a scan."""
+    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.schema import Block, BlockType, CoverageStatus
+
+    ctx = _Ctx(depth_of={}, tables={}, figures={})
+    eq = Block(id="#/texts/9", type=BlockType.EQUATION, text="E _ { n } = E _ { CBS }",
+               page=4, confidence=0.0,
+               extra={"crop_path": "assets/eq_p4.png", "ocr": True})
+
+    text, status, flag = _render_block(eq, ctx, [])
+
+    assert "not verifiable" in text and "no text layer" in text
+    assert "![equation](assets/eq_p4.png)" in text and "$$" in text   # LaTeX still ships
+    assert status == CoverageStatus.CROPPED
+    assert flag.disposition == "informational"

@@ -709,15 +709,26 @@ def _render_block(
                 # "suspect" verdicts came from a layer the enrichment step had
                 # already marked unfit to show, so calling them suspect
                 # extractions was a claim the evidence did not support.
-                unverifiable = (
-                    not intentional_crop
-                    and "text_layer" in b.extra
-                    and not b.extra.get("ordered")
+                #
+                # A scanned page is the stronger form of the same case and was
+                # landing in the harsher branch purely because it carries no
+                # `text_layer` key to test: there is no layer at all, so nothing
+                # can judge the LaTeX, and the verdict asked a reader to check
+                # the extraction against a reference the page does not have. On
+                # 28 papers converted at default settings that was 57 of the 120
+                # image-backed equations, every one of them on a scan.
+                scanned = bool(b.extra.get("ocr"))
+                unverifiable = not intentional_crop and (
+                    scanned or ("text_layer" in b.extra and not b.extra.get("ordered"))
+                )
+                why = (
+                    "the page is scanned and has no text layer"
+                    if scanned
+                    else "the page's own text layer is scrambled or undecodable here"
                 )
                 headline = (
-                    "equation not verifiable — the page's own text layer is "
-                    "scrambled or undecodable here, so it cannot judge the LaTeX; "
-                    f"{source}"
+                    f"equation not verifiable — {why}, so it cannot judge the "
+                    f"LaTeX; {source}"
                     if unverifiable
                     else f"equation extraction unverified — {source}"
                 )
