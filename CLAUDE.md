@@ -478,6 +478,21 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   on scanned pages with no layer to count; those go silent rather than being reported,
   because band overlap on its own was never evidence. The PDF is opened lazily, only
   once a page produces a candidate.
+- **Repetition is what makes a journal running head *not* the title.** `repeated_heading`
+  counted it as support, so `CHARLOTTE FROESE FISCHER` -- the author of a 1972 compilation,
+  printed above the text on 30 pages -- was selected as the title at high quality over the
+  real one sitting one block earlier on page 1. The two populations do not overlap: across
+  the corpus ten correct titles repeat on exactly two pages and that one wrong title on
+  thirty, so `_RUNNING_HEAD_PAGES = 4` sits in an empty band. A book whose title is also its
+  running head is exempt by being the document's first heading. Two other shapes reach the
+  same ranking as clean text and are now rejected outright rather than scored: a journal's
+  own citation line (`Palestine Technical University Research Journal, 2026, 14(02),
+  159-176` -- two of year, `NN(NN)`, trailing page range; 1 of 157 corpus candidates) and an
+  embedded Title that is only an identifier (`doi:`, `PII:`). Measured over 37 bundles, two
+  titles are fixed, two stay wrong (one at lower confidence), none regress. **Printed order
+  is not the tiebreak** -- it looks obvious and costs three documents: journals print `OPEN
+  ACCESS`, the journal name, and `Supporting Information for:` above the title, so
+  first-heading-wins fixes one paper and breaks three.
 - **A running footer swallowed into a table looks exactly like the table's own title,
   and only the other pages tell them apart.** A spanning cell renders in GFM as the same
   string in every column, so `data/tables/*.csv` writes it as a full row of repeats:

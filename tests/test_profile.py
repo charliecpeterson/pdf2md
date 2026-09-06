@@ -6,6 +6,7 @@ import json
 
 from pdf2md.profile import (
     _confidence,
+    _scanned_table_remedy,
     _scorecard_lines,
     build_profile,
     write_manifest,
@@ -588,3 +589,28 @@ def test_the_severity_row_shows_its_mass_not_only_its_worst_item():
 
     line = next(l for l in _scorecard_lines(profile) if "Unresolved error severity" in l)
     assert "high (1 high, 3 medium, 8 low; 12 action items)" in line
+
+
+def test_a_scan_whose_tables_all_failed_is_told_which_engine_reads_them():
+    """`Table verification coverage: none (0/82)` says what is wrong and not what
+    to do, though the measurement exists."""
+    dimensions = {
+        "ocr_dependence": {"ratio": 1.0, "numerator": 99, "denominator": 99},
+        "table_verification_coverage": {"ratio": 0.0, "numerator": 0, "denominator": 82},
+    }
+
+    lines = _scanned_table_remedy(dimensions)
+
+    assert "--engine mineru" in lines[0] and "--force-ocr" in lines[0]
+    assert "99% of the printed grid against Docling's 21%" in lines[0]
+
+
+def test_a_born_digital_document_is_not_pointed_at_another_engine():
+    """The MinerU measurement is about scans. On a born-digital paper the same
+    low coverage means something else, and the pointer would be guesswork."""
+    dimensions = {
+        "ocr_dependence": {"ratio": 0.0, "numerator": 0, "denominator": 14},
+        "table_verification_coverage": {"ratio": 0.0, "numerator": 0, "denominator": 7},
+    }
+
+    assert _scanned_table_remedy(dimensions) == []

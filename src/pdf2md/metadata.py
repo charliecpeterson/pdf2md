@@ -30,13 +30,26 @@ _GENERIC_TITLES = {
     "this page intentionally left blank",
     "title page",
 }
-_GENERATED_TITLE_PREFIXES = ("microsoft word -", "word -")
+_GENERATED_TITLE_PREFIXES = ("microsoft word -", "word -", "pii:", "doi:")
 _GENERIC_FILENAMES = {"document", "ignored", "paper", "scan", "source", "untitled"}
 _STRUCTURAL_TITLE = re.compile(
-    r"^(?:part|chapter|appendix)\s+(?:\d+|[ivxlcdm]+|[a-z])\b|^\d+(?:\.\d+)*\s",
+    # The trailing `\.?` matters: a section is numbered `1.` far more often than
+    # `1`, and without it `1. INTRODUCTION` read as an ordinary title.
+    r"^(?:part|chapter|appendix)\s+(?:\d+|[ivxlcdm]+|[a-z])\b|^\d+(?:\.\d+)*\.?\s",
     re.IGNORECASE,
 )
+# A section number in front of a generic heading does not make it less generic.
+_SECTION_NUMBER = re.compile(r"^\d+(?:\.\d+)*\.?\s+")
 _FRAGMENTED_WORD = re.compile(r"\b[A-Za-z]{1,2}\s+[a-z]\s+[A-Za-z]{2,}\b")
+# Past this many pages a repeated heading is page furniture, not a title.
+_RUNNING_HEAD_PAGES = 4
+# A journal typesets its own citation above the paper's title, and on a page whose
+# real title is glyph-damaged that line is the cleanest heading there is. Two of
+# the three marks must be present, so a title merely carrying a year or a range of
+# numbers is untouched.
+_CITATION_YEAR = re.compile(r"(?<!\d)(?:19|20)\d{2}(?!\d)")
+_CITATION_VOLUME = re.compile(r"\d+\s*\(\s*\d+\s*\)")
+_CITATION_PAGES = re.compile(r"\d+\s*[-\u2010-\u2015]\s*\d+\s*\Z")
 _PLACEHOLDER_AUTHORS = {
     "admin",
     "administrator",
@@ -83,13 +96,29 @@ def _arxiv_year(*sources: str) -> str | None:
 def _title_candidate(value: str | None) -> str | None:
     title = " ".join((value or "").split())
     normalized = title.casefold().strip(" .:-")
-    if not normalized or normalized in _GENERIC_TITLES:
+    if not normalized or _SECTION_NUMBER.sub("", normalized) in _GENERIC_TITLES:
         return None
     if normalized.startswith(_GENERATED_TITLE_PREFIXES):
         return None
     if normalized.endswith(" edition"):
         return None
+    if _is_citation_line(title):
+        return None
     return title
+
+
+def _is_citation_line(title: str) -> bool:
+    """A journal's own citation line, never the paper's title.
+
+    `Palestine Technical University Research Journal, 2026, 14(02), 159-176` is
+    the first heading of its page and outranked the real title, which is
+    bilingual and carries a glyph-fragmentation penalty for its Arabic half."""
+    marks = (
+        bool(_CITATION_YEAR.search(title)),
+        bool(_CITATION_VOLUME.search(title)),
+        bool(_CITATION_PAGES.search(title)),
+    )
+    return sum(marks) >= 2
 
 
 def _title_penalties(title: str) -> list[str]:
@@ -147,6 +176,7 @@ def _ranked_title(candidate: dict) -> dict:
         "probable_glyph_fragmentation": 45,
         "section_like_title": 25,
         "too_short": 20,
+        "running_head": 30,
     }[name] for name in candidate["penalties"])
     score = (
         max(candidate["base_scores"])
@@ -214,25 +244,48 @@ def _title_evidence(pdf_path, blocks: list[Block], embedded: dict, bookmarks) ->
             candidates, rejected, filename, "filename", 32
         )
 
+    first_heading = _candidate_key(headings[0].text) if headings else None
     repeated: dict[str, list[Block]] = {}
     for block in headings:
         repeated.setdefault(_candidate_key(block.text), []).append(block)
-    for group in repeated.values():
+    for key, group in repeated.items():
         if (
-            len(group) >= 2
-            and min(block.page for block in group) <= 10
-            and _candidate_key(group[0].text) in candidates
+            len(group) < 2
+            or min(block.page for block in group) > 10
+            or key not in candidates
         ):
-            first = group[0]
-            _add_title_evidence(
-                candidates,
-                rejected,
-                first.text,
-                "repeated_heading",
-                68,
-                pages=sorted({block.page for block in group}),
-                occurrences=len(group),
-            )
+            continue
+        pages = sorted({block.page for block in group})
+        first = group[0]
+        if len(pages) > _RUNNING_HEAD_PAGES and key != first_heading:
+            # For a journal running head, repetition is the evidence that a
+            # candidate is NOT the title. `CHARLOTTE FROESE FISCHER` is the
+            # author of the 1972 compilation, printed above the text on 30
+            # pages, and it was selected at high quality over the real title
+            # sitting one block earlier on page 1. Across the corpus the two
+            # populations do not overlap: ten correct titles repeat on exactly
+            # two pages and that one wrong title on thirty. A book whose title
+            # is also its running head is exempt by being the first heading.
+            candidates[key]["penalties"] = [
+                *candidates[key]["penalties"], "running_head",
+            ]
+            rejected.append({
+                "value": " ".join(first.text.split()),
+                "source": "repeated_heading",
+                "reason": "running_head",
+                "pages": pages,
+                "occurrences": len(group),
+            })
+            continue
+        _add_title_evidence(
+            candidates,
+            rejected,
+            first.text,
+            "repeated_heading",
+            68,
+            pages=pages,
+            occurrences=len(group),
+        )
 
     running_headers: dict[str, list[Block]] = {}
     for block in blocks:

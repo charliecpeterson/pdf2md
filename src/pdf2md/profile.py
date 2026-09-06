@@ -30,6 +30,11 @@ from pdf2md.schema import (
 from pdf2md.tables import table_has_content
 
 _GRADES = ("high", "medium", "low")  # ordered best -> worst
+# When the remedy line applies: mostly scanned, enough tables to judge, and
+# almost none of them verified.
+_SCANNED_SHARE = 0.5
+_MIN_TABLES_FOR_REMEDY = 4
+_UNVERIFIED_TABLE_SHARE = 0.25
 
 
 def _downgrade(current: str, to: str) -> str:
@@ -580,6 +585,36 @@ def _scorecard_lines(profile: DocumentProfile) -> list[str]:
         "",
         f"Legacy aggregate label: {profile.confidence} (deprecated and uncalibrated).",
         "Evidence sources, calibration status, counts, and notes are in `profile.json`.",
+        "",
+        *_scanned_table_remedy(dimensions),
+    ]
+
+
+def _scanned_table_remedy(dimensions: dict) -> list[str]:
+    """Name the remedy beside the row it explains.
+
+    A reader who sees `Table verification coverage: none (0/82)` on a scan is
+    told what is wrong and not what to do about it, though the measurement
+    exists: on a 99-page 1972 compilation MinerU recovered 99% of the printed
+    grid against Docling's 21%, with 0.6% of value tokens malformed against
+    22.9%. The claim is about scans, so the line is withheld unless the document
+    is one -- on a born-digital paper the same low coverage means something else
+    entirely, and pointing at a different engine would be guesswork."""
+    ocr = dimensions.get("ocr_dependence") or {}
+    tables = dimensions.get("table_verification_coverage") or {}
+    if (ocr.get("ratio") or 0) < _SCANNED_SHARE:
+        return []
+    if tables.get("denominator", 0) < _MIN_TABLES_FOR_REMEDY:
+        return []
+    if (tables.get("ratio") or 0) > _UNVERIFIED_TABLE_SHARE:
+        return []
+    return [
+        "Most of this document is scanned and almost none of its tables verified. "
+        "A second engine reads a scan's tables far better: on a measured 99-page "
+        "compilation MinerU recovered 99% of the printed grid against Docling's "
+        "21%, and 0.6% of value tokens were malformed against 22.9%. Re-run with "
+        "`--engine mineru` where it is installed, or `--force-ocr` as the fallback. "
+        "The source crop beside each table is authoritative either way.",
         "",
     ]
 
