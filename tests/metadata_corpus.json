@@ -96,7 +96,7 @@
     ]
   },
   {
-    "name": "a heading repeated across pages is the running head, not the title",
+    "name": "a heading repeated across pages is the running head, and the author under the title",
     "embedded": {},
     "blocks": [
       {
@@ -136,7 +136,9 @@
       }
     ],
     "expected_title": "AVERAGE-ENERGY-OF-CONFIGURATION HARTREE-FOCK RESULTS FOR THE ATOMS HELIUM TO RADON",
-    "expected_authors": null
+    "expected_authors": [
+      "CHARLOTTE FROESE FISCHER"
+    ]
   },
   {
     "name": "a journal citation line above the title is not the title",
@@ -197,6 +199,104 @@
       }
     ],
     "expected_title": null,
+    "expected_authors": null
+  },
+  {
+    "name": "an affiliation under the title is not an author line",
+    "embedded": {},
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "Energy-consistent pseudopotentials for lanthanides",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "Department of Applied Analysis and Computer Science University of Waterloo",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "Numerical results are reported.",
+        "page": 1
+      }
+    ],
+    "expected_title": "Energy-consistent pseudopotentials for lanthanides",
+    "expected_authors": null
+  },
+  {
+    "name": "authors printed one per block are read as one list",
+    "embedded": {},
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "Extended tight-binding quantum chemistry methods",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "Christoph Bannwarth 1",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "|",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "Eike Caldeweyher 2",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "2",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "Stefan Grimme 2",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "1 Department of Chemistry, Stanford University, Stanford",
+        "page": 1
+      }
+    ],
+    "expected_title": "Extended tight-binding quantum chemistry methods",
+    "expected_authors": [
+      "Christoph Bannwarth",
+      "Eike Caldeweyher",
+      "Stefan Grimme"
+    ]
+  },
+  {
+    "name": "a volume line under a book title is not an author",
+    "embedded": {},
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "QUANTUM THEORY OF ATOMIC STRUCTURE",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "VOLUME I",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "John C. Slater",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "Institute Professor Massachusetts Institute of Technology",
+        "page": 1
+      }
+    ],
+    "expected_title": "QUANTUM THEORY OF ATOMIC STRUCTURE",
     "expected_authors": null
   }
 ]

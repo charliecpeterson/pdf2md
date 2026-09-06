@@ -478,6 +478,24 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   on scanned pages with no layer to count; those go silent rather than being reported,
   because band overlap on its own was never evidence. The PDF is opened lazily, only
   once a page produces a candidate.
+- **The author line is the block under the title, and so is the affiliation.** Local author
+  extraction existed but needed an `Affiliations` heading to bound the region, which one
+  corpus document in 37 prints, so 30 of 37 reported no authors at all while naming them in
+  the emitted markdown. Anchoring on the title instead covers the rest, but only because the
+  name parser is all-or-nothing: the affiliation-bounded reading can collect the parts that
+  look like names and drop the others, since nothing else lives in that region, while a line
+  chosen for its position cannot -- `Department of Applied Analysis and Computer Science
+  University of Waterloo` is otherwise four capitalized words joined by `and`. So one part
+  that is not a name disqualifies the line, on an institution word, a function word, a digit
+  that survives marker-stripping, or a lowercase initial. The run must also start at the
+  first block under the title and continue while each block is names or a bare separator: a
+  journal that gives each author its own block with `|` between them yields eight, and
+  answering with the first would be a wrong author list, not a partial one (the stranded `2`
+  affiliation markers are why the separator pattern takes digits). Measured over 37 bundles,
+  10 documents gain a correct author list, none lose or change one. Two books were the only
+  false positives, both `VOLUME I` -- a book's front matter is what sits under its title, so
+  those words are in the same stoplist as the function words. Slater's real author is one
+  block further down and is not claimed: the run starts where it starts.
 - **Repetition is what makes a journal running head *not* the title.** `repeated_heading`
   counted it as support, so `CHARLOTTE FROESE FISCHER` -- the author of a 1972 compilation,
   printed above the text on 30 pages -- was selected as the title at high quality over the
