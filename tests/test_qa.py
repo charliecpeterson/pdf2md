@@ -61,8 +61,12 @@ def test_check_gates_on_missing_baseline_document():
 
 
 def test_check_gates_on_source_hash_mismatch():
-    baseline = {"d.pdf": {"source_sha256": "expected", "accounted_for": True}}
-    current = {"d.pdf": {"source_sha256": "different", "accounted_for": True}}
+    # Keyed by the source hash, as `_collect` writes it; `source` is the path the
+    # conversion was given and is what a reader is shown.
+    baseline = {"abc": {"source": "d.pdf", "source_sha256": "expected",
+                        "accounted_for": True}}
+    current = {"abc": {"source": "d.pdf", "source_sha256": "different",
+                       "accounted_for": True}}
     assert qa._check(current, baseline) == [
         "d.pdf: source_sha256 expected -> different"
     ]

@@ -238,7 +238,11 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
                 eval_recall_precision.py / eval_reading_order_precision.py /
                 eval_table_rows_precision.py / eval_symbol_precision.py (poppler as an independent
                 adjudicator for the four checks with no labelled set — each documents the blind
-                spot that makes it refuse rather than guess), eval_equations.py, eval_accuracy.py,
+                spot that makes it refuse rather than guess),
+                eval_metadata_precision.py (the DOI registry as the adjudicator for titles and
+                authors; the request carries the DOI and nothing else, and the oracle is partial
+                — a supplementary file prints its parent article's DOI, and a registry title
+                carries the publisher's markup), eval_equations.py, eval_accuracy.py,
                 agent_benchmark.py.
                 qa.py reports the verification signals (flagged tables, reading-order and
                 split-line pages, low-recall and accent-damaged blocks) as drift, never as
@@ -544,6 +548,19 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   the corpus it accepts 36, among them `Attention Is All You Need`, `SELF-CONSISTENT FIELD
   METHODS` and `II. METHODS`, so using it to veto an author-shaped title (`Oleg Borodin*`
   outranks its paper's real title) would take most correct titles with it.
+- **A title is more than one word, and it is not the author line.** Measured against the
+  DOI registry (`eval_metadata_precision.py`), 11 of 13 checkable titles and 9 of 9 checkable
+  author lists already agreed; the two title mismatches are the oracle's own limits, a manual
+  citing another paper's DOI and a registry title carrying `<scp>` markup. On a second corpus
+  it refuted three, and two were single words -- `AEUROPEANJOURNAL`, `insight`. Of 284
+  distinct title candidates corpus-wide, 29 are a single word and not one is a title: section
+  headings, journal banners, filenames. Separately, `matches_embedded_author` only caught a
+  heading equal to one author's name, so the whole author line (`Qing Lu and Kirk A Peterson
+  a)`) sailed past; requiring every *embedded* surname to appear catches it and stays anchored
+  on evidence the page did not supply, so it cannot fold back into the heuristics it corrects
+  — 3 corpus candidates match, all author lines, no real title. Still unfixed and left alone
+  rather than guessed at: `C3DT50599E 8617..8636 ++`, a publisher production string, which
+  no rule short of one written for it would catch.
 - **Repetition is what makes a journal running head *not* the title.** `repeated_heading`
   counted it as support, so `CHARLOTTE FROESE FISCHER` -- the author of a 1972 compilation,
   printed above the text on 30 pages -- was selected as the title at high quality over the

@@ -130,6 +130,13 @@ def _title_candidate(value: str | None) -> str | None:
         return None
     if _is_citation_line(title):
         return None
+    if len(title.split()) < 2:
+        # Measured over 284 corpus title candidates, 29 are a single word and not
+        # one of them is a title: section headings (`METHODS`, `Preface`), journal
+        # furniture (`ACCESS`, `CITATION`, `AEUROPEANJOURNAL`), and filenames
+        # (`ct400952t`, `Untitled-1`). Two of the three titles the DOI registry
+        # refuted were this shape.
+        return None
     if not any(char.isalpha() for char in title):
         # `3.3, 3.5` is a fragment of a category listing, and it beat
         # `MARCHING CUBES: A HIGH RESOLUTION 3D SURFACE CONSTRUCTION ALGORITHM`
@@ -248,9 +255,22 @@ def _title_evidence(pdf_path, blocks: list[Block], embedded: dict, bookmarks) ->
         for part in _AUTHOR_SPLIT.split(embedded.get("Author") or "")
         if part.strip()
     }
+    # An exact key match only catches a heading that is one author's name alone.
+    # `Qing Lu and Kirk A Peterson a)` is the whole author line, ORCID marker and
+    # all, and it outranked its paper's real title. Requiring every embedded
+    # surname to appear keeps the rule anchored on evidence the page did not
+    # supply -- the PDF's own Author field -- so it cannot fold back into the
+    # heuristics it is correcting. Measured over the corpus it matches three
+    # candidates, all author lines, no real title.
+    embedded_surnames = {
+        key.split()[-1] for key in embedded_author_names if key.split()
+    }
     for block in headings:
         if block.page <= 4:
-            if _candidate_key(block.text) in embedded_author_names:
+            words = set(_candidate_key(block.text).split())
+            if _candidate_key(block.text) in embedded_author_names or (
+                embedded_surnames and embedded_surnames <= words
+            ):
                 rejected.append({
                     "value": " ".join(block.text.split()),
                     "source": "front_heading",

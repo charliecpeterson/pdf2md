@@ -89,14 +89,10 @@ def _signals(version_dir: Path) -> dict | None:
     total = len(blocks)
     buckets = status("emitted") + status("cropped") + status("flagged") + status("dropped")
     return {
-        # The readable name for a human. `source_path` is whatever path the
-        # conversion was given, which is `source.pdf` for every bundle
-        # reconverted from its own copy -- useless in a table of 37 rows -- so
-        # the bundle directory stands in when it says nothing.
-        "source": (
-            name if (name := Path(d.get("source_path", "")).name) not in ("", "source.pdf")
-            else version_dir.parent.name
-        ),
+        # The path the conversion was given, kept as a path: `tests/
+        # test_corpus_hashes.py` resolves it, so a readable label must not be
+        # written here. `_label` is the display name instead.
+        "source": d.get("source_path") or version_dir.parent.name,
         "source_sha256": d.get("source_sha256", ""),
         # Which build produced this bundle. Not compared as an invariant -- it
         # moves on every code change -- but reported, so "no regressions" cannot
@@ -158,6 +154,15 @@ def _verification_signals(version_dir: Path) -> dict:
     }
 
 
+def _label(sig: dict) -> str:
+    """What to print for a document. `source_path` is whatever path the
+    conversion was handed -- `source.pdf` for every bundle reconverted from its
+    own copy, useless in a table of 37 rows -- so the bundle directory stands in
+    when the basename says nothing."""
+    name = Path(sig.get("source", "")).name
+    return sig.get("directory", name) if name in ("", "source.pdf") else name
+
+
 def _collect(out_dir: Path) -> dict[str, dict]:
     """Keyed by `source_sha256`, which is what identifies a document here.
 
@@ -191,7 +196,7 @@ def _print_table(sigs: dict[str, dict]) -> None:
     print(hdr)
     print("-" * len(hdr))
     for s in sigs.values():
-        print(f"{s['source'][:28]:28s} {s['pages']:3d} {s['blocks']:4d} "
+        print(f"{_label(s)[:28]:28s} {s['pages']:3d} {s['blocks']:4d} "
               f"{('OK' if s['accounted_for'] else 'NO'):>4} "
               f"{('OK' if s['complete'] else 'NO'):>4} {s['dropped']:4d} {s['orphaned_crops']:4d} "
               f"{s['eq_total']:3d} {s['eq_image_backed']:3d} {s['ocr_pages']:3d} "
@@ -211,7 +216,7 @@ def _print_table(sigs: dict[str, dict]) -> None:
                    ("tables_flagged", "order_pages", "split_line_pages",
                     "low_recall", "accent_damaged")):
             continue
-        print(f"{s['source'][:28]:28s} {s.get('tables_flagged', 0):4d} "
+        print(f"{_label(s)[:28]:28s} {s.get('tables_flagged', 0):4d} "
               f"{s.get('order_pages', 0):5d} {s.get('order_proven', 0):6d} "
               f"{s.get('split_line_pages', 0):5d} {s.get('low_recall', 0):6d} "
               f"{s.get('accent_damaged', 0):6d}")
@@ -220,10 +225,10 @@ def _print_table(sigs: dict[str, dict]) -> None:
 def _check(sigs: dict[str, dict], baseline: dict[str, dict]) -> list[str]:
     regressions: list[str] = []
     for source, cur in sigs.items():
-        name = cur.get("source", source)
+        name = _label(cur) or source
         base = baseline.get(source)
         if base is None:
-            print(f"  NEW: {cur['source']} (no baseline)")
+            print(f"  NEW: {_label(cur)} (no baseline)")
             continue
         expected_hash = base.get("source_sha256")
         if expected_hash and cur.get("source_sha256") != expected_hash:

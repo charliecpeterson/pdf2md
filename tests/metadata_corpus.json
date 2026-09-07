@@ -326,5 +326,55 @@
     ],
     "expected_title": "MARCHING CUBES: A HIGH RESOLUTION 3D SURFACE CONSTRUCTION ALGORITHM",
     "expected_authors": null
+  },
+  {
+    "name": "a single-word candidate is not a title",
+    "embedded": {},
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "AEUROPEANJOURNAL",
+        "page": 1
+      },
+      {
+        "type": "heading",
+        "text": "Polyhedral Structures with an Odd Number of Vertices",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "Nine-coordinate compounds are surveyed.",
+        "page": 1
+      }
+    ],
+    "expected_title": "Polyhedral Structures with an Odd Number of Vertices",
+    "expected_authors": null
+  },
+  {
+    "name": "a heading holding every embedded author surname is the author line",
+    "embedded": {
+      "Author": "Kirk Peterson"
+    },
+    "blocks": [
+      {
+        "type": "heading",
+        "text": "Qing Lu and Kirk A Peterson",
+        "page": 1
+      },
+      {
+        "type": "heading",
+        "text": "Correlation consistent basis sets for the lanthanides",
+        "page": 1
+      },
+      {
+        "type": "paragraph",
+        "text": "Basis sets are reported here.",
+        "page": 1
+      }
+    ],
+    "expected_title": "Correlation consistent basis sets for the lanthanides",
+    "expected_authors": [
+      "Kirk Peterson"
+    ]
   }
 ]
