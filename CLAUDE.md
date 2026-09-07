@@ -47,6 +47,10 @@ src/pdf2md/
   run_metrics.py sequential stage timings and work counts stored with provenance.
   logging.py    ... `Progress.heartbeat` takes a callable, so a long blocking stage that can
                 count its own progress reports the count instead of only that it is alive.
+  pipeline.py   ... `--engine auto` picks MinerU for a scan and Docling otherwise, deciding
+                from `GlyphIndex` rather than from pdfium's text presence: an OCR-overlay
+                scan has invisible text on every page and reads as 0% scanned otherwise.
+                The batch path cannot share one engine under `auto`.
   cli.py        Typer surface (convert / enrich / coverage / compare-runs / list /
                 review-tables / prune / version / doctor / models / line-reader).
   models.py     model warm-up and offline/reproducible local snapshots.

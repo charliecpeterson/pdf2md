@@ -366,7 +366,7 @@ def test_matching_run_with_failed_optional_calls_is_retried(tmp_path, monkeypatc
 def test_convert_reports_engine_setup_failure_without_raising(tmp_path, monkeypatch):
     monkeypatch.setenv("PDF2MD_OUT", str(tmp_path / "out"))
 
-    def fail_setup(engine, config):
+    def fail_setup(engine, config, pdf_path=None):
         raise RuntimeError("missing Python.h")
 
     monkeypatch.setattr("pdf2md.pipeline._get_engine", fail_setup)

@@ -178,8 +178,10 @@ class Config:
     passage_max_tokens: int = 512
 
     def __post_init__(self) -> None:
-        if self.engine not in {"docling", "mineru", "marker"}:
-            raise ValueError("engine must be 'docling', 'mineru' or 'marker'")
+        if self.engine not in {"docling", "mineru", "marker", "auto"}:
+            raise ValueError(
+                "engine must be 'docling', 'mineru', 'marker' or 'auto'"
+            )
         if self.engine in {"mineru", "marker"} and self.ocr_page_vlm:
             raise ValueError(
                 "--ocr-page-vlm cannot be combined with the MinerU engine; "

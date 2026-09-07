@@ -60,7 +60,9 @@ def convert(
         rich_help_panel="Input and output",
     ),
     engine: str = typer.Option(
-        None, "--engine", help="Parser backend: docling (default), mineru or marker.",
+        None, "--engine",
+        help="Parser backend: docling (default), mineru, marker, or auto "
+             "(mineru for a scan where it is installed, docling otherwise).",
         rich_help_panel="Input and output",
     ),
     marker_executable: str = typer.Option(

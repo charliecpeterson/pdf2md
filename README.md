@@ -309,6 +309,12 @@ Grouped by what they touch. All are flags to `convert`.
   figure OCR. Table cells, audits and crops are unaffected. Measured at 27% off a 28-page
   scan; the parse dominates, so it trims rather than transforms
 - `--engine mineru` — use MinerU's native structure for scans and difficult tables/equations
+- `--engine auto` — Docling for a born-digital document, MinerU for a scan where its
+  executable is configured and installed. The decision reads the PDF's own text layer
+  through `GlyphIndex`, so a digitised scan carrying someone else's OCR is still a scan;
+  a plain text-presence test calls a 99-page overlay scan 0% scanned. Never fails a run
+  over an absent optional engine: it warns and uses Docling. In directory mode the
+  decision is made per document, so the batch does not share one engine.
 - `--engine marker` — use Marker, the best-reading option; needs `--marker-executable` and a
   running inference server (see Installation)
 - `--mineru-executable PATH` — MinerU CLI in its separate environment
