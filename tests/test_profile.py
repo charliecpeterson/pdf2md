@@ -604,7 +604,7 @@ def test_a_scan_whose_tables_all_failed_is_told_which_engine_reads_them():
     lines = _scanned_table_remedy(dimensions)
 
     assert "--engine mineru" in lines[0] and "--force-ocr" in lines[0]
-    assert "99% of the printed grid against Docling's 21%" in lines[0]
+    assert "217 tables against Docling's 138" in lines[0]
 
 
 def test_a_born_digital_document_is_not_pointed_at_another_engine():

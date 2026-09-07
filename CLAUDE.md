@@ -675,6 +675,20 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   44 documents and 828 pages, the pair flags 30/30 pages of a 1972 scan and nothing else.
   `page_chars` then reports those pages as having no layer, so the existing scanned-page
   machinery takes over.
+- **MinerU reads a scan's tables better, and the claim now has ten documents behind it.**
+  It was one: a 1972 compilation where MinerU recovered 99% of the printed grid against
+  Docling's 21%. Converting ten scanned documents (251 pages) both ways on one machine at
+  one revision -- engine the only variable -- MinerU finds **217 tables against 138**,
+  carries a structural finding on **51% of them against 92%**, recovers **12% more clean
+  value tokens at a lower malformed rate** (5.3% against 7.7%), and runs in **19 minutes
+  against 31**. It never found fewer tables on any document. The per-kind split says where
+  the difference lives: `merged_cells` 91 -> 2, `shifted_values` 64 -> 12,
+  `header_absorbed_data` 7 -> 0, while `row_count` is level (105 -> 98) and
+  `decimal_separator_lost` is worse (6 -> 12). `table_verification_coverage` stays 0/N for
+  both, because on a scan the crop is authoritative and every cell is a candidate -- the
+  structural findings are the discriminator, not the coverage row. **Read MinerU's table
+  artifacts as `mineru_<page>_table_<n>.json`**, not `tables_*.json`: globbing the Docling
+  shape made every MinerU finding vanish and the engine read as flawless.
 - **Detecting the overlay fixes the posture, not the transcription.** The kept text is still
   whoever digitised the paper, and on an old scan that is the worst reading available.
   Measured over all 99 pages of a 1972 data table, scored against the printed row grid the

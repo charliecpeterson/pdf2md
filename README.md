@@ -73,7 +73,7 @@ the source crops make every uncertain claim inspectable.
 | Problem | Current approach | Status and boundary |
 |---|---|---|
 | General PDF structure | Docling layout, reading order, tables, formulas, and bounding boxes | Default production path for born-digital documents. |
-| Scans and difficult tables/equations | MinerU native structure through a separate CLI environment | Production option selected by the labelled bake-off; not run as a blanket second parser. |
+| Scans and difficult tables/equations | MinerU native structure through a separate CLI environment | Production option selected by the labelled bake-off; not run as a blanket second parser. Measured over ten scanned documents converted both ways on one machine at one revision: 217 tables against Docling's 138, a structural finding on 51% of them against 92%, 12% more clean values at a lower malformed rate (5.3% against 7.7%), in 19 minutes against 31. It never found fewer tables on any document. |
 | Best measured reading quality | Marker's JSON block tree through a separate CLI environment | Opt-in. Reads better than Docling on every olmOCR-bench subset (71.5% against 55.4% through pdf2md) and is the only engine here that emits inline mathematics as LaTeX. Needs a GPU inference server, and its output is not reproducible run to run, so the `qa.py --check` invariants cannot be enforced against it. |
 | Page rendering and exact PDF evidence | PDFium through pypdfium2 for glyphs, page rasters, crops, outlines, and vector objects | Production evidence layer, independent of the parser adapter. |
 | Clean scanned prose | RapidOCR followed by conservative punctuation repair and English word re-splitting | Default offline fallback. Word splitting is disabled for non-English scans. |

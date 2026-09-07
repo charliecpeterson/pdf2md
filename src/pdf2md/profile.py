@@ -646,11 +646,13 @@ def _scanned_table_remedy(dimensions: dict) -> list[str]:
         return []
     return [
         "Most of this document is scanned and almost none of its tables verified. "
-        "A second engine reads a scan's tables far better: on a measured 99-page "
-        "compilation MinerU recovered 99% of the printed grid against Docling's "
-        "21%, and 0.6% of value tokens were malformed against 22.9%. Re-run with "
-        "`--engine mineru` where it is installed, or `--force-ocr` as the fallback. "
-        "The source crop beside each table is authoritative either way.",
+        "A second engine reads a scan's tables better: over ten scanned documents "
+        "converted both ways on one machine, MinerU found 217 tables against "
+        "Docling's 138, carried a structural finding on 51% of them against 92%, "
+        "recovered 12% more clean values with a lower malformed rate (5.3% against "
+        "7.7%), and ran in 19 minutes against 31. Re-run with `--engine mineru` "
+        "where it is installed, or `--force-ocr` as the fallback. The source crop "
+        "beside each table is authoritative either way.",
         "",
     ]
 
