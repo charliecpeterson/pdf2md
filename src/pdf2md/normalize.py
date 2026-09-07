@@ -79,7 +79,7 @@ _LIGATURE_BYTE = re.compile(r"[\x02\x1b-\x1f]")
 
 
 def expand_ligature_glyphs(text: str) -> str:
-    """Map a broken TeX font's control-byte f-ligatures back to letters.
+    r"""Map a broken TeX font's control-byte f-ligatures back to letters.
 
     Only inside a word. The same slots mean other things in other TeX fonts --
     0x1C is `fi` in an OT1 text font and the relation the maths font draws for
