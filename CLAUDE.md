@@ -683,8 +683,15 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   value tokens at a lower malformed rate** (5.3% against 7.7%), and runs in **19 minutes
   against 31**. It never found fewer tables on any document. The per-kind split says where
   the difference lives: `merged_cells` 91 -> 2, `shifted_values` 64 -> 12,
-  `header_absorbed_data` 7 -> 0, while `row_count` is level (105 -> 98) and
-  `decimal_separator_lost` is worse (6 -> 12). `table_verification_coverage` stays 0/N for
+  `header_absorbed_data` 7 -> 0, `row_count` level (105 -> 98). **`decimal_separator_lost`
+  reads 6 -> 12 and that comparison is invalid**: the check needs a column of mostly-decimal
+  values to judge at all, and Docling's grids offer one in 13 of 138 tables against MinerU's
+  155 of 217 (on the 1972 compilation, 3 of 82 against 143 of 144). Per table the check can
+  actually judge it is 46% against 8% -- MinerU is six times better on the axis the raw
+  counts called worse. Docling's zero there is a grid too collapsed to have a decimal column,
+  not a grid without lost decimals. Counting findings across two engines only compares
+  populations the checks could reach equally.
+  `table_verification_coverage` stays 0/N for
   both, because on a scan the crop is authoritative and every cell is a candidate -- the
   structural findings are the discriminator, not the coverage row. **Read MinerU's table
   artifacts as `mineru_<page>_table_<n>.json`**, not `tables_*.json`: globbing the Docling
