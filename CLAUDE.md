@@ -239,6 +239,12 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
                 eval_table_rows_precision.py / eval_symbol_precision.py (poppler as an independent
                 adjudicator for the four checks with no labelled set — each documents the blind
                 spot that makes it refuse rather than guess),
+                eval_table_audit_cross_engine.py (a second engine over the same scans; its
+                pre-registered claim was refuted and the docstring says why -- two engines
+                OCR the same ink and recover the same *values* while arranging them
+                differently, and arrangement is what the audit is about, so a value-multiset
+                comparison is orthogonal to it. Also: Docling flags 127 of 138 tables on
+                scans, leaving a control of ten, so its audit cannot be scored there at all),
                 eval_metadata_precision.py (the DOI registry as the adjudicator for titles and
                 authors; the request carries the DOI and nothing else, and the oracle is partial
                 — a supplementary file prints its parent article's DOI, and a registry title
