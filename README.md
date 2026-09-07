@@ -78,10 +78,11 @@ the source crops make every uncertain claim inspectable.
 | Page rendering and exact PDF evidence | PDFium through pypdfium2 for glyphs, page rasters, crops, outlines, and vector objects | Production evidence layer, independent of the parser adapter. |
 | Clean scanned prose | RapidOCR followed by conservative punctuation repair and English word re-splitting | Default offline fallback. Word splitting is disabled for non-English scans. |
 | Whole-page OCR | OCR-focused VLM through an OpenAI-compatible endpoint | Opt-in. It can improve page text but collapses table, equation, and caption structure into one Markdown block. |
-| Equations | Docling LaTeX checked against the embedded text layer; suspect results become image-backed | Production. Surya re-transcription and Matplotlib render-back comparison are opt-in evidence. |
+| Equations | Docling LaTeX checked against the embedded text layer; suspect results become image-backed | Production. Surya re-transcription and Matplotlib render-back comparison are opt-in evidence. `Equation text coverage` counts only equations whose text stands without the crop, so a scan reads `none (0/11)` with all 11 LaTeX strings present: every formula-enabled document in the corpus transcribes 100% of its equations, and what varies is how many the page's own layer could confirm. A page with no layer cannot judge its equations either, so those findings are informational. |
 | Scans carrying an OCR text layer | Detected from a full-page image plus invisible (render-mode-3) text, and treated as a scan | Production. This is the one case where a text layer exists but is not the page's own words, so every glyph check would otherwise confirm the engine's errors instead of catching them. |
 | Reading order | Page columns recovered from block geometry, plus the document's own numbering where a page carries an unbroken run of ordinals | Production. The rest of the audit is order-insensitive by design, so an interleaved two-column page conserves every word and number and still reads as nonsense. The numbering path is proof rather than inference but only covers bibliographies the engine emits one entry per block; the geometric path covers the rest. |
 | Prose against the text layer | Per-block word recall on a script-split, hyphen-joined reading, with accent damage separated from missing words | Production. Missing words are an action beside the block; lost diacritics are recorded without burying a bibliography in markers. |
+| Symbols in prose | Greek letters and math operators present in the block's glyph region and absent from its emitted text | Production, reported never repaired. Word recall cannot see this: a 200-word paragraph that loses one `χ` scores 0.995 and passes, so 40 blocks across a 28-paper corpus drop a symbol and 4 of them are low-recall as well. Measured at 0.97 precision against poppler, with 0.3% of loss going unraised. |
 | Born-digital tables | Engine grid checked cell-by-cell against PDF glyphs, plus a row-level audit that projects the page's own ink into rows and accounts for every value in it | Production verification. A dropped, merged, or shifted row is named in the Markdown, in every derived artifact, and in `review.md`; the glyph-truth reading of the same region ships beside the engine's grid. |
 | Scanned numeric tables | Crop-authoritative table artifacts, normalized candidates, optional Tesseract comparison, exact external references, and deterministic review sheets | Production is evidence-first. Reader agreement, scientific relations, and validators never silently replace a value. |
 | Experimental table readers | PP-OCRv6/PaddleOCR-VL, projection-derived crops, fixed-font glyph atlases, and row/column recovery | Evaluation-only or separate non-mutating overlays. The measured corpus does not justify automatic OCR value promotion. |
@@ -799,6 +800,15 @@ out/<source-name>-<doc_id[:8]>/
 - `<block>.glyph.md` is the table region read straight out of the glyph layer, in the
   engine's columns: measured rows against a modelled grid. It is never the emitted
   table, and exists so a suspect row can be diffed rather than trusted.
+- A table typeset as repeated side-by-side panels is emitted one grid per panel, and any
+  row the split could not confidently assign to a panel is listed below them, unassigned,
+  under a marker naming the reason. Those rows are printed data: dropping them cost one
+  118-element table 22 numbers, `53 | I | 32.90(10) | 4.2049(18)` among them. The merged
+  grid in the table artifact keeps every row in its printed place.
+- A running header or footer the engine swallowed into a table is named as a finding. One
+  table cannot tell it from its own spanning title -- both render as the same string in
+  every column -- so the discriminator is the rest of the document: a running line repeats
+  verbatim across pages and a table's title does not.
 - `doc_id` is the SHA-256 of the source bytes. A completed version is reused only when
   its run fingerprint also matches the effective configuration, pdf2md implementation,
   engine identity, dependency versions, model identifiers, and prompt/cache schema.
@@ -930,6 +940,14 @@ out/<source-name>-<doc_id[:8]>/
 - **Sub/superscripts** are recovered from glyph geometry on born-digital pages, on by
   default. A residual ceiling remains where the engine renders an exponent unlike the
   raw glyphs.
+- **Dropped symbols are reported, not repaired.** Where the engine loses a Greek letter
+  or math operator from prose, the block carries a marker naming the characters. That
+  one is missing is certain; where to reinsert it is not, so the text is left as the
+  engine produced it and the source page stays the reference.
+- **A block of one or two characters that will not decode is a marginal mark, not lost
+  prose.** A journal's decorative footer glyph is flagged as an `undecodable fragment` at
+  informational severity rather than as an illegible paragraph, so `illegible_blocks`
+  counts text a reader actually lost.
 - **Book splitting depends on structural evidence.** Chapter bookmarks are preferred;
   numbered heading fallback is limited to Part containers to avoid turning references,
   index entries, or incidental “Chapter N” text into files. PDFs with neither signal
@@ -969,6 +987,12 @@ out/<source-name>-<doc_id[:8]>/
 - **Reader agreement is not ground truth.** OCR candidates can contain a plausible
   wrong digit that two readers share. The crop remains authoritative unless a cell
   matches a pinned external reference or a human verifies it.
+
+The `Unresolved error severity` row reports its mass, not only its worst item:
+`high (1 high, 3 medium, 8 low; 12 action items)`. A severity alone saturates — a
+paper whose single high finding is one reading-order glitch reads exactly like a
+346-page supplement with contaminated data cells — and the breakdown is what makes a
+stack of documents rankable.
 
 ## Methods and references
 
