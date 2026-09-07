@@ -89,7 +89,14 @@ def _signals(version_dir: Path) -> dict | None:
     total = len(blocks)
     buckets = status("emitted") + status("cropped") + status("flagged") + status("dropped")
     return {
-        "source": Path(d.get("source_path", version_dir.name)).name,
+        # The readable name for a human. `source_path` is whatever path the
+        # conversion was given, which is `source.pdf` for every bundle
+        # reconverted from its own copy -- useless in a table of 37 rows -- so
+        # the bundle directory stands in when it says nothing.
+        "source": (
+            name if (name := Path(d.get("source_path", "")).name) not in ("", "source.pdf")
+            else version_dir.parent.name
+        ),
         "source_sha256": d.get("source_sha256", ""),
         # Which build produced this bundle. Not compared as an invariant -- it
         # moves on every code change -- but reported, so "no regressions" cannot
@@ -152,11 +159,28 @@ def _verification_signals(version_dir: Path) -> dict:
 
 
 def _collect(out_dir: Path) -> dict[str, dict]:
+    """Keyed by `source_sha256`, which is what identifies a document here.
+
+    The filename was the key and is not an identity: it is whatever path the
+    conversion happened to be given. Reconverting the corpus from each bundle's
+    own `source.pdf` rewrote every `source_path` to that name, and the gate then
+    reported 30 documents "missing output" while their bundles sat in front of
+    it -- a run that gates nothing and exits 0. The same PDF also lives under two
+    directories here (`cc30d2877cfb32b4` and its readable-name twin), which one
+    filename cannot tell apart and one hash can."""
     out: dict[str, dict] = {}
     for doc_dir in sorted(p for p in out_dir.iterdir() if p.is_dir()):
         sig = _latest_signals(doc_dir)
-        if sig:
-            out[sig["source"]] = sig
+        if not sig:
+            continue
+        key = sig.get("source_sha256") or sig["source"]
+        # Two directories, one document: keep the freshly converted one, which
+        # is the one a --check is about.
+        if key not in out or sig.get("implementation_sha256") != out[key].get(
+            "implementation_sha256"
+        ) and doc_dir.name != out[key].get("directory"):
+            sig["directory"] = doc_dir.name
+            out[key] = sig
     return out
 
 
@@ -196,24 +220,30 @@ def _print_table(sigs: dict[str, dict]) -> None:
 def _check(sigs: dict[str, dict], baseline: dict[str, dict]) -> list[str]:
     regressions: list[str] = []
     for source, cur in sigs.items():
+        name = cur.get("source", source)
         base = baseline.get(source)
         if base is None:
-            print(f"  NEW: {source} (no baseline)")
+            print(f"  NEW: {cur['source']} (no baseline)")
             continue
         expected_hash = base.get("source_sha256")
         if expected_hash and cur.get("source_sha256") != expected_hash:
             regressions.append(
-                f"{source}: source_sha256 {expected_hash} -> {cur.get('source_sha256') or 'missing'}"
+                f"{name}: source_sha256 {expected_hash} -> {cur.get('source_sha256') or 'missing'}"
             )
         expected_accounted = base.get("accounted_for", base.get("lossless"))
         if expected_accounted and not cur["accounted_for"]:
-            regressions.append(f"{source}: accounted_for True -> False")
+            regressions.append(f"{name}: accounted_for True -> False")
         for key in _INVARIANTS:
             if cur.get(key, 0) > base.get(key, 0):
-                regressions.append(f"{source}: {key} {base.get(key, 0)} -> {cur.get(key, 0)}")
+                regressions.append(f"{name}: {key} {base.get(key, 0)} -> {cur.get(key, 0)}")
     for source in sorted(baseline.keys() - sigs.keys()):
-        print(f"  MISSING: {source} (in baseline, not in outputs)")
-        regressions.append(f"{source}: missing output")
+        print(f"  MISSING: {baseline[source].get('source', source)} "
+              "(in baseline, not in outputs)")
+        regressions.append(
+            f"{baseline[source].get('source', source)}: missing output")
+    compared = len(sigs.keys() & baseline.keys())
+    print(f"\n  compared {compared} of {len(sigs)} bundle(s) against "
+          f"{len(baseline)} baseline entries")
     _report_staleness(sigs)
     return regressions
 

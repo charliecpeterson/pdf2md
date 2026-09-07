@@ -242,7 +242,13 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
                 agent_benchmark.py.
                 qa.py reports the verification signals (flagged tables, reading-order and
                 split-line pages, low-recall and accent-damaged blocks) as drift, never as
-                invariants: a document is not worse for having its defects noticed.
+                invariants: a document is not worse for having its defects noticed. It keys
+                the baseline on `source_sha256`, not the filename — a filename is whatever
+                path a conversion was handed, and reconverting the corpus from each bundle's
+                own `source.pdf` renamed every document to `source.pdf`, at which point the
+                gate reported 30 documents "missing output" while their bundles sat in front
+                of it and still exited 0. The same PDF also lives under two directories here,
+                which one filename cannot tell apart and one hash can.
 ```
 
 ## Conventions
