@@ -3,22 +3,28 @@
 Development harnesses. None of this ships: `pyproject.toml` packages `src/pdf2md`
 only, and nothing here is imported by the library.
 
-There are 72 of them, 22.9k lines — more code than `src/` holds. That is not
-sprawl, it is the project's actual asset. Every claim in `CLAUDE.md` and `docs/`
-that carries a number was produced by something in here, and the 84 label and
-corpus files in `tests/` are what those numbers are measured against. A finding
-with no harness behind it is an opinion.
+There are 83 of them, 24.2k lines — slightly more code than `src/` holds. That is
+not sprawl, it is the project's actual asset. Every claim in `CLAUDE.md` and
+`docs/` that carries a number was produced by something in here, and the 84 label
+and corpus files in `tests/` are what those numbers are measured against. A
+finding with no harness behind it is an opinion.
+
+Pruning was considered on 2026-09-08 and rejected on the evidence: 55 of the 81
+Python harnesses are exercised by a test in `tests/`, and of the rest only
+`eval_digitize_ocr_gate.py` is named nowhere outside itself — and its results are
+`docs/digitize-ocr-gate-*.json`. A harness whose measurement is still cited is
+live code however long ago it last ran.
 
 ## What is here
 
 | prefix | count | what it does |
 |---|---|---|
-| `eval_*` | 55 | scores one behaviour against labels, an independent reader, or a second engine |
-| `benchmark_*`, `benchmark.py` | 3 | timing and end-use question answering, not correctness |
+| `eval_*` | 58 | scores one behaviour against labels, an independent reader, or a second engine |
+| `benchmark_*`, `benchmark.py` | 2 | timing and end-use question answering, not correctness |
 | `build_*` | 2 | generates a synthetic corpus with known ground truth |
 | `mine_*` | 2 | finds candidate cases worth labelling by hand |
-| `run_*` | 3 | drives an external tool (a reference implementation, a separate OCR env) |
-| the rest | 7 | `qa.py` (the regression gate), bakeoff scoring, one-off preparation |
+| `run_*` | 6 | drives an external tool (a reference implementation, a separate OCR env) |
+| the rest | 13 | `qa.py` (the regression gate), bakeoff scoring, one-off preparation |
 
 ## The distinction that matters
 

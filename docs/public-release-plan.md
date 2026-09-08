@@ -189,11 +189,17 @@ mine_pdf_parse_bench_cells.py
 run_atsp_hf_reference.py
 ```
 
-Each is a one-off probe whose result, if it mattered, is already in
-`CLAUDE.md` or `docs/`. Delete them; git has them. Then go through the rest with
-one question: is it a gate (run by CI or before a release), a harness (cited by
-a measurement in the docs), or a probe (ran once)? Gates and harnesses stay and
-get listed in `scripts/README.md`; probes go. A reasonable target is thirty.
+**Checked 2026-09-08 and rejected.** The eight came from grepping a narrow set
+of documents. Widening it: `eval_pdf_parse_bench`, `mine_numeric_reader_disagreements`,
+`mine_pdf_parse_bench_cells` and `run_atsp_hf_reference` each have a test in
+`tests/`; `eval_engine_text_agreement` is cited in `CHANGELOG.md` and
+`eval_figure_labels` in `docs/archive/PROJECT_PLAN.md`. Only
+`eval_digitize_ocr_gate.py` is named nowhere outside itself, and its results are
+`docs/digitize-ocr-gate-*.json`. Across the whole directory, 55 of 81 Python
+harnesses are exercised by a test. A harness whose measurement is still cited is
+live code however long ago it last ran, so nothing was deleted; the stale counts
+in `scripts/README.md` were corrected instead (72 -> 83 files, 22.9k -> 24.2k
+lines).
 
 ### 2.5 Tests
 
