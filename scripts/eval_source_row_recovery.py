@@ -19,13 +19,12 @@ from PIL import Image, ImageFilter, ImageOps
 from pdf2md.line_reader import (
     MINIMUM_SCORE,
     PINNED_READER,
-    _panel_key_bounds,
     _run_tesseract,
     _sha256,
     _table_crop,
     _validate_reader,
-    _words_in_bounds,
 )
+from pdf2md.panel_keys import _panel_key_bounds, _words_in_bounds
 from pdf2md.row_locator import (
     projection_cell_box,
     projection_column_runs,

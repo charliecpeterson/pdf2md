@@ -215,6 +215,11 @@ src/pdf2md/
                 sampling, crops linked in place, completed sheets read back.
   row_locator.py locates table panels, rows and columns from projections alone, with no OCR
                 tokens: the independent geometry check behind the raster row audit.
+  panel_keys.py finding a row's key words inside one panel of a scanned page — the hard half,
+                because on a repeated-panel table the same label appears once per panel and
+                matching on text alone puts a value under the wrong element. Aligned panels
+                use column bounds from the gaps between centres; the rest are localized
+                against their own crop. A panel overlapping its neighbour is refused.
   line_reader.py conservative PP-OCRv6 evidence for table row keys. The recognizer runs in a
                 separate environment; this emits hash-pinned inputs and accepts only matching
                 returns.

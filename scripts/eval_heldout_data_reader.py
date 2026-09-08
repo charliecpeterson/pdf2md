@@ -18,14 +18,8 @@ from pathlib import Path
 from _corpus import labelled_source
 from PIL import Image
 
-from pdf2md.line_reader import (
-    MINIMUM_SCORE,
-    _run_tesseract,
-    _service_crop,
-    _sha256,
-    _table_crop,
-    _validate_reader,
-)
+from pdf2md.line_reader import MINIMUM_SCORE, _run_tesseract, _sha256, _table_crop, _validate_reader
+from pdf2md.panel_keys import _service_crop
 from pdf2md.row_locator import (
     projection_cell_box,
     projection_lane_run,

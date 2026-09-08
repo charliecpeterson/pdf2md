@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from pdf2md import line_reader
+from pdf2md import line_reader, panel_keys
 from pdf2md.table_verify import _table_layout
 from pdf2md.tables import RepeatedPanelLayout
 
@@ -25,23 +25,23 @@ def _word(text: str, left: int) -> dict[str, object]:
 
 def test_row_key_words_handle_text_and_numeric_keys():
     line = [_word("3p-", 10), _word("2.81D+02", 100), _word("1", 180)]
-    assert [word["text"] for word in line_reader._row_key_words("3p-", line)] == ["3p-"]
+    assert [word["text"] for word in panel_keys._row_key_words("3p-", line)] == ["3p-"]
 
     numeric = [_word("0.0008", 10), _word("-0.42", 100)]
-    assert [word["text"] for word in line_reader._row_key_words("0.0008", numeric)] == [
+    assert [word["text"] for word in panel_keys._row_key_words("0.0008", numeric)] == [
         "0.0008"
     ]
     spaced = [_word("Cl", 10), _word("17", 40), _word("-0.2", 100)]
-    assert [word["text"] for word in line_reader._row_key_words("Cl 17", spaced)] == [
+    assert [word["text"] for word in panel_keys._row_key_words("Cl 17", spaced)] == [
         "Cl", "17",
     ]
 
 
 def test_key_normalization_preserves_semantic_punctuation():
-    assert line_reader._key("Cl₂") == line_reader._key("cl2")
-    assert line_reader._key("3p−") == line_reader._key("3p-")
-    assert line_reader._key("3p-") != line_reader._key("3p")
-    assert line_reader._key("0.0008") != line_reader._key("00008")
+    assert panel_keys._key("Cl₂") == panel_keys._key("cl2")
+    assert panel_keys._key("3p−") == panel_keys._key("3p-")
+    assert panel_keys._key("3p-") != panel_keys._key("3p")
+    assert panel_keys._key("0.0008") != panel_keys._key("00008")
 
 
 def test_panel_key_bounds_require_a_distinct_inter_panel_gap():
@@ -54,18 +54,18 @@ def test_panel_key_bounds_require_a_distinct_inter_panel_gap():
     centers = [(0, 50.0), (1, 100.0), (2, 150.0),
                (3, 300.0), (4, 350.0), (5, 400.0)]
 
-    assert line_reader._panel_key_bounds(layout, centers, 450) == {
+    assert panel_keys._panel_key_bounds(layout, centers, 450) == {
         0: (25.0, 75.0),
         3: (275.0, 325.0),
     }
 
     unseparated = [(column, 50.0 + column * 50.0) for column in range(6)]
-    assert line_reader._panel_key_bounds(layout, unseparated, 350) is None
+    assert panel_keys._panel_key_bounds(layout, unseparated, 350) is None
 
     single = RepeatedPanelLayout(
         starts=(0,), width=3, titles=("",), columns=(("RADIUS", "A", "B"),)
     )
-    assert line_reader._panel_key_bounds(single, centers[:3], 200) == {
+    assert panel_keys._panel_key_bounds(single, centers[:3], 200) == {
         0: (25.0, 75.0)
     }
 
@@ -73,7 +73,7 @@ def test_panel_key_bounds_require_a_distinct_inter_panel_gap():
 def test_words_in_bounds_keeps_only_one_panel_key():
     line = [_word("0.0008", 20), _word("1.2", 100), _word("0.0008", 300)]
 
-    assert [word["text"] for word in line_reader._words_in_bounds(line, (0, 80))] == [
+    assert [word["text"] for word in panel_keys._words_in_bounds(line, (0, 80))] == [
         "0.0008"
     ]
 
@@ -91,35 +91,35 @@ def test_panel_key_alignment_requires_counts_and_matching_y_positions(monkeypatc
         [{**_word("0.2", 20), "y": 35}],
         [{**_word("0.2", 220), "y": 36}],
     ]
-    monkeypatch.setattr(line_reader, "_word_lines", lambda _tsv: lines)
+    monkeypatch.setattr(panel_keys, "_word_lines", lambda _tsv: lines)
 
-    aligned = line_reader._aligned_panel_key_words(
+    aligned = panel_keys._aligned_panel_key_words(
         rows, [0, 1], layout, "tsv", {0: (0, 80), 2: (200, 280)}
     )
 
     assert aligned is not None
     assert [word["text"] for word in aligned[1, 2]] == ["0.2"]
 
-    monkeypatch.setattr(line_reader, "_word_lines", lambda _tsv: lines[:-1])
-    partial = line_reader._aligned_panel_key_words(
+    monkeypatch.setattr(panel_keys, "_word_lines", lambda _tsv: lines[:-1])
+    partial = panel_keys._aligned_panel_key_words(
         rows, [0, 1], layout, "tsv", {0: (0, 80), 2: (200, 280)}
     )
     assert partial is not None
     assert (0, 2) in partial
     assert (1, 2) not in partial
 
-    monkeypatch.setattr(line_reader, "_word_lines", lambda _tsv: lines)
+    monkeypatch.setattr(panel_keys, "_word_lines", lambda _tsv: lines)
     lines[-1][0]["y"] = 60
-    misaligned = line_reader._aligned_panel_key_words(
+    misaligned = panel_keys._aligned_panel_key_words(
         rows, [0, 1], layout, "tsv", {0: (0, 80), 2: (200, 280)}
     )
     assert misaligned is not None
     assert (1, 2) not in misaligned
 
     monkeypatch.setattr(
-        line_reader, "_word_lines", lambda _tsv: [lines[0], lines[1]]
+        panel_keys, "_word_lines", lambda _tsv: [lines[0], lines[1]]
     )
-    assert line_reader._aligned_panel_key_words(
+    assert panel_keys._aligned_panel_key_words(
         rows, [0, 1], layout, "tsv", {0: (0, 80), 2: (200, 280)}
     ) is None
 
@@ -145,10 +145,10 @@ def test_localized_panel_alignment_keeps_lanes_independent_and_monotonic(monkeyp
         [{**_word("0.15", 20), "y": 55}],
         [{**_word("0.3", 220), "y": 55}],
     ]
-    monkeypatch.setattr(line_reader, "_word_lines", lambda _tsv: lines)
+    monkeypatch.setattr(panel_keys, "_word_lines", lambda _tsv: lines)
     source_rows = line_reader._panel_numeric_source_rows(rows, layout)
 
-    aligned, refusals = line_reader._localized_panel_key_words(
+    aligned, refusals = panel_keys._localized_panel_key_words(
         rows, source_rows, layout, "tsv", {0: (0, 80), 2: (200, 280)}
     )
 

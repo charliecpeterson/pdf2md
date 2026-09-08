@@ -44,7 +44,7 @@
     },
     "semantic_scorer": {
       "path": "scripts/eval_heldout_data_reader.py",
-      "sha256": "2d8b6fe4d4967831ca8456b182395fac8e9cf00b7259b86bd92b861f5353a55e"
+      "sha256": "a41be00a48d57a5e0a0d42816414fd7d227ece90f169276ad7b512b452b0b18b"
     }
   },
   "expected": {
