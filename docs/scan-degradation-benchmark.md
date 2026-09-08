@@ -24,7 +24,7 @@ Build, convert, and evaluate it with:
 ```bash
 uv run python scripts/build_scan_degradation_corpus.py
 
-uv run pdf2md convert output/pdf/dolg-table-iii-scan-degradation.pdf \
+uv run pdf2md convert tests/fixtures/degradation/dolg-table-iii-scan-degradation.pdf \
   --out out/scan-degradation \
   --engine mineru \
   --mineru-executable env/mineru/bin/mineru \
@@ -34,7 +34,7 @@ uv run pdf2md convert output/pdf/dolg-table-iii-scan-degradation.pdf \
 
 uv run python scripts/eval_scan_degradation.py \
   out/scan-degradation/<document-id>/<version> \
-  --corpus-manifest output/pdf/dolg-table-iii-scan-degradation.manifest.json \
+  --corpus-manifest tests/fixtures/degradation/dolg-table-iii-scan-degradation.manifest.json \
   --report out/scan-degradation/report.json
 ```
 
@@ -43,7 +43,7 @@ The focused leave-one-factor-out corpus uses the same source table and ground tr
 ```bash
 uv run python scripts/build_scan_degradation_corpus.py --suite combined-ablation
 
-uv run pdf2md convert output/pdf/dolg-table-iii-combined-ablation.pdf \
+uv run pdf2md convert tests/fixtures/degradation/dolg-table-iii-combined-ablation.pdf \
   --out out/scan-ablation \
   --engine mineru \
   --mineru-executable env/mineru/bin/mineru \
@@ -53,7 +53,7 @@ uv run pdf2md convert output/pdf/dolg-table-iii-combined-ablation.pdf \
 
 uv run python scripts/eval_scan_degradation.py \
   out/scan-ablation/<document-id>/<version> \
-  --corpus-manifest output/pdf/dolg-table-iii-combined-ablation.manifest.json \
+  --corpus-manifest tests/fixtures/degradation/dolg-table-iii-combined-ablation.manifest.json \
   --report out/scan-ablation/report.json
 ```
 
@@ -116,7 +116,7 @@ uv run python scripts/build_multifamily_degradation_corpus.py
 
 uv run python scripts/eval_multifamily_degradation.py \
   out/multifamily-degradation/263f2589e86a0d53/v1 \
-  --corpus-manifest output/pdf/multifamily-table-degradation.manifest.json \
+  --corpus-manifest tests/fixtures/degradation/multifamily-table-degradation.manifest.json \
   --runtime tests/multifamily_degradation_runtime.json \
   --report out/multifamily-degradation/final-report.json \
   --check
@@ -213,7 +213,7 @@ agree and none contains one of those unresolved glyphs.
 ```bash
 uv run python scripts/eval_table_keys.py \
   out/scan-ablation/<document-id>/<version> \
-  --corpus-manifest output/pdf/dolg-table-iii-combined-ablation.manifest.json \
+  --corpus-manifest tests/fixtures/degradation/dolg-table-iii-combined-ablation.manifest.json \
   --report out/reviews/table-key-reader/report.json
 ```
 

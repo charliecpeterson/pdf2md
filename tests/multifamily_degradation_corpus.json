@@ -11,11 +11,11 @@
       "sha256": "49aa9934236eb5851cd52b3dcea2ae0d4fab35da4ff1c005e41b338dd71e3b47"
     },
     "corpus_pdf": {
-      "path": "output/pdf/multifamily-table-degradation.pdf",
+      "path": "tests/fixtures/degradation/multifamily-table-degradation.pdf",
       "sha256": "263f2589e86a0d5364270088666ce786f32988dd12896c85c1e0ca8fd4446247"
     },
     "corpus_manifest": {
-      "path": "output/pdf/multifamily-table-degradation.manifest.json",
+      "path": "tests/fixtures/degradation/multifamily-table-degradation.manifest.json",
       "sha256": "671eaf0aaf74ea8594f1d99f7fbf696ea3b80fe60a33b95454f1e7d43b91dacc"
     },
     "output_provenance": {

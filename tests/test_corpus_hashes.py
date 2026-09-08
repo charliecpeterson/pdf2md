@@ -99,9 +99,9 @@ def test_scan_degradation_pdfs_match_their_manifests():
         ("dolg-table-iii-scan-degradation", 12),
         ("dolg-table-iii-combined-ablation", 7),
     ):
-        artifact = _ROOT / "output" / "pdf" / f"{stem}.pdf"
+        artifact = _ROOT / "tests" / "fixtures" / "degradation" / f"{stem}.pdf"
         manifest = json.loads(
-            (_ROOT / "output" / "pdf" / f"{stem}.manifest.json").read_text()
+            (_ROOT / "tests" / "fixtures" / "degradation" / f"{stem}.manifest.json").read_text()
         )
 
         assert artifact.is_file()
