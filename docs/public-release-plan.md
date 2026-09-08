@@ -125,6 +125,12 @@ what the stages share (`doc`, `result`, `metrics`, `vdir`, `config`). The body o
 and the gate is the proof: every bundle's signature must be identical before and
 after.
 
+**Done in part, 2026-09-08.** `_Run` now names the shared state and
+`_finalize_bundle` is the first stage to take it, which took `convert_file` from
+599 lines to 438. The remaining stages should move the same way, one at a time,
+with the gate proving each — the pattern is established and the type exists.
+The original note, kept because the measurement is why the approach changed:
+
 **Attempted 2026-09-08 and deliberately stopped.** The state is wider than
 "`doc`, `result`, `metrics`, `vdir`, `config`" — measured, 20 locals cross the
 first boundary alone, and the last two stages taken by themselves need 14 inputs
