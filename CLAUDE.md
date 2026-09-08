@@ -193,8 +193,11 @@ src/pdf2md/
   table_verify.py attaches independent-reader and external-reference evidence to extracted table
                 cells. The OCR candidate is never rewritten; each JSONL record keeps the raw
                 engine value beside the second reading.
-  table_artifacts.py writes the inspectable table candidates and normalized repeated-panel data
-                (candidate/CSV/JSON/glyph-grid/printed-lines files and their audit headers).
+  table_artifacts.py writes the inspectable table candidates and their audit headers
+                (candidate/CSV/JSON/glyph-grid/printed-lines files).
+  table_panels.py the machine-readable form of a repeated-panel table: one record per printed
+                row, tagged with the panel it came from, plus the review signals that say
+                where to look. Promotes nothing; the raw grid stays beside it.
   table_resolution.py chooses the consumer-facing value for a cell without discarding evidence:
                 external references and reader agreement decide, format rules only diagnose.
   table_reference.py loads and compares semantic external references for table cells; a missing
