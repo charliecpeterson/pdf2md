@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from conftest import needs_corpus_bundles
+from conftest import needs_corpus_bundles, needs_corpus_pdfs
 
-pytestmark = needs_corpus_bundles
+pytestmark = [needs_corpus_bundles, needs_corpus_pdfs]
 
 _spec = importlib.util.spec_from_file_location(
     "eval_equations", Path(__file__).parent.parent / "scripts" / "eval_equations.py"

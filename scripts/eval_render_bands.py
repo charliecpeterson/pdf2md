@@ -18,6 +18,11 @@ docs/render-band-calibration.json.
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import hashlib
 import json
@@ -43,7 +48,7 @@ def _check_inputs() -> tuple[dict, dict, dict]:
     recovery = json.loads(_RECOVERY.read_text())
     problems = []
     for name, artifact in recovery.get("artifacts", {}).items():
-        path = _ROOT / artifact["path"]
+        path = labelled_source(artifact["path"], _ROOT)
         if _sha(path) != artifact.get("sha256"):
             problems.append(f"{name}: {artifact['path']}")
     labels = json.loads(_LABELS.read_text())
@@ -60,7 +65,7 @@ def _provenances(recovery: dict) -> dict[str, dict]:
     for name, artifact in recovery.get("artifacts", {}).items():
         if not name.endswith("_provenance"):
             continue
-        path = _ROOT / artifact["path"]
+        path = labelled_source(artifact["path"], _ROOT)
         doc = json.loads(path.read_text())
         source = Path(doc.get("source_path", "")).name
         if not source:

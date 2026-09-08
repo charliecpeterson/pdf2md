@@ -26,6 +26,29 @@ needs_corpus_bundles = pytest.mark.skipif(
     reason="converted corpus not available (set PDF2MD_BUNDLES; see docs/qa-corpus.md)",
 )
 
+
+def has_corpus_pdfs() -> bool:
+    """Most of the labelled sources resolve, not merely one.
+
+    A few entries point at a bundle's own `source.pdf` inside the output tree,
+    which is present whenever any conversion has been run — so "at least one
+    resolves" is true on a machine with no corpus at all."""
+    import json
+
+    baseline = json.loads((_ROOT / "tests" / "qa_baseline.json").read_text())
+    found = sum(
+        (_ROOT / record["source"]).is_file()
+        or (CORPUS_ROOT / Path(record["source"]).name).is_file()
+        for record in baseline.values()
+    )
+    return found * 2 >= len(baseline)
+
+
+needs_corpus_pdfs = pytest.mark.skipif(
+    not has_corpus_pdfs(),
+    reason="labelled source PDFs not available (set PDF2MD_CORPUS; see docs/qa-corpus.md)",
+)
+
 from pdf2md.schema import (
     BBox,
     Block,

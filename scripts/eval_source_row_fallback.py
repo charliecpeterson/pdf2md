@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import json
 from collections import Counter
@@ -71,7 +76,7 @@ def evaluate(root: Path, corpus: dict, output_dir: Path) -> dict:
     if corpus.get("schema_version") != 1:
         raise ValueError("unsupported source-row fallback corpus schema_version")
     for name, artifact in corpus["artifacts"].items():
-        path = root / artifact["path"]
+        path = labelled_source(artifact["path"], root)
         if _sha256(path) != artifact["sha256"]:
             raise ValueError(f"source-row fallback artifact hash mismatch: {name}")
 

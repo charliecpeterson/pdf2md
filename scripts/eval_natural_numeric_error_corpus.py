@@ -6,6 +6,11 @@ an exact surviving digit string cannot hide a missing column or guessed table sh
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import hashlib
 import json
@@ -74,7 +79,7 @@ def _rates(primary: dict[str, int], reader: dict[str, int]) -> dict[str, float |
 def _load_artifacts(root: Path, corpus: dict) -> dict[str, dict]:
     loaded = {}
     for name, artifact in corpus["artifacts"].items():
-        path = root / artifact["path"]
+        path = labelled_source(artifact["path"], root)
         if _sha256(path) != artifact["sha256"]:
             raise ValueError(f"natural numeric artifact hash mismatch: {name}")
         if path.suffix == ".json":

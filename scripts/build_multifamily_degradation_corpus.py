@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import hashlib
 import json
@@ -165,7 +170,7 @@ def build(
         raise RuntimeError("required tool unavailable: magick")
 
     for artifact in sources.get("artifacts", {}).values():
-        artifact_path = ROOT / artifact["path"]
+        artifact_path = labelled_source(artifact["path"], ROOT)
         if _sha256(artifact_path) != artifact["sha256"]:
             raise ValueError(f"source artifact hash mismatch: {artifact['path']}")
 

@@ -6,6 +6,11 @@ prefix after selection and never supply category-specific error rates or priorit
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import hashlib
 import json
@@ -35,7 +40,7 @@ def _load_records(root: Path, sources_path: Path) -> tuple[list[dict], dict]:
     if sources.get("schema_version") != 1:
         raise ValueError("unsupported active-review sources schema_version")
     artifact = sources["artifacts"]["numeric_confidence_report"]
-    path = root / artifact["path"]
+    path = labelled_source(artifact["path"], root)
     if _sha256(path) != artifact["sha256"]:
         raise ValueError("active-review numeric-confidence report hash mismatch")
     report = json.loads(path.read_text())
@@ -355,7 +360,7 @@ def check_corpus(root: Path, corpus_path: Path, report: dict) -> bool:
     if corpus.get("schema_version") != 1:
         raise ValueError("unsupported active-review corpus schema_version")
     for name, artifact in corpus["artifacts"].items():
-        if _sha256(root / artifact["path"]) != artifact["sha256"]:
+        if _sha256(labelled_source(artifact["path"], root)) != artifact["sha256"]:
             raise ValueError(f"active-review artifact hash mismatch: {name}")
     return _checked_result(report) == corpus["expected"]
 

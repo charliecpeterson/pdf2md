@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import hashlib
 import json
@@ -23,7 +28,7 @@ def _sha256(path: Path) -> str:
 
 def evaluate(root: Path, corpus_path: Path) -> dict:
     corpus = json.loads(corpus_path.read_text())
-    source = root / corpus["source"]["path"]
+    source = labelled_source(corpus["source"]["path"], root)
     provenance_path = root / corpus["conversion"]["provenance_path"]
     if _sha256(source) != corpus["source"]["sha256"]:
         raise ValueError("book source hash mismatch")

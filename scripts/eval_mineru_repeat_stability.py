@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import hashlib
 import itertools
@@ -43,7 +48,7 @@ def _iou(first: tuple[float, ...], second: tuple[float, ...]) -> float:
 
 
 def _load_run(root: Path, artifact: dict) -> dict:
-    path = root / artifact["path"]
+    path = labelled_source(artifact["path"], root)
     digest = _sha256(path)
     if digest != artifact["sha256"]:
         raise ValueError(f"MinerU repeat artifact hash mismatch: {artifact['path']}")
@@ -240,7 +245,7 @@ def check_corpus(root: Path, corpus_path: Path, report: dict) -> bool:
     if corpus.get("schema_version") != 1:
         raise ValueError("unsupported MinerU repeat corpus schema_version")
     for name, artifact in corpus["artifacts"].items():
-        if _sha256(root / artifact["path"]) != artifact["sha256"]:
+        if _sha256(labelled_source(artifact["path"], root)) != artifact["sha256"]:
             raise ValueError(f"MinerU repeat corpus artifact hash mismatch: {name}")
     return _checked_result(report) == corpus["expected"]
 

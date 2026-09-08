@@ -1,5 +1,21 @@
 # QA corpus
 
+## Where the corpus lives
+
+The labelled sources are copyrighted journal PDFs and are not in this
+repository. Keep them in one directory outside the tree and name it:
+
+```bash
+export PDF2MD_CORPUS=~/corpora/pdf2md     # the source PDFs
+export PDF2MD_BUNDLES=~/corpora/pdf2md-out  # optional: a conversion output root
+```
+
+`tests/test_corpus_hashes.py` verifies each file against the hash its labels
+record, and skips when the directory is absent, so a clean clone still passes.
+The file names are the `source` fields in `tests/qa_baseline.json`,
+`tests/accuracy_labels.json` and `tests/equation_labels.json`; each also carries
+the `source_sha256` that identifies the exact document.
+
 QA results are valid only for the exact source bytes named in the label files.
 The checks reject a source when its recorded SHA-256 does not match.
 

@@ -7,6 +7,11 @@ exact external replacement for the historical printed value.
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import csv
 import hashlib
@@ -214,7 +219,7 @@ def check_corpus(root: Path, corpus_path: Path, report: dict) -> bool:
     if corpus.get("schema_version") != 1:
         raise ValueError("unsupported ATSP Fischer corpus schema_version")
     for name, artifact in corpus["artifacts"].items():
-        if _sha256(root / artifact["path"]) != artifact["sha256"]:
+        if _sha256(labelled_source(artifact["path"], root)) != artifact["sha256"]:
             raise ValueError(f"ATSP Fischer artifact hash mismatch: {name}")
     return _checked_result(report) == corpus["expected"]
 

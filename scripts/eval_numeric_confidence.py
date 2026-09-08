@@ -7,6 +7,11 @@ continuous score supplies a threshold that could otherwise overfit.
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import hashlib
 import json
@@ -35,7 +40,7 @@ def _sha256(path: Path) -> str:
 def _load_artifacts(root: Path, sources: dict) -> dict[str, dict]:
     artifacts = {}
     for name, artifact in sources["artifacts"].items():
-        path = root / artifact["path"]
+        path = labelled_source(artifact["path"], root)
         if _sha256(path) != artifact["sha256"]:
             raise ValueError(f"numeric confidence artifact hash mismatch: {name}")
         artifacts[name] = json.loads(path.read_text())
@@ -464,7 +469,7 @@ def check_corpus(root: Path, corpus_path: Path, report: dict) -> bool:
     if corpus.get("schema_version") != 1:
         raise ValueError("unsupported numeric confidence corpus schema_version")
     for name, artifact in corpus["artifacts"].items():
-        if _sha256(root / artifact["path"]) != artifact["sha256"]:
+        if _sha256(labelled_source(artifact["path"], root)) != artifact["sha256"]:
             raise ValueError(f"numeric confidence corpus artifact hash mismatch: {name}")
     return _checked_result(report) == corpus["expected"]
 

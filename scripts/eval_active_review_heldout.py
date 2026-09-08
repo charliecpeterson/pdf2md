@@ -6,6 +6,11 @@ then compares active, random, and confidence-stratified review on that document.
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import hashlib
 import json
@@ -290,7 +295,7 @@ def check_corpus(root: Path, corpus_path: Path, report: dict) -> bool:
     if corpus.get("schema_version") != 1:
         raise ValueError("unsupported active-review heldout corpus schema_version")
     for name, artifact in corpus["artifacts"].items():
-        if _sha256(root / artifact["path"]) != artifact["sha256"]:
+        if _sha256(labelled_source(artifact["path"], root)) != artifact["sha256"]:
             raise ValueError(f"active-review heldout artifact hash mismatch: {name}")
     if _checked_result(report) != corpus["expected"]:
         raise ValueError("held-out active-review results differ from frozen corpus")

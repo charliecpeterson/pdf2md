@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent))
+from _corpus import labelled_source
+
 import argparse
 import hashlib
 import json
@@ -67,7 +72,7 @@ def evaluate(root: Path, corpus_path: Path) -> dict:
     corpus = json.loads(corpus_path.read_text())
     reports = []
     for labelled in corpus["documents"]:
-        source = root / labelled["source"]["path"]
+        source = labelled_source(labelled["source"]["path"], root)
         provenance_path = root / labelled["conversion"]["provenance_path"]
         if _sha256(source) != labelled["source"]["sha256"]:
             raise ValueError(f"figure source hash mismatch: {labelled['id']}")
