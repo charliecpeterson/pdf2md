@@ -3,7 +3,28 @@ blocks and drives the pipeline stages directly."""
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
 import pytest
+
+_ROOT = Path(__file__).parent.parent
+# Where the journal PDFs live, and where their converted bundles live. 43 of the
+# 47 labelled sources are copyrighted and cannot be redistributed, so the tests
+# that read them or their output skip rather than fail on a clean clone. That is
+# not the same as deselecting: with the corpus present they run automatically.
+CORPUS_ROOT = Path(os.environ.get("PDF2MD_CORPUS", _ROOT))
+BUNDLE_ROOT = Path(os.environ.get("PDF2MD_BUNDLES", _ROOT / "out"))
+
+
+def has_corpus_bundles() -> bool:
+    return BUNDLE_ROOT.is_dir() and any(BUNDLE_ROOT.glob("*/v*/provenance.json"))
+
+
+needs_corpus_bundles = pytest.mark.skipif(
+    not has_corpus_bundles(),
+    reason="converted corpus not available (set PDF2MD_BUNDLES; see docs/qa-corpus.md)",
+)
 
 from pdf2md.schema import (
     BBox,

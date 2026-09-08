@@ -36,3 +36,21 @@ and add a `CHANGELOG.md` entry.
 
 Pre-1.0: the public surface is the CLI plus a small library entrypoint
 (`convert_file` / `convert_dir`); everything else is internal and may change.
+
+## Running the checks
+
+```bash
+uv run pytest                     # fast suite: no engine, no models, no corpus
+uvx ruff check src tests scripts  # the pinned rule set in pyproject.toml
+uv run python scripts/qa.py out --check   # the regression gate; needs bundles
+```
+
+The fast suite passes on a clean clone: 98 of its tests read the labelled
+corpus or its converted bundles, and those skip when it is absent. 43 of the 47
+labelled sources are copyrighted journal PDFs that cannot be redistributed, so
+the corpus is assembled locally — `docs/qa-corpus.md` lists what it holds.
+Point `PDF2MD_CORPUS` at a directory of those PDFs and `PDF2MD_BUNDLES` at a
+conversion output root to run them.
+
+`uv run pytest -m integration` runs real Docling end to end and needs
+`PDF2MD_TEST_PDF`.

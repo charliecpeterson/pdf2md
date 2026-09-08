@@ -1,10 +1,29 @@
+"""The labelled corpora name real files, and every label agrees on which file.
+
+Two claims, deliberately separated because only one of them is checkable
+everywhere. That each source name maps to exactly one hash across the label
+files is a property of the labels alone, and a disagreement there is a labelling
+bug that would silently score two different PDFs as one document. That the file
+is on disk with that hash needs the corpus, and 43 of the 47 sources are
+copyrighted journal PDFs that cannot be redistributed. Asserting the second
+unconditionally is what made the whole suite fail on any machine but the
+maintainer's, including CI.
+
+Point `PDF2MD_CORPUS` at a directory holding them to run the on-disk half; it
+skips otherwise. `docs/qa-corpus.md` says what the corpus is.
+"""
+
 from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 
+import pytest
+
 _ROOT = Path(__file__).parent.parent
+_CORPUS = Path(os.environ.get("PDF2MD_CORPUS", _ROOT))
 
 
 def _sha256(path: Path) -> str:
@@ -15,23 +34,40 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def test_every_active_qa_source_exists_and_matches_one_hash():
+def _resolve(source: str) -> Path:
+    """A corpus source, wherever the corpus is. Tracked fixtures stay in the tree."""
+    in_tree = _ROOT / source
+    return in_tree if in_tree.is_file() else _CORPUS / Path(source).name
+
+
+def _require(path: Path, source: str) -> None:
+    if not path.is_file():
+        pytest.skip(f"corpus file not available: {source} (set PDF2MD_CORPUS)")
+
+
+def _labelled_sources() -> dict[str, set[str]]:
     baseline = json.loads((_ROOT / "tests" / "qa_baseline.json").read_text())
     accuracy = json.loads((_ROOT / "tests" / "accuracy_labels.json").read_text())
     equations = json.loads((_ROOT / "tests" / "equation_labels.json").read_text())
 
-    records = list(baseline.values()) + accuracy + equations
     hashes_by_source: dict[str, set[str]] = {}
-    for record in records:
-        source = record["source"]
+    for record in list(baseline.values()) + accuracy + equations:
         source_hash = record.get("source_sha256")
-        assert source_hash and len(source_hash) == 64, source
-        hashes_by_source.setdefault(source, set()).add(source_hash)
+        assert source_hash and len(source_hash) == 64, record["source"]
+        hashes_by_source.setdefault(record["source"], set()).add(source_hash)
+    return hashes_by_source
 
-    for source, source_hashes in hashes_by_source.items():
+
+def test_every_label_file_agrees_on_one_hash_per_source():
+    """Needs no corpus: two hashes for one name means two documents share a name."""
+    for source, source_hashes in _labelled_sources().items():
         assert len(source_hashes) == 1, source
-        source_path = _ROOT / source
-        assert source_path.is_file(), source
+
+
+def test_every_active_qa_source_matches_its_recorded_hash():
+    for source, source_hashes in _labelled_sources().items():
+        source_path = _resolve(source)
+        _require(source_path, source)
         assert _sha256(source_path) == next(iter(source_hashes)), source
 
 
@@ -41,8 +77,8 @@ def test_every_scanned_numeric_source_exists_and_matches_its_labels():
     for case in manifest["cases"]:
         labels = json.loads((_ROOT / case["labels"]).read_text())
         for document in labels["documents"]:
-            source_path = _ROOT / document["source"]
-            assert source_path.is_file(), document["source"]
+            source_path = _resolve(document["source"])
+            _require(source_path, document["source"])
             assert _sha256(source_path) == document["source_sha256"], document["source"]
 
 
@@ -50,14 +86,15 @@ def test_scan_degradation_ground_truth_matches_its_source():
     ground_truth = json.loads(
         (_ROOT / "tests" / "scan_degradation_ground_truth.json").read_text()
     )
-    source_path = _ROOT / ground_truth["source"]
+    source_path = _resolve(ground_truth["source"])
+    _require(source_path, ground_truth["source"])
 
-    assert source_path.is_file()
     assert _sha256(source_path) == ground_truth["source_sha256"]
     assert sum(len(row["values"]) for row in ground_truth["rows"]) == 162
 
 
 def test_scan_degradation_pdfs_match_their_manifests():
+    """These artifacts are generated and tracked, so they need no corpus."""
     for stem, pages in (
         ("dolg-table-iii-scan-degradation", 12),
         ("dolg-table-iii-combined-ablation", 7),
@@ -79,8 +116,8 @@ def test_multifamily_degradation_artifacts_match_frozen_corpus():
     )
 
     for artifact in corpus["artifacts"].values():
-        artifact_path = _ROOT / artifact["path"]
-        assert artifact_path.is_file(), artifact["path"]
+        artifact_path = _resolve(artifact["path"])
+        _require(artifact_path, artifact["path"])
         assert _sha256(artifact_path) == artifact["sha256"], artifact["path"]
 
     expected = corpus["expected"]

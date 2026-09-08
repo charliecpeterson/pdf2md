@@ -8,6 +8,10 @@ import json
 import sys
 from pathlib import Path
 
+from conftest import needs_corpus_bundles
+
+pytestmark = needs_corpus_bundles
+
 SCRIPTS = Path(__file__).parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 _spec = importlib.util.spec_from_file_location(

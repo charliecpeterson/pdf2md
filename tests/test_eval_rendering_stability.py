@@ -8,6 +8,10 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+from conftest import needs_corpus_bundles
+
+pytestmark = needs_corpus_bundles
+
 ROOT = Path(__file__).parent.parent
 SPEC = importlib.util.spec_from_file_location(
     "eval_rendering_stability", ROOT / "scripts" / "eval_rendering_stability.py"

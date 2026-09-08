@@ -5,6 +5,10 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
+from conftest import needs_corpus_bundles
+
+pytestmark = needs_corpus_bundles
+
 ROOT = Path(__file__).parent.parent
 SPEC = importlib.util.spec_from_file_location(
     "eval_equation_recovery", ROOT / "scripts" / "eval_equation_recovery.py"

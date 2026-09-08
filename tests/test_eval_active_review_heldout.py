@@ -6,6 +6,10 @@ import importlib.util
 import sys
 from pathlib import Path
 
+from conftest import needs_corpus_bundles
+
+pytestmark = needs_corpus_bundles
+
 ROOT = Path(__file__).parent.parent
 SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))

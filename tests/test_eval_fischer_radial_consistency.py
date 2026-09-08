@@ -6,6 +6,10 @@ import importlib.util
 import json
 from pathlib import Path
 
+from conftest import needs_corpus_bundles
+
+pytestmark = needs_corpus_bundles
+
 ROOT = Path(__file__).parent.parent
 spec = importlib.util.spec_from_file_location(
     "eval_fischer_radial_consistency",
