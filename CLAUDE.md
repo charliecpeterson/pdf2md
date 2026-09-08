@@ -140,6 +140,12 @@ src/pdf2md/
                 pdftocairo — through a temp cropbox'd one-page PDF, because pdftocairo's own
                 crop flags are silently ignored for SVG output.
   emit.py       Section tree → .md files + YAML front-matter; sets coverage_status, collects flags.
+  emit_figures.py what surrounds a figure crop: caption, recovered labels, table cross-
+                reference, and a born-digital chart's series as CSV and a redraw script.
+                A digitization below the floor is written as `<stem>.withheld.csv`, not dropped.
+  emit_math.py  making an engine's LaTeX safe to emit — closing what it left open, dropping
+                spacing-command walls, carrying the printed equation number in as a `\tag`.
+                Judges nothing; `confidence.assess_equation` and `--render-check` do that.
   tables.py     GFM table render, HTML fallback for spanning cells.
   table_rebuild.py  born-digital glyph-truth for tables: grid rebuild from whitespace corridors
                 (zero-crossing lanes, whole printed tokens per lane) plus row_bands (the same projection over y, so a subscript

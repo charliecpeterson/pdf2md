@@ -3,7 +3,8 @@ from __future__ import annotations
 import json
 
 from pdf2md.coverage import build_report
-from pdf2md.emit import _file_units, _tidy_math, emit_document
+from pdf2md.emit import _file_units, emit_document
+from pdf2md.emit_math import _tidy_math
 from pdf2md.schema import FORMAT_VERSION, CoverageStatus
 from pdf2md.structure import build_structure
 
@@ -687,7 +688,7 @@ def test_numeric_spike_check_skips_noncontinuous_orbital_rows(tmp_path):
 
 
 def test_balance_delims():
-    from pdf2md.emit import _balance_delims
+    from pdf2md.emit_math import _balance_delims
 
     # one \left, two \right won't compile in KaTeX -> drop the sizing commands.
     bad = r"\left\langle a \right| b \right\rangle"

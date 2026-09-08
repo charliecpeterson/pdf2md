@@ -165,7 +165,7 @@ def test_collapse_repeats_truncates_a_repeated_page_section():
 
 
 def test_plot_data_withholds_numbers_below_confidence_floor():
-    from pdf2md.emit import _plot_data
+    from pdf2md.emit_figures import _plot_data
     from pdf2md.schema import Digitization
 
     hi = Digitization(series=[[(0.0, 1.0), (1.0, 2.0)]], method="vector-path", confidence=0.9,
@@ -190,7 +190,7 @@ def test_plot_data_withholds_numbers_below_confidence_floor():
 
 
 def test_plot_data_points_at_the_printed_table():
-    from pdf2md.emit import _plot_data
+    from pdf2md.emit_figures import _plot_data
     from pdf2md.schema import Digitization, FigureLabels
 
     # no digitization at all (default config on a scan): the pointer still lands
@@ -211,7 +211,7 @@ def test_plot_data_points_at_the_printed_table():
 
 
 def test_plot_script_by_kind_with_figure_context():
-    from pdf2md.emit import _plot_data
+    from pdf2md.emit_figures import _plot_data
     from pdf2md.schema import Digitization, FigureLabels
 
     bars = Digitization(series=[[(1.0, 3.0), (2.0, 7.0)]], method="vector-path",
@@ -2038,7 +2038,7 @@ def test_a_printed_equation_number_stays_with_its_equation():
     emits LaTeX without it, and the prose's "substituting into (2)" then refers to
     nothing. \\tag is how LaTeX carries a number, so it stays attached.
     """
-    from pdf2md.emit import _equation_latex
+    from pdf2md.emit_math import _equation_latex
 
     assert _equation_latex("A = B + C", "2") == "$$\nA = B + C \\tag{2}\n$$"
     assert _equation_latex("A = B + C") == "$$\nA = B + C\n$$"

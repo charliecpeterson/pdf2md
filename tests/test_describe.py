@@ -192,7 +192,7 @@ def test_describe_does_not_override_math_ocr(tmp_path):
 
 
 def test_emit_description_block():
-    from pdf2md.emit import _description
+    from pdf2md.emit_figures import _description
 
     assert _description(None) == ""
     out = _description("a flow chart of program calls")
