@@ -15,7 +15,7 @@ def test_batch_setup_failure_returns_one_failed_result_per_pdf(tmp_path, monkeyp
     def fail_setup(engine, config):
         raise RuntimeError("missing Python.h")
 
-    monkeypatch.setattr(pipeline, "_get_engine", fail_setup)
+    monkeypatch.setattr(pipeline, "select_engine", fail_setup)
 
     results = pipeline.convert_dir(tmp_path, config=Config())
 
@@ -34,7 +34,7 @@ def test_batch_excludes_generated_sources_below_output_root(tmp_path, monkeypatc
     converted = []
 
     monkeypatch.setenv("PDF2MD_OUT", str(output))
-    monkeypatch.setattr(pipeline, "_get_engine", lambda engine, config: object())
+    monkeypatch.setattr(pipeline, "select_engine", lambda engine, config: object())
     monkeypatch.setattr(pipeline, "get_transcriber", lambda config: None)
     monkeypatch.setattr(pipeline, "get_describer", lambda config: None)
 
@@ -60,7 +60,7 @@ def test_batch_keeps_original_pdfs_when_input_is_output_root(tmp_path, monkeypat
     converted = []
 
     monkeypatch.setenv("PDF2MD_OUT", str(tmp_path))
-    monkeypatch.setattr(pipeline, "_get_engine", lambda engine, config: object())
+    monkeypatch.setattr(pipeline, "select_engine", lambda engine, config: object())
     monkeypatch.setattr(pipeline, "get_transcriber", lambda config: None)
     monkeypatch.setattr(pipeline, "get_describer", lambda config: None)
 

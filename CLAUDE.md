@@ -47,16 +47,16 @@ src/pdf2md/
   run_metrics.py sequential stage timings and work counts stored with provenance.
   logging.py    ... `Progress.heartbeat` takes a callable, so a long blocking stage that can
                 count its own progress reports the count instead of only that it is alive.
-  pipeline.py   ... `--engine auto` picks MinerU for a scan and Docling otherwise, deciding
-                from `GlyphIndex` rather than from pdfium's text presence: an OCR-overlay
-                scan has invisible text on every page and reads as 0% scanned otherwise.
-                The batch path cannot share one engine under `auto`.
   cli.py        Typer surface (convert / enrich / coverage / compare-runs / list /
                 review-tables / prune / version / doctor / models / line-reader).
   models.py     model warm-up and offline/reproducible local snapshots.
 
   engines/
     base.py     Engine Protocol + EngineResult (the swap seam; carries raw_tables for enrich).
+    select.py   select_engine: the seam's front door. `--engine auto` picks MinerU for a scan
+                and Docling otherwise, asking `GlyphIndex` rather than pdfium's text presence
+                — an OCR-overlay scan has invisible text on every page and reads as 0%
+                scanned otherwise. The batch path cannot share one engine under `auto`.
     docling.py  the ONLY module that imports docling. PURE translation → schema (no
                 pdfium, no verification); tables ship RawTable cells for enrich to rebuild.
     mineru.py   external-CLI adapter for scans and difficult tables/equations. Reads native
@@ -157,7 +157,10 @@ src/pdf2md/
                 until the accounting corroborates it. raster_row_findings covers the scanned case
                 the glyph path cannot reach, off the table's own crop. running_text_findings is
                 the one check with document scope, because one table cannot tell a swallowed
-                running footer from its own spanning title. Stored on
+                running footer from its own spanning title; `audit_scanned_tables` and
+                `audit_running_text_rows` are the two document-scope entry points, called
+                from the pipeline because one needs the rendered crop and the other the
+                other pages. Stored on
                 TableData.grid_audit; becomes a CoverageFlag in emit. `corroborated` in that
                 payload — the ink established the arrangement is wrong — is also what makes enrich
                 keep the region's printed lines verbatim (TableData.printed_lines).

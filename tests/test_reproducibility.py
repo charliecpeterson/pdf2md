@@ -369,7 +369,7 @@ def test_convert_reports_engine_setup_failure_without_raising(tmp_path, monkeypa
     def fail_setup(engine, config, pdf_path=None):
         raise RuntimeError("missing Python.h")
 
-    monkeypatch.setattr("pdf2md.pipeline._get_engine", fail_setup)
+    monkeypatch.setattr("pdf2md.pipeline.select_engine", fail_setup)
     pdf = Path(__file__).parent / "fixtures" / "vector_plot.pdf"
 
     result = convert_file(pdf)

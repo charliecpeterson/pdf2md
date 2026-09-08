@@ -30,6 +30,7 @@ from typing import Any
 from pdf2md.schema import BBox, RawTable
 from pdf2md.scripts import Char, PageChars
 from pdf2md.table_rebuild import content_norm, engine_lane_bounds, row_bands
+from pdf2md.tables import gfm_rows
 
 # A band has to sit this far inside the engine's cell extent to count as a row
 # of the grid; captions and footnotes live in the block's bbox but outside it.
@@ -1005,3 +1006,63 @@ def _repeated_row_text(row: list[str]) -> str | None:
     if len(text) < _RUNNING_MIN_CHARS or _NUMBER.fullmatch(text):
         return None
     return text
+
+
+# ---------------------------------------------------------------------------
+# Document scope. `audit_table` sees one table and cannot answer either of these:
+# whether a grid the glyph path could not reach loses rows (that needs the crop,
+# which does not exist until the render stage), or whether a row repeated across
+# every column is the page's running footer rather than the table's own title
+# (that needs the other pages).
+
+def audit_scanned_tables(tables, version_dir: Path) -> None:
+    """Row accounting for the tables the glyph path could not reach.
+
+    Runs here rather than in `enrich_tables` because it needs the rendered crop,
+    which does not exist until the crop stage. Only fills in where the glyph
+    audit produced no row accounting at all -- a page with a text layer is
+    already measured more precisely than pixels can manage."""
+    for table in tables:
+        if table.grid_audit.get("rows") or not table.source_crop:
+            continue
+        rows = len(gfm_rows(table.gfm)) if (table.gfm or "").strip() else 0
+        if rows < 2:
+            continue
+        found = raster_row_findings(version_dir / table.source_crop, rows)
+        if not found:
+            continue
+        table.grid_audit = {
+            **table.grid_audit,
+            **{k: v for k, v in found.items() if k != "findings"},
+        }
+        if found.get("findings"):
+            table.grid_audit["findings"] = [
+                *table.grid_audit.get("findings", []), *found["findings"],
+            ]
+
+
+def audit_running_text_rows(tables) -> None:
+    """Flag the tables whose rows are the page's running header or footer.
+
+    Document scope, so it cannot live in `audit_table`: telling a swallowed
+    running line from a table's own spanning title takes the other pages."""
+    rows = {
+        table.block_id: gfm_rows(table.gfm)
+        for table in tables if (table.gfm or "").strip()
+    }
+    found = running_text_findings(
+        [(table.block_id, table.page, rows[table.block_id])
+         for table in tables if table.block_id in rows]
+    )
+    for table in tables:
+        finding = found.get(table.block_id)
+        if finding is None:
+            continue
+        table.grid_audit = {
+            **table.grid_audit,
+            "findings": [
+                *table.grid_audit.get("findings", []),
+                {"kind": finding.kind, "severity": finding.severity,
+                 "detail": finding.detail, "rows": list(finding.rows)},
+            ],
+        }

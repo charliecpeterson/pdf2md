@@ -12,7 +12,7 @@ import json
 import shutil
 import subprocess
 import time
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from functools import cache
 from importlib.metadata import PackageNotFoundError
@@ -61,6 +61,7 @@ from pdf2md.doi_metadata import (
 from pdf2md.emit import emit_document
 from pdf2md.engine_state import write_engine_state
 from pdf2md.engines.base import Engine, normalize_page_origin
+from pdf2md.engines.select import select_engine
 from pdf2md.enrich import (
     GlyphIndex,
     enrich_blocks,
@@ -69,6 +70,7 @@ from pdf2md.enrich import (
     recall_review_flags,
     record_recall,
     resegment_ocr_prose,
+    warn_about_scan_overlays,
 )
 from pdf2md.logging import Progress, collapse_repeated_warnings, get_logger
 from pdf2md.metadata import extract_metadata
@@ -91,9 +93,8 @@ from pdf2md.schema import (
 from pdf2md.structure import build_structure
 from pdf2md.symbol_index import write_symbol_index
 from pdf2md.table_artifacts import annotate_table_artifacts
-from pdf2md.table_audit import raster_row_findings, running_text_findings
+from pdf2md.table_audit import audit_running_text_rows, audit_scanned_tables
 from pdf2md.table_rebuild import glyph_unbacked_tables
-from pdf2md.tables import gfm_rows
 from pdf2md.transcribe import Transcriber, get_transcriber
 from pdf2md.vision_cache import CacheStats, load_vision_cache
 from pdf2md.visual import (
@@ -274,95 +275,6 @@ def _read_heartbeat(engine: Engine, engine_name: str, source_pages: int) -> obje
     return message
 
 
-# Above this share of pages with no usable text layer the document is a scan,
-# where MinerU is the measured better reader.
-_SCAN_SHARE = 0.5
-
-
-def _scanned_share(pdf_path: Path) -> float:
-    """Fraction of pages with no usable text layer.
-
-    Through `GlyphIndex`, not by asking pdfium whether a page has text: a
-    digitised scan carrying someone else's OCR has text on every page, drawn
-    invisibly over the image, and a plain text-presence test reads the 1972
-    compilation -- 99 scanned pages -- as 0% scanned. `GlyphIndex.page_chars`
-    already returns nothing for those pages, which is the whole point of
-    `scanned_overlay`."""
-    with GlyphIndex(pdf_path) as glyphs:
-        pdf = pdfium.PdfDocument(str(pdf_path))
-        try:
-            pages = len(pdf)
-        finally:
-            pdf.close()
-        if not pages:
-            return 0.0
-        return sum(
-            glyphs.page_chars(page) is None for page in range(1, pages + 1)
-        ) / pages
-
-
-def _auto_engine(config: Config, pdf_path: Path | None) -> str:
-    """Pick the engine for `--engine auto`: MinerU for a scan, Docling otherwise.
-
-    Measured over ten scanned documents converted both ways on one machine,
-    MinerU found 217 tables against Docling's 138 and carried a structural
-    finding on 51% of them against 92%. That result is about scans; on
-    born-digital pages Docling is the default for good reasons, so the decision
-    is made from the one property that separates the two populations, and made
-    from the PDF rather than from the conversion, because it has to be made
-    first. A configured executable that is not installed falls back with a
-    warning rather than failing the run."""
-    if pdf_path is None:
-        return "docling"
-    share = _scanned_share(pdf_path)
-    if share < _SCAN_SHARE:
-        log.info("engine auto: %.0f%% of pages have a text layer, using docling",
-                 100 * (1 - share))
-        return "docling"
-    try:
-        from pdf2md.engines.mineru import MinerUEngine
-
-        MinerUEngine(config.mineru_executable, deskew_scans=config.deskew_scans)
-    except Exception as exc:  # noqa: BLE001 - an absent optional engine is not an error
-        log.warning("engine auto: %.0f%% of pages are scanned and MinerU reads those "
-                    "better, but it is unavailable (%s); using docling",
-                    100 * share, exc)
-        return "docling"
-    log.info("engine auto: %.0f%% of pages have no text layer, using mineru",
-             100 * share)
-    return "mineru"
-
-
-def _get_engine(engine: Engine | None, config: Config,
-                pdf_path: Path | None = None) -> Engine:
-    if engine is not None:
-        return engine
-    if config.engine == "auto":
-        config = replace(config, engine=_auto_engine(config, pdf_path))
-    if config.engine == "mineru":
-        from pdf2md.engines.mineru import MinerUEngine
-
-        return MinerUEngine(
-            config.mineru_executable, deskew_scans=config.deskew_scans
-        )
-    if config.engine == "marker":
-        from pdf2md.engines.marker import MarkerEngine
-
-        return MarkerEngine(config.marker_executable)
-    from pdf2md.engines.docling import DoclingEngine
-
-    return DoclingEngine(
-        formula_enrichment=config.do_formula_enrichment,
-        force_ocr=config.force_ocr,
-        # --ocr-page-vlm transcribes every page itself, so skip Docling's OCR entirely (roughly
-        # halves the run on a scanned book); layout/figure detection still runs, and _vlm_ocr_pages
-        # enumerates the scanned pages straight from the PDF rather than from Docling's blocks.
-        skip_ocr=config.ocr_page_vlm,
-        artifacts_path=config.local_model_dir,
-        device=config.device,
-    )
-
-
 def convert_file(
     pdf_path: Path,
     *,
@@ -427,7 +339,7 @@ def convert_file(
     metrics = RunMetrics()
     vision_cache_stats = CacheStats()
     try:
-        engine = _get_engine(engine, config, pdf_path)
+        engine = select_engine(engine, config, pdf_path)
     except Exception as exc:  # noqa: BLE001 - report setup failures like document failures
         log.error("engine setup failed for %s: %s", pdf_path.name, exc)
         return ConvertResult(doc_id, 0, dd, [], failed=True, error=str(exc))
@@ -606,11 +518,11 @@ def convert_file(
         progress.stage("rendering %d source crops", crop_count)
     _render_crops(pdf_path, result.figures, crop_blocks, assets, config)
     _attach_table_crops(result.blocks, result.tables, authoritative_tables)
-    _audit_scanned_tables(result.tables, vdir)
-    _audit_running_text_rows(result.tables)
+    audit_scanned_tables(result.tables, vdir)
+    audit_running_text_rows(result.tables)
 
     ocr_pages = {b.page for b in result.blocks if b.extra.get("ocr")}
-    _warn_about_scan_overlays(pdf_path, ocr_pages, config)
+    warn_about_scan_overlays(pdf_path, ocr_pages, config)
 
     # Lossless vector export beside the PNG crop (--figure-svg): a born-digital figure's
     # geometry and text as SVG a reader can parse. Scanned pages skip — their SVG would
@@ -998,7 +910,7 @@ def convert_dir(
         # `auto` decides per document, so the batch cannot share one engine.
         engine = (
             None if config.engine == "auto" and engine is None
-            else _get_engine(engine, config)
+            else select_engine(engine, config)
         )
         transcriber = get_transcriber(config)  # loads the math-OCR model once, if enabled
         describer = get_describer(config)      # one vision client, reused across the batch
@@ -1043,52 +955,6 @@ def _eq_crops(blocks) -> list:
     ]
 
 
-def _transcribe_equations(
-    blocks,
-    transcriber,
-    vdir: Path,
-    document_dir: Path | None = None,
-    *,
-    cache_stats: CacheStats | None = None,
-) -> None:
-    """Store a better hint on each image-backed equation from re-OCR'ing its crop."""
-    cache = load_vision_cache(document_dir or vdir.parent, cache_stats)
-    custom_identity = getattr(transcriber, "cache_identity", None)
-    identity = (
-        str(custom_identity() if callable(custom_identity) else custom_identity)
-        if custom_identity is not None else
-        f"{type(transcriber).__module__}.{type(transcriber).__qualname__}"
-    )
-    for b in blocks:
-        crop = b.extra.get("crop_path")
-        if b.type is BlockType.EQUATION and crop:
-            image_path = vdir / crop
-            if not image_path.is_file():
-                latex = transcriber.transcribe(image_path)
-                if latex:
-                    b.extra["transcribed"] = latex
-                    b.extra["transcribed_source"] = "math OCR"
-                continue
-            key_payload = {
-                "schema": 1,
-                "kind": "equation-transcription",
-                "transcriber": identity,
-                "image_sha256": content_hash(image_path),
-                "implementation_sha256": _implementation_sha256(),
-            }
-            key = "transcription-v1:" + hashlib.sha256(
-                json.dumps(key_payload, sort_keys=True, separators=(",", ":")).encode()
-            ).hexdigest()
-            latex = cache.get(key)
-            if latex is None:
-                latex = transcriber.transcribe(image_path)
-                if latex:
-                    cache[key] = latex
-            if latex:
-                b.extra["transcribed"] = latex
-                b.extra["transcribed_source"] = "math OCR"
-
-
 def _placeable(flags, emission_index: dict[str, dict]) -> list:
     """Flags whose block has somewhere in the Markdown to put a marker.
 
@@ -1129,86 +995,6 @@ def _table_crops(blocks, tables, *, include_structured: bool = False) -> tuple[l
             b.extra["cells_unverified"] = True
             authoritative.add(b.id)
     return selected, authoritative
-
-
-def _warn_about_scan_overlays(pdf_path: Path, ocr_pages: set[int], config: Config) -> None:
-    """Say so when a document is a scan carrying someone else's OCR.
-
-    Detecting it gets the posture right — crops authoritative, cells candidates —
-    but the transcription is still whoever digitised the paper, and on an old
-    scan that is the worst reading available. Measured over all 99 pages of a
-    1972 data-table paper: the embedded layer leaves 22.9% of value tokens
-    malformed and recovers 21% of each page's printed row grid, where MinerU
-    leaves 0.6% and recovers 99%. A re-OCR through --force-ocr sits between them
-    (8% on a three-page sample). Naming the better path is the point of the
-    warning."""
-    if not ocr_pages or config.force_ocr:
-        return
-    with GlyphIndex(pdf_path) as glyphs:
-        overlaid = sum(glyphs.scanned_overlay(page) for page in sorted(ocr_pages))
-    if overlaid:
-        log.warning(
-            "%d page(s) are scans carrying an embedded OCR text layer; that text is "
-            "kept as a candidate beside the authoritative crops and is only as good "
-            "as whoever digitised the paper. For a fresh transcription re-run with "
-            "--engine mineru, which on a measured 1972 scan cut malformed value "
-            "tokens from 22.9%% to 0.6%%; --force-ocr is the fallback where MinerU "
-            "is unavailable.",
-            overlaid,
-        )
-
-
-def _audit_scanned_tables(tables, version_dir: Path) -> None:
-    """Row accounting for the tables the glyph path could not reach.
-
-    Runs here rather than in `enrich_tables` because it needs the rendered crop,
-    which does not exist until the crop stage. Only fills in where the glyph
-    audit produced no row accounting at all -- a page with a text layer is
-    already measured more precisely than pixels can manage."""
-    for table in tables:
-        if table.grid_audit.get("rows") or not table.source_crop:
-            continue
-        rows = len(gfm_rows(table.gfm)) if (table.gfm or "").strip() else 0
-        if rows < 2:
-            continue
-        found = raster_row_findings(version_dir / table.source_crop, rows)
-        if not found:
-            continue
-        table.grid_audit = {
-            **table.grid_audit,
-            **{k: v for k, v in found.items() if k != "findings"},
-        }
-        if found.get("findings"):
-            table.grid_audit["findings"] = [
-                *table.grid_audit.get("findings", []), *found["findings"],
-            ]
-
-
-def _audit_running_text_rows(tables) -> None:
-    """Flag the tables whose rows are the page's running header or footer.
-
-    Document scope, so it cannot live in `audit_table`: telling a swallowed
-    running line from a table's own spanning title takes the other pages."""
-    rows = {
-        table.block_id: gfm_rows(table.gfm)
-        for table in tables if (table.gfm or "").strip()
-    }
-    found = running_text_findings(
-        [(table.block_id, table.page, rows[table.block_id])
-         for table in tables if table.block_id in rows]
-    )
-    for table in tables:
-        finding = found.get(table.block_id)
-        if finding is None:
-            continue
-        table.grid_audit = {
-            **table.grid_audit,
-            "findings": [
-                *table.grid_audit.get("findings", []),
-                {"kind": finding.kind, "severity": finding.severity,
-                 "detail": finding.detail, "rows": list(finding.rows)},
-            ],
-        }
 
 
 def _attach_table_crops(blocks, tables, authoritative: set) -> None:
@@ -1271,3 +1057,49 @@ def _render_crops(pdf_path: Path, figures, eq_blocks, assets: Path, config: Conf
 def _block_crop_dpi(block: Block, config: Config) -> int:
     floor = max(config.crop_dpi, config.scan_crop_dpi) if block.extra.get("ocr") else config.crop_dpi
     return dpi_for_region(block.bbox, config.vlm_crop_target_px, floor)
+
+
+def _transcribe_equations(
+    blocks,
+    transcriber,
+    vdir: Path,
+    document_dir: Path | None = None,
+    *,
+    cache_stats: CacheStats | None = None,
+) -> None:
+    """Store a better hint on each image-backed equation from re-OCR'ing its crop."""
+    cache = load_vision_cache(document_dir or vdir.parent, cache_stats)
+    custom_identity = getattr(transcriber, "cache_identity", None)
+    identity = (
+        str(custom_identity() if callable(custom_identity) else custom_identity)
+        if custom_identity is not None else
+        f"{type(transcriber).__module__}.{type(transcriber).__qualname__}"
+    )
+    for b in blocks:
+        crop = b.extra.get("crop_path")
+        if b.type is BlockType.EQUATION and crop:
+            image_path = vdir / crop
+            if not image_path.is_file():
+                latex = transcriber.transcribe(image_path)
+                if latex:
+                    b.extra["transcribed"] = latex
+                    b.extra["transcribed_source"] = "math OCR"
+                continue
+            key_payload = {
+                "schema": 1,
+                "kind": "equation-transcription",
+                "transcriber": identity,
+                "image_sha256": content_hash(image_path),
+                "implementation_sha256": _implementation_sha256(),
+            }
+            key = "transcription-v1:" + hashlib.sha256(
+                json.dumps(key_payload, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest()
+            latex = cache.get(key)
+            if latex is None:
+                latex = transcriber.transcribe(image_path)
+                if latex:
+                    cache[key] = latex
+            if latex:
+                b.extra["transcribed"] = latex
+                b.extra["transcribed_source"] = "math OCR"
