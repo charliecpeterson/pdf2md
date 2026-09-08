@@ -17,7 +17,6 @@ from pdf2md.render import CropRenderer
 from pdf2md.scan_deskew import deskew_image
 from pdf2md.schema import BBox
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CROPS = ROOT / "out" / "reviews" / "non-fischer-third-reader-v1" / "crops.json"
 DEFAULT_CONFIDENCE = ROOT / "out" / "reviews" / "numeric-confidence-v1" / "report.json"

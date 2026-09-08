@@ -10,8 +10,8 @@ from pdf2md.table_rebuild import check_table_cells, content_norm, locate, rebuil
 from pdf2md.tables import html_to_gfm
 
 
-def ch(text: str, l: float, r: float, b: float, t: float) -> Char:
-    return (text, l, b, r, t)
+def ch(text: str, left: float, r: float, b: float, t: float) -> Char:
+    return (text, left, b, r, t)
 
 
 def word(text: str, x: float, b: float, t: float, w: float = 4.0) -> list[Char]:

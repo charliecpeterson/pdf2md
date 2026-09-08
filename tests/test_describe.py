@@ -85,8 +85,8 @@ class _FakeDescriber:
 
 
 def test_describe_crops_routes_by_kind(tmp_path):
-    from pdf2md.visual import _describe_crops
     from pdf2md.schema import BBox, Block, BlockType, FigureRef
+    from pdf2md.visual import _describe_crops
 
     (tmp_path / "assets").mkdir()
     for name in ("p0.png", "e.png", "t.png"):
@@ -105,8 +105,8 @@ def test_describe_crops_routes_by_kind(tmp_path):
 
 
 def test_describe_cache_skips_reinference(tmp_path):
-    from pdf2md.visual import _describe_crops
     from pdf2md.schema import BBox, FigureRef
+    from pdf2md.visual import _describe_crops
 
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "p0.png").write_bytes(b"png-bytes")
@@ -182,8 +182,8 @@ def test_interrupted_descriptions_reuse_completed_regions(tmp_path):
 
 
 def test_describe_does_not_override_math_ocr(tmp_path):
-    from pdf2md.visual import _describe_crops
     from pdf2md.schema import Block, BlockType
+    from pdf2md.visual import _describe_crops
 
     eq = Block("#/e", BlockType.EQUATION, "x", 1,
                extra={"crop_path": "assets/e.png", "transcribed": "from surya"})

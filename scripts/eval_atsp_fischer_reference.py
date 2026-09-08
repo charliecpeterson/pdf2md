@@ -15,7 +15,6 @@ import re
 from collections import Counter
 from pathlib import Path
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_VERSION = ROOT / "out" / "0685e8d85e2237d8" / "v6"
 DEFAULT_CASES = ROOT / "tests" / "atsp_fischer_reference_cases.json"

@@ -28,7 +28,7 @@ from pathlib import Path
 import pypdfium2 as pdfium
 
 from pdf2md.scripts import PageChars
-from pdf2md.table_rebuild import check_table_cells, content_norm, locate, rebuild_grid
+from pdf2md.table_rebuild import check_table_cells, locate, rebuild_grid
 
 _ROOT = Path(__file__).parent.parent
 _DEFAULT_LABELS = _ROOT / "tests" / "glyph_table_labels.json"

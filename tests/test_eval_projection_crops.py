@@ -6,7 +6,6 @@ import importlib.util
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).parent.parent
 SPEC = importlib.util.spec_from_file_location(
     "eval_projection_crops", ROOT / "scripts" / "eval_projection_crops.py"

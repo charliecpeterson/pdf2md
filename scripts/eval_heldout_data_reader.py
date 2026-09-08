@@ -30,7 +30,6 @@ from pdf2md.row_locator import (
 from pdf2md.table_verify import _numeric_read
 from pdf2md.tables import gfm_rows
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_LABELS = ROOT / "tests" / "heldout_data_cell_labels.json"
 DEFAULT_READER_CORPUS = ROOT / "tests" / "heldout_data_reader_corpus.json"

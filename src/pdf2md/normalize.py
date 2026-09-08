@@ -223,7 +223,7 @@ def resegment_words(text: str) -> str:
         import wordninja
     except ImportError:
         return text
-    def keep_if_words(match: "re.Match[str]") -> str:
+    def keep_if_words(match: re.Match[str]) -> str:
         """A split is kept only when every piece looks like a word.
 
         wordninja splits *any* alphabetic run, so on a garbled scan it manufactures

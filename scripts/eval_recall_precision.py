@@ -60,12 +60,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-import pypdfium2 as pdfium  # noqa: E402
+from dataclasses import fields
 
-from dataclasses import fields  # noqa: E402
+import pypdfium2 as pdfium
 
-from pdf2md.enrich import GlyphIndex, _recall_words, record_recall  # noqa: E402
-from pdf2md.schema import BBox, Block, BlockType, TableData  # noqa: E402
+from pdf2md.enrich import GlyphIndex, _recall_words, record_recall
+from pdf2md.schema import BBox, Block, BlockType, TableData
 
 
 def _rescored(version_dir: Path, source: Path) -> dict[str, dict]:

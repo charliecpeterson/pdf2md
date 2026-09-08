@@ -15,16 +15,15 @@ import unicodedata
 from collections import Counter
 from pathlib import Path
 
+from eval_numeric_tables import _candidate_tables, _table_pages
 from PIL import Image, ImageFilter, ImageOps
 
-from eval_numeric_tables import _candidate_tables, _table_pages
 from pdf2md.table_verify import (
     _aligned_tesseract_lines,
     _numeric_source_rows,
     _numericish_word,
     _table_layout,
 )
-
 
 _ROOT = Path(__file__).parent.parent
 _GROUND_TRUTH = _ROOT / "tests" / "scan_degradation_ground_truth.json"

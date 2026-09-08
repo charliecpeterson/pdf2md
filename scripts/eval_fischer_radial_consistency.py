@@ -10,11 +10,9 @@ import argparse
 import csv
 import hashlib
 import json
-import math
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
-
 
 ROOT = Path(__file__).parent.parent
 DEFAULT_VERSION = ROOT / "out" / "0685e8d85e2237d8" / "v6"

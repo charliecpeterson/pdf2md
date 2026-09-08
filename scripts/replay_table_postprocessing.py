@@ -12,7 +12,7 @@ import json
 import re
 import shutil
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from pdf2md.cache import run_fingerprint
@@ -83,7 +83,7 @@ def replay(source: Path, target: Path) -> dict[str, int]:
     if source.parent != target.parent or _version(target) <= _version(source):
         raise ValueError("target must be a later version of the same document")
 
-    started = datetime.now(timezone.utc)
+    started = datetime.now(UTC)
     source_provenance_hash = _sha256(source_provenance_path)
     provenance = json.loads(source_provenance_path.read_text())
 
@@ -146,7 +146,7 @@ def replay(source: Path, target: Path) -> dict[str, int]:
         record["normalized_json"] = table.normalized_json_path or None
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
 
-    finished = datetime.now(timezone.utc)
+    finished = datetime.now(UTC)
     run_inputs = dict(provenance["provenance"].get("run_inputs") or {})
     run_inputs["implementation_sha256"] = _implementation_sha256()
     run_inputs["postprocessing_replay"] = {

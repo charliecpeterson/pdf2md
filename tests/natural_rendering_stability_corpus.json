@@ -36,15 +36,15 @@
     },
     "reader_runner": {
       "path": "scripts/run_paddle_line_reader.py",
-      "sha256": "999d0d9e485a96f806e5d7cac85af9d4c84bd8f4c06b5d118e9cfd09ae239be6"
+      "sha256": "af8a31f8563e601d09e6c15af27986a8bcf15216a015a784d147a01bd3a2cfc2"
     },
     "stability_evaluator": {
       "path": "scripts/eval_rendering_stability.py",
-      "sha256": "a5d3bfcb26ddf6062d8af629ea5c71a8a7274a1f16534f84082ca0fb0d752b5d"
+      "sha256": "f629deb4844cad42e95ba2fb4d2f56c84ae23573de950c7671f41a795ebec22e"
     },
     "semantic_scorer": {
       "path": "scripts/eval_heldout_data_reader.py",
-      "sha256": "67b90e56f1234fd7ccfcd43d4fe54ba60fb12b561112d69324c03313b0645ea5"
+      "sha256": "c713baead1cb7f7ac4096274ce27de70d144c074600c945014b149a0ff2056d0"
     }
   },
   "expected": {
@@ -92,9 +92,18 @@
       "primary_error_positive_predictive_value": 0.46428571,
       "primary_error_negative_predictive_value": 0.97619048,
       "by_natural_error_document": {
-        "nasa-wates-page-120": {"errors": 5, "unstable_errors": 5},
-        "ornl-mastersjob-pages-54-57": {"errors": 8, "unstable_errors": 7},
-        "slater-atomic-structure-vol1": {"errors": 1, "unstable_errors": 1}
+        "nasa-wates-page-120": {
+          "errors": 5,
+          "unstable_errors": 5
+        },
+        "ornl-mastersjob-pages-54-57": {
+          "errors": 8,
+          "unstable_errors": 7
+        },
+        "slater-atomic-structure-vol1": {
+          "errors": 1,
+          "unstable_errors": 1
+        }
       }
     }
   }

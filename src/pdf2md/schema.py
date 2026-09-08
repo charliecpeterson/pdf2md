@@ -233,7 +233,7 @@ class Section:
     kind: SectionKind
     page_start: int
     block_ids: list[str] = field(default_factory=list)
-    children: list["Section"] = field(default_factory=list)
+    children: list[Section] = field(default_factory=list)
 
 
 @dataclass

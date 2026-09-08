@@ -9,13 +9,13 @@ from __future__ import annotations
 import sys
 
 from pdf2md.engines.docling import (
+    _LABEL_MAP,
     _caption_bbox,
     _cell_bbox,
     _label_value,
     _quality_evidence,
     missing_cuda_python_headers,
 )
-from pdf2md.engines.docling import _LABEL_MAP
 from pdf2md.schema import BlockType
 
 

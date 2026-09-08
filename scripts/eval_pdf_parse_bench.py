@@ -17,7 +17,6 @@ from pathlib import Path
 
 from pdf2md.tables import html_tables
 
-
 _NUMBER = re.compile(
     r"(?<![\w.])[-+−–—]?(?:\d{1,3}(?:[ ,]\d{3})+|\d+)(?:\.\d+)?"
     r"(?:[eE][-+]?\d+)?(?![\w.])"

@@ -13,8 +13,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from PIL import Image, __version__ as pillow_version
-
+from PIL import Image
+from PIL import __version__ as pillow_version
 
 _ROOT = Path(__file__).parent.parent
 _SOURCE = _ROOT / "dolg-ecp.pdf"

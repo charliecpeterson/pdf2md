@@ -5,7 +5,6 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-
 SCRIPTS = Path(__file__).parent.parent / "scripts"
 spec = importlib.util.spec_from_file_location(
     "eval_source_row_alignment_corpus",

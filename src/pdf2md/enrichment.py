@@ -6,8 +6,8 @@ and therefore receive a fresh immutable version, audit artifacts, and provenance
 
 from __future__ import annotations
 
-from dataclasses import dataclass, fields, replace
 import json
+from dataclasses import dataclass, fields, replace
 from pathlib import Path
 
 from pdf2md.cache import content_hash, doc_dir, latest_version
@@ -16,7 +16,6 @@ from pdf2md.engine_state import ENGINE_STATE_NAME, StoredEngine, load_engine_sta
 from pdf2md.pipeline import ConvertResult, convert_file
 from pdf2md.schema import BlockType
 from pdf2md.transcribe import get_transcriber
-
 
 _STAGES = {"equations", "charts", "descriptions", "metadata"}
 

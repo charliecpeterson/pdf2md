@@ -22,7 +22,6 @@ from typing import Any
 
 from pdf2md.tables import html_tables
 
-
 _LABELS = Path(__file__).parent.parent / "tests" / "bakeoff_labels.json"
 _ENGINE_PINS = Path(__file__).parent.parent / "tests" / "bakeoff_engine_pins.json"
 _ROOT = Path(__file__).parent.parent

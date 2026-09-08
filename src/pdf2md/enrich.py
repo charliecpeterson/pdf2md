@@ -26,9 +26,9 @@ from pdf2md.confidence import (
     is_clean,
     trim_runaway_repetition,
 )
-from pdf2md.conservation import numeric_accounting, numeric_conservation, semantic_output
-from pdf2md.logging import get_logger
+from pdf2md.conservation import semantic_output
 from pdf2md.legibility import is_garbage
+from pdf2md.logging import get_logger
 from pdf2md.normalize import (
     clean_preformatted,
     clean_reading,
@@ -216,7 +216,7 @@ class GlyphIndex:
     def close(self) -> None:
         self._pdf.close()
 
-    def __enter__(self) -> "GlyphIndex":
+    def __enter__(self) -> GlyphIndex:
         return self
 
     def __exit__(self, *exc: object) -> None:

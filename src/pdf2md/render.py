@@ -98,7 +98,7 @@ class CropRenderer:
     def close(self) -> None:
         self._pdf.close()
 
-    def __enter__(self) -> "CropRenderer":
+    def __enter__(self) -> CropRenderer:
         return self
 
     def __exit__(self, *exc: object) -> None:

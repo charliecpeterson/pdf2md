@@ -6,12 +6,12 @@ report is JSON-safe and stored with provenance rather than sent to external tele
 
 from __future__ import annotations
 
-from collections.abc import Callable
-from dataclasses import dataclass, field
 import json
-from pathlib import Path
 import sys
 import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 

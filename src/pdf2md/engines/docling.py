@@ -10,11 +10,11 @@ inherits it. Tables ship their structured cells (`RawTable`) for `enrich` to reb
 
 from __future__ import annotations
 
-from importlib.metadata import version
 import math
+import sysconfig
+from importlib.metadata import version
 from pathlib import Path
 from statistics import fmean
-import sysconfig
 
 from pdf2md.engines.base import EngineResult
 from pdf2md.logging import get_logger

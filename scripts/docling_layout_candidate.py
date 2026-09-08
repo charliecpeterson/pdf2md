@@ -8,12 +8,11 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-from importlib.metadata import PackageNotFoundError, version
 import json
-from pathlib import Path
 import re
+from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 from typing import Any
-
 
 _DEPENDENCIES = (
     "docling",

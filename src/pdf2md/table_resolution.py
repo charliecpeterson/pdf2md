@@ -16,7 +16,6 @@ from pathlib import Path
 from pdf2md.schema import TableData
 from pdf2md.tables import RepeatedPanelLayout
 
-
 RESOLUTION_FIELDS = [
     "primary_value",
     "reader_value",

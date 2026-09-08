@@ -13,7 +13,6 @@ from pathlib import Path
 
 from pdf2md.schema import Document, Section
 
-
 OUTLINE_SCHEMA_VERSION = 2
 _BIBLIOGRAPHY = re.compile(
     r"\b(bibliograph|references|works cited|further reading|recommended reading)\b",

@@ -9,8 +9,9 @@ from __future__ import annotations
 import re
 import unicodedata
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from pdf2md.schema import Block, BlockType, CoverageFlag, CoverageStatus, Document
 from pdf2md.tables import render_table

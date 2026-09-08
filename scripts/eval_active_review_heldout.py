@@ -22,7 +22,6 @@ from eval_active_review_sampling import (
     _stratified_order,
 )
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCES = ROOT / "tests" / "active_review_sampling_sources.json"
 DEFAULT_CORPUS = ROOT / "tests" / "active_review_heldout_corpus.json"

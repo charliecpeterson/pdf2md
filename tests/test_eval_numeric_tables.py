@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-import importlib.util
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
+
+from pdf2md import table_verify
 
 _spec = importlib.util.spec_from_file_location(
     "eval_numeric_tables", Path(__file__).parent.parent / "scripts" / "eval_numeric_tables.py"
@@ -278,7 +280,7 @@ def test_tesseract_tsv_maps_repeated_panels_and_sparse_rows():
 
     mapped = ent._map_tesseract_tsv(rows, "\n".join([header, *words]), layout)
 
-    assert len(ent._word_lines("\n".join([header, *words]))) == 4
+    assert len(table_verify._word_lines("\n".join([header, *words]))) == 4
     assert mapped[2, 0] == "0.1"
     assert mapped[2, 3] == "2.2"
     assert mapped[3, 1] == "."

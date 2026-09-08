@@ -375,13 +375,17 @@ def build_passages(
             for section in reversed(breadcrumb)
             if section["id"] in section_roles
         ), None)
-        def contextualize(part: str) -> str:
+        # Closes over this iteration's block, and is called only from the two
+        # statements below it, before the loop advances. B023 warns about a
+        # closure that outlives the iteration; this one does not.
+        def contextualize(
+            part: str,
+            breadcrumb: list = breadcrumb,
+            block_type: str = block.type.value,
+            semantic_role: str | None = semantic_role,
+        ) -> str:
             return _retrieval_text(
-                metadata,
-                breadcrumb,
-                block.type.value,
-                part,
-                semantic_role=semantic_role,
+                metadata, breadcrumb, block_type, part, semantic_role=semantic_role
             )
 
         parts = split_passage_text(

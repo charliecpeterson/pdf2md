@@ -23,7 +23,6 @@ import numpy as np
 
 from pdf2md.schema import Digitization
 
-
 _VLM_CONFIDENCE = 0.3  # a raster read is a rough estimate, not a measurement
 
 

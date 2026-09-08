@@ -16,14 +16,14 @@ from collections import defaultdict
 from difflib import SequenceMatcher
 from pathlib import Path
 
-from PIL import Image
-
 from eval_numeric_tables import (
     _candidate_tables,
     _latest_version,
     _table_crops,
     _table_pages,
 )
+from PIL import Image
+
 from pdf2md.table_verify import (
     _align_numeric_lines,
     _aligned_tesseract_lines,

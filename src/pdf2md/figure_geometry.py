@@ -16,7 +16,6 @@ import ctypes
 
 import pypdfium2.raw as C
 
-
 _IDENT = (1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
 
 
@@ -187,12 +186,12 @@ def _axes_frames(polys, region):
     rw, rh = x1 - x0, y1 - y0
     out = []
     for p in [q for q in polys if _is_rect(q)] + _spine_frames(polys, region):
-        l, r, b, t = _fbox(p)
-        if l <= x0 + 1 or b <= y0 + 1:
+        left, r, b, t = _fbox(p)
+        if left <= x0 + 1 or b <= y0 + 1:
             continue
-        if r - l < 0.04 * rw or t - b < 0.04 * rh:
+        if r - left < 0.04 * rw or t - b < 0.04 * rh:
             continue
-        if any(abs(l - q[0]) < 2 and abs(r - q[1]) < 2 and abs(b - q[2]) < 2
+        if any(abs(left - q[0]) < 2 and abs(r - q[1]) < 2 and abs(b - q[2]) < 2
                for q in (_fbox(o) for o in out)):
             continue
         out.append(p)
@@ -204,12 +203,13 @@ def _assign(positions, frames):
     """Index of the smallest calibrated frame containing each position (None if none) —
     an inset's contents belong to the inset, not also to the panel drawn around it."""
     boxes = [_fbox(f) for f in frames]
-    areas = [(r - l) * (t - b) for l, r, b, t in boxes]
+    areas = [(r - left) * (t - b) for left, r, b, t in boxes]
     out = []
     for x, y in positions:
         best = None
-        for i, (l, r, b, t) in enumerate(boxes):
-            if l - 3 <= x <= r + 3 and b - 3 <= y <= t + 3 and (best is None or areas[i] < areas[best]):
+        for i, (left, r, b, t) in enumerate(boxes):
+            if (left - 3 <= x <= r + 3 and b - 3 <= y <= t + 3
+                    and (best is None or areas[i] < areas[best])):
                 best = i
         out.append(best)
     return out
@@ -219,8 +219,8 @@ def _marker_style(o) -> tuple:
     """A marker's appearance key: the stamped size plus the fill/stroke colors of the
     form's inner path. Same-series markers stamp identically; different series differ in
     glyph size or color, so grouping on this key separates the series."""
-    l, b, r, t = o.get_pos()
-    key = [round(r - l, 1), round(t - b, 1)]
+    left, b, r, t = o.get_pos()
+    key = [round(r - left, 1), round(t - b, 1)]
     for i in range(C.FPDFFormObj_CountObjects(o)):
         child = C.FPDFFormObj_GetObject(o, i)
         for getter in (C.FPDFPageObj_GetFillColor, C.FPDFPageObj_GetStrokeColor):

@@ -21,7 +21,6 @@ from pdf2md.schema import (
     TableData,
 )
 
-
 CHUNKS_SCHEMA_VERSION = 2
 DEFAULT_MAX_CHARS = 6000
 

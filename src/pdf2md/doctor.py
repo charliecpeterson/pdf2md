@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
-from importlib import metadata
 import json
 import os
-from pathlib import Path
 import platform
 import shutil
 import subprocess
 import sys
 import urllib.request
+from dataclasses import asdict, dataclass
+from importlib import metadata
+from pathlib import Path
 from urllib import error, request
 
 from pdf2md.config import Config

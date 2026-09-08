@@ -47,7 +47,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import shutil
 import sys
 import time
 from pathlib import Path
@@ -55,9 +54,9 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT / "src"))
 
-from pdf2md.config import Config  # noqa: E402
-from pdf2md.conservation import _EMITTED_NAV, _PDF2MD_MARKER  # noqa: E402
-from pdf2md.pipeline import convert_file  # noqa: E402
+from pdf2md.config import Config
+from pdf2md.conservation import _EMITTED_NAV, _PDF2MD_MARKER
+from pdf2md.pipeline import convert_file
 
 _FRONT_MATTER = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
 # pdf2md's own page anchors. Not printed text, and a header/footer absence test

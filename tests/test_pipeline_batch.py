@@ -2,8 +2,8 @@
 
 import hashlib
 
-from pdf2md.config import Config
 from pdf2md import pipeline
+from pdf2md.config import Config
 
 
 def test_batch_setup_failure_returns_one_failed_result_per_pdf(tmp_path, monkeypatch):

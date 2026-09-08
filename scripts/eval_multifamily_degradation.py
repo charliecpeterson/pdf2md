@@ -16,8 +16,8 @@ from collections import Counter
 from pathlib import Path
 
 from eval_numeric_tables import _candidate_tables, _resolved_cells, _table_pages
-from pdf2md.tables import gfm_rows
 
+from pdf2md.tables import gfm_rows
 
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCES = ROOT / "tests" / "multifamily_degradation_sources.json"
@@ -25,7 +25,7 @@ DEFAULT_CORPUS = ROOT / "tests" / "multifamily_degradation_corpus.json"
 DEFAULT_RUNTIME = ROOT / "tests" / "multifamily_degradation_runtime.json"
 
 sys.path.insert(0, str(Path(__file__).parent))
-from eval_heldout_data_reader import _outcome  # noqa: E402
+from eval_heldout_data_reader import _outcome
 
 
 def _sha256(path: Path) -> str:

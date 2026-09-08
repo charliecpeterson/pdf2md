@@ -17,7 +17,6 @@ from pathlib import Path
 
 from pdf2md.run_metrics import failed_optional_calls
 
-
 _DOCUMENT_HASH_LENGTHS = {8, 12, 16, 64}
 
 

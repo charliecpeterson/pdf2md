@@ -14,8 +14,8 @@ import unicodedata
 from pathlib import Path
 
 from eval_numeric_tables import _candidate_tables, _resolved_cells, _table_pages
-from pdf2md.table_verify import numeric_values_equal, typed_value
 
+from pdf2md.table_verify import numeric_values_equal, typed_value
 
 _ROOT = Path(__file__).parent.parent
 _GROUND_TRUTH = _ROOT / "tests" / "scan_degradation_ground_truth.json"

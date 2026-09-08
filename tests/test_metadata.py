@@ -10,7 +10,6 @@ import pytest
 from pdf2md import doi_metadata, metadata
 from pdf2md.schema import Block, BlockType
 
-
 _CASES = json.loads((Path(__file__).parent / "metadata_corpus.json").read_text())
 
 

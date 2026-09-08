@@ -73,3 +73,38 @@ packages = ["src/pdf2md"]
 testpaths = ["tests"]
 addopts = "-m 'not integration'"
 markers = ["integration: runs real Docling end-to-end (slow, opt-in)"]
+
+[tool.ruff]
+# Pinned on purpose. With no config, `ruff check` enables 415 rules and the set
+# moves with the tool: CI went red on 341 findings across two dozen rules the
+# project had never chosen. What is selected below is what this code is held to.
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+# E/F are the floor, I keeps imports ordered, UP keeps the code current for the
+# Python floor, B catches real bug classes, RUF100 stops dead `noqa`s
+# accumulating. Style families (ISC, FLY, FURB, PLR, PLW, TRY, PIE) are left out
+# rather than blanket-ignored: they disagree with how this code is written, and
+# a rule the project will not act on should not be in the report.
+# BLE001 and E402 are selected because the code already carries 57 `noqa`
+# directives for them, each with a written reason. Dropping the rules would turn
+# every one of those into dead text; keeping them keeps the reasons load-bearing.
+select = ["E4", "E7", "E9", "E402", "F", "I", "UP", "B", "BLE001", "RUF100"]
+# Adding `strict=` to 83 existing `zip()` calls is a behaviour change (it raises
+# on length mismatch) dressed as a lint fix. Not applied blind.
+ignore = [
+    "B905",
+    # `class BlockType(str, Enum)` -> `StrEnum` is not behaviour-neutral:
+    # `str(BlockType.PARAGRAPH)` is "BlockType.PARAGRAPH" today and would become
+    # "paragraph". These enums are serialized into provenance and passages.
+    "UP042",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# `typer.Option(...)` in a default argument is how Typer declares a CLI.
+"src/pdf2md/cli.py" = ["B008"]
+# Dev harnesses import the package by path and re-export for their own scripts.
+"scripts/*" = ["E402"]
+# These load a script by path and must extend sys.path before importing from it.
+"tests/test_prepare_paddleocr_crops.py" = ["E402"]

@@ -36,7 +36,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from pdf2md.doi_metadata import fetch_doi_metadata  # noqa: E402
+from pdf2md.doi_metadata import fetch_doi_metadata
 
 # A printed DOI, minus the punctuation a sentence puts after it.
 _DOI = re.compile(r"10\.\d{4,9}/[-._;()/:A-Za-z0-9]+")

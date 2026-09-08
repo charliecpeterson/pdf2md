@@ -19,7 +19,6 @@ import numpy as np
 import pypdfium2 as pdfium
 from PIL import Image
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCES = ROOT / "tests" / "column_geometry_methods_sources.json"
 DEFAULT_CORPUS = ROOT / "tests" / "column_geometry_methods_corpus.json"

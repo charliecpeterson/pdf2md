@@ -339,7 +339,7 @@ def test_figure_digitization_reuses_one_document_and_one_page_handle(tmp_path, m
 
 
 def test_ocr_axis_gate_requires_geometry_that_can_produce_a_series():
-    from pdf2md.digitize import _VectorGeometry, _has_series_geometry
+    from pdf2md.digitize import _has_series_geometry, _VectorGeometry
 
     frame = [(0, 0), (10, 0), (10, 10), (0, 10), (0, 0)]
     curve = [(0, 1), (5, 6), (10, 9)]
@@ -914,7 +914,7 @@ def test_vector_digitizer_recovers_bar_chart():
 
 
 def test_digitize_reads_superscript_and_log_axis():
-    from pdf2md.digitize import fit_axis, _token_value
+    from pdf2md.digitize import _token_value, fit_axis
 
     # a log tick '10' + a smaller, raised '3' is 10^3, not the literal 103
     chars = [("1", 14, 30, 7.0), ("0", 20, 30, 7.0), ("3", 26, 33, 5.0)]
@@ -1825,7 +1825,8 @@ def test_a_path_that_only_traces_the_axes_box_is_not_data():
     curve = [(100.0, 400.0), (200.0, 250.0), (300.0, 180.0), (500.0, 120.0)]
     assert _traces_the_frame(curve, frame) is False
 
-    ident = (lambda v: v)
+    def ident(v):
+        return v
     assert _data_series([triangle], frame, ident, ident) == []
     assert len(_data_series([curve], frame, ident, ident)) == 1
 
@@ -1871,7 +1872,7 @@ def test_a_log_axis_must_beat_a_line_by_more_than_a_rounding_error():
 
 
 def test_a_bezier_curve_is_read_on_the_curve_not_at_its_controls():
-    from pdf2md.figure_geometry import _BEZIER_STEPS, _segment_points
+    from pdf2md.figure_geometry import _BEZIER_STEPS
 
     # pdfium reports a cubic as three BEZIERTO segments -- two control points and the
     # endpoint -- and taking all three put the controls, which are not on the curve,

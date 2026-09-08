@@ -13,9 +13,10 @@ import shutil
 import subprocess
 import time
 from dataclasses import dataclass, field, replace
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import cache
-from importlib.metadata import PackageNotFoundError, version as package_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as package_version
 from pathlib import Path
 
 import pypdfium2 as pdfium
@@ -35,6 +36,12 @@ from pdf2md.cache import (
 from pdf2md.chunks import write_chunks
 from pdf2md.confidence import RECOVER_BELOW
 from pdf2md.config import Config
+from pdf2md.conservation import (
+    annotate_conservation_warnings,
+    conservation_review_flags,
+    numeric_conservation,
+)
+from pdf2md.coverage import build_report
 from pdf2md.describe import (
     VISION_CACHE_SCHEMA_VERSION,
     VISION_PROMPT_SHA256,
@@ -46,6 +53,14 @@ from pdf2md.document_metadata import (
     build_document_metadata,
     write_document_metadata,
 )
+from pdf2md.doi_metadata import (
+    DOI_METADATA_NAME,
+    fetch_doi_metadata,
+    merge_doi_metadata,
+)
+from pdf2md.emit import emit_document
+from pdf2md.engine_state import write_engine_state
+from pdf2md.engines.base import Engine, normalize_page_origin
 from pdf2md.enrich import (
     GlyphIndex,
     enrich_blocks,
@@ -55,55 +70,42 @@ from pdf2md.enrich import (
     record_recall,
     resegment_ocr_prose,
 )
-from pdf2md.conservation import (
-    annotate_conservation_warnings,
-    conservation_review_flags,
-    numeric_conservation,
-)
-from pdf2md.coverage import build_report
-from pdf2md.emit import emit_document
-from pdf2md.engine_state import write_engine_state
-from pdf2md.engines.base import Engine, normalize_page_origin
 from pdf2md.logging import Progress, collapse_repeated_warnings, get_logger
-from pdf2md.doi_metadata import (
-    DOI_METADATA_NAME,
-    fetch_doi_metadata,
-    merge_doi_metadata,
-)
 from pdf2md.metadata import extract_metadata
-from pdf2md.passages import write_passages
 from pdf2md.passage_tokenizer import load_passage_tokenizer
+from pdf2md.passages import write_passages
 from pdf2md.profile import build_profile, write_manifest, write_profile, write_readme
+from pdf2md.reading_order import reading_order_flags
 from pdf2md.render import CropRenderer, dpi_for_region
 from pdf2md.review import build_review_queue, write_review_files
 from pdf2md.run_metrics import RunMetrics, failed_optional_calls
 from pdf2md.scan_ocr import _vlm_ocr_pages
 from pdf2md.schema import (
     FORMAT_VERSION,
+    Block,
     BlockType,
     CoverageReport,
     Document,
     Provenance,
 )
-from pdf2md.transcribe import Transcriber, get_transcriber
-from pdf2md.reading_order import reading_order_flags
 from pdf2md.structure import build_structure
 from pdf2md.symbol_index import write_symbol_index
 from pdf2md.table_artifacts import annotate_table_artifacts
 from pdf2md.table_audit import raster_row_findings, running_text_findings
 from pdf2md.table_rebuild import glyph_unbacked_tables
 from pdf2md.tables import gfm_rows
+from pdf2md.transcribe import Transcriber, get_transcriber
+from pdf2md.vision_cache import CacheStats, load_vision_cache
 from pdf2md.visual import (
     _describe_crops,
     _digitize_figures,
     _label_figures,
     _ocr_scanned_figures,
     _promote_figure_captions,
-    associate_figure_captions,
     _svg_figures,
+    associate_figure_captions,
     clean_figure_structure,
 )
-from pdf2md.vision_cache import CacheStats, load_vision_cache
 
 log = get_logger("pipeline")
 _OCR_LOGGERS = ("RapidOCR", "docling.models.stages.ocr.rapid_ocr_model")
@@ -421,7 +423,7 @@ def convert_file(
             or config.figure_labels) and describer is None:
         describer = get_describer(config)
 
-    started = datetime.now(timezone.utc)
+    started = datetime.now(UTC)
     metrics = RunMetrics()
     vision_cache_stats = CacheStats()
     try:
@@ -560,7 +562,7 @@ def convert_file(
     grobid_tei: dict[str, bytes] | None = None
     grobid_references: list[dict] | None = None
     if config.grobid_url:
-        from pdf2md.grobid import HEADER_TEI_NAME, REFS_TEI_NAME, fetch_grobid, merge_grobid
+        from pdf2md.grobid import fetch_grobid, merge_grobid
 
         progress.stage("enriching metadata with GROBID")
         enriched = fetch_grobid(pdf_path, config.grobid_url,
@@ -921,7 +923,7 @@ def convert_file(
         passage_count=passage_count,
     )
 
-    finished = datetime.now(timezone.utc)
+    finished = datetime.now(UTC)
     doc.provenance = Provenance(
         tool_version=__version__,
         engine_versions=result.engine_versions,

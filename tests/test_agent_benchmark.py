@@ -8,7 +8,6 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-
 _ROOT = Path(__file__).parent.parent
 _spec = importlib.util.spec_from_file_location(
     "agent_benchmark", _ROOT / "scripts" / "agent_benchmark.py"

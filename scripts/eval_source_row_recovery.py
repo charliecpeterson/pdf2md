@@ -43,7 +43,6 @@ from pdf2md.table_verify import (
 )
 from pdf2md.tables import RepeatedPanelLayout, gfm_rows, split_repeated_panels
 
-
 ONE_GAP_MINIMUM_EXACT_RATIO = 0.85
 
 

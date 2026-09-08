@@ -44,16 +44,16 @@ import sys
 if str(sys_path) not in sys.path:
     sys.path.insert(0, str(sys_path))
 
-from pdf2md.enrich import (  # noqa: E402
+from pdf2md.enrich import (
     _SYMBOL_DASHES,
     _SYMBOLS,
     GlyphIndex,
     record_symbol_loss,
 )
-from pdf2md.schema import BBox, Block, BlockType, PROSE_TYPES  # noqa: E402
+from pdf2md.schema import PROSE_TYPES, BBox, Block, BlockType
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from eval_recall_precision import poppler_region  # noqa: E402
+from eval_recall_precision import poppler_region
 
 
 def _symbols(text: str) -> Counter:

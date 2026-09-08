@@ -9,7 +9,6 @@ from pathlib import Path
 
 from pdf2md.schema import Block, BlockType, TableData
 
-
 ROOT = Path(__file__).parent.parent
 spec = importlib.util.spec_from_file_location(
     "replay_table_postprocessing",

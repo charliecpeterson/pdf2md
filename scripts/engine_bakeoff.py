@@ -22,10 +22,9 @@ import signal
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
 
 _ROOT = Path(__file__).parent.parent
 _DEFAULT_MANIFEST = _ROOT / "tests" / "bakeoff_manifest.json"
@@ -390,11 +389,11 @@ def _run_one(
     executable: str | None,
     timeout: float | None,
 ) -> tuple[Path, dict[str, Any]]:
-    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+    run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%S.%fZ")
     run_dir = output_root / document["id"] / engine_id / run_id
     native_dir = run_dir / "native"
     native_dir.mkdir(parents=True)
-    started = datetime.now(timezone.utc)
+    started = datetime.now(UTC)
     record: dict[str, Any] = {
         "schema_version": 1,
         "run_id": run_id,
@@ -448,7 +447,7 @@ def _run_one(
                 "timed_out" if timed_out else ("ok" if exit_code == 0 else "failed")
             )
 
-    finished = datetime.now(timezone.utc)
+    finished = datetime.now(UTC)
     record["finished_at"] = finished.isoformat()
     record["outputs"] = _inventory(run_dir, native_dir)
     (run_dir / "run.json").write_text(json.dumps(record, indent=2) + "\n")

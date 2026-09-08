@@ -7,7 +7,6 @@ carrying someone else's OCR as a text layer never reaches the scanned path.
 """
 import json
 import sys
-from collections import Counter
 from pathlib import Path
 
 VALUE_KINDS = {"stray_glyphs_in_numeric_column", "decimal_separator_lost"}

@@ -114,9 +114,9 @@ def main() -> None:
     for source, source_labels in by_source.items():
         prov = provs.get(source)
         if prov is None:
-            results.extend({"source": source, "block_id": l["block_id"],
-                            "page": l["page"], "status": "no_pinned_artifact"}
-                           for l in source_labels)
+            results.extend({"source": source, "block_id": label["block_id"],
+                            "page": label["page"], "status": "no_pinned_artifact"}
+                           for label in source_labels)
             continue
         with CropRenderer(_ROOT / source, dpi=_DPI,
                           padding_pts=_PADDING_PT) as renderer:

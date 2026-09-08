@@ -5,7 +5,6 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-
 SCRIPTS = Path(__file__).parent.parent / "scripts"
 _spec = importlib.util.spec_from_file_location(
     "build_scan_degradation_corpus",

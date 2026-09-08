@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import json
 
-from pdf2md.review import build_review_queue, write_review_files
 from pdf2md.profile import build_profile, write_manifest, write_profile, write_readme
+from pdf2md.review import build_review_queue, write_review_files
 from pdf2md.schema import (
     Block,
     BlockType,

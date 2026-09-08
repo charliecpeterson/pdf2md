@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).parent.parent
 spec = importlib.util.spec_from_file_location(
     "eval_promotion_decision",

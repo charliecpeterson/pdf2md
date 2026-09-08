@@ -9,7 +9,6 @@ from pathlib import Path
 
 from PIL import Image
 
-
 SCRIPTS = Path(__file__).parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 _spec = importlib.util.spec_from_file_location(

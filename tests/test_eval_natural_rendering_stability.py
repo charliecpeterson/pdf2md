@@ -5,7 +5,6 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-
 ROOT = Path(__file__).parent.parent
 spec = importlib.util.spec_from_file_location(
     "eval_natural_rendering_stability",

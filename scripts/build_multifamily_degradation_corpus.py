@@ -9,8 +9,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from PIL import Image, __version__ as pillow_version
-
+from PIL import Image
+from PIL import __version__ as pillow_version
 
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCES = ROOT / "tests" / "multifamily_degradation_sources.json"

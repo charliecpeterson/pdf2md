@@ -6,7 +6,6 @@ import importlib.util
 import json
 from pathlib import Path
 
-
 SCRIPTS = Path(__file__).parent.parent / "scripts"
 _spec = importlib.util.spec_from_file_location(
     "eval_blind_corpus", SCRIPTS / "eval_blind_corpus.py"

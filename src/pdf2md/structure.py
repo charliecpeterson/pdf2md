@@ -13,7 +13,6 @@ from dataclasses import dataclass
 from pdf2md.outline import heading_depth, is_label_heading, section_kind
 from pdf2md.schema import Block, BlockType, Section, SectionKind
 
-
 # Below this page count a document is treated as a paper (single file) even when
 # it ships bookmarks; at or above it, bookmarked top-level sections become files.
 SPLIT_MIN_PAGES = 40

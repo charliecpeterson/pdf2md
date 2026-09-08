@@ -12,7 +12,6 @@ from pathlib import Path
 
 from eval_numeric_tables import evaluate as evaluate_labels
 
-
 _MANIFEST = Path(__file__).parent.parent / "tests" / "scanned_numeric_corpus.json"
 _COUNT_KEYS = ("checked", "agree", "disagree", "tool_refused")
 

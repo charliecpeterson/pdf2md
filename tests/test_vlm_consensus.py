@@ -5,10 +5,7 @@ from __future__ import annotations
 
 import json
 
-import pytest
-
 from pdf2md.digitize_vlm import vlm_digitize_consensus
-from pdf2md.schema import Digitization
 
 
 def _reply(points_per_series: list[list[tuple[float, float]]]) -> str:

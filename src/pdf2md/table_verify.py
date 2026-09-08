@@ -26,9 +26,12 @@ from pdf2md.logging import Progress, get_logger
 from pdf2md.scan_deskew import deskew_image
 from pdf2md.schema import Block, TableData
 from pdf2md.table_reference import (
-    compare_external_reference,
     external_outcome as _external_outcome,
+)
+from pdf2md.table_reference import (
     load_external_reference as _load_external_reference,
+)
+from pdf2md.table_reference import (
     normalized_semantics as _normalized_semantics,
 )
 from pdf2md.table_resolution import resolve_cell_records

@@ -15,8 +15,8 @@ from collections import Counter
 from pathlib import Path
 
 from eval_heldout_data_reader import _outcome, _semantic_value
-from pdf2md.table_verify import numeric_values_equal, typed_value
 
+from pdf2md.table_verify import numeric_values_equal, typed_value
 
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCES = ROOT / "tests" / "numeric_confidence_sources.json"

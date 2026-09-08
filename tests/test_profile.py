@@ -21,8 +21,8 @@ from pdf2md.schema import (
     CoverageFlag,
     CoverageReport,
     CoverageStatus,
-    Document,
     Digitization,
+    Document,
     FigureRef,
     TableData,
 )
@@ -589,7 +589,8 @@ def test_the_severity_row_shows_its_mass_not_only_its_worst_item():
     ]}
     profile = build_profile(doc, review_queue=review_queue)
 
-    line = next(l for l in _scorecard_lines(profile) if "Unresolved error severity" in l)
+    line = next(row for row in _scorecard_lines(profile)
+                if "Unresolved error severity" in row)
     assert "high (1 high, 3 medium, 8 low; 12 action items)" in line
 
 

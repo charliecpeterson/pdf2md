@@ -16,7 +16,6 @@ from decimal import Decimal, InvalidOperation
 from html.parser import HTMLParser
 from pathlib import Path
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CORPUS = ROOT / "tests" / "internal_scientific_checks_corpus.json"
 DEFAULT_REPORT = ROOT / "out" / "reviews" / "internal-scientific-checks-v1.json"

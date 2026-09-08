@@ -21,12 +21,13 @@ import tempfile
 from pathlib import Path
 
 import matplotlib
-matplotlib.use("pdf")
-import matplotlib.pyplot as plt  # noqa: E402
-import pypdfium2 as pdfium  # noqa: E402
 
-from pdf2md.digitize import VectorPathDigitizer  # noqa: E402
-from pdf2md.schema import BBox  # noqa: E402
+matplotlib.use("pdf")
+import matplotlib.pyplot as plt
+import pypdfium2 as pdfium
+
+from pdf2md.digitize import VectorPathDigitizer
+from pdf2md.schema import BBox
 
 X = list(range(0, 11))
 
@@ -165,7 +166,9 @@ def _match_error(recovered, truth, xlim, ylim):
             return None
         used.add(bi)
         for rp, tp in zip(recs[bi], t):
-            xe += abs(rp[0] - tp[0]); ye += abs(rp[1] - tp[1]); n += 1
+            xe += abs(rp[0] - tp[0])
+            ye += abs(rp[1] - tp[1])
+            n += 1
     return 100 * xe / n / xr, 100 * ye / n / yr
 
 
@@ -177,7 +180,9 @@ def main():
         for name, gen in CASES:
             path = Path(td) / f"{name}.pdf"
             truth, xlim, ylim = gen(path)
-            doc = pdfium.PdfDocument(str(path)); w, h = doc[0].get_size(); doc.close()
+            doc = pdfium.PdfDocument(str(path))
+            w, h = doc[0].get_size()
+            doc.close()
             res = dig.digitize(path, 1, BBox(x0=0, y0=0, x1=w, y1=h))
             if res is None:
                 print(f"{name:22}{len(truth):>6}{'-':>5}{'-':>6}{'-':>8}{'-':>8}  no extraction (fell back to crop)")

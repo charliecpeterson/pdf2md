@@ -15,14 +15,12 @@ from collections import defaultdict
 from pathlib import Path
 
 from pdf2md.table_verify import (
-    _is_number,
-    _looks_numeric,
-    _numeric_read,
     _table_layout,
-    _word_lines,
-    map_tesseract_tsv as _map_tesseract_tsv,
     numeric_values_equal,
     typed_value,
+)
+from pdf2md.table_verify import (
+    map_tesseract_tsv as _map_tesseract_tsv,
 )
 from pdf2md.tables import RepeatedPanelLayout, gfm_rows, html_tables, split_repeated_panels
 
@@ -226,7 +224,8 @@ def _paddle_tables(response: dict) -> list[list[list[str]]]:
 def _structure_equal(left: str, right: str) -> bool:
     if _values_equal(left, right):
         return True
-    normalize = lambda value: re.sub(r"\s+", "", value).casefold()
+    def normalize(value):
+        return re.sub(r"\s+", "", value).casefold()
     return normalize(left) == normalize(right)
 
 

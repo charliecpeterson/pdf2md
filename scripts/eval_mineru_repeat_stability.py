@@ -11,7 +11,6 @@ from pathlib import Path
 
 from pdf2md.engines.mineru import _translate_middle
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCES = ROOT / "tests" / "mineru_repeat_stability_sources.json"
 DEFAULT_CORPUS = ROOT / "tests" / "mineru_repeat_stability_corpus.json"

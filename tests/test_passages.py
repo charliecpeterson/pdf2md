@@ -6,10 +6,9 @@ import json
 
 from jsonschema import Draft202012Validator
 
-from pdf2md.passages import build_passages, load_passage_schema, write_passages
 from pdf2md.passage_split import split_passage_text
 from pdf2md.passage_tokenizer import load_passage_tokenizer
-from pdf2md.search import _load_passages
+from pdf2md.passages import build_passages, load_passage_schema, write_passages
 from pdf2md.schema import (
     BBox,
     Block,
@@ -23,6 +22,7 @@ from pdf2md.schema import (
     SectionKind,
     TableData,
 )
+from pdf2md.search import _load_passages
 
 
 class _WordTokenizer:

@@ -25,7 +25,6 @@ from pdf2md.row_locator import (
     projection_row_bands,
 )
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CORPUS = ROOT / "tests" / "projection_row_stress_corpus.json"
 DEFAULT_OUTPUT = ROOT / "out" / "reviews" / "projection-row-stress-v1"

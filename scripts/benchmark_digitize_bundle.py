@@ -9,12 +9,12 @@ write to the bundle, so repeated timing runs exercise the same inputs.
 from __future__ import annotations
 
 import argparse
-from collections import Counter
-from dataclasses import asdict
 import json
 import logging
-from pathlib import Path
 import time
+from collections import Counter
+from dataclasses import asdict
+from pathlib import Path
 
 from pdf2md.config import Config
 from pdf2md.logging import Progress

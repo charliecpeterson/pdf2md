@@ -211,7 +211,7 @@ def _scriptsplit_text(chars: list[Char]) -> str:
 class PageChars:
     """Per-page glyph geometry, extracted once and queried by bounding box."""
 
-    def __init__(self, page: "pdfium.PdfPage") -> None:
+    def __init__(self, page: pdfium.PdfPage) -> None:
         tp = page.get_textpage()
         self._tp = tp  # kept for text_lines (pdfium's native line detection)
         n = tp.count_chars()

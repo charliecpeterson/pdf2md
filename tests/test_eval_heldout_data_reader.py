@@ -7,7 +7,6 @@ import json
 from decimal import Decimal
 from pathlib import Path
 
-
 ROOT = Path(__file__).parent.parent
 SPEC = importlib.util.spec_from_file_location(
     "eval_heldout_data_reader", ROOT / "scripts" / "eval_heldout_data_reader.py"

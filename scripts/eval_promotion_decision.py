@@ -11,7 +11,6 @@ import hashlib
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCES = ROOT / "tests" / "promotion_decision_sources.json"
 DEFAULT_CORPUS = ROOT / "tests" / "promotion_decision_corpus.json"

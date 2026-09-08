@@ -11,7 +11,6 @@ from pathlib import Path
 from pdf2md.line_reader import MINIMUM_SCORE, _validate_reader
 from pdf2md.table_verify import numeric_values_equal, typed_value
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CORPUS = ROOT / "tests" / "non_fischer_third_reader_corpus.json"
 OUTCOMES = ("agree", "disagree", "tool_refused")

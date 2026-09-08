@@ -30,7 +30,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from eval_engine_table_agreement import _engine, _iou, _load  # noqa: E402
+from eval_engine_table_agreement import _engine, _iou, _load
 
 _PROSE = {"paragraph", "heading", "list", "caption", "footnote"}
 _WORD = re.compile(r"[^\W\d_]+", re.UNICODE)

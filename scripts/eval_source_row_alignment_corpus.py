@@ -25,7 +25,6 @@ from pdf2md.row_locator import (
     projection_row_bands,
 )
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CORPUS = ROOT / "tests" / "source_row_alignment_corpus.json"
 DEFAULT_OUTPUT = ROOT / "out" / "reviews" / "source-row-alignment-heldout-v1"

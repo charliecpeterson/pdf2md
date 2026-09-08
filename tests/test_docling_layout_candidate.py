@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-
 _spec = importlib.util.spec_from_file_location(
     "docling_layout_candidate",
     Path(__file__).parent.parent / "scripts" / "docling_layout_candidate.py",

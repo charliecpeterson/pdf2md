@@ -18,7 +18,6 @@ from pathlib import Path
 from pdf2md.table_review import _CONFIDENCE_ORDER, _take_diverse
 from pdf2md.table_verify import typed_value
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCES = ROOT / "tests" / "active_review_sampling_sources.json"
 DEFAULT_CORPUS = ROOT / "tests" / "active_review_sampling_corpus.json"

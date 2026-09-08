@@ -55,7 +55,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from pdf2md.reading_order import _longest_increasing  # noqa: E402
+from pdf2md.reading_order import _longest_increasing
 
 _FLOW = {"paragraph", "heading", "list"}
 _WORD = re.compile(r"[^\W\d_]+", re.UNICODE)

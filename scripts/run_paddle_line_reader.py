@@ -8,6 +8,7 @@ import importlib.metadata
 import json
 from pathlib import Path
 
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -54,7 +55,7 @@ def run(inputs_path: Path, output_path: Path, model_name: str, device: str) -> d
                 payload = prediction.json["res"]
                 result["text"] = payload.get("rec_text")
                 result["score"] = payload.get("rec_score")
-            except Exception as error:
+            except Exception as error:  # noqa: BLE001 - a reader failure is data, not a crash
                 result["error"] = f"{type(error).__name__}: {error}"
         records.append(result)
         print(

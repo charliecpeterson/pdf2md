@@ -11,8 +11,8 @@ import hashlib
 import json
 from pathlib import Path
 
-from eval_numeric_tables import _values_equal, evaluate as evaluate_labels
-
+from eval_numeric_tables import _values_equal
+from eval_numeric_tables import evaluate as evaluate_labels
 
 ROOT = Path(__file__).parent.parent
 DEFAULT_CORPUS = ROOT / "tests" / "natural_numeric_error_corpus.json"

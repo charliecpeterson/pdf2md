@@ -133,7 +133,7 @@ for doc in sorted(d for d in args.root.iterdir() if d.is_dir()):
 
 for k, n in totals.most_common():
     print(f"  {k:44s}: {n}")
-print(f"\nsame-digit disagreements (engine value | glyph value):")
+print("\nsame-digit disagreements (engine value | glyph value):")
 for doc, name, pairs in report[:20]:
     shown = ", ".join(f"{a!r}|{b!r}" for a, b in pairs)
     print(f"  {doc[:38]:38s} {name:16s} {shown}")

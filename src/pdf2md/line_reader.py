@@ -35,7 +35,6 @@ from pdf2md.table_verify import (
 )
 from pdf2md.tables import RepeatedPanelLayout, gfm_rows
 
-
 MINIMUM_SCORE = 0.99
 PINNED_READER = {
     "model_name": "PP-OCRv6_medium_rec",
@@ -132,7 +131,7 @@ def _panel_key_bounds(
             return None
 
     bounds = {}
-    for panel_index, start in enumerate(layout.starts):
+    for start in layout.starts:
         center = float(by_column[start])
         next_center = float(by_column[start + 1])
         half_gap = (next_center - center) / 2

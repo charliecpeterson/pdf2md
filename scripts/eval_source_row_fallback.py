@@ -10,7 +10,6 @@ from pathlib import Path
 from pdf2md.line_reader import _sha256
 from pdf2md.table_verify import numeric_values_equal
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CORPUS = ROOT / "tests" / "source_row_fallback_corpus.json"
 DEFAULT_OUTPUT = ROOT / "out" / "reviews" / "source-row-fallback-corpus-v1"

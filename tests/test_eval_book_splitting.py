@@ -5,7 +5,6 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-
 ROOT = Path(__file__).parent.parent
 SPEC = importlib.util.spec_from_file_location(
     "eval_book_splitting", ROOT / "scripts" / "eval_book_splitting.py"

@@ -18,6 +18,7 @@ from eval_numeric_tables import (
     _table_pages,
     _tesseract_reference,
 )
+
 from pdf2md.table_verify import numeric_values_equal, typed_value
 
 

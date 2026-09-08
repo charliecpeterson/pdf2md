@@ -15,7 +15,6 @@ from pathlib import Path
 from pdf2md import table_resolution
 from pdf2md.table_verify import numeric_values_equal, typed_value
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CASES = ROOT / "tests" / "numeric_validator_adversarial_cases.json"
 DEFAULT_CORPUS = ROOT / "tests" / "numeric_validator_adversarial_corpus.json"

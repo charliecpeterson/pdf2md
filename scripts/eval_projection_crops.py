@@ -14,7 +14,6 @@ from pdf2md.line_reader import MINIMUM_SCORE, PINNED_READER, _sha256, _validate_
 from pdf2md.row_locator import projection_cell_box
 from pdf2md.table_verify import numeric_values_equal
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_RECOVERY = ROOT / "out" / "reviews" / "fischer-source-row-recovery-v2"
 DEFAULT_OUTPUT = ROOT / "out" / "reviews" / "fischer-projection-crops-v1"

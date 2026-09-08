@@ -9,7 +9,6 @@ from __future__ import annotations
 import re
 from typing import Protocol
 
-
 DEFAULT_TOKENIZER = "lexical"
 LEXICAL_TOKENIZER_ID = "pdf2md-unicode-lexical-v1"
 _TOKEN = re.compile(r"\w+(?:['’]\w+)*|[^\w\s]", re.UNICODE)

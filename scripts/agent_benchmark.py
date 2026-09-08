@@ -43,7 +43,6 @@ from pdf2md.schema import (
     TableData,
 )
 
-
 _ROOT = Path(__file__).parent.parent
 _QUESTIONS = _ROOT / "tests" / "agent_questions.json"
 _MANIFEST = _ROOT / "tests" / "bakeoff_manifest.json"

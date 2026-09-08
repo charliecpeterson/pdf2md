@@ -7,7 +7,6 @@ import json
 from decimal import Decimal
 from pathlib import Path
 
-
 SCRIPTS = Path(__file__).parent.parent / "scripts"
 _spec = importlib.util.spec_from_file_location(
     "eval_source_row_recovery", SCRIPTS / "eval_source_row_recovery.py"

@@ -11,7 +11,6 @@ import hashlib
 import json
 from pathlib import Path
 
-
 _ROOT = Path(__file__).parent.parent
 _DEFAULT_CORPUS = _ROOT / "tests" / "blind_pdf_corpus.json"
 

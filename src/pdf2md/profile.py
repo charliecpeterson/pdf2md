@@ -791,19 +791,19 @@ def write_readme(version_dir: Path, doc: Document, meta: dict, profile: Document
             if p.table_cell_resolution else []
         ),
         *(
-            [f"Glyph-verified table cells (born-digital): " + ", ".join(
+            ["Glyph-verified table cells (born-digital): " + ", ".join(
                 f"{verdict}={count}" for verdict, count in sorted(g.items())
             ) + "."]
             if (g := p.table_cell_glyph_check) else []
         ),
         *(
-            [f"Equation render-back check: " + ", ".join(
+            ["Equation render-back check: " + ", ".join(
                 f"{verdict}={count}" for verdict, count in sorted(r.items())
             ) + "."]
             if (r := p.equation_render_check) else []
         ),
         *(
-            [f"Equation LaTeX renders under the bundled math renderer: "
+            ["Equation LaTeX renders under the bundled math renderer: "
              + ", ".join(f"{k}={v}" for k, v in sorted(s.items())) + "."]
             if (s := p.equation_render_support) else []
         ),

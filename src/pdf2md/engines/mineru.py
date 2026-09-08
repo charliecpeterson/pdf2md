@@ -15,9 +15,10 @@ import subprocess
 import tempfile
 import threading
 from collections import deque
+from collections.abc import Iterator
 from contextlib import nullcontext
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from pdf2md import __version__
 from pdf2md.engines.base import EngineResult

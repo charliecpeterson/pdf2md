@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from pdf2md.engines.mineru import MinerUEngine
 from pdf2md.engines.mineru import (
+    MinerUEngine,
     _capture_output,
     _progress_counter,
     _translate_middle,

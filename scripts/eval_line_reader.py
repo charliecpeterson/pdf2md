@@ -13,7 +13,6 @@ from pathlib import Path
 
 from PIL import Image, ImageFilter, ImageOps
 
-
 _ROOT = Path(__file__).parent.parent
 _LABELS = _ROOT / "tests" / "line_reader_labels.json"
 _SUBSCRIPTS = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")

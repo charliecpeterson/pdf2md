@@ -6,8 +6,8 @@ interface instead of inventing a second corpus index or retrieval contract.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
 from pathlib import Path
 
 from pdf2md.cache import (

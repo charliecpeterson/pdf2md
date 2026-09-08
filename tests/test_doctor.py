@@ -7,9 +7,9 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from pdf2md.config import Config
 from pdf2md import doctor
 from pdf2md.cli import app
+from pdf2md.config import Config
 
 
 def test_default_diagnostics_do_not_require_optional_tools(monkeypatch):

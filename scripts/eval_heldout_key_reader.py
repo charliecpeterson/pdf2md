@@ -24,7 +24,6 @@ from pdf2md.row_locator import (
 )
 from pdf2md.table_verify import numeric_values_equal
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCE_CORPUS = ROOT / "tests" / "source_row_alignment_corpus.json"
 DEFAULT_READER_CORPUS = ROOT / "tests" / "heldout_key_reader_corpus.json"

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import importlib.util
 import itertools
 import json
@@ -17,7 +16,6 @@ from pdf2md.line_reader import MINIMUM_SCORE, _sha256, _validate_reader
 from pdf2md.render import CropRenderer
 from pdf2md.scan_deskew import deskew_image
 from pdf2md.schema import BBox
-
 
 ROOT = Path(__file__).parent.parent
 DEFAULT_LABELS = ROOT / "tests" / "heldout_data_cell_labels.json"

@@ -9,7 +9,6 @@ from pathlib import Path
 
 import pytest
 
-
 _spec = importlib.util.spec_from_file_location(
     "eval_equations", Path(__file__).parent.parent / "scripts" / "eval_equations.py"
 )

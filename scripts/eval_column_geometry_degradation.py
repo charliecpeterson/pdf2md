@@ -14,11 +14,9 @@ from collections import Counter
 from io import BytesIO
 from pathlib import Path
 
+import eval_column_geometry_methods as methods
 import numpy as np
 from PIL import Image, ImageEnhance, ImageFilter
-
-import eval_column_geometry_methods as methods
-
 
 ROOT = Path(__file__).parent.parent
 DEFAULT_SOURCES = ROOT / "tests" / "column_geometry_methods_sources.json"

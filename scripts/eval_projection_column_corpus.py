@@ -17,7 +17,6 @@ from pdf2md.row_locator import (
     projection_row_bands,
 )
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CORPUS = ROOT / "tests" / "projection_column_corpus.json"
 DEFAULT_OUTPUT = ROOT / "out" / "reviews" / "projection-column-corpus-v1"

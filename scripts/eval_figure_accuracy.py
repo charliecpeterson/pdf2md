@@ -11,7 +11,6 @@ from pathlib import Path
 from pdf2md.schema import BBox, Block, BlockType, FigureLabels, FigureRef
 from pdf2md.visual import clean_figure_structure
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CORPUS = ROOT / "tests" / "figure_accuracy_corpus.json"
 DEFAULT_REPORT = ROOT / "out" / "reviews" / "figure-accuracy-v1.json"

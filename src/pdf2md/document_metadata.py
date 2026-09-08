@@ -6,14 +6,13 @@ Verification states describe agreement and traceability, not probabilities.
 
 from __future__ import annotations
 
-from collections import Counter
-from difflib import SequenceMatcher
 import json
 import re
+from collections import Counter
+from difflib import SequenceMatcher
 from pathlib import Path
 
 from pdf2md.schema import Block, BlockType, Document, Section, SectionKind
-
 
 METADATA_NAME = "metadata.json"
 METADATA_SCHEMA_VERSION = 1
@@ -335,7 +334,8 @@ def _local_references(doc: Document, roles: dict[str, dict]) -> tuple[list[dict]
 
 
 def _reference_similarity(left: str, right: str) -> float:
-    normalize = lambda value: re.sub(r"\W+", " ", value.casefold()).strip()
+    def normalize(value):
+        return re.sub(r"\W+", " ", value.casefold()).strip()
     return SequenceMatcher(None, normalize(left), normalize(right)).ratio()
 
 

@@ -13,7 +13,6 @@ from pathlib import Path
 
 from pdf2md.passage_split import prose_units
 
-
 SYMBOL_INDEX_SCHEMA_VERSION = 1
 _INLINE_MATH = re.compile(r"(?<!\$)\$([^$\n]{1,40})\$(?!\$)")
 _DISPLAY_MATH = re.compile(r"\$\$(.*?)\$\$", re.DOTALL)

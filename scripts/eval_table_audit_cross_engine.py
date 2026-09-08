@@ -48,7 +48,6 @@ import argparse
 import collections
 import json
 import re
-import sys
 from pathlib import Path
 
 _NUMBER = re.compile(r"[-+−]?\d[\d,]*(?:\.\d+)?(?:[eE][-+]?\d+)?")
@@ -111,7 +110,7 @@ def compare(a_dir: Path, b_dir: Path) -> list[dict]:
             by_hash.setdefault(key, {})[side] = prov.parent
 
     rows = []
-    for key, sides in by_hash.items():
+    for sides in by_hash.values():
         if len(sides) != 2:
             continue
         a_tables, b_tables = _load(sides["a"]), _load(sides["b"])

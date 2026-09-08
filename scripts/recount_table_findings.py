@@ -5,7 +5,8 @@ at conversion time, and the stray-glyph detector has gained three guards since.
 Re-running grid_findings over the stored cells gives today's numbers without
 reconverting.
 """
-import json, sys
+import json
+import sys
 from collections import Counter
 from pathlib import Path
 

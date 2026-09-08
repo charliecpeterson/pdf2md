@@ -181,7 +181,7 @@ def report(result: dict, quiet: bool = False) -> None:
         print("-" * 84)
         for row in result["tables"]:
             def rate(key: str) -> str:
-                return "-" if row[key] is None else f"{row[key]:.2f}"
+                return "-" if row[key] is None else f"{row[key]:.2f}"  # noqa: B023
             cells = f"{row['cells_left']:>4d}/{row['cells_right']:<4d}"
             audit = ", ".join(row["audit_findings"]) or "-"
             print(f"{row['block_id']:22s} {row['page']:>3d} {cells:>11s} "

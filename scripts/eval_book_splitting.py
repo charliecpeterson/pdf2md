@@ -12,7 +12,6 @@ from pdf2md.emit import _file_units
 from pdf2md.schema import Block, BlockType
 from pdf2md.structure import build_structure
 
-
 ROOT = Path(__file__).parent.parent
 DEFAULT_CORPUS = ROOT / "tests" / "book_split_corpus.json"
 DEFAULT_REPORT = ROOT / "out" / "reviews" / "book-splitting-v1.json"

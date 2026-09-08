@@ -213,7 +213,7 @@ class Config:
         return values
 
     @classmethod
-    def load(cls, path: Path | None = None, *, base: "Config | None" = None) -> "Config":
+    def load(cls, path: Path | None = None, *, base: Config | None = None) -> Config:
         cfg = base or cls()
         if path is None:
             return cfg

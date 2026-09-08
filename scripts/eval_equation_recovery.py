@@ -13,7 +13,6 @@ import importlib.util
 import json
 from pathlib import Path
 
-
 _ROOT = Path(__file__).parent.parent
 _DEFAULT_CORPUS = _ROOT / "tests" / "equation_recovery_corpus.json"
 _EQUATION_SPEC = importlib.util.spec_from_file_location(

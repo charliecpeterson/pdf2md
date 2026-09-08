@@ -23,17 +23,17 @@ from __future__ import annotations
 
 import argparse
 import json
+
+# Reuse the table differential's matcher: same problem, same solution.
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
 from pdf2md.reading_order import _longest_increasing
 from pdf2md.schema import BlockType
 
-# Reuse the table differential's matcher: same problem, same solution.
-import sys
-
 sys.path.insert(0, str(Path(__file__).parent))
-from eval_engine_table_agreement import _engine, _iou, _load  # noqa: E402
+from eval_engine_table_agreement import _engine, _iou, _load
 
 _FLOW = {BlockType.PARAGRAPH.value, BlockType.HEADING.value, BlockType.LIST.value}
 _MIN_MATCH_SHARE = 0.6

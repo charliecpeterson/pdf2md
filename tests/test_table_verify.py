@@ -10,13 +10,13 @@ from pdf2md import table_verify
 from pdf2md.emit import emit_document
 from pdf2md.schema import Block, BlockType, Document, TableData
 from pdf2md.structure import build_structure
+from pdf2md.table_reference import compare_external_reference
 from pdf2md.table_resolution import resolve_cell_records
 from pdf2md.table_verify import (
     _aligned_tesseract_lines,
-    _table_layout,
     _reader_parse_rate,
+    _table_layout,
     _verification_status,
-    compare_external_reference,
     map_tesseract_tsv,
     typed_value,
 )

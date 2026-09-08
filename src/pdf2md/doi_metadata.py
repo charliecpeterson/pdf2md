@@ -15,7 +15,6 @@ import urllib.request
 
 from pdf2md.logging import get_logger
 
-
 log = get_logger("doi_metadata")
 DOI_METADATA_NAME = "data/doi-metadata.csl.json"
 
@@ -88,7 +87,8 @@ def _csl_text(record: dict, key: str) -> str | None:
 
 
 def _same_field(left, right) -> bool:
-    normalize = lambda value: re.sub(r"\W+", " ", str(value).casefold()).strip()
+    def normalize(value):
+        return re.sub(r"\W+", " ", str(value).casefold()).strip()
     if isinstance(left, list) and isinstance(right, list):
         return [normalize(item) for item in left] == [normalize(item) for item in right]
     return normalize(left) == normalize(right)

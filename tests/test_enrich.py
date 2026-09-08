@@ -4,8 +4,6 @@ what) that used to live untested inside the Docling adapter."""
 
 from __future__ import annotations
 
-import pytest
-
 from pdf2md.enrich import (
     _cell_read_boxes,
     enrich_blocks,
@@ -308,7 +306,7 @@ def test_recall_summary_aggregates_and_counts_low_blocks():
 
 
 def test_numeric_accounting_canonicalizes_and_finds_missing():
-    from pdf2md.enrich import numeric_accounting
+    from pdf2md.conservation import numeric_accounting
 
     source = ("Table 3: −1,234.50 and 92; repeated 1,234 and 1,234; "
               "trailing dot 12.; ligature ﬁne x²")
@@ -327,7 +325,7 @@ def test_numeric_accounting_survives_typeset_spacing_and_exponents():
     # decimal point ("2 . 3"), and exponents ride as separate groups ("10 19"
     # once text_scriptsplit has split the glued layer form "1019"). Both sides
     # must tokenize to the same values.
-    from pdf2md.enrich import numeric_accounting
+    from pdf2md.conservation import numeric_accounting
 
     source = "cost 2.3 · 10 19 and rate d −0.5"
     output = "2 . 3 · 10 <sup>19</sup> and d^{ -0.5 }"
@@ -345,8 +343,8 @@ def test_numeric_accounting_survives_typeset_spacing_and_exponents():
 def test_scriptsplit_separates_scripted_groups():
     from pdf2md.scripts import _scriptsplit_text
 
-    def ch(text, l, b, r, t):
-        return (text, float(l), float(b), float(r), float(t))
+    def ch(text, left, b, r, t):
+        return (text, float(left), float(b), float(r), float(t))
 
     # '10' on the baseline, a raised smaller '19' group after it.
     chars = [

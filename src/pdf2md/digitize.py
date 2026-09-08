@@ -16,10 +16,10 @@ it shares none of this module's machinery, which is why it is not in this file.
 from __future__ import annotations
 
 import ctypes
-from dataclasses import dataclass
 import math
 import re
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import NamedTuple, Protocol, runtime_checkable
 
@@ -105,9 +105,9 @@ def _text_groups(page, region):
     chars = []
     for i in range(tp.count_chars()):
         ch = tp.get_text_range(i, 1)
-        l, b, r, t = tp.get_charbox(i)
+        left, b, r, t = tp.get_charbox(i)
         if ch.strip():
-            chars.append(("-" if ch == "−" else ch, (l + r) / 2, (b + t) / 2, t - b))  # U+2212 -> '-'
+            chars.append(("-" if ch == "−" else ch, (left + r) / 2, (b + t) / 2, t - b))  # U+2212 -> '-'
     # Agglomerate order-independently: a char joins a label if it's close to ANY glyph
     # already in it (same line within 5pt, centers within 9pt), and a char bridging two
     # groups merges them. This survives glyphs that sit off the baseline -- a low decimal
@@ -157,10 +157,10 @@ def _object_text_groups(page, region):
         s = _textobj_str(o, tp)
         if not s.strip():
             continue
-        l, b, r, t = o.get_pos()
+        left, b, r, t = o.get_pos()
         ma, mb, mc, md, me, mf = container
         corners = [(ma * x + mc * y + me, mb * x + md * y + mf)
-                   for x, y in ((l, b), (r, b), (l, t), (r, t))]
+                   for x, y in ((left, b), (r, b), (left, t), (r, t))]
         cx = sum(x for x, _ in corners) / 4
         cy = sum(y for _, y in corners) / 4
         h = max(y for _, y in corners) - min(y for _, y in corners)
@@ -375,10 +375,10 @@ def _right_axis_ticks(page, frame):
         text = _textobj_str(o, tp)
         if not text.strip():
             continue
-        l, b, r, t = o.get_pos()
+        left, b, r, t = o.get_pos()
         ma, mb, mc, md, me, mf = container
         corners = [(ma * x + mc * y + me, mb * x + md * y + mf)
-                   for x, y in ((l, b), (r, b), (l, t), (r, t))]
+                   for x, y in ((left, b), (r, b), (left, t), (r, t))]
         mx = sum(x for x, _ in corners) / 4
         my = sum(y for _, y in corners) / 4
         if not (fx1 + 2 < mx <= fx1 + 0.4 * fw + 2):
@@ -413,7 +413,7 @@ def _fit_right_axis(ticks, frame, others=()):
             # panels put the next panel's axis squarely in this band: wires-2020
             # #/pictures/26 is two parity plots and was withheld for it, though it
             # scores 3 of 4 labelled anchors.
-            and not any(abs(px - l) < px - fx1 for l in lefts)]
+            and not any(abs(px - left) < px - fx1 for left in lefts)]
     if len(mine) < 2:
         return None
     pairs, _flipped = restore_signs(sorted(mine, key=lambda t: t[1]))
@@ -545,9 +545,9 @@ def _bar_series(polys, frame, fx, fy) -> list[list[tuple[float, float]]]:
 def _neighborhood(frame, region):
     """The band of page around a frame where its own tick labels live — passed to
     _calibrate as the text region so adjacent subplots' labels stay out of the fit."""
-    l, r, b, t = _fbox(frame)
-    fw, fh = r - l, t - b
-    return (max(region[0], l - 0.4 * fw), min(region[1], r + 0.08 * fw),
+    left, r, b, t = _fbox(frame)
+    fw, fh = r - left, t - b
+    return (max(region[0], left - 0.4 * fw), min(region[1], r + 0.08 * fw),
             max(region[2], b - 0.35 * fh), min(region[3], t + 0.08 * fh))
 
 
@@ -691,7 +691,8 @@ def _has_series_geometry(geometry: _VectorGeometry) -> bool:
         frames,
     )
     form_of = _assign([(form[0], form[1]) for form in forms], frames)
-    identity = lambda value: value
+    def identity(value):
+        return value
     for index, frame in enumerate(frames):
         polylines = [
             polyline

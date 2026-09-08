@@ -20,8 +20,8 @@ from eval_pdf_parse_bench import (
     _latest_versions,
     _match_tables,
 )
-from pdf2md.table_verify import _numeric_read, typed_value
 
+from pdf2md.table_verify import _numeric_read, typed_value
 
 _ROW_BREAK = re.compile(r"\\\\(?:\s*\[[^\]]*\])?")
 _NUMBER = re.compile(r"[-+]?(?:\d+(?:[ ,]\d{3})*(?:\.\d+)?|\.\d+)(?:[eE][-+]?\d+)?")

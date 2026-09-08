@@ -7,9 +7,9 @@ running the layout engine again.
 
 from __future__ import annotations
 
-from dataclasses import asdict, fields
 import hashlib
 import json
+from dataclasses import asdict, fields
 from pathlib import Path
 from typing import Any
 
@@ -26,7 +26,6 @@ from pdf2md.schema import (
     RawTable,
     TableData,
 )
-
 
 ENGINE_STATE_SCHEMA_VERSION = 1
 ENGINE_STATE_NAME = "base-state.json"

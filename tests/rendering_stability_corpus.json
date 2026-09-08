@@ -27,7 +27,7 @@
     },
     "reader_runner": {
       "path": "scripts/run_paddle_line_reader.py",
-      "sha256": "999d0d9e485a96f806e5d7cac85af9d4c84bd8f4c06b5d118e9cfd09ae239be6"
+      "sha256": "af8a31f8563e601d09e6c15af27986a8bcf15216a015a784d147a01bd3a2cfc2"
     }
   },
   "expected": {
@@ -51,30 +51,150 @@
       "unique_crop_hashes": 672
     },
     "variant_results": {
-      "dpi300-adaptive-deskewed-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
-      "dpi300-adaptive-deskewed-tight": {"checked": 56, "agree": 45, "disagree": 0, "tool_refused": 11},
-      "dpi300-adaptive-original-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
-      "dpi300-adaptive-original-tight": {"checked": 56, "agree": 45, "disagree": 0, "tool_refused": 11},
-      "dpi300-grayscale-deskewed-padded": {"checked": 56, "agree": 49, "disagree": 0, "tool_refused": 7},
-      "dpi300-grayscale-deskewed-tight": {"checked": 56, "agree": 46, "disagree": 0, "tool_refused": 10},
-      "dpi300-grayscale-original-padded": {"checked": 56, "agree": 49, "disagree": 0, "tool_refused": 7},
-      "dpi300-grayscale-original-tight": {"checked": 56, "agree": 46, "disagree": 0, "tool_refused": 10},
-      "dpi450-adaptive-deskewed-padded": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
-      "dpi450-adaptive-deskewed-tight": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
-      "dpi450-adaptive-original-padded": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
-      "dpi450-adaptive-original-tight": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
-      "dpi450-grayscale-deskewed-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
-      "dpi450-grayscale-deskewed-tight": {"checked": 56, "agree": 47, "disagree": 0, "tool_refused": 9},
-      "dpi450-grayscale-original-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
-      "dpi450-grayscale-original-tight": {"checked": 56, "agree": 47, "disagree": 0, "tool_refused": 9},
-      "dpi600-adaptive-deskewed-padded": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
-      "dpi600-adaptive-deskewed-tight": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
-      "dpi600-adaptive-original-padded": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
-      "dpi600-adaptive-original-tight": {"checked": 56, "agree": 51, "disagree": 0, "tool_refused": 5},
-      "dpi600-grayscale-deskewed-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
-      "dpi600-grayscale-deskewed-tight": {"checked": 56, "agree": 53, "disagree": 0, "tool_refused": 3},
-      "dpi600-grayscale-original-padded": {"checked": 56, "agree": 50, "disagree": 0, "tool_refused": 6},
-      "dpi600-grayscale-original-tight": {"checked": 56, "agree": 53, "disagree": 0, "tool_refused": 3}
+      "dpi300-adaptive-deskewed-padded": {
+        "checked": 56,
+        "agree": 50,
+        "disagree": 0,
+        "tool_refused": 6
+      },
+      "dpi300-adaptive-deskewed-tight": {
+        "checked": 56,
+        "agree": 45,
+        "disagree": 0,
+        "tool_refused": 11
+      },
+      "dpi300-adaptive-original-padded": {
+        "checked": 56,
+        "agree": 50,
+        "disagree": 0,
+        "tool_refused": 6
+      },
+      "dpi300-adaptive-original-tight": {
+        "checked": 56,
+        "agree": 45,
+        "disagree": 0,
+        "tool_refused": 11
+      },
+      "dpi300-grayscale-deskewed-padded": {
+        "checked": 56,
+        "agree": 49,
+        "disagree": 0,
+        "tool_refused": 7
+      },
+      "dpi300-grayscale-deskewed-tight": {
+        "checked": 56,
+        "agree": 46,
+        "disagree": 0,
+        "tool_refused": 10
+      },
+      "dpi300-grayscale-original-padded": {
+        "checked": 56,
+        "agree": 49,
+        "disagree": 0,
+        "tool_refused": 7
+      },
+      "dpi300-grayscale-original-tight": {
+        "checked": 56,
+        "agree": 46,
+        "disagree": 0,
+        "tool_refused": 10
+      },
+      "dpi450-adaptive-deskewed-padded": {
+        "checked": 56,
+        "agree": 51,
+        "disagree": 0,
+        "tool_refused": 5
+      },
+      "dpi450-adaptive-deskewed-tight": {
+        "checked": 56,
+        "agree": 50,
+        "disagree": 0,
+        "tool_refused": 6
+      },
+      "dpi450-adaptive-original-padded": {
+        "checked": 56,
+        "agree": 51,
+        "disagree": 0,
+        "tool_refused": 5
+      },
+      "dpi450-adaptive-original-tight": {
+        "checked": 56,
+        "agree": 50,
+        "disagree": 0,
+        "tool_refused": 6
+      },
+      "dpi450-grayscale-deskewed-padded": {
+        "checked": 56,
+        "agree": 50,
+        "disagree": 0,
+        "tool_refused": 6
+      },
+      "dpi450-grayscale-deskewed-tight": {
+        "checked": 56,
+        "agree": 47,
+        "disagree": 0,
+        "tool_refused": 9
+      },
+      "dpi450-grayscale-original-padded": {
+        "checked": 56,
+        "agree": 50,
+        "disagree": 0,
+        "tool_refused": 6
+      },
+      "dpi450-grayscale-original-tight": {
+        "checked": 56,
+        "agree": 47,
+        "disagree": 0,
+        "tool_refused": 9
+      },
+      "dpi600-adaptive-deskewed-padded": {
+        "checked": 56,
+        "agree": 51,
+        "disagree": 0,
+        "tool_refused": 5
+      },
+      "dpi600-adaptive-deskewed-tight": {
+        "checked": 56,
+        "agree": 51,
+        "disagree": 0,
+        "tool_refused": 5
+      },
+      "dpi600-adaptive-original-padded": {
+        "checked": 56,
+        "agree": 51,
+        "disagree": 0,
+        "tool_refused": 5
+      },
+      "dpi600-adaptive-original-tight": {
+        "checked": 56,
+        "agree": 51,
+        "disagree": 0,
+        "tool_refused": 5
+      },
+      "dpi600-grayscale-deskewed-padded": {
+        "checked": 56,
+        "agree": 50,
+        "disagree": 0,
+        "tool_refused": 6
+      },
+      "dpi600-grayscale-deskewed-tight": {
+        "checked": 56,
+        "agree": 53,
+        "disagree": 0,
+        "tool_refused": 3
+      },
+      "dpi600-grayscale-original-padded": {
+        "checked": 56,
+        "agree": 50,
+        "disagree": 0,
+        "tool_refused": 6
+      },
+      "dpi600-grayscale-original-tight": {
+        "checked": 56,
+        "agree": 53,
+        "disagree": 0,
+        "tool_refused": 3
+      }
     },
     "best_agreement": 53,
     "zero_disagreement_variants": 24,

@@ -19,7 +19,6 @@ from pdf2md.table_resolution import enrich_normalized_datasets
 from pdf2md.table_verify import typed_value, write_cell_evidence
 from pdf2md.tables import gfm_rows, render_table, split_repeated_panels, table_has_content
 
-
 _ELEMENTS = (
     "", "H", "HE", "LI", "BE", "B", "C", "N", "O", "F", "NE", "NA", "MG",
     "AL", "SI", "P", "S", "CL", "AR", "K", "CA", "SC", "TI", "V", "CR", "MN",

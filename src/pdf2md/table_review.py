@@ -20,7 +20,6 @@ from PIL import Image
 from pdf2md.render import CropRenderer
 from pdf2md.schema import BBox
 
-
 _CONFIDENCE_ORDER = {"low": 0, "medium": 1, "high": 2, "verified": 3}
 _CSV_FIELDS = (
     "page", "block_id", "row", "column", "atomic_number", "symbol", "row_key",

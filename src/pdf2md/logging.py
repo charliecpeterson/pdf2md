@@ -3,13 +3,12 @@ place that installs a real handler."""
 
 from __future__ import annotations
 
-from collections import Counter
-from collections.abc import Iterator
-from contextlib import contextmanager
 import logging
 import threading
-from typing import Callable
 import time
+from collections import Counter
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 
 _ROOT = "pdf2md"
 
@@ -76,7 +75,7 @@ class Progress:
     @contextmanager
     def heartbeat(
         self,
-        message: "str | Callable[[], str]",
+        message: str | Callable[[], str],
         *,
         interval_seconds: float = 60.0,
     ) -> Iterator[None]:
