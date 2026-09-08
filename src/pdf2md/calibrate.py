@@ -13,7 +13,7 @@ from typing import NamedTuple
 
 import numpy as np
 
-from pdf2md.digitize import fit_axis, restore_signs
+from pdf2md.axes import fit_axis, restore_signs
 from pdf2md.labels import best_orientation
 
 _NUM = re.compile(r"-?\d+(?:\.\d+)?")

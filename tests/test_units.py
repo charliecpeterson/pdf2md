@@ -865,7 +865,7 @@ def test_vector_digitizer_reads_two_panel_figure():
 
 
 def test_drop_outlier_rescues_a_poisoned_tick_band():
-    from pdf2md.digitize import _drop_outlier
+    from pdf2md.axes import _drop_outlier
 
     # a rotated axis title OCR-fragments into the y band as '1', wrecking a clean
     # log sequence; leave-one-out finds and drops exactly that tick
@@ -879,7 +879,7 @@ def test_drop_outlier_rescues_a_poisoned_tick_band():
 
 
 def test_restore_log_signs_flips_descending_powers_of_ten():
-    from pdf2md.digitize import restore_log_signs
+    from pdf2md.axes import restore_log_signs
 
     # pdfium dropped the superscript minus: 10^-1..10^-3 read as 10, 100, 1000 down the
     # axis — monotonic, so only the powers-of-ten prior can catch it
@@ -914,7 +914,7 @@ def test_vector_digitizer_recovers_bar_chart():
 
 
 def test_digitize_reads_superscript_and_log_axis():
-    from pdf2md.digitize import _token_value, fit_axis
+    from pdf2md.axes import _token_value, fit_axis
 
     # a log tick '10' + a smaller, raised '3' is 10^3, not the literal 103
     chars = [("1", 14, 30, 7.0), ("0", 20, 30, 7.0), ("3", 26, 33, 5.0)]
@@ -929,7 +929,7 @@ def test_digitize_reads_superscript_and_log_axis():
 
 
 def test_digitize_restores_dropped_negative_signs():
-    from pdf2md.digitize import restore_signs
+    from pdf2md.axes import restore_signs
 
     # the text layer drops matplotlib's minus glyph, so ticks -4..4 parse as 4,2,0,2,4
     # by ascending page position (bottom-left origin: y up); monotonicity restores signs.
@@ -1782,7 +1782,8 @@ def test_table_crops_include_glyph_unbacked_tables():
 
 
 def test_data_far_from_its_own_ticks_loses_the_confidence_to_ship():
-    from pdf2md.digitize import _Calibration, _tick_range_fraction
+    from pdf2md.axes import _Calibration
+    from pdf2md.digitize import _tick_range_fraction
 
     cal = _Calibration(lambda p: p, lambda p: p, 1.0, 2, "linear", "linear", False,
                        (0.0, 80.0), (0.0, 5.0))
@@ -1794,7 +1795,8 @@ def test_data_far_from_its_own_ticks_loses_the_confidence_to_ship():
 
 
 def test_each_panel_is_checked_against_its_own_ticks():
-    from pdf2md.digitize import _Calibration, _tick_range_fraction
+    from pdf2md.axes import _Calibration
+    from pdf2md.digitize import _tick_range_fraction
 
     # Two stacked subplots, y 0..10 and y 0..100. Checking the second panel's series
     # against the first panel's ticks convicts a perfectly good panel -- which is what
@@ -1859,7 +1861,7 @@ def test_a_second_y_axis_gets_its_own_scale():
 
 
 def test_a_log_axis_must_beat_a_line_by_more_than_a_rounding_error():
-    from pdf2md.digitize import fit_axis
+    from pdf2md.axes import fit_axis
 
     # 54/56/58 is arithmetic, but log10 is locally linear over so narrow a range, so
     # with a 1e-6 margin the log fit won on unevenly printed ticks and the axis came
@@ -1898,7 +1900,7 @@ def test_a_grid_of_rectangles_is_not_a_data_curve():
 
 
 def test_a_second_axis_the_ocr_tier_cannot_assign_is_withheld():
-    from pdf2md.digitize import _fit_right_axis
+    from pdf2md.axes import _fit_right_axis
 
     # The vector tier tells which curve belongs to which scale by the colour of the
     # tick labels. A figure reaches the OCR tier precisely because its tick text is

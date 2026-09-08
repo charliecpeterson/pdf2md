@@ -112,6 +112,9 @@ src/pdf2md/
                 Digitization it returns — different input, different failure mode, its own
                 consensus and round-trip check. Approximate by construction; the crop stays
                 authoritative.
+  axes.py       turning tick marks into a coordinate system: tick text from glyphs or text
+                objects, the linear/log fit, and the right-hand axis. Everything else in
+                digitize reads page points; this is what makes them mean a value.
   digitize.py   figure data recovery. VectorPathDigitizer reads born-digital chart data from the
                 drawn vector paths (default on; near-lossless): lines, scatter (multi-series, split
                 by marker style), bars on a common baseline (Digitization.kind), and MULTI-PANEL
