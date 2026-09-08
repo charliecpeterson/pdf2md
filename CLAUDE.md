@@ -53,8 +53,11 @@ src/pdf2md/
   run_metrics.py sequential stage timings and work counts stored with provenance.
   logging.py    ... `Progress.heartbeat` takes a callable, so a long blocking stage that can
                 count its own progress reports the count instead of only that it is alive.
-  cli.py        Typer surface (convert / enrich / coverage / compare-runs / list /
-                review-tables / prune / version / doctor / models / line-reader).
+  cli.py        the two commands that write: convert and enrich, plus the Typer app.
+  cli_inspect.py the ones that read: coverage / compare-runs / list / find / review-tables /
+                prune / version / doctor / models / line-reader. Registered by import —
+                `cli` imports it after building `app`, so the decorators attach to the same
+                instance.
   cli_report.py the last line of a run — accounting first, then the worst outstanding item,
                 then where to look. That order is the point: it is the only part of the
                 audit most people read.

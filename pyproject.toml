@@ -104,6 +104,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 # `typer.Option(...)` in a default argument is how Typer declares a CLI.
 "src/pdf2md/cli.py" = ["B008"]
+"src/pdf2md/cli_inspect.py" = ["B008"]
 # Dev harnesses import the package by path and re-export for their own scripts.
 "scripts/*" = ["E402"]
 # These load a script by path and must extend sys.path before importing from it.
