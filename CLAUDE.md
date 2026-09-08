@@ -288,14 +288,111 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
 - stdlib `logging` under `pdf2md.*`, never `print`. NullHandler in the library.
 - Soft ~700-line file ceiling. Don't recreate the old project's God-files.
 
+- `output format` is a versioned contract: bump `FORMAT_VERSION` in `schema.py`
+  when front-matter keys or the file layout change in a parser-breaking way.
+
 ## Gotchas
 
-- **Formula enrichment** (`Config.do_formula_enrichment`, default on) turns
-  equations into LaTeX but is slow (minutes for equation-heavy papers). Off →
-  equations aren't transcribed, so each is cropped to an authoritative image
-  (`_eq_crops` crops any equation with no text, not just low-confidence ones) and
-  emitted as `![equation](...)`, never a bare "empty equation block". `--no-formula`
-  is the CLI lever.
+Grouped by what they concern, in the order of the module map above. Each is a
+rule and the measurement that produced it — the measurement is the point, and a
+rule without its number is a superstition.
+
+### Engines & Scans
+
+Which parser reads what, and the one page shape that inverts every check.
+
+
+- **A scan carrying someone else's OCR is detected and treated as a scan.** This is the one
+  condition under which the whole verification layer inverts: the text layer exists, so
+  nothing routes the page down the scanned path, and every glyph check then verifies the
+  engine against the same wrong characters and reports agreement. `GlyphIndex.scanned_overlay`
+  identifies it from two properties, both structural — one image covering most of the page,
+  and the text over it drawn in render mode 3 (invisible), which is what an OCR overlay must
+  use and what page text never does. Geometry alone is not enough: a full-page figure plate
+  carries labels inside its own bounds and is indistinguishable by position. Measured across
+  44 documents and 828 pages, the pair flags 30/30 pages of a 1972 scan and nothing else.
+  `page_chars` then reports those pages as having no layer, so the existing scanned-page
+  machinery takes over.
+- **MinerU reads a scan's tables better, and the claim now has ten documents behind it.**
+  It was one: a 1972 compilation where MinerU recovered 99% of the printed grid against
+  Docling's 21%. Converting ten scanned documents (251 pages) both ways on one machine at
+  one revision -- engine the only variable -- MinerU finds **217 tables against 138**,
+  carries a structural finding on **51% of them against 92%**, recovers **12% more clean
+  value tokens at a lower malformed rate** (5.3% against 7.7%), and runs in **19 minutes
+  against 31**. It never found fewer tables on any document. The per-kind split says where
+  the difference lives: `merged_cells` 91 -> 2, `shifted_values` 64 -> 12,
+  `header_absorbed_data` 7 -> 0, `row_count` level (105 -> 98). **`decimal_separator_lost`
+  reads 6 -> 12 and that comparison is invalid**: the check needs a column of mostly-decimal
+  values to judge at all, and Docling's grids offer one in 13 of 138 tables against MinerU's
+  155 of 217 (on the 1972 compilation, 3 of 82 against 143 of 144). Per table the check can
+  actually judge it is 46% against 8% -- MinerU is six times better on the axis the raw
+  counts called worse. Docling's zero there is a grid too collapsed to have a decimal column,
+  not a grid without lost decimals. Counting findings across two engines only compares
+  populations the checks could reach equally.
+  `table_verification_coverage` stays 0/N for
+  both, because on a scan the crop is authoritative and every cell is a candidate -- the
+  structural findings are the discriminator, not the coverage row. **Read MinerU's table
+  artifacts as `mineru_<page>_table_<n>.json`**, not `tables_*.json`: globbing the Docling
+  shape made every MinerU finding vanish and the engine read as flawless.
+- **Detecting the overlay fixes the posture, not the transcription.** The kept text is still
+  whoever digitised the paper, and on an old scan that is the worst reading available.
+  Measured over all 99 pages of a 1972 data table, scored against the printed row grid the
+  two engines between them establish (97 values, no labels needed — every atom's table uses
+  the same grid): Docling on the embedded layer recovers 21% of each page's grid with 22.9%
+  of value tokens malformed, and MinerU 99% with 0.6%, on 145 tables against 82. The audit
+  built here agrees independently: 1 of MinerU's 145 tables carries a structural finding
+  against 79 of Docling's 82. `--force-ocr` sits between them (8% on a three-page sample).
+  The pipeline warns and names `--engine mineru` when it detects the case.
+- **`--ocr-page-vlm` transcribes whole scanned pages (page-level replacement).** `_vlm_ocr_pages`
+  renders each scanned page, sends it to the vision model, and collapses that page's prose blocks
+  into one transcription block (`text_source="vlm-page"`); figures still crop. It runs before
+  `build_structure` (which consumes the block list). When it's on, `_get_engine` skips Docling's
+  slow `force_full_page_ocr` even under `--force-ocr` — the VLM re-transcribes, so that OCR would
+  just be discarded. A failed transcription emits a visible page marker and retains the page image.
+- **MinerU runs outside the project environment.** Select it with `--engine mineru` and point
+  `--mineru-executable` at that environment's CLI. The adapter consumes native middle JSON,
+  then pdf2md renders source crops and applies the normal coverage and chart-safety gates.
+  Do not combine MinerU with `--ocr-page-vlm`: page replacement would discard its element structure.
+- **A page's visible box does not always start at (0, 0), and engines report
+  coordinates relative to it.** pdfium is absolute user space -- charboxes,
+  `set_cropbox`, page-object bounds -- so on a page with a non-zero MediaBox or
+  CropBox corner every glyph check reads ink that far from the text it is
+  scoring. Measured: an ACS paper with origin (9, 9) scored mean word recall
+  0.53 and an Elsevier one with CropBox (20, 62) scored 0.21; shifting by
+  exactly the origin put both above 0.94. Three of 17 documents were affected,
+  and they were the three worst-scoring in the corpus. `engines/base.py`'s
+  `normalize_page_origin` canonicalizes on user space at the seam (so
+  `Block.bbox`, `TableData.bbox`, `FigureRef.bbox`/`caption_bbox` and
+  `RawCell.bbox` are all absolute from there on), and `render.py` subtracts the
+  origin again when mapping into the rendered raster, which covers the visible
+  box. A (0, 0)-origin document is untouched by both.
+- Docling block/prov bboxes are bottom-left origin (`y0 > y1`); `render.py` flips Y.
+  Don't re-flip elsewhere. **Exception: table-cell bboxes are TOPLEFT** — the docling
+  adapter (`_cell_bbox`) flips them to bottom-left so enrich's glyph lookups (script
+  overlay, font-decode refill) land on the right region.
+- Docling formulas are `TextItem`s with label `formula` (self_ref `#/texts/N`),
+  not a separate collection. The adapter maps label → `BlockType.EQUATION`.
+- Book splitting selectively expands Part-like bookmark containers into chapter files,
+  restores out-of-order destinations to source-page order, and can use two or more
+  numbered chapter headings when a Part has no chapter bookmarks. PDFs without that
+  evidence remain split at their top-level bookmarks. Inline sub/superscripts are
+  recovered from glyph geometry (`scripts.py`, default on); a residual ceiling remains
+  where the engine renders an exponent unlike the raw glyphs.
+
+### Tables
+
+The largest surface here, and the one the field reports care about most.
+
+- **A sign the engine detached still belongs to its number, and a range does not.**
+  `merged_cells` skips a cell whose whitespace-separated parts are not all numbers,
+  and the engine renders a page's `−3383.702155` as `- 3383.702155` — a lone `-` is
+  not a number, so a cell holding a whole collapsed column of negatives was never
+  examined. s00214-006-0174-5 table 2 flattened ten elements and thirty energies into
+  one data row (source 11 rows against engine 2) and raised nothing. Rejoining
+  unconditionally was measured and rejected first: it turned `151 - 153` in an
+  `exp. ref` column into two collapsed rows. A collapsed column of negatives leads
+  with a sign, a range leads with a value, so the rejoin needs `parts[0]` to be one.
+  Two tables newly convicted corpus-wide, none lost, labelled set still 1.00/1.00.
 - **A table block's `crop_path` means the image is authoritative; `TableData.source_crop`
   does not.** Every table is now cropped so a reader can check the printed region, but
   `crop_path` is load-bearing well beyond emission: it routes the emitter to publish the
@@ -309,6 +406,266 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   conservation pass to add findings that only exist by then. Anything emitted beside content
   as navigation (the `*[pdf2md] table source:*` line) must be stripped in
   `conservation._semantic_output`, or its link labels count as words the source never had.
+- **A pdf2md marker above a table is not part of the table's repeated header.**
+  `passage_split._split_table` repeats the caption and column header on every continuation
+  passage; a marker belongs to the table as a whole and rides only with the first. A caption
+  stays in the repeated header, a `>` line or `*[pdf2md]` line does not. When the header
+  genuinely cannot fit the budget the split degrades to unheadered rows with a warning
+  rather than raising — aborting lost the whole document over one wide table, which cost
+  three of ten conversions on the frozen unseen corpus.
+- **A printed table row reaches more than one column; a wrapped cell's continuation does
+  not.** Row-band counting assumes one printed line per row, which holds for a dense
+  parameter table and fails for any table with a paragraph in a cell. Unguarded it reported
+  nine merges for a three-row table of model answers, and `merged_rows` was the most common
+  finding on a corpus of unseen papers — 13 of 19 flagged tables, of which 11 had cells of
+  119-889 characters. Two guards, both needed (10 false positives with only the lane rule,
+  6 with only the width rule, 2 with both): a row whose own cell text cannot fit its box is
+  excluded, and a printed line reaching fewer than `_MIN_ROW_LANES` columns is a
+  continuation, not a row. `row_locator.projection_row_bands` gets this free on the raster
+  path because it projects only the panel's leading stripe, where row labels live.
+- **Every sweep in the table audit clamps to the engine's cell extent, so a grid that is a
+  fragment of its table measures the fragment against itself.** `_covers_little_of` refuses
+  when the cells span under half the block's region in either axis; healthy grids span 0.79
+  to 1.0 (median 0.95 across 95 tables), and the one fragment measured 0.09. Found by
+  running two engines over the same corpus and asking where they disagreed.
+- **Header exclusion uses `column_header`, not `header`.** `RawCell.header` is
+  `column_header or row_header`, and a table whose leading label column is a row header has
+  *every* row looking like a heading — which switched merge counting off entirely on 32 of
+  95 tables measured. `_header_rows` uses column headers only, falling back to row 0 when
+  the engine names none (every table has a heading, and a two-line heading is what the
+  exclusion exists for). After the fix: 0 of 86.
+- **A column whose cells all hold the same count of values is collapsed.**
+  `_numeric_columns` needs most cells to be a *lone* number, so it cannot see a column where
+  *every* cell was merged — none is ever lone. Consistency is the signal instead.
+- **A cell holding many values is a collapsed column whatever its column looks like.**
+  `merged_cells` normally needs the column to be numeric — three lone numbers elsewhere in
+  it — which a table flattened to *one* data row can never satisfy. And the row-band check
+  can't help there either: a cell holding eleven rows of content overruns its box, so the
+  wrapped-cell guard excludes it. So the cell's own contents are the only evidence left,
+  and four or more whitespace-separated values in one cell stands on its own.
+- **A drawn grid is one path of many closed rectangles, which `_is_rect` does not
+  catch.** It spans the plot and is not flat, so nothing else stopped it either: that
+  same figure shipped its gridlines as a 60-point series at confidence 0.999, and only
+  after the frame guard removed a bogus panel that had been holding its confidence
+  under the floor — a fix making a different defect visible. `_axis_aligned` requires a
+  *share* (`_AXIS_ALIGNED_SHARE` = 0.9) rather than all segments, because concatenating
+  disjoint subpaths leaves a jump between each rectangle and the next: 57 of that path's
+  59 segments are axis-aligned and the 2 that are not are those jumps. Measured over
+  every candidate path in the labelled figures the distribution is bimodal — 45 at or
+  below 0.3, 12 at 1.0, nothing between 0.6 and 1.0 — so the rule sits in an empty band.
+  Bars are axis-aligned too; removing them here is what lets them reach `_bar_series`.
+- **`eval_table_rows_precision.py` counts printed lines, and a line is not a row.**
+  Poppler and the ink projection both count lines, so on a table whose cells span
+  several lines they agree with each other and neither says anything about whether
+  the grid is right: Intro-to_Relativistic-QC table 28 reads 34 lines for 9 logical
+  rows because its irreps are stacked, and abstaining there is correct. That is why
+  the harness's control matters and why its 40 "silent" tables are not a recall gap —
+  23 have cells long enough to wrap, 7 have no cells, and the 10 whose cells fit one
+  line differ by 1-3 rows, which a caption and a header line inside the region
+  account for. The two with a genuinely collapsed grid were the detached-sign case
+  above.
+- **The panel split refuses a row it cannot place, and the emitter dropped it.**
+  `split_repeated_panels` records such a row in `refused_rows` rather than guessing which
+  panel it belongs to -- a trailing blank where the neighbouring panel has a value, a row
+  key shifted across the boundary -- and `panel_tables` rendered only `panel["rows"]`. On
+  ct4c00784's 118-element polarizability table that was 22 printed numbers gone from the
+  readable grid with no marker (`53 | I | 32.90(10) | 4.2049(18)`, `59 | Pr | 216(20)`,
+  `50.0(20) | 4.464(26)`), while `document.md` presented the panels as the table. Nothing
+  else caught it: the block was accounted for, the grid audit was silent, and only
+  whole-document conservation noticed the tokens vanish -- which is what a high-severity
+  `unexplained loss: 5 word(s), 22 number(s)` was reporting. 4 of 18 panel tables corpus-wide
+  refuse at least one row. They are now listed under the panels, never folded back into a
+  panel: the split declined for a reason, and guessing would put a value under the wrong
+  element. Measured after: 646 source numbers, 0 lost, and the conservation action gone.
+  **Everything added beside a table has to be inside a marker or made of the source's own
+  words**, or the silent loss is simply traded for pdf2md's vocabulary counted as content
+  the page never printed. That caught this change twice: `panel`/`column N`/`why` columns
+  (moved into the marker, which `_PDF2MD_MARKER` strips) and then a repeated column header
+  (dropped -- the merged grid holds one header row for both panels, so a third copy is an
+  addition; GFM demands the row, not its content). `*panel N*` labels are stripped in
+  `conservation.semantic_output` for the same reason, keeping any title after the dash,
+  which is the table's own.
+- **A running footer swallowed into a table looks exactly like the table's own title,
+  and only the other pages tell them apart.** A spanning cell renders in GFM as the same
+  string in every column, so `data/tables/*.csv` writes it as a full row of repeats:
+  `Q. Lu and K.A. Peterson, J. Chem. Phys. (2016)` fills whole rows of the Lanthanides SI's
+  basis-set tables, where anyone loading the CSV gets citation strings among the exponents.
+  Docling emits no PAGE_HEADER/PAGE_FOOTER block on that document (0 of 430), so there is no
+  engine-side truth to consult. Repetition is the discriminator: 118 tables corpus-wide carry
+  a fully-repeated non-numeric row, and requiring the same string on three distinct pages
+  keeps the 34 that are the SI's footer while leaving Atkins section titles and Slater's
+  per-atom headings, which differ page to page. One bundle of 32 fires; no other string does.
+  The check needs the whole document, so it runs from `pipeline._audit_running_text_rows`
+  rather than `audit_table`, and it reports rather than deletes -- the row is still ink the
+  page printed.
+- **A grid can hold every value and still be wrong, and no textual signal tells a
+  listing from a table.** The Lanthanides SI is basis sets typeset as fixed-width
+  listings; the engine calls them tables and 91 of 117 carry a structural finding
+  (second only to the 1972 OCR-overlay scan; born-digital papers with real numeric
+  tables sit at 0-19%). Nothing is lost — 98.9% of value tokens are present, which is
+  why numeric conservation reads clean — they are in the wrong cells, and a grid that
+  keeps every exponent and loses which coefficient it belongs to is not a usable basis
+  set. Two textual discriminators were measured and rejected: printed-lines-vs-engine-
+  rows fires on 132 tables across 12 documents (mostly scans whose region overlaps
+  prose), and line-shape uniformity catches ten well-formed numeric tables at its
+  strictest. So the trigger is `grid_audit["corroborated"]`, the audit's own finding
+  that the ink contradicts the arrangement, and those tables ship `printed_lines`
+  verbatim beside the grid: 99.0% of value tokens in the emitted grid against 100.0% in
+  the listing, in printed order. Evidence beside the table, never the emitted table —
+  the same boundary the glyph grid keeps.
+- **Marker runs outside the project environment, and supplies no `raw_tables`.** Its JSON
+  renderer recurses into a block only when the block's class does not derive directly from
+  `Block`, and `TableCell` does, so cells are flattened into the table's HTML and never
+  appear as children. Tables therefore arrive as markup (`html_to_gfm`, shared with MinerU)
+  and the per-cell glyph verification in `enrich`/`table_audit` has nothing to attach to --
+  the same trade the MinerU adapter makes. Marker's Surya also drives a vLLM backend that
+  wants a Docker container with the `nvidia` runtime registered; where it is not, start the
+  server by hand (`scripts/start_surya_vllm.sh`) and set `SURYA_INFERENCE_URL`.
+- **A cell's glyphs are read from its column lane, not its own box.** An engine draws
+  the box inside the ink and `_region` keeps a glyph only when its *center* is inside, so
+  a tight box truncates the font-decode refill and it writes the short reading over the
+  cell: on the GRASP2018 contents pages `12.1` refilled as `12.`, `A.1` as `A.`, `6.10`
+  as `6.1`. `enrich._cell_read_boxes` widens each cell to its column's lane
+  (`table_rebuild.engine_lane_bounds`, the union of that column's single-column cells --
+  column 0 there spans 90.0-122.9 where the cell claims 99.1-117.6) but never past a
+  row-neighbour, and processes a row left to right so the bound is the previous cell's
+  *read* edge. Both bounds are load-bearing: the neighbour alone pulls a contents page's
+  leader dots into the number cell (848 cells corpus-wide read `. . . . . 13` for `13`),
+  the lane alone can overlap the next column and claim a glyph twice. Measured after:
+  318 cells recover clipped characters, 0 gain leaders, 0 cell pairs overlap more than
+  the engine's own boxes already did. Script detection still uses the cell's own box --
+  that is about geometry inside the cell.
+- **The wrap guard needs an absolute length, not only box overrun.** A cell can overrun a
+  narrow numeric column at eleven characters (`0.965 0.969` does), and no eleven-character
+  cell is a wrapped paragraph. Without `_MIN_WRAP_CHARS` the guard excluded every row of a
+  table whose columns were merely narrow, which silenced both merge checks on a textbook
+  row-pair collapse. Measured: collapse tables max out around 21 characters per cell,
+  wrapped-prose tables run to a median of 48 and a max of 583.
+- **A lane edge that lands mid-value cuts the number in half, and half a number
+  parses.** The glyph grid read the region character by character, each joining the lane
+  its own center falls in, so wherever the engine's cell boxes are the wrong shape a value
+  is split across two cells: a Lanthanides SI table shipped `2.1999000E-01 1` beside
+  `.6203900E-06` where the page prints two whole numbers. That is worse than a contaminated
+  cell, which at least fails loudly. Assigning whole printed tokens instead repaired 843 of
+  1,019 cut numeric tokens over 2,050 corpus grids and turned 919 cells from several
+  fragments into one value, with 3 cells changed the other way -- all three a header row's
+  `34` correctly separating into `3` and `4`. Characters lost and gained are both exactly
+  zero, which is the invariant: the change moves ink between lanes and creates none. A token
+  ends at a whitespace glyph, which these PDFs emit at roughly one per four ink characters,
+  so most breaks are read off the page; `_TOKEN_GAP_SHARE` covers the documents that
+  position their word spaces instead, and 1.5 sits in the valley of a distribution massed
+  below 0.5 and again at 2.0 character widths.
+
+### Equations
+
+What the LaTeX claims, and when the page cannot judge it.
+
+- **Formula enrichment** (`Config.do_formula_enrichment`, default on) turns
+  equations into LaTeX but is slow (minutes for equation-heavy papers). Off →
+  equations aren't transcribed, so each is cropped to an authoritative image
+  (`_eq_crops` crops any equation with no text, not just low-confidence ones) and
+  emitted as `![equation](...)`, never a bare "empty equation block". `--no-formula`
+  is the CLI lever.
+- **A recovered equation number is the page's own, and read as an invented value.**
+  `emit` renders it as `\tag{N}` but it lives in `Block.extra`, not in the block's text, so
+  the comparison saw a number in the output with no source. 12 of the 17 conservation
+  actions on a 28-paper run at default settings were that and nothing else, which on one
+  paper meant 6 findings where the honest count is 0. The number joins the source side
+  rather than being stripped from the output -- it *is* printed on the page, which is why it
+  was recovered -- so every other number stays strictly compared.
+- **`Equation text coverage: none (0/11)` does not mean no equation was extracted.**
+  The row counts only equations whose text stands without the crop, so a scan whose every
+  equation carries LaTeX under an authoritative image scores zero and reads like total
+  loss. Measured over the corpus, *every* formula-enabled document transcribes 100% of its
+  equations -- 11 of 11, 41 of 41, 194 of 194, 66 of 66 -- and what varies is only how many
+  the page's own text layer could confirm. The opposite cause exists and needs the opposite
+  sentence: with `--no-formula` nothing is transcribed at all (0 of 1848 on one book), and
+  the two are indistinguishable from the ratio alone, which is why `DocumentProfile` now
+  carries `equations_transcribed` beside the image-backed count.
+- **A page whose text layer is scrambled cannot judge an equation, so its
+  disagreement is not evidence.** `enrich` already records whether the layer was
+  clean and in reading order (`Block.extra['ordered']`, from `is_clean` +
+  `SCRAMBLED_ABOVE`) to decide whether to *show* it as a hint; `emit` now uses the
+  same signal to decide what the finding may *claim*. Measured over the equations
+  in bundles converted with formula enrichment on, 52 of 61 `suspect` verdicts came
+  from a layer already marked unfit, so the finding reads "equation not verifiable"
+  and rides as informational rather than asserting the extraction is wrong. It is
+  informational because nothing is withheld: all 494 equations on formula-enabled
+  documents emit their LaTeX, and the 277 that are image-backed carry the `$$` block
+  under the crop. What is missing is a verdict, for a reason belonging to the page.
+  Raised as an action it was 231 entries across the corpora, 78 in one 25-page maths
+  paper. Agreement
+  from an unfit layer still counts (9 equations verify that way), which is why the
+  cross-check keeps running against it -- the asymmetry is the whole point. **A
+  scanned page is the stronger form of the same case and was getting the harsher
+  verdict**, purely because it carries no `text_layer` key to test: there is no layer
+  at all, so nothing can judge the LaTeX, and the finding asked a reader to check the
+  extraction against a reference the page does not have. Over 28 papers at default
+  settings that was 57 of the 120 image-backed equations, every one on a scan.
+  `_UNTERMINATED_ENVIRONMENT` also drops a runaway `\begin{array} { c c c ...`
+  that never closes (3 of 158 equations): a 4075-character spec reached the token
+  set as one 1000-character `cccc...` counted as missing content.
+- **Equation confidence + image-backing live in `enrich.py`/`confidence.py`, not
+  the engine.** When the engine's LaTeX disagrees with the text layer (or a scan
+  has none), the equation is cropped to an authoritative image and the text rides
+  as a flagged hint. `--transcribe` re-OCRs that crop with Surya (`transcribe.py`).
+
+### Figures
+
+Reading data off drawn geometry, and refusing to when it cannot be calibrated.
+
+- **A curve read at its Bezier control points can miss the curve entirely.** pdfium
+  reports a cubic as three BEZIERTO segments — two control points and the endpoint —
+  and `_segment_points` appended all three as if they were data. A curve drawn as many
+  short Beziers hides the error, which is why the aggregate never showed it; a curve
+  drawn as a few long ones is all error. Atkins Fig. 3.4 is `ln(Vf/Vi)` and came back
+  with (2.95, 1.86) where the printed curve passes through (2.95, 1.08). Flattening at
+  `_BEZIER_STEPS` = 8 tracks it to within 0.01-0.08 across the range.
+- **The tier that cannot see colour cannot assign a second axis, so it withholds.**
+  A figure reaches `vector_ocr_digitize_page` precisely because its tick text is
+  outlined to paths — which is also why it has no text objects and no colours to match
+  a curve to a scale. `_fit_right_axis` (shared with the vector tier) detects the axis
+  from the OCR'd ticks, and the tier then returns an empty candidate with a note rather
+  than mapping everything on the left scale: wires-2020 #/pictures/47 was shipping its
+  right-hand bars out by a factor of ten (1 of 5 labelled anchors), and Atkins
+  #/pictures/1248 both its E/V and P/(W cm⁻²) curves on the E/V scale. 2 of 15 OCR-tier
+  extractions withheld. **A tick nearer another frame's left edge than this frame's
+  right edge is that frame's axis** — side-by-side panels put the next panel's y axis
+  squarely in the band, and without that exclusion wires-2020 #/pictures/26 (two parity
+  plots, 3 of 4 anchors) was withheld too. Colour cannot always resolve it even when
+  available: #/pictures/47 uses the same five bar colours on both scales, split only by
+  category group, which is why withholding rather than guessing is the rule.
+- **A figure with two y scales is drawn so a reader can tell which curve is which, and
+  colour is how.** `_fit_ticks` looks only left of the frame and `_neighborhood` reaches
+  barely past its right edge — both deliberate, to keep a neighbouring subplot's labels
+  out of the fit — so a right-hand axis was invisible and every series got the left
+  scale. Atkins Fig. 5.1 shipped its ethanol curve, truly 52.3 to 58.1, as 13.6 to 19.7
+  at **confidence 1.0**. `_right_axis_ticks` reads text *objects* (only an object carries
+  a colour) in a band bounded by the frame's own width, `_second_y_axis` fits them, and
+  `_panel_series` routes a series to the right calibration when its stroke colour matches
+  the right ticks' colour: on that figure the right ticks, the word "Ethanol" and its
+  curve are all `(113, 45, 125)`. All four anchors now match within 0.12 on a 4-unit
+  axis, and the range check is measured before the right-axis series join, or they would
+  be convicted for being on the axis they belong to. Watch the adjacent trap: `fit_axis`
+  preferred a log fit that beat linear by `1e-6`, and 54/56/58 came back "log" because
+  log10 is locally linear over a narrow range and the printed ticks are 5% unevenly
+  spaced. `_LOG_MARGIN` is 0.01 — a real log axis fits a line terribly, so the margin
+  costs nothing.
+- **A figure's own printed text (caption, axis titles, tick labels) is recovered
+  model-free.** The Docling adapter scoops the figure's text items (which Docling
+  attaches to the Picture, not the body) into `labels` via `_recover_figure_text`.
+  For a *scanned* figure a default post-render pass (`_ocr_scanned_figures`, gated by
+  `config.ocr_figures`) re-OCRs the crop upright with `figure_labels_ocr` — the engine
+  reads a sideways scan's small text as garbage, so it tries all four 90° rotations and
+  keeps the most legible. `--figure-labels` supersedes both with the vision read. Finally
+  `_promote_figure_captions` lifts a 'Fig N.' line out of those labels into `caption`
+  (`extract_caption`), so a scan's caption renders as the figure's visible caption; a figure
+  with a Docling-supplied caption already is left alone.
+
+### Recall & Conservation
+
+Token-level signals: what the page printed against what was emitted.
+
 - **Word recall measures the emitted text against a *script-split, hyphen-joined* reading
   of the region.** Both sides get the same tokenization or the metric reports its own
   artifacts: the layer glues a reference marker onto its base word (`technetium67`) where
@@ -341,13 +698,6 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   populations. `strict` is the same
   comparison without diacritic folding; the gap is accent damage (`Co te` for `Côté`),
   which is a real defect but a different one from a missing word and stays informational.
-- **A recovered equation number is the page's own, and read as an invented value.**
-  `emit` renders it as `\tag{N}` but it lives in `Block.extra`, not in the block's text, so
-  the comparison saw a number in the output with no source. 12 of the 17 conservation
-  actions on a 28-paper run at default settings were that and nothing else, which on one
-  paper meant 6 findings where the honest count is 0. The number joins the source side
-  rather than being stripped from the output -- it *is* printed on the page, which is why it
-  was recovered -- so every other number stays strictly compared.
 - **Conservation compares a block against its own rendered markup, so both sides must be
   normalized the same way.** `token_accounting` runs `_semantic_output` over the source as
   well as the output. Without it an HTML table's `td`/`tr`/`tbody` counted as source words
@@ -355,49 +705,6 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   `<sup>` in a prose block cost two phantom words. On a clean paper that was 25 of 25
   conservation flags. Anything emitted beside content (the `*[pdf2md] table source:*` line,
   a marker and its blockquote continuation) is stripped from both readings.
-- **A pdf2md marker above a table is not part of the table's repeated header.**
-  `passage_split._split_table` repeats the caption and column header on every continuation
-  passage; a marker belongs to the table as a whole and rides only with the first. A caption
-  stays in the repeated header, a `>` line or `*[pdf2md]` line does not. When the header
-  genuinely cannot fit the budget the split degrades to unheadered rows with a warning
-  rather than raising — aborting lost the whole document over one wide table, which cost
-  three of ten conversions on the frozen unseen corpus.
-- **A printed table row reaches more than one column; a wrapped cell's continuation does
-  not.** Row-band counting assumes one printed line per row, which holds for a dense
-  parameter table and fails for any table with a paragraph in a cell. Unguarded it reported
-  nine merges for a three-row table of model answers, and `merged_rows` was the most common
-  finding on a corpus of unseen papers — 13 of 19 flagged tables, of which 11 had cells of
-  119-889 characters. Two guards, both needed (10 false positives with only the lane rule,
-  6 with only the width rule, 2 with both): a row whose own cell text cannot fit its box is
-  excluded, and a printed line reaching fewer than `_MIN_ROW_LANES` columns is a
-  continuation, not a row. `row_locator.projection_row_bands` gets this free on the raster
-  path because it projects only the panel's leading stripe, where row labels live.
-- **Every sweep in the table audit clamps to the engine's cell extent, so a grid that is a
-  fragment of its table measures the fragment against itself.** `_covers_little_of` refuses
-  when the cells span under half the block's region in either axis; healthy grids span 0.79
-  to 1.0 (median 0.95 across 95 tables), and the one fragment measured 0.09. Found by
-  running two engines over the same corpus and asking where they disagreed.
-- **Header exclusion uses `column_header`, not `header`.** `RawCell.header` is
-  `column_header or row_header`, and a table whose leading label column is a row header has
-  *every* row looking like a heading — which switched merge counting off entirely on 32 of
-  95 tables measured. `_header_rows` uses column headers only, falling back to row 0 when
-  the engine names none (every table has a heading, and a two-line heading is what the
-  exclusion exists for). After the fix: 0 of 86.
-- **The wrap guard needs an absolute length, not only box overrun.** A cell can overrun a
-  narrow numeric column at eleven characters (`0.965 0.969` does), and no eleven-character
-  cell is a wrapped paragraph. Without `_MIN_WRAP_CHARS` the guard excluded every row of a
-  table whose columns were merely narrow, which silenced both merge checks on a textbook
-  row-pair collapse. Measured: collapse tables max out around 21 characters per cell,
-  wrapped-prose tables run to a median of 48 and a max of 583.
-- **A column whose cells all hold the same count of values is collapsed.**
-  `_numeric_columns` needs most cells to be a *lone* number, so it cannot see a column where
-  *every* cell was merged — none is ever lone. Consistency is the signal instead.
-- **A cell holding many values is a collapsed column whatever its column looks like.**
-  `merged_cells` normally needs the column to be numeric — three lone numbers elsewhere in
-  it — which a table flattened to *one* data row can never satisfy. And the row-band check
-  can't help there either: a cell holding eleven rows of content overruns its box, so the
-  wrapped-cell guard excludes it. So the cell's own contents are the only evidence left,
-  and four or more whitespace-separated values in one cell stands on its own.
 - **Word recall cannot see a dropped symbol, and its threshold is not the problem.**
   A 200-word paragraph that loses one `χ` scores 0.995 and passes the floor, which is
   correct -- one word in two hundred is not a lost paragraph -- so the signal has to be its
@@ -430,74 +737,28 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   findings the check does raise. Suppressing those was hiding content, not deferring on
   it, so `missing_in_neighbour` now gates the note. This is the honest form of the
   admission `quality.py` already makes about region-boundary accuracy.
-- **A curve read at its Bezier control points can miss the curve entirely.** pdfium
-  reports a cubic as three BEZIERTO segments — two control points and the endpoint —
-  and `_segment_points` appended all three as if they were data. A curve drawn as many
-  short Beziers hides the error, which is why the aggregate never showed it; a curve
-  drawn as a few long ones is all error. Atkins Fig. 3.4 is `ln(Vf/Vi)` and came back
-  with (2.95, 1.86) where the printed curve passes through (2.95, 1.08). Flattening at
-  `_BEZIER_STEPS` = 8 tracks it to within 0.01-0.08 across the range.
-- **A drawn grid is one path of many closed rectangles, which `_is_rect` does not
-  catch.** It spans the plot and is not flat, so nothing else stopped it either: that
-  same figure shipped its gridlines as a 60-point series at confidence 0.999, and only
-  after the frame guard removed a bogus panel that had been holding its confidence
-  under the floor — a fix making a different defect visible. `_axis_aligned` requires a
-  *share* (`_AXIS_ALIGNED_SHARE` = 0.9) rather than all segments, because concatenating
-  disjoint subpaths leaves a jump between each rectangle and the next: 57 of that path's
-  59 segments are axis-aligned and the 2 that are not are those jumps. Measured over
-  every candidate path in the labelled figures the distribution is bimodal — 45 at or
-  below 0.3, 12 at 1.0, nothing between 0.6 and 1.0 — so the rule sits in an empty band.
-  Bars are axis-aligned too; removing them here is what lets them reach `_bar_series`.
-- **The tier that cannot see colour cannot assign a second axis, so it withholds.**
-  A figure reaches `vector_ocr_digitize_page` precisely because its tick text is
-  outlined to paths — which is also why it has no text objects and no colours to match
-  a curve to a scale. `_fit_right_axis` (shared with the vector tier) detects the axis
-  from the OCR'd ticks, and the tier then returns an empty candidate with a note rather
-  than mapping everything on the left scale: wires-2020 #/pictures/47 was shipping its
-  right-hand bars out by a factor of ten (1 of 5 labelled anchors), and Atkins
-  #/pictures/1248 both its E/V and P/(W cm⁻²) curves on the E/V scale. 2 of 15 OCR-tier
-  extractions withheld. **A tick nearer another frame's left edge than this frame's
-  right edge is that frame's axis** — side-by-side panels put the next panel's y axis
-  squarely in the band, and without that exclusion wires-2020 #/pictures/26 (two parity
-  plots, 3 of 4 anchors) was withheld too. Colour cannot always resolve it even when
-  available: #/pictures/47 uses the same five bar colours on both scales, split only by
-  category group, which is why withholding rather than guessing is the rule.
-- **A figure with two y scales is drawn so a reader can tell which curve is which, and
-  colour is how.** `_fit_ticks` looks only left of the frame and `_neighborhood` reaches
-  barely past its right edge — both deliberate, to keep a neighbouring subplot's labels
-  out of the fit — so a right-hand axis was invisible and every series got the left
-  scale. Atkins Fig. 5.1 shipped its ethanol curve, truly 52.3 to 58.1, as 13.6 to 19.7
-  at **confidence 1.0**. `_right_axis_ticks` reads text *objects* (only an object carries
-  a colour) in a band bounded by the frame's own width, `_second_y_axis` fits them, and
-  `_panel_series` routes a series to the right calibration when its stroke colour matches
-  the right ticks' colour: on that figure the right ticks, the word "Ethanol" and its
-  curve are all `(113, 45, 125)`. All four anchors now match within 0.12 on a 4-unit
-  axis, and the range check is measured before the right-axis series join, or they would
-  be convicted for being on the axis they belong to. Watch the adjacent trap: `fit_axis`
-  preferred a log fit that beat linear by `1e-6`, and 54/56/58 came back "log" because
-  log10 is locally linear over a narrow range and the printed ticks are 5% unevenly
-  spaced. `_LOG_MARGIN` is 0.01 — a real log axis fits a line terribly, so the margin
-  costs nothing.
-- **A sign the engine detached still belongs to its number, and a range does not.**
-  `merged_cells` skips a cell whose whitespace-separated parts are not all numbers,
-  and the engine renders a page's `−3383.702155` as `- 3383.702155` — a lone `-` is
-  not a number, so a cell holding a whole collapsed column of negatives was never
-  examined. s00214-006-0174-5 table 2 flattened ten elements and thirty energies into
-  one data row (source 11 rows against engine 2) and raised nothing. Rejoining
-  unconditionally was measured and rejected first: it turned `151 - 153` in an
-  `exp. ref` column into two collapsed rows. A collapsed column of negatives leads
-  with a sign, a range leads with a value, so the rejoin needs `parts[0]` to be one.
-  Two tables newly convicted corpus-wide, none lost, labelled set still 1.00/1.00.
-- **`eval_table_rows_precision.py` counts printed lines, and a line is not a row.**
-  Poppler and the ink projection both count lines, so on a table whose cells span
-  several lines they agree with each other and neither says anything about whether
-  the grid is right: Intro-to_Relativistic-QC table 28 reads 34 lines for 9 logical
-  rows because its irreps are stacked, and abstaining there is correct. That is why
-  the harness's control matters and why its 40 "silent" tables are not a recall gap —
-  23 have cells long enough to wrap, 7 have no cells, and the 10 whose cells fit one
-  line differ by 1-3 rows, which a caption and a header line inside the region
-  account for. The two with a genuinely collapsed grid were the detached-sign case
-  above.
+- **`--force-ocr` re-OCRs the page and suppresses the glyph layer.** For a PDF whose
+  embedded text is itself bad OCR, the engine OCRs full pages (`force_full_page_ocr`) and
+  `GlyphIndex(force_ocr=True)` reports every page as having no text — so the doc is treated
+  as a scan and the glyph-based refill/religature/script overlay are skipped (they'd re-derive
+  from the bad layer). The engine's fresh OCR text stands; pair with `--ocr-page-vlm` for a
+  full-page vision transcription.
+- **A layer that spells symbols with letters passes every per-character test and is
+  still nonsense.** `is_clean` looked for unmapped glyphs (C0/C1 controls, U+FFFD),
+  which a font substituting *ordinary letters* for symbols sails through: Wiley
+  draws `(14)` as `ð14Þ` and a square root as a run of `ffi` ligatures. The
+  equation is then convicted for disagreeing with a broken reference. 101 of 383
+  equation regions carry one of the two signatures, in Wiley and in an ACS review,
+  so it is a font property and not a publisher's; of the 19 suspect equations whose
+  layer was called fit, 11 carry one and are now informational, leaving 8 genuine
+  candidates. This is a classification change, deliberately: dropping `ðNÞ` from
+  both sides of the *comparison* was measured and rejected (71 equations improved,
+  93 got worse), because removing a token both sides carry only lowers the ratio.
+
+### Reading Order
+
+The defect the rest of the audit is blind to by construction.
+
 - **Poppler is not independent of the reading-order defect it is asked to judge.**
   Its order largely follows the PDF's content stream, which is where a stream-order
   defect comes from, so on exactly the pages whose disorder the engine inherited it
@@ -529,15 +790,48 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   on scanned pages with no layer to count; those go silent rather than being reported,
   because band overlap on its own was never evidence. The PDF is opened lazily, only
   once a page produces a candidate.
-- **`Equation text coverage: none (0/11)` does not mean no equation was extracted.**
-  The row counts only equations whose text stands without the crop, so a scan whose every
-  equation carries LaTeX under an authoritative image scores zero and reads like total
-  loss. Measured over the corpus, *every* formula-enabled document transcribes 100% of its
-  equations -- 11 of 11, 41 of 41, 194 of 194, 66 of 66 -- and what varies is only how many
-  the page's own text layer could confirm. The opposite cause exists and needs the opposite
-  sentence: with `--no-formula` nothing is transcribed at all (0 of 1848 on one book), and
-  the two are indistinguishable from the ratio alone, which is why `DocumentProfile` now
-  carries `equations_transcribed` beside the image-backed count.
+
+### Text & Fonts
+
+Characters the engine loses, and what is worth repairing versus reporting.
+
+- **Broken-font text (dingbat mojibake) is repaired from pdfium, not the engine.**
+  A font with no usable ToUnicode CMap makes Docling's default backend emit symbol-
+  font garbage (`/a114❛❝...`); pypdfium2 decodes it correctly. `enrich.py` detects
+  garbage prose (`legibility.is_garbage`) and refills it from `PageChars.text_region`.
+  A block that's still garbage after the refill is flagged `illegible` by `emit.py`,
+  never emitted as prose. The font's ﬀ/ﬁ/ﬂ ligatures also lack ToUnicode, but pdfium
+  surfaces them as C0 control bytes (TeX OT1 slots, `\x1b`-`\x1f`), not dropped, so
+  `normalize.expand_ligature_glyphs` maps them back to ff/fi/fl/ffi/ffl (and `\x02`
+  soft-hyphen → join) in `clean_reading` before the control-strip — deterministic, no
+  dictionary.
+- **A two-character block that will not decode is a marginal mark, not lost prose.** A
+  journal prints a decorative glyph at the bottom of every page in a font with no usable
+  encoding; `is_garbage` fires on it and `emit` called it `illegible text layer` at high
+  severity, which put five of them at the top of an otherwise clean paper's review queue --
+  every high item ejic202100500 had. Corpus-wide 17 of 79 illegible flags are blocks of two
+  characters or fewer. The block still gets a marker and stays accounted for; what changes
+  is the claim, `undecodable fragment` at informational/low, so `illegible_blocks` counts
+  paragraphs a reader actually lost. Measured on that paper: 6 high items to 1, and the one
+  left is a real recall finding. `legibility.MIN_JUDGED_CHARS` is the floor -- the third
+  check to need one, after `reading_order._MIN_FLOW_CHARS` and `enrich._FRAGMENT_CHARS`,
+  which keep their own because they ask different questions of a short block.
+- **A block of one or two characters is a shattered fragment, not content.** Docling
+  breaks a display equation into per-glyph `paragraph` blocks -- one Atkins page yields
+  `A`, `d`, `G`, `dx`, `=m`, `p`, `,` as fourteen of them -- and emits them after the
+  prose they sit above. Three checks had to learn this separately. `reading_order`
+  excludes them from the flow (`_MIN_FLOW_CHARS`), via `_flow_blocks` so the order and
+  split-line checks cannot disagree about what a block is again: 20 order findings and 26
+  split-line findings cleared, and 3 order findings *revealed* where fragments had been
+  padding the ordered run. `record_block_recall` skips them when the source region is as
+  small as the output (`_FRAGMENT_TOKENS`, `_FRAGMENT_CHARS`) -- both sides must be tiny,
+  so a region holding a hundred words that emits two characters is still a catastrophic
+  loss, which is what keeps table blocks measured against their markup.
+
+### Metadata
+
+Bibliographic fields, and why page furniture keeps winning.
+
 - **The author line is the block under the title, and so is the affiliation.** Local author
   extraction existed but needed an `Affiliations` heading to bound the region, which one
   corpus document in 37 prints, so 30 of 37 reported no authors at all while naming them in
@@ -592,252 +886,3 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
   is not the tiebreak** -- it looks obvious and costs three documents: journals print `OPEN
   ACCESS`, the journal name, and `Supporting Information for:` above the title, so
   first-heading-wins fixes one paper and breaks three.
-- **A lane edge that lands mid-value cuts the number in half, and half a number
-  parses.** The glyph grid read the region character by character, each joining the lane
-  its own center falls in, so wherever the engine's cell boxes are the wrong shape a value
-  is split across two cells: a Lanthanides SI table shipped `2.1999000E-01 1` beside
-  `.6203900E-06` where the page prints two whole numbers. That is worse than a contaminated
-  cell, which at least fails loudly. Assigning whole printed tokens instead repaired 843 of
-  1,019 cut numeric tokens over 2,050 corpus grids and turned 919 cells from several
-  fragments into one value, with 3 cells changed the other way -- all three a header row's
-  `34` correctly separating into `3` and `4`. Characters lost and gained are both exactly
-  zero, which is the invariant: the change moves ink between lanes and creates none. A token
-  ends at a whitespace glyph, which these PDFs emit at roughly one per four ink characters,
-  so most breaks are read off the page; `_TOKEN_GAP_SHARE` covers the documents that
-  position their word spaces instead, and 1.5 sits in the valley of a distribution massed
-  below 0.5 and again at 2.0 character widths.
-- **The panel split refuses a row it cannot place, and the emitter dropped it.**
-  `split_repeated_panels` records such a row in `refused_rows` rather than guessing which
-  panel it belongs to -- a trailing blank where the neighbouring panel has a value, a row
-  key shifted across the boundary -- and `panel_tables` rendered only `panel["rows"]`. On
-  ct4c00784's 118-element polarizability table that was 22 printed numbers gone from the
-  readable grid with no marker (`53 | I | 32.90(10) | 4.2049(18)`, `59 | Pr | 216(20)`,
-  `50.0(20) | 4.464(26)`), while `document.md` presented the panels as the table. Nothing
-  else caught it: the block was accounted for, the grid audit was silent, and only
-  whole-document conservation noticed the tokens vanish -- which is what a high-severity
-  `unexplained loss: 5 word(s), 22 number(s)` was reporting. 4 of 18 panel tables corpus-wide
-  refuse at least one row. They are now listed under the panels, never folded back into a
-  panel: the split declined for a reason, and guessing would put a value under the wrong
-  element. Measured after: 646 source numbers, 0 lost, and the conservation action gone.
-  **Everything added beside a table has to be inside a marker or made of the source's own
-  words**, or the silent loss is simply traded for pdf2md's vocabulary counted as content
-  the page never printed. That caught this change twice: `panel`/`column N`/`why` columns
-  (moved into the marker, which `_PDF2MD_MARKER` strips) and then a repeated column header
-  (dropped -- the merged grid holds one header row for both panels, so a third copy is an
-  addition; GFM demands the row, not its content). `*panel N*` labels are stripped in
-  `conservation.semantic_output` for the same reason, keeping any title after the dash,
-  which is the table's own.
-- **A running footer swallowed into a table looks exactly like the table's own title,
-  and only the other pages tell them apart.** A spanning cell renders in GFM as the same
-  string in every column, so `data/tables/*.csv` writes it as a full row of repeats:
-  `Q. Lu and K.A. Peterson, J. Chem. Phys. (2016)` fills whole rows of the Lanthanides SI's
-  basis-set tables, where anyone loading the CSV gets citation strings among the exponents.
-  Docling emits no PAGE_HEADER/PAGE_FOOTER block on that document (0 of 430), so there is no
-  engine-side truth to consult. Repetition is the discriminator: 118 tables corpus-wide carry
-  a fully-repeated non-numeric row, and requiring the same string on three distinct pages
-  keeps the 34 that are the SI's footer while leaving Atkins section titles and Slater's
-  per-atom headings, which differ page to page. One bundle of 32 fires; no other string does.
-  The check needs the whole document, so it runs from `pipeline._audit_running_text_rows`
-  rather than `audit_table`, and it reports rather than deletes -- the row is still ink the
-  page printed.
-- **A grid can hold every value and still be wrong, and no textual signal tells a
-  listing from a table.** The Lanthanides SI is basis sets typeset as fixed-width
-  listings; the engine calls them tables and 91 of 117 carry a structural finding
-  (second only to the 1972 OCR-overlay scan; born-digital papers with real numeric
-  tables sit at 0-19%). Nothing is lost — 98.9% of value tokens are present, which is
-  why numeric conservation reads clean — they are in the wrong cells, and a grid that
-  keeps every exponent and loses which coefficient it belongs to is not a usable basis
-  set. Two textual discriminators were measured and rejected: printed-lines-vs-engine-
-  rows fires on 132 tables across 12 documents (mostly scans whose region overlaps
-  prose), and line-shape uniformity catches ten well-formed numeric tables at its
-  strictest. So the trigger is `grid_audit["corroborated"]`, the audit's own finding
-  that the ink contradicts the arrangement, and those tables ship `printed_lines`
-  verbatim beside the grid: 99.0% of value tokens in the emitted grid against 100.0% in
-  the listing, in printed order. Evidence beside the table, never the emitted table —
-  the same boundary the glyph grid keeps.
-- **A two-character block that will not decode is a marginal mark, not lost prose.** A
-  journal prints a decorative glyph at the bottom of every page in a font with no usable
-  encoding; `is_garbage` fires on it and `emit` called it `illegible text layer` at high
-  severity, which put five of them at the top of an otherwise clean paper's review queue --
-  every high item ejic202100500 had. Corpus-wide 17 of 79 illegible flags are blocks of two
-  characters or fewer. The block still gets a marker and stays accounted for; what changes
-  is the claim, `undecodable fragment` at informational/low, so `illegible_blocks` counts
-  paragraphs a reader actually lost. Measured on that paper: 6 high items to 1, and the one
-  left is a real recall finding. `legibility.MIN_JUDGED_CHARS` is the floor -- the third
-  check to need one, after `reading_order._MIN_FLOW_CHARS` and `enrich._FRAGMENT_CHARS`,
-  which keep their own because they ask different questions of a short block.
-- **A block of one or two characters is a shattered fragment, not content.** Docling
-  breaks a display equation into per-glyph `paragraph` blocks -- one Atkins page yields
-  `A`, `d`, `G`, `dx`, `=m`, `p`, `,` as fourteen of them -- and emits them after the
-  prose they sit above. Three checks had to learn this separately. `reading_order`
-  excludes them from the flow (`_MIN_FLOW_CHARS`), via `_flow_blocks` so the order and
-  split-line checks cannot disagree about what a block is again: 20 order findings and 26
-  split-line findings cleared, and 3 order findings *revealed* where fragments had been
-  padding the ordered run. `record_block_recall` skips them when the source region is as
-  small as the output (`_FRAGMENT_TOKENS`, `_FRAGMENT_CHARS`) -- both sides must be tiny,
-  so a region holding a hundred words that emits two characters is still a catastrophic
-  loss, which is what keeps table blocks measured against their markup.
-- **A scan carrying someone else's OCR is detected and treated as a scan.** This is the one
-  condition under which the whole verification layer inverts: the text layer exists, so
-  nothing routes the page down the scanned path, and every glyph check then verifies the
-  engine against the same wrong characters and reports agreement. `GlyphIndex.scanned_overlay`
-  identifies it from two properties, both structural — one image covering most of the page,
-  and the text over it drawn in render mode 3 (invisible), which is what an OCR overlay must
-  use and what page text never does. Geometry alone is not enough: a full-page figure plate
-  carries labels inside its own bounds and is indistinguishable by position. Measured across
-  44 documents and 828 pages, the pair flags 30/30 pages of a 1972 scan and nothing else.
-  `page_chars` then reports those pages as having no layer, so the existing scanned-page
-  machinery takes over.
-- **MinerU reads a scan's tables better, and the claim now has ten documents behind it.**
-  It was one: a 1972 compilation where MinerU recovered 99% of the printed grid against
-  Docling's 21%. Converting ten scanned documents (251 pages) both ways on one machine at
-  one revision -- engine the only variable -- MinerU finds **217 tables against 138**,
-  carries a structural finding on **51% of them against 92%**, recovers **12% more clean
-  value tokens at a lower malformed rate** (5.3% against 7.7%), and runs in **19 minutes
-  against 31**. It never found fewer tables on any document. The per-kind split says where
-  the difference lives: `merged_cells` 91 -> 2, `shifted_values` 64 -> 12,
-  `header_absorbed_data` 7 -> 0, `row_count` level (105 -> 98). **`decimal_separator_lost`
-  reads 6 -> 12 and that comparison is invalid**: the check needs a column of mostly-decimal
-  values to judge at all, and Docling's grids offer one in 13 of 138 tables against MinerU's
-  155 of 217 (on the 1972 compilation, 3 of 82 against 143 of 144). Per table the check can
-  actually judge it is 46% against 8% -- MinerU is six times better on the axis the raw
-  counts called worse. Docling's zero there is a grid too collapsed to have a decimal column,
-  not a grid without lost decimals. Counting findings across two engines only compares
-  populations the checks could reach equally.
-  `table_verification_coverage` stays 0/N for
-  both, because on a scan the crop is authoritative and every cell is a candidate -- the
-  structural findings are the discriminator, not the coverage row. **Read MinerU's table
-  artifacts as `mineru_<page>_table_<n>.json`**, not `tables_*.json`: globbing the Docling
-  shape made every MinerU finding vanish and the engine read as flawless.
-- **Detecting the overlay fixes the posture, not the transcription.** The kept text is still
-  whoever digitised the paper, and on an old scan that is the worst reading available.
-  Measured over all 99 pages of a 1972 data table, scored against the printed row grid the
-  two engines between them establish (97 values, no labels needed — every atom's table uses
-  the same grid): Docling on the embedded layer recovers 21% of each page's grid with 22.9%
-  of value tokens malformed, and MinerU 99% with 0.6%, on 145 tables against 82. The audit
-  built here agrees independently: 1 of MinerU's 145 tables carries a structural finding
-  against 79 of Docling's 82. `--force-ocr` sits between them (8% on a three-page sample).
-  The pipeline warns and names `--engine mineru` when it detects the case.
-- **`--force-ocr` re-OCRs the page and suppresses the glyph layer.** For a PDF whose
-  embedded text is itself bad OCR, the engine OCRs full pages (`force_full_page_ocr`) and
-  `GlyphIndex(force_ocr=True)` reports every page as having no text — so the doc is treated
-  as a scan and the glyph-based refill/religature/script overlay are skipped (they'd re-derive
-  from the bad layer). The engine's fresh OCR text stands; pair with `--ocr-page-vlm` for a
-  full-page vision transcription.
-- **`--ocr-page-vlm` transcribes whole scanned pages (page-level replacement).** `_vlm_ocr_pages`
-  renders each scanned page, sends it to the vision model, and collapses that page's prose blocks
-  into one transcription block (`text_source="vlm-page"`); figures still crop. It runs before
-  `build_structure` (which consumes the block list). When it's on, `_get_engine` skips Docling's
-  slow `force_full_page_ocr` even under `--force-ocr` — the VLM re-transcribes, so that OCR would
-  just be discarded. A failed transcription emits a visible page marker and retains the page image.
-- **Marker runs outside the project environment, and supplies no `raw_tables`.** Its JSON
-  renderer recurses into a block only when the block's class does not derive directly from
-  `Block`, and `TableCell` does, so cells are flattened into the table's HTML and never
-  appear as children. Tables therefore arrive as markup (`html_to_gfm`, shared with MinerU)
-  and the per-cell glyph verification in `enrich`/`table_audit` has nothing to attach to --
-  the same trade the MinerU adapter makes. Marker's Surya also drives a vLLM backend that
-  wants a Docker container with the `nvidia` runtime registered; where it is not, start the
-  server by hand (`scripts/start_surya_vllm.sh`) and set `SURYA_INFERENCE_URL`.
-- **MinerU runs outside the project environment.** Select it with `--engine mineru` and point
-  `--mineru-executable` at that environment's CLI. The adapter consumes native middle JSON,
-  then pdf2md renders source crops and applies the normal coverage and chart-safety gates.
-  Do not combine MinerU with `--ocr-page-vlm`: page replacement would discard its element structure.
-- **A page whose text layer is scrambled cannot judge an equation, so its
-  disagreement is not evidence.** `enrich` already records whether the layer was
-  clean and in reading order (`Block.extra['ordered']`, from `is_clean` +
-  `SCRAMBLED_ABOVE`) to decide whether to *show* it as a hint; `emit` now uses the
-  same signal to decide what the finding may *claim*. Measured over the equations
-  in bundles converted with formula enrichment on, 52 of 61 `suspect` verdicts came
-  from a layer already marked unfit, so the finding reads "equation not verifiable"
-  and rides as informational rather than asserting the extraction is wrong. It is
-  informational because nothing is withheld: all 494 equations on formula-enabled
-  documents emit their LaTeX, and the 277 that are image-backed carry the `$$` block
-  under the crop. What is missing is a verdict, for a reason belonging to the page.
-  Raised as an action it was 231 entries across the corpora, 78 in one 25-page maths
-  paper. Agreement
-  from an unfit layer still counts (9 equations verify that way), which is why the
-  cross-check keeps running against it -- the asymmetry is the whole point. **A
-  scanned page is the stronger form of the same case and was getting the harsher
-  verdict**, purely because it carries no `text_layer` key to test: there is no layer
-  at all, so nothing can judge the LaTeX, and the finding asked a reader to check the
-  extraction against a reference the page does not have. Over 28 papers at default
-  settings that was 57 of the 120 image-backed equations, every one on a scan.
-  `_UNTERMINATED_ENVIRONMENT` also drops a runaway `\begin{array} { c c c ...`
-  that never closes (3 of 158 equations): a 4075-character spec reached the token
-  set as one 1000-character `cccc...` counted as missing content.
-- **A layer that spells symbols with letters passes every per-character test and is
-  still nonsense.** `is_clean` looked for unmapped glyphs (C0/C1 controls, U+FFFD),
-  which a font substituting *ordinary letters* for symbols sails through: Wiley
-  draws `(14)` as `ð14Þ` and a square root as a run of `ffi` ligatures. The
-  equation is then convicted for disagreeing with a broken reference. 101 of 383
-  equation regions carry one of the two signatures, in Wiley and in an ACS review,
-  so it is a font property and not a publisher's; of the 19 suspect equations whose
-  layer was called fit, 11 carry one and are now informational, leaving 8 genuine
-  candidates. This is a classification change, deliberately: dropping `ðNÞ` from
-  both sides of the *comparison* was measured and rejected (71 equations improved,
-  93 got worse), because removing a token both sides carry only lowers the ratio.
-- **Equation confidence + image-backing live in `enrich.py`/`confidence.py`, not
-  the engine.** When the engine's LaTeX disagrees with the text layer (or a scan
-  has none), the equation is cropped to an authoritative image and the text rides
-  as a flagged hint. `--transcribe` re-OCRs that crop with Surya (`transcribe.py`).
-- **A figure's own printed text (caption, axis titles, tick labels) is recovered
-  model-free.** The Docling adapter scoops the figure's text items (which Docling
-  attaches to the Picture, not the body) into `labels` via `_recover_figure_text`.
-  For a *scanned* figure a default post-render pass (`_ocr_scanned_figures`, gated by
-  `config.ocr_figures`) re-OCRs the crop upright with `figure_labels_ocr` — the engine
-  reads a sideways scan's small text as garbage, so it tries all four 90° rotations and
-  keeps the most legible. `--figure-labels` supersedes both with the vision read. Finally
-  `_promote_figure_captions` lifts a 'Fig N.' line out of those labels into `caption`
-  (`extract_caption`), so a scan's caption renders as the figure's visible caption; a figure
-  with a Docling-supplied caption already is left alone.
-- **A cell's glyphs are read from its column lane, not its own box.** An engine draws
-  the box inside the ink and `_region` keeps a glyph only when its *center* is inside, so
-  a tight box truncates the font-decode refill and it writes the short reading over the
-  cell: on the GRASP2018 contents pages `12.1` refilled as `12.`, `A.1` as `A.`, `6.10`
-  as `6.1`. `enrich._cell_read_boxes` widens each cell to its column's lane
-  (`table_rebuild.engine_lane_bounds`, the union of that column's single-column cells --
-  column 0 there spans 90.0-122.9 where the cell claims 99.1-117.6) but never past a
-  row-neighbour, and processes a row left to right so the bound is the previous cell's
-  *read* edge. Both bounds are load-bearing: the neighbour alone pulls a contents page's
-  leader dots into the number cell (848 cells corpus-wide read `. . . . . 13` for `13`),
-  the lane alone can overlap the next column and claim a glyph twice. Measured after:
-  318 cells recover clipped characters, 0 gain leaders, 0 cell pairs overlap more than
-  the engine's own boxes already did. Script detection still uses the cell's own box --
-  that is about geometry inside the cell.
-- **Broken-font text (dingbat mojibake) is repaired from pdfium, not the engine.**
-  A font with no usable ToUnicode CMap makes Docling's default backend emit symbol-
-  font garbage (`/a114❛❝...`); pypdfium2 decodes it correctly. `enrich.py` detects
-  garbage prose (`legibility.is_garbage`) and refills it from `PageChars.text_region`.
-  A block that's still garbage after the refill is flagged `illegible` by `emit.py`,
-  never emitted as prose. The font's ﬀ/ﬁ/ﬂ ligatures also lack ToUnicode, but pdfium
-  surfaces them as C0 control bytes (TeX OT1 slots, `\x1b`-`\x1f`), not dropped, so
-  `normalize.expand_ligature_glyphs` maps them back to ff/fi/fl/ffi/ffl (and `\x02`
-  soft-hyphen → join) in `clean_reading` before the control-strip — deterministic, no
-  dictionary.
-- **A page's visible box does not always start at (0, 0), and engines report
-  coordinates relative to it.** pdfium is absolute user space -- charboxes,
-  `set_cropbox`, page-object bounds -- so on a page with a non-zero MediaBox or
-  CropBox corner every glyph check reads ink that far from the text it is
-  scoring. Measured: an ACS paper with origin (9, 9) scored mean word recall
-  0.53 and an Elsevier one with CropBox (20, 62) scored 0.21; shifting by
-  exactly the origin put both above 0.94. Three of 17 documents were affected,
-  and they were the three worst-scoring in the corpus. `engines/base.py`'s
-  `normalize_page_origin` canonicalizes on user space at the seam (so
-  `Block.bbox`, `TableData.bbox`, `FigureRef.bbox`/`caption_bbox` and
-  `RawCell.bbox` are all absolute from there on), and `render.py` subtracts the
-  origin again when mapping into the rendered raster, which covers the visible
-  box. A (0, 0)-origin document is untouched by both.
-- Docling block/prov bboxes are bottom-left origin (`y0 > y1`); `render.py` flips Y.
-  Don't re-flip elsewhere. **Exception: table-cell bboxes are TOPLEFT** — the docling
-  adapter (`_cell_bbox`) flips them to bottom-left so enrich's glyph lookups (script
-  overlay, font-decode refill) land on the right region.
-- Docling formulas are `TextItem`s with label `formula` (self_ref `#/texts/N`),
-  not a separate collection. The adapter maps label → `BlockType.EQUATION`.
-- Book splitting selectively expands Part-like bookmark containers into chapter files,
-  restores out-of-order destinations to source-page order, and can use two or more
-  numbered chapter headings when a Part has no chapter bookmarks. PDFs without that
-  evidence remain split at their top-level bookmarks. Inline sub/superscripts are
-  recovered from glyph geometry (`scripts.py`, default on); a residual ceiling remains
-  where the engine renders an exponent unlike the raw glyphs.
-- `output format` is a versioned contract: bump `FORMAT_VERSION` in `schema.py`
-  when front-matter keys or the file layout change in a parser-breaking way.
