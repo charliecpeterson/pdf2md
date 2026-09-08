@@ -120,7 +120,7 @@ def test_dpi_for_region_clamps_small_up_and_large_down():
 
 def test_scanned_block_crop_keeps_300_dpi_source_detail():
     from pdf2md.config import Config
-    from pdf2md.pipeline import _block_crop_dpi
+    from pdf2md.crops import _block_crop_dpi
     from pdf2md.schema import BBox, Block, BlockType
 
     bbox = BBox(x0=0, y0=700, x1=500, y1=0)
@@ -1602,7 +1602,7 @@ def test_metadata_heuristic(monkeypatch):
 
 
 def test_eq_crops_selects_low_confidence_and_untranscribed():
-    from pdf2md.pipeline import _eq_crops
+    from pdf2md.crops import _eq_crops
     from pdf2md.schema import BBox, Block, BlockType
 
     bb = BBox(0, 10, 5, 0)
@@ -1733,7 +1733,7 @@ def test_clean_vlm_text_decodes_escaped_newlines():
 
 
 def test_table_crops_key_on_type_not_id():
-    from pdf2md.pipeline import _table_crops
+    from pdf2md.crops import _table_crops
     from pdf2md.schema import BBox, Block, BlockType, TableData
 
     bb = BBox(0, 10, 5, 0)
@@ -1762,7 +1762,7 @@ def test_table_crops_key_on_type_not_id():
 
 
 def test_table_crops_include_glyph_unbacked_tables():
-    from pdf2md.pipeline import _table_crops
+    from pdf2md.crops import _table_crops
     from pdf2md.schema import BBox, Block, BlockType, TableData
 
     bb = BBox(0, 10, 5, 0)

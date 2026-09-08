@@ -134,6 +134,10 @@ src/pdf2md/
   chunks.py     section- and page-local retrieval chunks with source-page and asset pointers.
   bookmarks.py  read embedded PDF TOC via pypdfium2.
   outline.py    heading depth (from section numbering) + section kind.
+  crops.py      which blocks get a crop and what the image then claims. `crop_path` versus
+                `TableData.source_crop` is the load-bearing distinction: every table gets a
+                source_crop to check against, and only an authoritative image gets crop_path,
+                which routes the emitter to publish the image instead of the cells.
   render.py     pypdfium2 bbox crops → assets/ (Y-flip, per-page geometry, full-page fallback).
                 full_page() renders whole scanned pages as verification rasters. svg_crop()
                 (--figure-svg) exports a born-digital figure region as lossless SVG via
