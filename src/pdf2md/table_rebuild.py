@@ -355,6 +355,13 @@ def content_norm(text: str | None) -> str:
     return " ".join(text.split()).strip()
 
 
+def compact(text: str) -> str:
+    """Comparable content with every space gone. Column-aligned typesetting puts
+    spaces inside numbers and the engine puts them elsewhere; nothing about
+    either placement is content."""
+    return re.sub(r"\s+", "", content_norm(text))
+
+
 def _reading(chars: list[Char]) -> str:
     """Glyphs as read: visual lines top-down (the same overlap grouping used
     everywhere scripts geometry is read), left-to-right within a line. Word gaps

@@ -155,12 +155,15 @@ src/pdf2md/
                 per-engine-cell glyph verification (verdicts + uncovered-ink strays) recorded as
                 read-only evidence on TableData.cell_glyph_check during enrich; spacing_only
                 verdicts are not flagged.
-  table_audit.py  the row- and grid-level failures check_table_cells cannot see, because a row the
+  table_grid.py the checks that read only the emitted cells and never the source: merged_cells,
+                shifted_values, header_absorbed_data, stray_glyphs_in_numeric_column,
+                decimal_separator_lost. Owns TableFinding. Stands at medium until the ink
+                corroborates it — a signature in the text is a suspicion, ink is evidence.
+  table_audit.py  the row-level failures check_table_cells cannot see, because a row the
                 engine never created has no cell to verify. row_accounting projects the region's
                 ink into rows and requires every value in a row band to reach a cell of the engine
-                rows covering it (dropped rows, merged rows); grid_findings reads only the emitted
-                cells (merged_cells, shifted_values, header_absorbed_data) and stands at medium
-                until the accounting corroborates it. raster_row_findings covers the scanned case
+                rows covering it (dropped rows, merged rows); audit_table joins it to
+                table_grid's text-only findings. raster_row_findings covers the scanned case
                 the glyph path cannot reach, off the table's own crop. running_text_findings is
                 the one check with document scope, because one table cannot tell a swallowed
                 running footer from its own spanning title; `audit_scanned_tables` and
