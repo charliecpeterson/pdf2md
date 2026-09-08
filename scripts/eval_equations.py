@@ -18,9 +18,8 @@ from __future__ import annotations
 
 import sys as _sys
 from pathlib import Path as _Path
-_sys.path.insert(0, str(_Path(__file__).parent))
-from _corpus import labelled_source
 
+_sys.path.insert(0, str(_Path(__file__).parent))
 import argparse
 import difflib
 import hashlib
@@ -28,6 +27,8 @@ import json
 import re
 from collections import Counter
 from pathlib import Path
+
+from _corpus import labelled_source
 
 _TAG = re.compile(r"\\tag\s*\{[^}]*\}")
 _WRAP = re.compile(r"\\(?:text|operatorname|mathrm|mathbf|mathit|mathbb|boldsymbol|rm)\s*\{?([^{}]*)\}?")

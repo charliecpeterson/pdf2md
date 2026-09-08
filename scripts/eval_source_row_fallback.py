@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import sys as _sys
 from pathlib import Path as _Path
-_sys.path.insert(0, str(_Path(__file__).parent))
-from _corpus import labelled_source
 
+_sys.path.insert(0, str(_Path(__file__).parent))
 import argparse
 import json
 from collections import Counter
 from pathlib import Path
+
+from _corpus import labelled_source
 
 from pdf2md.line_reader import _sha256
 from pdf2md.table_verify import numeric_values_equal

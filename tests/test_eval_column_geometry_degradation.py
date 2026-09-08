@@ -6,9 +6,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw
-
 from conftest import needs_corpus_bundles, needs_corpus_pdfs
+from PIL import Image, ImageDraw
 
 pytestmark = [needs_corpus_bundles, needs_corpus_pdfs]
 

@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 
 import pytest
-
 from conftest import needs_corpus_bundles, needs_corpus_pdfs
 
 pytestmark = [needs_corpus_bundles, needs_corpus_pdfs]

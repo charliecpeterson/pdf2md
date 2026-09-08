@@ -9,9 +9,8 @@ from __future__ import annotations
 
 import sys as _sys
 from pathlib import Path as _Path
-_sys.path.insert(0, str(_Path(__file__).parent))
-from _corpus import labelled_source
 
+_sys.path.insert(0, str(_Path(__file__).parent))
 import argparse
 import csv
 import hashlib
@@ -19,6 +18,8 @@ import json
 import re
 from collections import Counter
 from pathlib import Path
+
+from _corpus import labelled_source
 
 ROOT = Path(__file__).parent.parent
 DEFAULT_VERSION = ROOT / "out" / "0685e8d85e2237d8" / "v6"

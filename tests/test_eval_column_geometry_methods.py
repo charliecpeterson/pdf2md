@@ -8,9 +8,8 @@ import sys
 from pathlib import Path
 
 import pytest
-from PIL import Image, ImageDraw
-
 from conftest import needs_corpus_bundles, needs_corpus_pdfs
+from PIL import Image, ImageDraw
 
 pytestmark = [needs_corpus_bundles, needs_corpus_pdfs]
 

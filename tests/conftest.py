@@ -3,10 +3,20 @@ blocks and drives the pipeline stages directly."""
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
 import pytest
+
+from pdf2md.schema import (
+    BBox,
+    Block,
+    BlockType,
+    Document,
+    FigureRef,
+    TableData,
+)
 
 _ROOT = Path(__file__).parent.parent
 # Where the journal PDFs live, and where their converted bundles live. 43 of the
@@ -33,8 +43,6 @@ def has_corpus_pdfs() -> bool:
     A few entries point at a bundle's own `source.pdf` inside the output tree,
     which is present whenever any conversion has been run — so "at least one
     resolves" is true on a machine with no corpus at all."""
-    import json
-
     baseline = json.loads((_ROOT / "tests" / "qa_baseline.json").read_text())
     found = sum(
         (_ROOT / record["source"]).is_file()
@@ -49,14 +57,6 @@ needs_corpus_pdfs = pytest.mark.skipif(
     reason="labelled source PDFs not available (set PDF2MD_CORPUS; see docs/qa-corpus.md)",
 )
 
-from pdf2md.schema import (
-    BBox,
-    Block,
-    BlockType,
-    Document,
-    FigureRef,
-    TableData,
-)
 
 
 def mk_block(bid: str, btype: BlockType, text: str, page: int = 1, **extra) -> Block:

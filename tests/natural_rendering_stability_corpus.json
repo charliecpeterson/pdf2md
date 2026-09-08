@@ -40,11 +40,11 @@
     },
     "stability_evaluator": {
       "path": "scripts/eval_rendering_stability.py",
-      "sha256": "41ba1dd0f98925f0ef913b9efc686003f76272391516e9aa51e4ae284f576420"
+      "sha256": "ce324652578fa70bb5a05f5295beb4d8d11c85f98823b6819254f0d804230a22"
     },
     "semantic_scorer": {
       "path": "scripts/eval_heldout_data_reader.py",
-      "sha256": "393a6cdc5925595a66607eff7f922bfb54d703ce5dde63b8272130dedacb47b6"
+      "sha256": "2d8b6fe4d4967831ca8456b182395fac8e9cf00b7259b86bd92b861f5353a55e"
     }
   },
   "expected": {

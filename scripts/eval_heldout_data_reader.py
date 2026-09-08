@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import sys as _sys
 from pathlib import Path as _Path
-_sys.path.insert(0, str(_Path(__file__).parent))
-from _corpus import labelled_source
 
+_sys.path.insert(0, str(_Path(__file__).parent))
 import argparse
 import importlib.util
 import json
@@ -16,6 +15,7 @@ from collections import Counter
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
+from _corpus import labelled_source
 from PIL import Image
 
 from pdf2md.line_reader import (

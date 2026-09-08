@@ -6,9 +6,8 @@ import importlib.util
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
-
 from conftest import needs_corpus_bundles
+from PIL import Image
 
 pytestmark = needs_corpus_bundles
 

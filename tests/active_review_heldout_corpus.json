@@ -12,7 +12,7 @@
     },
     "base_ranking": {
       "path": "scripts/eval_active_review_sampling.py",
-      "sha256": "806f12c408a1beda279ad2970ef730c54ae7b58bff4997de893481a5d6c6acc8"
+      "sha256": "cf7818f5e24441e00a3d35e99b42554d136d01b6519de3323dfecc99d08cb847"
     }
   },
   "expected": {

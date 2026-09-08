@@ -9,9 +9,8 @@ from __future__ import annotations
 
 import sys as _sys
 from pathlib import Path as _Path
-_sys.path.insert(0, str(_Path(__file__).parent))
-from _corpus import labelled_source
 
+_sys.path.insert(0, str(_Path(__file__).parent))
 import argparse
 import hashlib
 import json
@@ -19,6 +18,7 @@ import math
 from collections import Counter
 from pathlib import Path
 
+from _corpus import labelled_source
 from eval_heldout_data_reader import _outcome, _semantic_value
 
 from pdf2md.table_verify import numeric_values_equal, typed_value
