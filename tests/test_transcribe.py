@@ -58,7 +58,7 @@ def test_transcribe_only_image_backed_equations():
 
 
 def test_emit_prefers_transcribed_hint():
-    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.render_block import _Ctx, _render_block
     from pdf2md.schema import CoverageStatus
 
     ctx = _Ctx(depth_of={}, tables={}, figures={})

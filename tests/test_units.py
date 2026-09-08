@@ -1012,7 +1012,7 @@ def test_table_consensus_preserves_disagreements_and_missing_cells():
 
 
 def test_norm_title_dedup_and_initial_guard():
-    from pdf2md.emit import _norm_title
+    from pdf2md.render_block import _norm_title
 
     # bookmark title and the part-prefixed page heading normalise equal (dedup works)
     assert _norm_title("IV Issues of convergence") == _norm_title("Part IV: Issues of convergence")
@@ -1709,7 +1709,7 @@ def test_apply_page_transcripts_marks_truncated_pages():
 
 
 def test_emit_flags_cap_truncated_page_visible_and_counted():
-    from pdf2md.emit import _Ctx, _render_blocks
+    from pdf2md.render_block import _Ctx, _render_blocks
     from pdf2md.schema import Block, BlockType, CoverageStatus
 
     b = Block("#/page/5", BlockType.PARAGRAPH, "transcribed prose", 5,

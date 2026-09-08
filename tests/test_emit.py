@@ -298,7 +298,7 @@ def test_emit_shows_figure_outcome_and_emits_associated_caption_once(tmp_path):
 
 
 def test_table_data_renders_even_when_block_mislabelled():
-    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.render_block import _Ctx, _render_block
     from pdf2md.schema import Block, BlockType, CoverageStatus, TableData
 
     # Docling labels a TOC page 'other' but still parses cells; the data must render
@@ -312,7 +312,7 @@ def test_table_data_renders_even_when_block_mislabelled():
 
 
 def test_failed_table_falls_back_to_image():
-    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.render_block import _Ctx, _render_block
     from pdf2md.schema import Block, BlockType, CoverageStatus
 
     ctx = _Ctx(depth_of={}, tables={}, figures={})
@@ -699,7 +699,7 @@ def test_balance_delims():
 
 
 def test_low_confidence_equation_uses_image_and_hint():
-    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.render_block import _Ctx, _render_block
     from pdf2md.schema import Block, BlockType, CoverageStatus
 
     ctx = _Ctx(depth_of={}, tables={}, figures={})
@@ -739,7 +739,7 @@ def test_low_confidence_equation_uses_image_and_hint():
 
 
 def test_empty_equation_with_crop_emits_image_not_empty_marker():
-    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.render_block import _Ctx, _render_block
     from pdf2md.schema import Block, BlockType, CoverageStatus
 
     ctx = _Ctx(depth_of={}, tables={}, figures={})
@@ -788,7 +788,7 @@ def test_emit_accounts_for_every_block(tmp_path, sample_document):
 
 
 def test_formula_option_separates_intentional_crop_from_suspect_extraction():
-    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.render_block import _Ctx, _render_block
     from pdf2md.schema import Block, BlockType
 
     intentional = Block(
@@ -814,7 +814,7 @@ def test_formula_option_separates_intentional_crop_from_suspect_extraction():
 def test_illegible_footnote_flagged_not_emitted():
     # A broken-font footnote is symbol-font garbage like any prose; it must be flagged,
     # not appended to the footnote list as readable text (the FOOTNOTE branch gates it).
-    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.render_block import _Ctx, _render_block
     from pdf2md.schema import Block, BlockType
 
     ctx = _Ctx(depth_of={}, tables={}, figures={})
@@ -877,7 +877,7 @@ def test_emit_snapshot(tmp_path, sample_document, snapshot):
 
 
 def test_heading_plan_dedup_and_merge():
-    from pdf2md.emit import _heading_plan
+    from pdf2md.render_block import _heading_plan
     from pdf2md.schema import Block, BlockType
 
     blocks = [
@@ -896,7 +896,7 @@ def test_heading_plan_dedup_and_merge():
 def test_heading_plan_label_plus_title_dup_dropped():
     # When a "Part N" label is followed by a heading that restates the file title,
     # both are dropped (the file title already says it), not merged into a duplicate.
-    from pdf2md.emit import _heading_plan
+    from pdf2md.render_block import _heading_plan
     from pdf2md.schema import Block, BlockType
 
     blocks = [
@@ -1078,7 +1078,7 @@ def test_a_document_whose_text_layer_is_unfit_says_so_once_and_names_the_remedy(
     unfitness, which is what makes the verdict reachable on a paper with one
     equation.
     """
-    from pdf2md.emit import _unfit_text_layer
+    from pdf2md.render_block import _unfit_text_layer
     from pdf2md.schema import BBox, Block, BlockType, TableData
 
     blocks = [
@@ -1107,7 +1107,7 @@ def test_a_document_whose_text_layer_is_unfit_says_so_once_and_names_the_remedy(
 
 
 def test_a_clean_document_gets_no_unfit_verdict():
-    from pdf2md.emit import _unfit_text_layer
+    from pdf2md.render_block import _unfit_text_layer
     from pdf2md.schema import BBox, Block, BlockType
 
     blocks = [
@@ -1131,7 +1131,7 @@ def test_unjudgeable_equations_alone_do_not_impugn_a_document_s_values():
     damage at all. An earlier version of this verdict fired on all six and told
     those readers to re-run with --force-ocr, which the evidence does not support.
     """
-    from pdf2md.emit import _unfit_text_layer
+    from pdf2md.render_block import _unfit_text_layer
     from pdf2md.schema import BBox, Block, BlockType, Document
     from pdf2md.structure import build_structure
 
@@ -1147,7 +1147,7 @@ def test_unjudgeable_equations_alone_do_not_impugn_a_document_s_values():
 
 
 def test_one_damaged_table_is_its_own_flag_and_not_a_document_verdict():
-    from pdf2md.emit import _unfit_text_layer
+    from pdf2md.render_block import _unfit_text_layer
     from pdf2md.schema import BBox, Document, TableData
     from pdf2md.structure import build_structure
 
@@ -1287,7 +1287,7 @@ def test_a_scanned_page_cannot_judge_its_own_equations_either():
     the harsher branch and asked a reader to check the extraction against a
     reference the page does not have. On 28 papers at default settings that was
     57 of the 120 image-backed equations, every one of them on a scan."""
-    from pdf2md.emit import _Ctx, _render_block
+    from pdf2md.render_block import _Ctx, _render_block
     from pdf2md.schema import Block, BlockType, CoverageStatus
 
     ctx = _Ctx(depth_of={}, tables={}, figures={})

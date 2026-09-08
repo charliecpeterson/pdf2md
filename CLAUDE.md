@@ -155,7 +155,13 @@ src/pdf2md/
                 (--figure-svg) exports a born-digital figure region as lossless SVG via
                 pdftocairo — through a temp cropbox'd one-page PDF, because pdftocairo's own
                 crop flags are silently ignored for SVG output.
-  emit.py       Section tree → .md files + YAML front-matter; sets coverage_status, collects flags.
+  emit.py       Section tree → .md files + YAML front-matter; the file layout and index.
+  render_block.py one block to one piece of Markdown, and the disposition that goes with it.
+                This is where the accounting invariant is enforced: every branch returns a
+                CoverageStatus with its text and none returns text without one, which is what
+                makes accounted_for a check rather than a hope. Its flags say only what they
+                can support — "not verifiable" where nothing could have judged, "undecodable
+                fragment" where there was no prose to lose.
   emit_figures.py what surrounds a figure crop: caption, recovered labels, table cross-
                 reference, and a born-digital chart's series as CSV and a redraw script.
                 A digitization below the floor is written as `<stem>.withheld.csv`, not dropped.
