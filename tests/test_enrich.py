@@ -4,14 +4,8 @@ what) that used to live untested inside the Docling adapter."""
 
 from __future__ import annotations
 
-from pdf2md.enrich import (
-    _cell_read_boxes,
-    enrich_blocks,
-    enrich_figures,
-    enrich_tables,
-    recall_review_flags,
-    record_recall,
-)
+from pdf2md.enrich import _cell_read_boxes, enrich_blocks, enrich_figures, enrich_tables
+from pdf2md.recall import recall_review_flags, record_recall
 from pdf2md.schema import BBox, Block, BlockType, FigureRef, RawCell, RawTable, TableData
 
 _BB = BBox(x0=0, y0=10, x1=10, y1=0)
@@ -273,7 +267,7 @@ def test_word_recall_of_a_table_block_still_sees_dropped_characters():
 
 
 def test_prose_word_recall_strips_script_tags_and_skips_empty_regions():
-    from pdf2md.enrich import record_block_recall
+    from pdf2md.recall import record_block_recall
 
     # A script tag becomes a boundary on both sides, because the source is read
     # script-split: `<sup>2</sup>nd` and the layer's `2nd` both give `2` + `nd`.
@@ -288,7 +282,7 @@ def test_prose_word_recall_strips_script_tags_and_skips_empty_regions():
 
 
 def test_recall_summary_aggregates_and_counts_low_blocks():
-    from pdf2md.enrich import recall_summary
+    from pdf2md.recall import recall_summary
 
     def block(recall):
         return Block(id="#/b", type=BlockType.PARAGRAPH, text="x", page=1,
@@ -360,7 +354,7 @@ def test_scriptsplit_separates_scripted_groups():
 
 
 def test_recall_flags_separate_missing_words_from_lost_accents():
-    from pdf2md.enrich import recall_review_flags
+    from pdf2md.recall import recall_review_flags
 
     def block(bid, recall):
         return Block(id=bid, type=BlockType.PARAGRAPH, text="x", page=4,
@@ -386,7 +380,7 @@ def test_recall_flags_separate_missing_words_from_lost_accents():
 
 
 def test_recall_flags_read_a_bundle_written_before_strict_existed():
-    from pdf2md.enrich import recall_review_flags, recall_summary
+    from pdf2md.recall import recall_review_flags, recall_summary
 
     old = Block(id="#/a", type=BlockType.PARAGRAPH, text="x", page=1,
                 extra={"glyph_word_recall": {"matched": 20, "total": 20}})
@@ -396,7 +390,7 @@ def test_recall_flags_read_a_bundle_written_before_strict_existed():
 
 
 def test_recall_counts_a_line_broken_word_once():
-    from pdf2md.enrich import record_block_recall
+    from pdf2md.recall import record_block_recall
 
     # The layer breaks `structure` across a line with an undecodable soft hyphen;
     # the emitter rejoins it. Scoring that as two lost words is a metric bug.
@@ -407,7 +401,7 @@ def test_recall_counts_a_line_broken_word_once():
 
 
 def test_recall_joins_a_word_the_glyph_layer_drew_in_two_runs():
-    from pdf2md.enrich import record_block_recall
+    from pdf2md.recall import record_block_recall
 
     # A styled capital splits `ReAct` across two source tokens with no hyphen to
     # join on. Scoring that as two lost words measures the draw order, not the
@@ -419,7 +413,7 @@ def test_recall_joins_a_word_the_glyph_layer_drew_in_two_runs():
 
 
 def test_recall_does_not_invent_a_join_the_output_never_had():
-    from pdf2md.enrich import record_block_recall
+    from pdf2md.recall import record_block_recall
 
     # The join is only made when the emitted text actually contains the result,
     # so two genuinely separate lost words stay lost.
@@ -429,7 +423,7 @@ def test_recall_does_not_invent_a_join_the_output_never_had():
 
 
 def test_recall_is_not_claimed_where_two_blocks_claim_one_region():
-    from pdf2md.enrich import recall_review_flags
+    from pdf2md.recall import recall_review_flags
     from pdf2md.schema import BBox
 
     def block(bid, box, recall):
@@ -745,7 +739,7 @@ def test_a_symbol_the_page_prints_and_the_output_drops_is_recorded():
     `where χ is the van der Waals radius` emits as `where is the van der Waals
     radius`. In a 200-word paragraph that is recall 0.995, which passes; over a
     28-paper corpus 40 blocks dropped a symbol and 4 crossed the floor."""
-    from pdf2md.enrich import record_symbol_loss
+    from pdf2md.recall import record_symbol_loss
     from pdf2md.schema import BBox
 
     block = Block(id="#/a", type=BlockType.PARAGRAPH, page=4, bbox=BBox(0, 10, 10, 0),
@@ -762,7 +756,7 @@ def test_a_symbol_the_page_prints_and_the_output_drops_is_recorded():
 def test_a_dash_normalized_on_the_way_out_is_not_a_dropped_symbol():
     """`−` emitting as `-` is formatting. A class where loss and normalization
     both live would need a threshold, which is what this check exists to avoid."""
-    from pdf2md.enrich import record_symbol_loss
+    from pdf2md.recall import record_symbol_loss
     from pdf2md.schema import BBox
 
     block = Block(id="#/a", type=BlockType.PARAGRAPH, page=1, bbox=BBox(0, 10, 10, 0),
@@ -774,7 +768,7 @@ def test_a_dash_normalized_on_the_way_out_is_not_a_dropped_symbol():
 
 
 def test_dropped_symbols_are_raised_apart_from_recall():
-    from pdf2md.enrich import recall_review_flags
+    from pdf2md.recall import recall_review_flags
 
     block = Block(id="#/a", type=BlockType.PARAGRAPH, text="where is the radius", page=7,
                   extra={"glyph_word_recall": {"matched": 199, "total": 200, "strict": 199},

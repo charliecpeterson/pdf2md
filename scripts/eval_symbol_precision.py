@@ -44,12 +44,8 @@ import sys
 if str(sys_path) not in sys.path:
     sys.path.insert(0, str(sys_path))
 
-from pdf2md.enrich import (
-    _SYMBOL_DASHES,
-    _SYMBOLS,
-    GlyphIndex,
-    record_symbol_loss,
-)
+from pdf2md.enrich import _SYMBOL_DASHES, _SYMBOLS, GlyphIndex
+from pdf2md.recall import record_symbol_loss
 from pdf2md.schema import PROSE_TYPES, BBox, Block, BlockType
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))

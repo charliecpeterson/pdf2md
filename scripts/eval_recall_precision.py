@@ -64,7 +64,8 @@ from dataclasses import fields
 
 import pypdfium2 as pdfium
 
-from pdf2md.enrich import GlyphIndex, _recall_words, record_recall
+from pdf2md.enrich import GlyphIndex, _recall_words
+from pdf2md.recall import record_recall
 from pdf2md.schema import BBox, Block, BlockType, TableData
 
 

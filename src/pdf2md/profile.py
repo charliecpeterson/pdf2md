@@ -13,10 +13,10 @@ from pathlib import Path
 
 from pdf2md.confidence import plot_data_accepted
 from pdf2md.document_metadata import METADATA_NAME
-from pdf2md.enrich import recall_summary
 from pdf2md.grobid import REFS_TEI_NAME
 from pdf2md.logging import _duration
 from pdf2md.quality import build_quality_scorecard
+from pdf2md.recall import recall_summary
 from pdf2md.review import build_review_queue
 from pdf2md.run_metrics import failed_optional_calls
 from pdf2md.schema import (
