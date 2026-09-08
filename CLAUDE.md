@@ -207,9 +207,14 @@ src/pdf2md/
   search.py     literal offline search over completed passage bundles, reading the stable
                 passage interface rather than inventing an index.
   doctor.py     environment diagnostics for the engines and optional features.
-  metadata.py   ranked local bibliographic evidence from embedded fields, front-page and
-                repeated headings, running titles, early bookmarks, and meaningful filenames.
-                Selected, alternate, penalized, and rejected candidates remain inspectable.
+  metadata.py   ranked local *title* evidence: embedded fields, front-page and repeated
+                headings, running titles, early bookmarks, meaningful filenames. Selected,
+                alternate, penalized and rejected candidates remain inspectable.
+  authors.py    who wrote it. Two readings with different standards: an `Affiliations`
+                heading bounds the region exactly and can drop the parts that are not names;
+                a line chosen for sitting under the title cannot, so `_author_names` is
+                all-or-nothing. It is NOT a name classifier — over 157 corpus title
+                candidates it accepts 36, including `Attention Is All You Need`.
   grobid.py     optional GROBID enrichment (--grobid-url): header fields + every reference string
                 parsed from TEI; fill-gaps-only merge (GROBID's header model can latch onto arXiv
                 license boilerplate), raw TEI under data/, unreachable service degrades with a warning.
