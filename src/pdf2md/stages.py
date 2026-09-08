@@ -6,7 +6,8 @@ take fifteen arguments and read worse than the inline code they replaced. The
 order is load-bearing in three places, each marked where it matters: the glyph
 verification runs after the table pass, the page-level VLM transcription runs
 before `build_structure` consumes the block list, and the vision-cache checkpoint
-is taken where the geometry metrics are recorded.
+is taken where the geometry metrics are recorded, which is what the charts stage's
+cache numbers are measured against.
 """
 
 from __future__ import annotations
@@ -440,6 +441,10 @@ def _describe_document(run: _Run) -> None:
         title=run.meta.get("title") or pdf_path.stem,
         page_count=len(result.page_sizes),
     )
+    # The charts stage reports its cache activity as the difference from here, so
+    # the position of this snapshot is what the "charts" cache numbers mean. It
+    # spans the render and equation stages too; that is the reading the recorded
+    # metrics have always had, and moving it would silently change them.
     run.cache_checkpoint = run.vision_cache.snapshot()
     run.metrics.finish(
         "geometry",
