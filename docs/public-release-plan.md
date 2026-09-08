@@ -339,8 +339,39 @@ than the steps that went as written:
   plan. 55 of 81 harnesses are exercised by a test. Nothing deleted; the stale
   counts in `scripts/README.md` were corrected instead.
 
-Still open: 2.1 (needs its own session), 2.3 (`emit.py` and the other
-over-ceiling modules), and 2.5's second half.
+### Section 2 in full, 2026-09-08
+
+All of section 2 except the remainder of 2.1 is done. Twelve modules were over
+the 700-line ceiling; **three are now**, and two of those are documented as
+needing more than a move:
+
+| module | was | now | seam |
+|---|---|---|---|
+| `emit.py` | 1,144 | 346 | `emit_figures`, `emit_math`, `render_block` |
+| `enrich.py` | 1,022 | 561 | `recall.py` — repair split from measurement |
+| `table_audit.py` | 1,068 | 700 | `table_grid.py` — text-only checks from ink |
+| `digitize.py` | 928 | 638 | `axes.py` — geometry split from calibration |
+| `cli.py` | 959 | 489 | `cli_inspect.py`, `cli_report.py` |
+| `profile.py` | 857 | 493 | `run_readme.py` — numbers split from prose |
+| `line_reader.py` | 827 | 576 | `panel_keys.py` |
+| `table_artifacts.py` | 777 | 293 | `table_panels.py` |
+| `metadata.py` | 749 | 508 | `authors.py` |
+| `visual.py` | 703 | 422 | `figure_passes.py` |
+| `pipeline.py` | 1,271 | 1,098 | `engines/select`, `crops`, `_Run` |
+| `table_verify.py` | 727 | 727 | **none found** |
+
+`table_verify.py` was tried and reverted: the second reading and the value typing
+are genuinely entangled — the reader group needs `typed_value`, `_numeric_read`
+and `_reader_agreement_score`, which would make the split circular. 27 lines over
+the ceiling is the cheapest thing on this list to leave alone.
+
+Two moves were reverted for the same reason and are worth remembering as a rule:
+**a function that cannot move without dragging its dependencies backwards is not
+in the wrong place.** `_transcribe_equations` needs the run fingerprint, so it
+stays in `pipeline`.
+
+Still open: the rest of 2.1 (the earlier stages onto `_Run`, now mechanical), and
+`table_verify.py` if a seam is ever found.
 
 ## 6. Order and effort
 
