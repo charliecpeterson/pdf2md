@@ -391,20 +391,25 @@ the whole of section 2.
 
 | step | what | effort | proof it worked |
 |---|---|---|---|
-| 1 | ruff config + fixes (1.1) | half a day | CI green |
-| 2 | corpus-dependent tests skip cleanly (1.2) | an hour | `uv run pytest` passes on a clean clone |
-| 3 | remove session log, settle `notes/`, move `output/pdf` (1.3) | an hour | `git ls-files` review |
-| 4 | corpus out of the root, `PDF2MD_CORPUS` (1.4) | half a day | gate still 37 of 37 |
-| 5 | cut a release (1.5) | an hour | a tag |
+| 1 | ruff config + fixes (1.1) | done | CI green |
+| 2 | corpus-dependent tests skip cleanly (1.2) | done | `uv run pytest` passes on a clean clone |
+| 3 | remove session log, settle `notes/`, move `output/pdf` (1.3) | done | `git ls-files` review |
+| 4 | corpus out of the root, `PDF2MD_CORPUS` (1.4) | done | gate still 37 of 37 |
+| 5 | cut a release (1.5) | done — v0.2.0 | a tag |
 | 6a | move the document-scope passes out (2.2) | done | gate 37 of 37 |
-| 6b | split `convert_file` (2.1) | two days, needs a state object | gate signatures byte-identical |
-| 7 | `emit.py`, `table_audit.py`, `enrich.py` (2.3) | two days | same |
-| 8 | prune `scripts/` (2.4) | half a day | `scripts/README.md` lists all of them |
-| 9 | README split (3.1) | a day | a stranger finds `convert` in under a minute |
-| 10 | CLAUDE.md regroup (3.2) | a day | 400 lines, nothing lost |
-| 11 | `docs/` triage (3.3) | half a day | `docs/README.md` index |
+| 6b | split `convert_file` (2.1) | done | files byte-identical, work counts identical |
+| 7 | `emit.py`, `table_audit.py`, `enrich.py` (2.3) | done | same |
+| 8 | prune `scripts/` (2.4) | done — nothing to prune | `scripts/README.md` lists all of them |
+| 9 | README split (3.1) | done | a stranger finds `convert` in under a minute |
+| 10 | CLAUDE.md regroup (3.2) | done | 400 lines, nothing lost |
+| 11 | `docs/` triage (3.3) | done | `docs/README.md` index |
 
-Steps 1 through 5 are the public-readiness line: after them the repo can be
-public and a clone works. Steps 6 through 11 are what makes it readable, and can
-be done afterwards, one at a time, each behind the gate. Roughly two weeks of
-focused work in total; the first five are two days.
+Steps 1 through 5 were the public-readiness line: after them the repo can be
+public and a clone works. Steps 6 through 11 are what makes it readable.
+
+**All eleven are done, 2026-09-08.** What is left is one module 27 lines over the
+ceiling with no seam worth the churn (`table_verify.py`), and the four items in
+section 4 that were decided against rather than skipped. The estimate above said
+two weeks; it took a day, because most of the work was measuring what the plan
+had assumed rather than doing what it described — four of its predictions were
+wrong and those corrections are recorded in section 5.

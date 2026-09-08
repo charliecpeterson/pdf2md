@@ -7,6 +7,17 @@ here.
 
 ## [Unreleased]
 
+### Changed
+
+- `pipeline.convert_file` is now the list of its eight stages over one `_Run`
+  state object, and `pipeline.py` is 121 lines rather than 1,271. The stages live
+  in `stages.py`, the audit-and-seal step in `finalize.py`, and the run-fingerprint
+  inputs in `run_identity.py`. No behaviour change: the same document converts to
+  byte-identical files with identical work counts.
+- `ConvertResult` moved to `pdf2md.schema`, beside every other dataclass. Import it
+  from there; `pdf2md.pipeline` no longer defines it.
+- `pipeline._transcribe_equations` is now `transcribe.transcribe_equations`.
+
 ## [0.2.0] - 2026-09-08
 
 The first release since the project became measurable rather than merely
