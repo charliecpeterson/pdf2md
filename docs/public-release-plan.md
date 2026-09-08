@@ -125,6 +125,16 @@ what the stages share (`doc`, `result`, `metrics`, `vdir`, `config`). The body o
 and the gate is the proof: every bundle's signature must be identical before and
 after.
 
+**Attempted 2026-09-08 and deliberately stopped.** The state is wider than
+"`doc`, `result`, `metrics`, `vdir`, `config`" — measured, 20 locals cross the
+first boundary alone, and the last two stages taken by themselves need 14 inputs
+and return one value. A function with 14 parameters is not an improvement on the
+inline code, so the split is not a rename: it needs a `ConversionState` dataclass
+designed on purpose, and that is a design change to review rather than a
+mechanical refactor. Do it as its own piece of work with the gate before and
+after, not as part of a cleanup pass. Step 2.2 below was done first and is what
+took the file from 1,271 lines to 1,105.
+
 ### 2.2 `pipeline.py` has absorbed document-scope passes
 
 Beyond the God function, `pipeline.py` (1,271 lines) holds `_audit_scanned_tables`,
@@ -301,7 +311,8 @@ Named so they are decisions rather than omissions.
 | 3 | remove session log, settle `notes/`, move `output/pdf` (1.3) | an hour | `git ls-files` review |
 | 4 | corpus out of the root, `PDF2MD_CORPUS` (1.4) | half a day | gate still 37 of 37 |
 | 5 | cut a release (1.5) | an hour | a tag |
-| 6 | split `convert_file` and empty `pipeline.py` (2.1, 2.2) | two days | gate signatures byte-identical |
+| 6a | move the document-scope passes out (2.2) | done | gate 37 of 37 |
+| 6b | split `convert_file` (2.1) | two days, needs a state object | gate signatures byte-identical |
 | 7 | `emit.py`, `table_audit.py`, `enrich.py` (2.3) | two days | same |
 | 8 | prune `scripts/` (2.4) | half a day | `scripts/README.md` lists all of them |
 | 9 | README split (3.1) | a day | a stranger finds `convert` in under a minute |
