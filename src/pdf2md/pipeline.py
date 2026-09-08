@@ -279,6 +279,75 @@ def _read_heartbeat(engine: Engine, engine_name: str, source_pages: int) -> obje
     return message
 
 
+# Past this many pages, formula enrichment is worth warning about up front.
+_LONG_DOCUMENT_PAGES = 200
+
+
+def _warn_about_long_formula_run(
+    source_pages: int | None, engine_name: str, config: Config
+) -> None:
+    """Say before the wait, not after it.
+
+    Formula enrichment is the slowest stage by a wide margin -- measured at 3.4x
+    the whole conversion over 28 papers -- and on a long book it is hours. The
+    warning names the escape (`--no-formula` now, `pdf2md enrich` later), because
+    an hour into a progress bar is not the moment to learn there was a choice.
+    """
+    if (
+        source_pages is not None
+        and source_pages >= _LONG_DOCUMENT_PAGES
+        and config.do_formula_enrichment
+        and engine_name != "stored"
+    ):
+        log.warning(
+            "preflight: %d-page document with formula enrichment enabled; "
+            "this stage can take hours on equation-heavy books. Use --no-formula "
+            "for a faster image-backed base bundle, then run `pdf2md enrich ... --equations`",
+            source_pages,
+        )
+
+
+def _reuse_completed_version(
+    pdf_path: Path, dd: Path, doc_id: str, fingerprint: str, force: bool
+) -> ConvertResult | None:
+    """The completed version this run would reproduce, if there is one.
+
+    A version is reused only when its run fingerprint matches — the effective
+    config, this implementation, the engine identity, dependency versions, model
+    identifiers and prompt schema. A *partial* match is not reused: it is
+    reported and then re-run, so the optional model work that failed gets another
+    attempt while the regions that completed stay cached.
+    """
+    if force:
+        return None
+    cached = matching_version(dd, fingerprint)
+    if cached is not None:
+        vdir = dd / f"v{cached}"
+        prov = vdir / "provenance.json"
+        stored = json.loads(prov.read_text()) if prov.exists() else {}
+        log.info("cached: %s (v%d, run %s)", pdf_path.name, cached, fingerprint[:12])
+        return ConvertResult(
+            doc_id,
+            cached,
+            vdir,
+            sorted(vdir.glob("*.md")),
+            page_count=stored.get("page_count", 0),
+            cached=True,
+            run_metrics=(stored.get("provenance") or {}).get("run_metrics", {}),
+        )
+    partial = matching_version(dd, fingerprint, include_partial=True)
+    if partial is not None:
+        stored = json.loads((dd / f"v{partial}" / "provenance.json").read_text())
+        log.info(
+            "retrying %s: matching v%d has %d failed optional model call(s); "
+            "completed regions remain cached",
+            pdf_path.name,
+            partial,
+            failed_optional_calls((stored.get("provenance") or {}).get("run_metrics", {})),
+        )
+    return None
+
+
 def convert_file(
     pdf_path: Path,
     *,
@@ -299,38 +368,9 @@ def convert_file(
     run_inputs = _run_inputs(doc_id, config, engine)
     fingerprint = run_fingerprint(run_inputs)
 
-    cached = matching_version(dd, fingerprint)
-    if cached is not None and not force:
-        vdir = dd / f"v{cached}"
-        prov = vdir / "provenance.json"
-        stored = json.loads(prov.read_text()) if prov.exists() else {}
-        pages = stored.get("page_count", 0)
-        stored_metrics = (stored.get("provenance") or {}).get("run_metrics", {})
-        log.info("cached: %s (v%d, run %s)", pdf_path.name, cached, fingerprint[:12])
-        return ConvertResult(
-            doc_id,
-            cached,
-            vdir,
-            sorted(vdir.glob("*.md")),
-            page_count=pages,
-            cached=True,
-            run_metrics=stored_metrics,
-        )
-    if not force:
-        partial = matching_version(dd, fingerprint, include_partial=True)
-        if partial is not None:
-            partial_path = dd / f"v{partial}" / "provenance.json"
-            partial_document = json.loads(partial_path.read_text())
-            partial_metrics = (
-                (partial_document.get("provenance") or {}).get("run_metrics", {})
-            )
-            log.info(
-                "retrying %s: matching v%d has %d failed optional model call(s); "
-                "completed regions remain cached",
-                pdf_path.name,
-                partial,
-                failed_optional_calls(partial_metrics),
-            )
+    reused = _reuse_completed_version(pdf_path, dd, doc_id, fingerprint, force)
+    if reused is not None:
+        return reused
 
     # Build the optional vision client up front (cheap, no network) so a vision flag
     # without the extra fails here, before the engine runs and writes a
@@ -350,18 +390,7 @@ def convert_file(
     engine_name = getattr(engine, "name", type(engine).__name__)
     source_pages = _source_page_count(pdf_path)
     metrics.finish("setup", source_pages=source_pages)
-    if (
-        source_pages is not None
-        and source_pages >= 200
-        and config.do_formula_enrichment
-        and engine_name != "stored"
-    ):
-        log.warning(
-            "preflight: %d-page document with formula enrichment enabled; "
-            "this stage can take hours on equation-heavy books. Use --no-formula "
-            "for a faster image-backed base bundle, then run `pdf2md enrich ... --equations`",
-            source_pages,
-        )
+    _warn_about_long_formula_run(source_pages, engine_name, config)
     if source_pages is None:
         progress.stage("reading source with %s", engine_name)
         heartbeat = f"still reading source with {engine_name}"
