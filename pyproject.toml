@@ -1,6 +1,6 @@
 [project]
 name = "pdf2md"
-version = "0.1.0"
+version = "0.2.0"
 description = "Auditable PDF to markdown converter with structured output and per-block provenance"
 readme = "README.md"
 license = "MIT"

@@ -6,8 +6,26 @@ separately by `FORMAT_VERSION` in `schema.py`; a breaking change there is noted
 here.
 
 ## [Unreleased]
+
+## [0.2.0] - 2026-09-08
+
+The first release since the project became measurable rather than merely
+careful. Everything below was already true of `main`; what changes here is that
+it now has a version number, a green CI run, and a clone that works.
+
+For a reader arriving new: the accounting invariant is the point — every block
+the engine finds leaves as text, a table, LaTeX, a crop, or a visible marker,
+and `CoverageReport.accounted_for` is the check. `FORMAT_VERSION` is `0.13` and
+is what a parser should pin, not this number.
+
+Since 0.1.0 the verification layer grew four independent adjudicators (poppler
+for word recall, reading order, table rows and dropped symbols; the DOI registry
+for titles and authors), the engine seam grew MinerU and Marker adapters, and
+the review queue learned to say what it cannot judge instead of guessing. The
+detail is below, in the sections carried over from Unreleased.
+
 ### Changed
-- `FORMAT_VERSION` is `0.12`: table artifacts carry headers, `<block>.glyph.md` is new, and
+- `FORMAT_VERSION` is `0.13`: table artifacts carry headers, `<block>.glyph.md` is new, and
   `profile.json` gains `tables_structurally_flagged` beside `tables_verified` (which counts
   text-backed cells and says nothing about whether whole rows survived), plus
   `glyph_accent_damaged_blocks` and `reading_order_pages`.
