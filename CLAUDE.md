@@ -36,7 +36,13 @@ src/pdf2md/
                 audit, and immutable bundle finalization.
   scan_ocr.py   whole-page VLM transcription for scanned pages, including cache reuse and
                 visible failure markers.
-  visual.py     figure crops, SVG export, labels, descriptions, and chart recovery.
+  visual.py     what *is* a figure: panel merging, journal-furniture removal, continued-
+                fragment joining, caption association.
+  figure_passes.py getting content out of one: chart data, printed labels, description.
+                Four passes in descending order of trust — vector paths (near-lossless,
+                default on), OCR-read axes, then a VLM estimate that only clears the floor
+                when a model-free pre-scan calibrated the axes. The crop stays authoritative
+                at every tier, which is why a withheld candidate is written, not dropped.
   vision_cache.py document-level inference-cache persistence, integrity checks, and
                   exact lookup/hit/write accounting.
   schema.py     all dataclasses + enums (Document, Section, Block, BBox, TableData, RawTable/RawCell, FigureRef, Provenance, CoverageReport). FORMAT_VERSION lives here.

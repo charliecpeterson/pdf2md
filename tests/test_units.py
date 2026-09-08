@@ -262,7 +262,7 @@ def test_vector_digitizer_recovers_known_plot():
 
 
 def test_figure_digitization_reuses_one_document_and_one_page_handle(tmp_path, monkeypatch):
-    from pdf2md import visual
+    from pdf2md import figure_passes
     from pdf2md.config import Config
     from pdf2md.schema import BBox, FigureRef
 
@@ -297,8 +297,8 @@ def test_figure_digitization_reuses_one_document_and_one_page_handle(tmp_path, m
         def count(self, label, completed, total, *, unit, detail=None):
             progress_calls.append((label, completed, total, unit, detail))
 
-    monkeypatch.setattr(visual.pdfium, "PdfDocument", FakePdf)
-    monkeypatch.setattr(visual, "VectorPathDigitizer", FakeDigitizer)
+    monkeypatch.setattr(figure_passes.pdfium, "PdfDocument", FakePdf)
+    monkeypatch.setattr(figure_passes, "VectorPathDigitizer", FakeDigitizer)
 
     bbox = BBox(0, 10, 10, 0)
     figures = [
@@ -306,7 +306,7 @@ def test_figure_digitization_reuses_one_document_and_one_page_handle(tmp_path, m
         FigureRef("#/pictures/2", 1, bbox),
         FigureRef("#/pictures/3", 2, bbox),
     ]
-    counts = visual._digitize_figures(
+    counts = figure_passes._digitize_figures(
         figures,
         tmp_path / "book.pdf",
         Config(),

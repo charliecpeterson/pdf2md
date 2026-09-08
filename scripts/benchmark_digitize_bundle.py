@@ -17,9 +17,9 @@ from dataclasses import asdict
 from pathlib import Path
 
 from pdf2md.config import Config
+from pdf2md.figure_passes import _digitize_figures
 from pdf2md.logging import Progress
 from pdf2md.schema import BBox, FigureRef
-from pdf2md.visual import _digitize_figures
 
 
 def _figures(bundle: Path, limit: int | None) -> tuple[list[FigureRef], dict[str, str]]:

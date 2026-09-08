@@ -77,6 +77,12 @@ from pdf2md.enrich import (
     resegment_ocr_prose,
     warn_about_scan_overlays,
 )
+from pdf2md.figure_passes import (
+    _describe_crops,
+    _digitize_figures,
+    _label_figures,
+    _ocr_scanned_figures,
+)
 from pdf2md.logging import Progress, collapse_repeated_warnings, get_logger
 from pdf2md.metadata import extract_metadata
 from pdf2md.passage_tokenizer import load_passage_tokenizer
@@ -102,10 +108,6 @@ from pdf2md.table_audit import audit_running_text_rows, audit_scanned_tables
 from pdf2md.transcribe import Transcriber, get_transcriber
 from pdf2md.vision_cache import CacheStats, load_vision_cache
 from pdf2md.visual import (
-    _describe_crops,
-    _digitize_figures,
-    _label_figures,
-    _ocr_scanned_figures,
     _promote_figure_captions,
     _svg_figures,
     associate_figure_captions,
