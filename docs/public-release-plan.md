@@ -308,7 +308,35 @@ Named so they are decisions rather than omissions.
 - **No merging of the three engine adapters.** The seam is load-bearing and is
   documented as such.
 
-## 5. Order and effort
+## 5. What was done, 2026-09-08
+
+Steps 1-5, 2.2, 2.4, 3.1, 3.2 and 3.3 are done and pushed; CI is green for
+the first time in this plan's history. The blockers are cleared, so the
+repository can be public.
+
+Four of the plan's predictions were wrong, and the corrections are worth more
+than the steps that went as written:
+
+- **1.2 was one test; it was 33 across 22 files.** They read either the labelled
+  PDFs or the bundles converted from them. Two skip predicates, not one, and the
+  PDF one has to ask whether *most* labelled sources resolve — a few baseline
+  entries point at a bundle's own `source.pdf`, which exists wherever a
+  conversion has ever run.
+- **1.4 was a path change; it was a fan-out.** Twenty-three harnesses resolved a
+  labelled source themselves in four different spellings. `scripts/_corpus.py`
+  now holds the one answer.
+- **2.1 does not split without a state object.** Twenty locals cross the first
+  stage boundary; the last two stages alone need fourteen inputs. Left undone on
+  purpose, with the measurement recorded above.
+- **2.4's eight orphan scripts were one.** The grep behind that claim covered too
+  few documents: four have tests, two are cited in the changelog and the archived
+  plan. 55 of 81 harnesses are exercised by a test. Nothing deleted; the stale
+  counts in `scripts/README.md` were corrected instead.
+
+Still open: 2.1 (needs its own session), 2.3 (`emit.py` and the other
+over-ceiling modules), and 2.5's second half.
+
+## 6. Order and effort
 
 | step | what | effort | proof it worked |
 |---|---|---|---|
