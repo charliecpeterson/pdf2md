@@ -12,7 +12,7 @@ Phase 6/7 made scanned numeric tables very solid. The project's own diagnostics
 point at three weaker areas:
 
 1. **Born-digital tables.** Both engines match only 13/41 numeric tables exactly;
-   an oracle over three engines reaches only 15 (`docs/bakeoff-results.md`,
+   an oracle over three engines reaches only 15 (`docs/archive/bakeoff-results.md`,
    `pdf-parse-bench` diagnostic). Almost none of the Phase 6 machinery applies,
    because it assumes scanned input.
 2. **Raster charts.** Vector fixtures pass 5/5 deterministically; the raster/VLM
@@ -177,7 +177,7 @@ the whole grid as stray ink.
 
 Blind-corpus measurement (2026-08-22, the frozen ten-document unseen corpus,
 `~/scratch/pdf2md-blind-v1`, converted `--no-formula --force`; aggregate in
-`docs/table-glyph-verify-blind.json`): 5,572 cells across 86 tables verified.
+`docs/results/table-glyph-verify-blind.json`): 5,572 cells across 86 tables verified.
 exact 4,127 (74%), spacing_only 375 (7%), mismatch 571 (10%),
 engine_without_glyphs 688 (12%). Five documents are perfectly clean under the
 verifier; the signal mass concentrates in four, and triage of every flag
@@ -325,7 +325,7 @@ evidence of a wrong equation, and no band may gate anything. The pass stays
 opt-in, scan-scoped, review-ranking only. Making it a real verifier would need
 a different comparison (component/structure matching rather than dense IoU);
 harness and frozen report live in `scripts/eval_render_bands.py` +
-`docs/render-band-calibration.json` so any successor starts from data.
+`docs/results/render-band-calibration.json` so any successor starts from data.
 
 Original plan text:
 
@@ -1188,7 +1188,7 @@ rather than as a passed gate.
 ## Idea 8: Inline mathematics emission, scoped and shelved 2026-09-03
 
 Status: scoped, not built. The measurement that motivates it is in
-`docs/olmocr-bench-predictions.md`; the feasibility probe below is new.
+`docs/archive/olmocr-bench-predictions.md`; the feasibility probe below is new.
 
 ### What is missing
 

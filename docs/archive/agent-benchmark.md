@@ -64,7 +64,7 @@ Environment: Apple M2 Ultra, Ollama 0.32.5, `qwen3-vl:32b`, temperature 0,
 `reasoning_effort=none`, seed 0, and a shared 4,096-token completion cap. Bundle
 retrieval supplied the highest-ranked page-local chunk and at most one review
 image. PDF mode received the pinned source page rendered at 180 DPI. The
-[result snapshot](agent-benchmark-2026-08-12.json) records these limits under
+[result snapshot](../results/agent-benchmark-2026-08-12.json) records these limits under
 `settings`. It removes machine-specific absolute paths and raw model scratch
 text while retaining answers, citations, asset basenames, and token counts.
 
@@ -143,7 +143,7 @@ input tokens. Two legacy chunk records opened scanned-page images through the ol
 as action-required. Source-page and asset references remain in the passage records.
 
 The frozen summary and raw-result hashes are in
-[agent-benchmark-passages-2026-08-25.json](agent-benchmark-passages-2026-08-25.json).
+[agent-benchmark-passages-2026-08-25.json](../results/agent-benchmark-passages-2026-08-25.json).
 Run the deterministic comparison with:
 
 ```console
@@ -192,7 +192,7 @@ The model-free audit measures chunks and passages at top-1, top-3, and top-5 bud
   --retrieval-budget 1 \
   --retrieval-budget 3 \
   --retrieval-budget 5 \
-  --output docs/agent-benchmark-long-books-2026-08-25-retrieval.json
+  --output docs/results/agent-benchmark-long-books-2026-08-25-retrieval.json
 ```
 
 | Records | Budget | Page hits | Mean page recall | Mean page precision | Ranking time |
@@ -215,7 +215,7 @@ The audit also records the original conversion times from pinned provenance:
 173.288 seconds for Relativistic QC and 1,007.967 seconds for Atkins. Result strata
 are stored separately for every representation, retrieval type, budget, and document
 class. The frozen model-free report is
-[agent-benchmark-long-books-2026-08-25-retrieval.json](agent-benchmark-long-books-2026-08-25-retrieval.json).
+[agent-benchmark-long-books-2026-08-25-retrieval.json](../results/agent-benchmark-long-books-2026-08-25-retrieval.json).
 
 The matched model run used local Ollama with `qwen3.6:35b-mlx`, temperature 0,
 `reasoning_effort=none`, seed 0, top-3 passages, at most one image, and a 1,024-token
@@ -232,7 +232,7 @@ completion cap:
   --max-chunks 3 \
   --max-assets 1 \
   --max-tokens 1024 \
-  --output docs/agent-benchmark-long-books-2026-08-25-model.json
+  --output docs/results/agent-benchmark-long-books-2026-08-25-model.json
 ```
 
 | Representation | Correct | Valid page citations |
@@ -262,7 +262,7 @@ The four failures name the next retrieval work rather than a parser-wide regress
   missing-glyph passages, so the model made a claim despite a correct review record.
 
 The model report is
-[agent-benchmark-long-books-2026-08-25-model.json](agent-benchmark-long-books-2026-08-25-model.json).
+[agent-benchmark-long-books-2026-08-25-model.json](../results/agent-benchmark-long-books-2026-08-25-model.json).
 Both reports state that calibration is not applicable because the runner emits
 categorical outcomes and no confidence-like probabilities.
 
@@ -306,7 +306,7 @@ The one release blocker is arithmetic. The model reports 2.589076 for
 `4.753337 / 1.835914`; decimal arithmetic gives 2.589085 at six places. This separates
 table extraction quality from agent calculation quality and argues for a calculator
 or deterministic expression evaluator in any ingestion workflow. The pinned result
-is in `docs/agent-benchmark-numeric-2026-08-15.json`.
+is in `docs/results/agent-benchmark-numeric-2026-08-15.json`.
 
 The follow-up calculator experiment freezes that ratio as a separate one-question
 control. `--calculator` reads only the two query-selected, hash-pinned `best_value`
@@ -319,7 +319,7 @@ fields but answers `2.587225`. The assisted condition verifies operands `4.75333
 `1.835914`, computes `2.589085`, and returns that exact answer. It removes the release
 blocker for 79 additional input tokens, a 20.2 percent increase on this small packet.
 The frozen paired result is
-`docs/agent-benchmark-calculator-2026-08-15.json`.
+`docs/results/agent-benchmark-calculator-2026-08-15.json`.
 
 ```console
 uv run --extra describe python scripts/agent_benchmark.py \
@@ -384,7 +384,7 @@ labelled `0.5`; numeric scoring now accepts a response consisting solely of a si
 fraction.
 
 The frozen result is
-`docs/agent-benchmark-equation-figure-2026-08-15.json`. mlx-vlm's chat-completions
+`docs/results/agent-benchmark-equation-figure-2026-08-15.json`. mlx-vlm's chat-completions
 handler was not used: it passes multimodal content, including base64 image URLs, into
 the text prompt formatter and stalls during MLX evaluation. The Responses handler
 separates image bytes from prompt text and reports token usage correctly.

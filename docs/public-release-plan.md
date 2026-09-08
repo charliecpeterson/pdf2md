@@ -68,7 +68,7 @@ anything outside `tests/`.
   evidence behind several design decisions; I would keep them, un-ignore the
   first one, and drop the four per-file ignores.
 - `output/pdf/` holds three synthetic degradation PDFs (15 MB, one of them 11 MB)
-  plus manifests, referenced only by `docs/scan-degradation-benchmark.md`. They
+  plus manifests, referenced only by `docs/archive/scan-degradation-benchmark.md`. They
   are generated, so they are fine to publish, but `output/` reads as build
   output. Move them to `tests/fixtures/degradation/` and update the one doc.
   If 11 MB in the clone matters, regenerate them at lower resolution; the

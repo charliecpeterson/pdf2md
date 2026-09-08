@@ -17,13 +17,13 @@ welcome, but there's no response-time guarantee and some may sit.
   and `scripts/eval_accuracy.py <corpus-out> --check`
   (source-checked structural facts and profile signals).
 - After retrieval, chunking, prompt, or bundle-format changes, run the paired
-  command in `docs/agent-benchmark.md`. Its `--check` gate requires bundle
+  command in `docs/archive/agent-benchmark.md`. Its `--check` gate requires bundle
   accuracy to meet PDF-page accuracy and at least 20 percent fewer input tokens.
 - Match the conventions in `CLAUDE.md` (dataclasses, no Pydantic, stdlib logging,
   the engine seam stays the only place that imports docling).
 - `README.md` records current product decisions, methods, and deferred boundaries.
   Candidate accuracy work lives in `docs/accuracy-improvement-notes.md`; the completed
-  quality and ingestion workstream lives in `docs/quality-and-ingestion-plan.md`; the
+  quality and ingestion workstream lives in `docs/archive/quality-and-ingestion-plan.md`; the
   earlier decision log remains in `docs/archive/PROJECT_PLAN.md`.
 
 ## Output is a versioned contract

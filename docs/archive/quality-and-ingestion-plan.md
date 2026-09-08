@@ -104,8 +104,8 @@ Acceptance:
 
 Evidence:
 
-- [`digitize-ocr-gate-atkins.json`](digitize-ocr-gate-atkins.json)
-- [`digitize-ocr-gate-grasp.json`](digitize-ocr-gate-grasp.json)
+- [`digitize-ocr-gate-atkins.json`](../results/digitize-ocr-gate-atkins.json)
+- [`digitize-ocr-gate-grasp.json`](../results/digitize-ocr-gate-grasp.json)
 - `scripts/benchmark_digitize_bundle.py` reports accepted-ID and exact serialized-record
   preservation as part of every replay.
 
@@ -598,7 +598,7 @@ Evidence so far:
 - Matched `qwen3.6:35b-mlx` bundle runs give both formats 11/11 correct answers and
   11/11 valid page citations with no release blockers. Passages reduce input tokens by
   41.8 percent. The frozen summary and raw hashes are in
-  `docs/agent-benchmark-passages-2026-08-25.json`.
+  `docs/results/agent-benchmark-passages-2026-08-25.json`.
 
 #### I3. Add deterministic document maps
 
@@ -817,8 +817,8 @@ Evidence:
   page citations and 11,508 input tokens. It passes all prose, symbol, table, and figure
   questions. Failures are isolated to one cross-page explanation, one reference, the
   equation-definition case, and the unanswerable case.
-- [`agent-benchmark-long-books-2026-08-25-retrieval.json`](agent-benchmark-long-books-2026-08-25-retrieval.json)
-  and [`agent-benchmark-long-books-2026-08-25-model.json`](agent-benchmark-long-books-2026-08-25-model.json)
+- [`agent-benchmark-long-books-2026-08-25-retrieval.json`](../results/agent-benchmark-long-books-2026-08-25-retrieval.json)
+  and [`agent-benchmark-long-books-2026-08-25-model.json`](../results/agent-benchmark-long-books-2026-08-25-model.json)
   retain the full settings, timings, hashes, per-query outcomes, and strata.
 
 #### A2. Re-run parser and layout bake-offs against pinned releases
@@ -853,7 +853,7 @@ Evidence:
 - The pinned MinerU comparison scores 74/78 and remains the targeted table, equation,
   and scan fallback. Its raster result still emits unsupported structured chart data,
   so blanket routing remains unsafe.
-- [`layout-bakeoff-2026-08-25.json`](layout-bakeoff-2026-08-25.json) retains source
+- [`layout-bakeoff-2026-08-25.json`](../results/layout-bakeoff-2026-08-25.json) retains source
   hashes, exact facts, dependency and model pins, native run IDs, timings, and Docling
   resource measurements. [`bakeoff-results.md`](bakeoff-results.md) records the
   decision and its limits.
@@ -1024,7 +1024,7 @@ Deferred unless evidence changes the boundary:
   deselected, in 44.04 seconds.
 - Added the long-book agent corpus with 14 source-rendered labels across eight
   representation classes. The repository stores only hashes and labels; local setup and
-  provenance-pinning instructions are in `docs/agent-benchmark.md`.
+  provenance-pinning instructions are in `docs/archive/agent-benchmark.md`.
 - Extended the retrieval audit to fixed top-1, top-3, and top-5 budgets, exact page
   recall, action-queue precision and recall, ranking time, original conversion time,
   and nested representation and document-class strata.
@@ -1040,7 +1040,7 @@ Deferred unless evidence changes the boundary:
 - Ran the four unresolved labelled strata through Heron, Heron-101, and all three Egret
   sizes. Default Heron leads the Docling candidates at 29/78 facts; the alternatives
   score 26 to 28 and do not improve any stratum.
-- Froze the six-engine comparison in `docs/layout-bakeoff-2026-08-25.json`. MinerU keeps
+- Froze the six-engine comparison in `docs/results/layout-bakeoff-2026-08-25.json`. MinerU keeps
   its targeted fallback role at 74/78, while its unsupported raster chart data keeps it
   out of the blanket default path.
 - Ran the full suite after A2: 623 tests passed and 2 integration tests were deselected
@@ -1074,5 +1074,5 @@ Deferred unless evidence changes the boundary:
 - [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12)
 - [Python `resource` module](https://docs.python.org/3/library/resource.html)
 - [Linux `getrusage(2)` units and scope](https://man7.org/linux/man-pages/man2/getrusage.2.html)
-- [pdf2md accuracy improvement notes](accuracy-improvement-notes.md)
+- [pdf2md accuracy improvement notes](../accuracy-improvement-notes.md)
 - [pdf2md agent benchmark](agent-benchmark.md)

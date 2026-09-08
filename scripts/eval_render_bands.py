@@ -13,7 +13,7 @@ the baseline marked not-exact (natural negatives).
 The output is the score distribution per class and the measured separation, so
 RENDER_SIMILAR_ABOVE / RENDER_DISSIMILAR_BELOW become data cuts instead of
 guesses. Inputs are hash-checked; the report is written to
-docs/render-band-calibration.json.
+docs/results/render-band-calibration.json.
 """
 
 from __future__ import annotations
@@ -99,7 +99,7 @@ def _corruptions(latex: str) -> list[tuple[str, str]]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--json", type=Path,
-                        default=_ROOT / "docs" / "render-band-calibration.json")
+                        default=_ROOT / "docs" / "results" / "render-band-calibration.json")
     args = parser.parse_args()
 
     recovery, labels, baseline = _check_inputs()

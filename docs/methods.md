@@ -12,20 +12,20 @@ They are not needed for normal conversion.
 Current design and user-facing behavior live in this README. The focused records
 hold the details that would make the main document unreadable:
 
-- [Engine bake-off](engine-bakeoff.md) and
-  [bake-off results](bakeoff-results.md)
+- [Engine bake-off](archive/engine-bakeoff.md) and
+  [bake-off results](archive/bakeoff-results.md)
 - [Dense numeric tables](dense-numeric-tables.md)
-- [Scan-degradation benchmark](scan-degradation-benchmark.md)
+- [Scan-degradation benchmark](archive/scan-degradation-benchmark.md)
 - [Figure-to-text methods](figure-to-text.md)
-- [Agent benchmark](agent-benchmark.md)
-- [Completed quality, performance, and ingestion plan](quality-and-ingestion-plan.md)
+- [Agent benchmark](archive/agent-benchmark.md)
+- [Completed quality, performance, and ingestion plan](archive/quality-and-ingestion-plan.md)
 - [Accuracy ideas, implemented experiments, and remaining candidates](accuracy-improvement-notes.md)
 - [Archived original project plan and decision log](archive/PROJECT_PLAN.md)
 
 <details>
 <summary>Accuracy experiments and evaluator commands</summary>
 
-The development [agent benchmark](agent-benchmark.md) compares answers from
+The development [agent benchmark](archive/agent-benchmark.md) compares answers from
 page chunks or stable passages against answers from pinned source-PDF pages. It records
 accuracy, citations, opened assets, review flags, and input tokens. A matched
 11-question regression gives chunks and passages 11/11 correct answers and 11/11 valid
@@ -52,7 +52,7 @@ repeated-consensus mappings, zero wrong mappings, and seven refusals after persi
 ruling lines prevent internal word gaps from being mistaken for separators. These
 locators remain evaluation-only.
 
-The [controlled scan-degradation benchmark](scan-degradation-benchmark.md)
+The [controlled scan-degradation benchmark](archive/scan-degradation-benchmark.md)
 measures exact cells under independent changes to resolution, blur, rotation,
 contrast, and JPEG compression. It also records the Tesseract column-alignment defect
 the benchmark exposed and the before/after evidence counts. Its five-family extension

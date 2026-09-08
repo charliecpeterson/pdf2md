@@ -10,7 +10,7 @@ This is a rebuild of an abandoned MCP server (the old `docsmcp`). `README.md` is
 the source of truth for current product scope, design, methods, and user-facing
 behavior. Candidate accuracy work and experiment status live in
 `docs/accuracy-improvement-notes.md`; the completed 2026 quality, performance, and
-ingestion workstream is recorded in `docs/quality-and-ingestion-plan.md`; the earlier
+ingestion workstream is recorded in `docs/archive/quality-and-ingestion-plan.md`; the earlier
 rationale and decision log remain in `docs/archive/PROJECT_PLAN.md`.
 
 ## Run and develop

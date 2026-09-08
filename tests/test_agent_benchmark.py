@@ -538,7 +538,7 @@ def test_numeric_reply_requires_reported_fields_and_artifact_citation():
 def test_numeric_benchmark_snapshot_pins_questions_and_measured_failure():
     question_path = _ROOT / "tests" / "numeric_agent_questions.json"
     snapshot = json.loads(
-        (_ROOT / "docs" / "agent-benchmark-numeric-2026-08-15.json").read_text()
+        (_ROOT / "docs" / "results" / "agent-benchmark-numeric-2026-08-15.json").read_text()
     )
 
     assert snapshot["questions_sha256"] == hashlib.sha256(
@@ -573,7 +573,7 @@ def test_numeric_benchmark_snapshot_pins_questions_and_measured_failure():
 def test_equation_figure_snapshot_pins_measured_failure_and_context_gain():
     question_path = _ROOT / "tests" / "equation_figure_agent_questions.json"
     snapshot = json.loads(
-        (_ROOT / "docs" / "agent-benchmark-equation-figure-2026-08-15.json")
+        (_ROOT / "docs" / "results" / "agent-benchmark-equation-figure-2026-08-15.json")
         .read_text()
     )
 
@@ -614,7 +614,7 @@ def test_equation_figure_snapshot_pins_measured_failure_and_context_gain():
 def test_calculator_snapshot_pins_control_and_assisted_outcomes():
     question_path = _ROOT / "tests" / "numeric_calculator_questions.json"
     snapshot = json.loads(
-        (_ROOT / "docs" / "agent-benchmark-calculator-2026-08-15.json").read_text()
+        (_ROOT / "docs" / "results" / "agent-benchmark-calculator-2026-08-15.json").read_text()
     )
 
     assert snapshot["questions_sha256"] == hashlib.sha256(

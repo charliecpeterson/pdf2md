@@ -243,7 +243,7 @@ Docling layout alternative, and do not route raster charts through MinerU
 without an independent data check. The full portable result, including all
 fact-level outcomes, source hashes, model pins, dependency versions, timings,
 and Docling memory measurements, is in
-[`layout-bakeoff-2026-08-25.json`](layout-bakeoff-2026-08-25.json).
+[`layout-bakeoff-2026-08-25.json`](../results/layout-bakeoff-2026-08-25.json).
 
 ## Current outcome
 

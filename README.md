@@ -109,7 +109,7 @@ an advantage. The status and measurements for each are kept in
 [the accuracy notes](docs/accuracy-improvement-notes.md).
 
 The completed large-document performance, quality-reporting, and retrieval-format
-work is recorded in the [quality and ingestion plan](docs/quality-and-ingestion-plan.md).
+work is recorded in the [quality and ingestion plan](docs/archive/quality-and-ingestion-plan.md).
 
 ## Install
 
@@ -191,6 +191,7 @@ conversion prints cached, converted, and failed totals when the batch completes.
 | [docs/methods.md](docs/methods.md) | how each behaviour is measured, and against what |
 | [docs/known-limits.md](docs/known-limits.md) | what this does not do well |
 | [docs/qa-corpus.md](docs/qa-corpus.md) | the labelled corpus and where to keep it |
+| [docs/](docs/) | everything else, including the archived workstreams |
 | [scripts/README.md](scripts/README.md) | the 83 evaluation harnesses |
 | [notes/](notes/) | field reports from people who used it for real work |
 | [CHANGELOG.md](CHANGELOG.md) | what changed, by release |
