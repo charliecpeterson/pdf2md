@@ -16,7 +16,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from pdf2md.cache import run_fingerprint
-from pdf2md.pipeline import _implementation_sha256
+from pdf2md.run_identity import _implementation_sha256
 from pdf2md.schema import BBox, Block, BlockType, CoverageStatus, TableData
 from pdf2md.table_artifacts import _write_normalized_panels
 from pdf2md.table_resolution import enrich_normalized_datasets

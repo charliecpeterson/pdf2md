@@ -369,7 +369,7 @@ def test_convert_reports_engine_setup_failure_without_raising(tmp_path, monkeypa
     def fail_setup(engine, config, pdf_path=None):
         raise RuntimeError("missing Python.h")
 
-    monkeypatch.setattr("pdf2md.pipeline.select_engine", fail_setup)
+    monkeypatch.setattr("pdf2md.stages.select_engine", fail_setup)
     pdf = Path(__file__).parent / "fixtures" / "vector_plot.pdf"
 
     result = convert_file(pdf)
@@ -398,7 +398,7 @@ def test_chart_stage_collapses_repeated_ocr_warnings(tmp_path, monkeypatch, capl
             "ocr_axis_ineligible": 0,
         }
 
-    monkeypatch.setattr("pdf2md.pipeline._digitize_figures", noisy_digitizer)
+    monkeypatch.setattr("pdf2md.stages._digitize_figures", noisy_digitizer)
     config = Config(
         do_formula_enrichment=False,
         detect_scripts=False,

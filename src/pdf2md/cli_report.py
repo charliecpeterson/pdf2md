@@ -15,8 +15,8 @@ from pathlib import Path
 import typer
 
 from pdf2md.logging import _duration
-from pdf2md.pipeline import ConvertResult
 from pdf2md.run_metrics import failed_optional_calls
+from pdf2md.schema import ConvertResult
 
 
 def _report(results: list[ConvertResult]) -> None:

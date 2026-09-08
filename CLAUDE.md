@@ -32,8 +32,17 @@ pipeline stages with synthetic `EngineResult`/`Document` fixtures. The
 
 ```
 src/pdf2md/
-  pipeline.py   convert_file / convert_dir: orchestrates parse, repair, render, emit,
-                audit, and immutable bundle finalization.
+  pipeline.py   convert_file / convert_dir: the stage list, and per-document failure
+                isolation for a batch. 121 lines; the work is in the three below.
+  stages.py     the stages themselves, and the `_Run` state they hand along. Each takes
+                that one object and mutates it, because extracted plainly they take
+                fifteen arguments and read worse than the inline code. Three orderings
+                are load-bearing and marked where they matter.
+  finalize.py   the last stage: audit the emitted bundle, write the derived files, seal
+                the version. provenance.json is written last and atomically, because its
+                presence is what marks a version complete.
+  run_identity.py what makes this run this run — the inputs `cache.run_fingerprint`
+                hashes. Above cache.py because naming the engine means importing engines.
   scan_ocr.py   whole-page VLM transcription for scanned pages, including cache reuse and
                 visible failure markers.
   visual.py     what *is* a figure: panel merging, journal-furniture removal, continued-
@@ -45,7 +54,7 @@ src/pdf2md/
                 at every tier, which is why a withheld candidate is written, not dropped.
   vision_cache.py document-level inference-cache persistence, integrity checks, and
                   exact lookup/hit/write accounting.
-  schema.py     all dataclasses + enums (Document, Section, Block, BBox, TableData, RawTable/RawCell, FigureRef, Provenance, CoverageReport). FORMAT_VERSION lives here.
+  schema.py     all dataclasses + enums (Document, Section, Block, BBox, TableData, RawTable/RawCell, FigureRef, Provenance, CoverageReport, ConvertResult). FORMAT_VERSION lives here.
   cache.py      source SHA-256, readable document directories, run fingerprints,
                 completed-version lookup, and version allocation.
   config.py     frozen Config dataclass loaded from TOML (no Pydantic).
@@ -103,7 +112,7 @@ src/pdf2md/
   confidence.py equation LaTeX vs text-layer cross-check scoring (assess_equation; RECOVER_BELOW, SCRAMBLED_ABOVE, HINT_MIN_CONF). Also render-back
                 verification (--render-check, eqrender extra): draw an image-backed equation's LaTeX with mathtext and soft-IoU its stretched ink mask
                 against the source crop — only where the text layer couldn't judge (scans/unjudged); evidence tiers on Block.extra.render_check.
-  transcribe.py opt-in multi-pass: re-transcribe image-backed equation crops with local math-OCR (Surya). Transcriber seam + SuryaTranscriber.
+  transcribe.py opt-in multi-pass: re-transcribe image-backed equation crops with local math-OCR (Surya). Transcriber seam + SuryaTranscriber + transcribe_equations.
   describe.py   opt-in (--describe): describe figure/table/equation crops with a vision model over an
                 OpenAI-compatible API (ollama/vLLM/remote). Describer seam + OpenAIVisionDescriber.
   figure_geometry.py shapes read off a PDF page — drawn paths, the frames around them, and
@@ -542,7 +551,7 @@ The largest surface here, and the one the field reports care about most.
   a fully-repeated non-numeric row, and requiring the same string on three distinct pages
   keeps the 34 that are the SI's footer while leaving Atkins section titles and Slater's
   per-atom headings, which differ page to page. One bundle of 32 fires; no other string does.
-  The check needs the whole document, so it runs from `pipeline._audit_running_text_rows`
+  The check needs the whole document, so it runs from `stages._render_assets`
   rather than `audit_table`, and it reports rather than deletes -- the row is still ink the
   page printed.
 - **A grid can hold every value and still be wrong, and no textual signal tells a

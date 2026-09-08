@@ -125,21 +125,30 @@ what the stages share (`doc`, `result`, `metrics`, `vdir`, `config`). The body o
 and the gate is the proof: every bundle's signature must be identical before and
 after.
 
-**Done in part, 2026-09-08.** `_Run` now names the shared state and
-`_finalize_bundle` is the first stage to take it, which took `convert_file` from
-599 lines to 438. The remaining stages should move the same way, one at a time,
-with the gate proving each — the pattern is established and the type exists.
-The original note, kept because the measurement is why the approach changed:
+**Done, 2026-09-08.** `convert_file` is now the list of eight stage calls over one
+`_Run`, and `pipeline.py` is 121 lines. The stages moved out of it with the state:
 
-**Attempted 2026-09-08 and deliberately stopped.** The state is wider than
-"`doc`, `result`, `metrics`, `vdir`, `config`" — measured, 20 locals cross the
-first boundary alone, and the last two stages taken by themselves need 14 inputs
-and return one value. A function with 14 parameters is not an improvement on the
-inline code, so the split is not a rename: it needs a `ConversionState` dataclass
-designed on purpose, and that is a design change to review rather than a
-mechanical refactor. Do it as its own piece of work with the gate before and
-after, not as part of a cleanup pass. Step 2.2 below was done first and is what
-took the file from 1,271 lines to 1,105.
+| module | lines | holds |
+|---|---|---|
+| `pipeline.py` | 121 | `convert_file`, `convert_dir` — the stage list and per-document failure isolation |
+| `stages.py` | 695 | `_Run` and the eight stages |
+| `finalize.py` | 184 | audit, derived files, seal |
+| `run_identity.py` | 137 | the inputs `run_fingerprint` hashes |
+
+`ConvertResult` moved to `schema.py`, which is where every other dataclass lives
+and what breaks the cycle a stage module would otherwise have with `pipeline`.
+`_transcribe_equations` moved to `transcribe.py` as `transcribe_equations` — the
+note below says it could not, because it needs `_implementation_sha256`; once
+that had its own module the objection went away, which is worth remembering as a
+pattern rather than as a correction.
+
+**The proof, both times:** the same 6-page paper converted before and after,
+every emitted file byte-identical, and every work count in `run_metrics`
+identical. Only the timings and the implementation hash differ, which is what a
+refactor is supposed to change. The fast suite (804 tests) and the corpus gate
+(37 bundles, no regressions) ran on each step.
+
+The original note, kept because the measurement is why the approach changed:
 
 ### 2.2 `pipeline.py` has absorbed document-scope passes
 
@@ -332,8 +341,10 @@ than the steps that went as written:
   labelled source themselves in four different spellings. `scripts/_corpus.py`
   now holds the one answer.
 - **2.1 does not split without a state object.** Twenty locals cross the first
-  stage boundary; the last two stages alone need fourteen inputs. Left undone on
-  purpose, with the measurement recorded above.
+  stage boundary; the last two stages alone need fourteen inputs. Naming the
+  state (`_Run`) is what made it a split rather than a rearrangement — after
+  which the same eight stages came out mechanically, and `pipeline.py` went from
+  1,271 lines to 121.
 - **2.4's eight orphan scripts were one.** The grep behind that claim covered too
   few documents: four have tests, two are cited in the changelog and the archived
   plan. 55 of 81 harnesses are exercised by a test. Nothing deleted; the stale
@@ -357,7 +368,7 @@ needing more than a move:
 | `table_artifacts.py` | 777 | 293 | `table_panels.py` |
 | `metadata.py` | 749 | 508 | `authors.py` |
 | `visual.py` | 703 | 422 | `figure_passes.py` |
-| `pipeline.py` | 1,271 | 1,098 | `engines/select`, `crops`, `_Run` |
+| `pipeline.py` | 1,271 | **121** | `engines/select`, `crops`, `stages`, `finalize`, `run_identity` |
 | `table_verify.py` | 727 | 727 | **none found** |
 
 `table_verify.py` was tried and reverted: the second reading and the value typing
@@ -367,11 +378,14 @@ the ceiling is the cheapest thing on this list to leave alone.
 
 Two moves were reverted for the same reason and are worth remembering as a rule:
 **a function that cannot move without dragging its dependencies backwards is not
-in the wrong place.** `_transcribe_equations` needs the run fingerprint, so it
-stays in `pipeline`.
+in the wrong place** — *until the dependency itself moves.* `_transcribe_equations`
+needed the run fingerprint, so it stayed in `pipeline`; extracting
+`run_identity.py` removed the reason and it now lives in `transcribe.py`. Check
+the objection again after every move that changes the import graph.
 
-Still open: the rest of 2.1 (the earlier stages onto `_Run`, now mechanical), and
-`table_verify.py` if a seam is ever found.
+With 2.1 finished, **one module is over the ceiling**: `table_verify.py` at 727,
+27 lines over, with no seam that does not run the dependencies backwards. That is
+the whole of section 2.
 
 ## 6. Order and effort
 

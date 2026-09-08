@@ -1957,7 +1957,7 @@ def test_the_source_read_heartbeat_counts_pages_when_the_engine_can():
     that cannot says which it is, rather than leaving the reader to guess whether
     silence means slow or hung.
     """
-    from pdf2md.pipeline import _read_heartbeat
+    from pdf2md.stages import _read_heartbeat
 
     class Counting:
         seen = 0
@@ -1981,7 +1981,7 @@ def test_the_source_read_heartbeat_counts_pages_when_the_engine_can():
 def test_the_heartbeat_reports_before_the_first_page_lands():
     """Model load happens before any page is read, and a zero count there would
     divide by zero rather than say what is happening."""
-    from pdf2md.pipeline import _read_heartbeat
+    from pdf2md.stages import _read_heartbeat
 
     class NotYet:
         def pages_seen(self):
@@ -1994,7 +1994,7 @@ def test_the_heartbeat_does_not_claim_zero_minutes_left_while_still_working():
     """The counter follows pages into the pipeline, so it reaches the total while
     the last stages drain -- measured at about a minute on a 545-page book. Saying
     "0 min left" there is the original problem in miniature."""
-    from pdf2md.pipeline import _read_heartbeat
+    from pdf2md.stages import _read_heartbeat
 
     class Finished:
         def pages_seen(self):

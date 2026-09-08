@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
 # Bumped when the on-disk output contract changes in a way that would break a
@@ -368,3 +369,19 @@ class Document:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+@dataclass
+class ConvertResult:
+    """What a conversion returns: where the bundle is, and whether it is usable."""
+
+    doc_id: str
+    version: int
+    out_dir: Path
+    md_files: list[Path]
+    coverage: CoverageReport | None = None
+    page_count: int = 0
+    cached: bool = False
+    failed: bool = False
+    error: str | None = None
+    run_metrics: dict = field(default_factory=dict)

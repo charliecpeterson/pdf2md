@@ -4,6 +4,7 @@ import hashlib
 
 from pdf2md import pipeline
 from pdf2md.config import Config
+from pdf2md.schema import ConvertResult
 
 
 def test_batch_setup_failure_returns_one_failed_result_per_pdf(tmp_path, monkeypatch):
@@ -40,7 +41,7 @@ def test_batch_excludes_generated_sources_below_output_root(tmp_path, monkeypatc
 
     def record(pdf, **kwargs):
         converted.append(pdf)
-        return pipeline.ConvertResult(pdf.name, 1, tmp_path, [])
+        return ConvertResult(pdf.name, 1, tmp_path, [])
 
     monkeypatch.setattr(pipeline, "convert_file", record)
 
@@ -66,7 +67,7 @@ def test_batch_keeps_original_pdfs_when_input_is_output_root(tmp_path, monkeypat
 
     def record(pdf, **kwargs):
         converted.append(pdf)
-        return pipeline.ConvertResult(pdf.name, 1, tmp_path, [])
+        return ConvertResult(pdf.name, 1, tmp_path, [])
 
     monkeypatch.setattr(pipeline, "convert_file", record)
 

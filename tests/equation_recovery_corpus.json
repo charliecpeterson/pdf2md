@@ -11,7 +11,7 @@
     },
     "transcriber": {
       "path": "src/pdf2md/transcribe.py",
-      "sha256": "a1b569f5fab3d22a87900db03f3a937f95850c967acd7f0b0269a3c413fefb3d"
+      "sha256": "ab88973007665b97ad1d3d37418a2ba9563a4d6b5e132f5230e61f1ceb48429a"
     },
     "attention_provenance": {
       "path": "out/qa-current/bdfaa68d8984f0dc/v1/provenance.json",

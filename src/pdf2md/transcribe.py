@@ -14,12 +14,18 @@ optional: with `surya-ocr` absent the pipeline simply skips the pass.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
+from pdf2md.cache import content_hash
 from pdf2md.logging import get_logger
+from pdf2md.run_identity import _implementation_sha256
+from pdf2md.schema import BlockType
+from pdf2md.vision_cache import CacheStats, load_vision_cache
 
 log = get_logger("transcribe")
 
@@ -97,3 +103,49 @@ def get_transcriber(config) -> Transcriber | None:
     if not getattr(config, "transcribe_equations", False):
         return None
     return SuryaTranscriber(device=getattr(config, "device", None))
+
+
+def transcribe_equations(
+    blocks,
+    transcriber,
+    vdir: Path,
+    document_dir: Path | None = None,
+    *,
+    cache_stats: CacheStats | None = None,
+) -> None:
+    """Store a better hint on each image-backed equation from re-OCR'ing its crop."""
+    cache = load_vision_cache(document_dir or vdir.parent, cache_stats)
+    custom_identity = getattr(transcriber, "cache_identity", None)
+    identity = (
+        str(custom_identity() if callable(custom_identity) else custom_identity)
+        if custom_identity is not None else
+        f"{type(transcriber).__module__}.{type(transcriber).__qualname__}"
+    )
+    for b in blocks:
+        crop = b.extra.get("crop_path")
+        if b.type is BlockType.EQUATION and crop:
+            image_path = vdir / crop
+            if not image_path.is_file():
+                latex = transcriber.transcribe(image_path)
+                if latex:
+                    b.extra["transcribed"] = latex
+                    b.extra["transcribed_source"] = "math OCR"
+                continue
+            key_payload = {
+                "schema": 1,
+                "kind": "equation-transcription",
+                "transcriber": identity,
+                "image_sha256": content_hash(image_path),
+                "implementation_sha256": _implementation_sha256(),
+            }
+            key = "transcription-v1:" + hashlib.sha256(
+                json.dumps(key_payload, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest()
+            latex = cache.get(key)
+            if latex is None:
+                latex = transcriber.transcribe(image_path)
+                if latex:
+                    cache[key] = latex
+            if latex:
+                b.extra["transcribed"] = latex
+                b.extra["transcribed_source"] = "math OCR"

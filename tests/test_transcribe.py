@@ -5,9 +5,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pdf2md.pipeline import _transcribe_equations
 from pdf2md.schema import BBox, Block, BlockType
-from pdf2md.transcribe import SuryaTranscriber, _latex_from_html
+from pdf2md.transcribe import SuryaTranscriber, _latex_from_html, transcribe_equations
 
 
 def test_latex_from_html():
@@ -49,7 +48,7 @@ def test_transcribe_only_image_backed_equations():
               extra={"crop_path": "assets/p.png"}),
     ]
     t = _FakeTranscriber(r"\rho = 8\pi\nu^2/c^3")
-    _transcribe_equations(blocks, t, Path("/out/v1"))
+    transcribe_equations(blocks, t, Path("/out/v1"))
 
     assert blocks[0].extra["transcribed"] == r"\rho = 8\pi\nu^2/c^3"  # image-backed eq
     assert "transcribed" not in blocks[1].extra                       # trusted eq, no crop

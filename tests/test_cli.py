@@ -11,7 +11,7 @@ from typer.testing import CliRunner
 from pdf2md.cache import content_hash, doc_dir
 from pdf2md.cli import app
 from pdf2md.cli_report import _failure_hint, _report
-from pdf2md.pipeline import ConvertResult
+from pdf2md.schema import ConvertResult
 
 
 def test_report_summarizes_cached_output_from_profile(tmp_path, capsys):

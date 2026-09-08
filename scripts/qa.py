@@ -261,7 +261,7 @@ def _report_staleness(sigs: dict[str, dict]) -> None:
     prints "no regressions" over output nothing has re-measured is worse than
     one that admits it, so the count is always shown.
     """
-    from pdf2md.pipeline import _implementation_sha256
+    from pdf2md.run_identity import _implementation_sha256
 
     current = _implementation_sha256()
     stale = sorted(

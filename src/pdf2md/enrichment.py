@@ -13,8 +13,8 @@ from pathlib import Path
 from pdf2md.cache import content_hash, doc_dir, latest_version
 from pdf2md.config import Config
 from pdf2md.engine_state import ENGINE_STATE_NAME, StoredEngine, load_engine_state
-from pdf2md.pipeline import ConvertResult, convert_file
-from pdf2md.schema import BlockType
+from pdf2md.pipeline import convert_file
+from pdf2md.schema import BlockType, ConvertResult
 from pdf2md.transcribe import get_transcriber
 
 _STAGES = {"equations", "charts", "descriptions", "metadata"}

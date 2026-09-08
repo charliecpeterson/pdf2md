@@ -17,16 +17,18 @@ from pdf2md.enrichment import (
     preflight,
     resolve_version,
 )
-from pdf2md.pipeline import ConvertResult, _transcribe_equations, convert_file
+from pdf2md.pipeline import convert_file
 from pdf2md.schema import (
     BBox,
     Block,
     BlockType,
+    ConvertResult,
     FigureRef,
     RawCell,
     RawTable,
     TableData,
 )
+from pdf2md.transcribe import transcribe_equations
 
 
 def _bundle(tmp_path: Path) -> Path:
@@ -300,7 +302,7 @@ def test_interrupted_equation_enrichment_reuses_completed_regions(tmp_path):
     interrupted = _InterruptingTranscriber(fail_on=2)
 
     with pytest.raises(RuntimeError, match="interrupted"):
-        _transcribe_equations(blocks, interrupted, version, document)
+        transcribe_equations(blocks, interrupted, version, document)
 
     rerun_blocks = [
         Block(
@@ -313,7 +315,7 @@ def test_interrupted_equation_enrichment_reuses_completed_regions(tmp_path):
         for index, name in enumerate(("first.png", "second.png"))
     ]
     resumed = _InterruptingTranscriber()
-    _transcribe_equations(rerun_blocks, resumed, version, document)
+    transcribe_equations(rerun_blocks, resumed, version, document)
 
     assert resumed.calls == 1
     assert rerun_blocks[0].extra["transcribed"] == "first"
