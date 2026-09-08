@@ -49,6 +49,9 @@ src/pdf2md/
                 count its own progress reports the count instead of only that it is alive.
   cli.py        Typer surface (convert / enrich / coverage / compare-runs / list /
                 review-tables / prune / version / doctor / models / line-reader).
+  cli_report.py the last line of a run — accounting first, then the worst outstanding item,
+                then where to look. That order is the point: it is the only part of the
+                audit most people read.
   models.py     model warm-up and offline/reproducible local snapshots.
 
   engines/
