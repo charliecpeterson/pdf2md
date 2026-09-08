@@ -74,12 +74,13 @@ from pdf2md.logging import Progress, collapse_repeated_warnings, get_logger
 from pdf2md.metadata import extract_metadata
 from pdf2md.passage_tokenizer import load_passage_tokenizer
 from pdf2md.passages import write_passages
-from pdf2md.profile import build_profile, write_manifest, write_profile, write_readme
+from pdf2md.profile import build_profile, write_manifest, write_profile
 from pdf2md.reading_order import reading_order_flags
 from pdf2md.recall import recall_review_flags, record_recall
 from pdf2md.render import CropRenderer, dpi_for_region
 from pdf2md.review import build_review_queue, write_review_files
 from pdf2md.run_metrics import RunMetrics, failed_optional_calls
+from pdf2md.run_readme import write_readme
 from pdf2md.scan_ocr import _vlm_ocr_pages
 from pdf2md.schema import (
     FORMAT_VERSION,

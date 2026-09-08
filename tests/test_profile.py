@@ -7,12 +7,14 @@ from types import SimpleNamespace
 
 from pdf2md.profile import (
     _confidence,
-    _equation_coverage_note,
-    _scanned_table_remedy,
-    _scorecard_lines,
     build_profile,
     write_manifest,
     write_profile,
+)
+from pdf2md.run_readme import (
+    _equation_coverage_note,
+    _scanned_table_remedy,
+    _scorecard_lines,
     write_readme,
 )
 from pdf2md.schema import (
