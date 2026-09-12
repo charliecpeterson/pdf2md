@@ -152,6 +152,35 @@ counter during its main parse, so pdf2md prints the source page count and elapse
 heartbeats until that call returns. `--verbose` also includes the underlying engine
 diagnostics.
 
+### Hardware, threads, and running more than one convert
+
+There is no `--jobs`: one `pdf2md convert` works through its documents one at a time,
+and a batch is parallelised by running several processes. That is safe on one output
+root, including on the same PDF, because a `v<n>` directory is allocated by creating it
+— two runs cannot land in one version, they take adjacent numbers. `prune` also skips a
+version a live run is holding. What is *not* shared is the model load: every process
+loads its own copy of Docling's models and wants a core or two, so on a machine you
+share with other work, size the process count and the thread cap together.
+
+| Knob | Where | Notes |
+|---|---|---|
+| Accelerator device | `device = "auto"` in a `--config` TOML | `auto` \| `cuda` \| `cuda:N` \| `mps` \| `xpu` \| `cpu`. There is no `--device` flag, and `DOCLING_DEVICE` is **ignored** (pdf2md passes the configured value explicitly, which wins over the environment). |
+| CPU threads | `OMP_NUM_THREADS` or `DOCLING_NUM_THREADS` in the environment | Honoured, via Docling's own settings — pdf2md does not set `num_threads`, so the environment is what decides. Default is **4**. This is the knob for staying out of the way of a long job on a shared box. |
+
+`pdf2md doctor` reports which device this machine will actually use before anything is
+copied to it:
+
+```
+[ok      ] accelerator device: mps (device = auto)
+```
+
+A configured device the host cannot provide is an `ERROR` there rather than a failure
+hours into a run, and an explicit choice that silently resolved to something else is a
+`warning`. The resolved device is also logged once per run (`docling runs on cuda:0
+(device = auto)`) and recorded in `provenance.json` under `run_inputs.engine.device`,
+because the layout detector makes marginally different calls per device — which means
+bundles built on CUDA and on MPS are not interchangeable, and do not share a cache entry.
+
 ### Add enrichment after conversion
 
 A completed bundle can receive optional model-backed evidence without running its layout

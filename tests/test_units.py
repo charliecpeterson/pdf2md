@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
+import os
 import time
 from pathlib import Path
 
@@ -1295,6 +1297,92 @@ def test_incomplete_version_ignored(tmp_path):
     (dd / "v1" / "assets").mkdir(parents=True)  # crops written, crash before emit/provenance
     assert latest_version(dd) is None
     assert next_version(dd) == 1                # the next run reuses v1, not v2
+
+
+def _claim(dd, n, *, pid, host=None):
+    import socket
+
+    (dd / f"v{n}").mkdir(parents=True, exist_ok=True)
+    (dd / f"v{n}" / "claim.json").write_text(json.dumps(
+        {"host": host or socket.gethostname(), "pid": pid, "claimed_at": "now"}
+    ))
+
+
+def _dead_pid():
+    """A pid that has certainly exited: a child, waited on, so it is reaped."""
+    import subprocess
+    import sys
+
+    child = subprocess.Popen([sys.executable, "-c", ""])
+    child.wait()
+    return child.pid
+
+
+def test_claim_version_steps_over_a_running_conversion(tmp_path):
+    # Two converts of one document at once used to pick the same number, and the
+    # second deleted the first one's directory on the way in.
+    from pdf2md.cache import claim_version
+
+    dd = tmp_path / "doc"
+    first, first_dir = claim_version(dd)
+    (first_dir / "base-state.json").write_text("engine state")
+    second, second_dir = claim_version(dd)
+    assert (first, second) == (1, 2)
+    assert (first_dir / "base-state.json").read_text() == "engine state"
+    assert second_dir == dd / "v2"
+
+
+def test_claim_version_reuses_a_crashed_runs_number(tmp_path):
+    from pdf2md.cache import claim_version
+
+    dd = tmp_path / "doc"
+    _claim(dd, 1, pid=_dead_pid())
+    (dd / "v1" / "stale.json").write_text("half-written")
+    version, vdir = claim_version(dd)
+    assert version == 1
+    assert not (vdir / "stale.json").exists()  # cleared, not inherited
+
+
+def test_claim_version_leaves_another_hosts_directory_alone(tmp_path):
+    # Its pid numbers mean nothing here, so it counts as live.
+    from pdf2md.cache import claim_version
+
+    dd = tmp_path / "doc"
+    _claim(dd, 1, pid=_dead_pid(), host="some-other-box")
+    assert claim_version(dd)[0] == 2
+
+
+def test_claim_version_never_removes_a_completed_version(tmp_path):
+    from pdf2md.cache import claim_version
+
+    dd = tmp_path / "doc"
+    _complete_version(dd, 1)
+    _complete_version(dd, 2)
+    (dd / "v3").mkdir()  # a pre-claim partial from an older pdf2md
+    (dd / "v3" / "provenance.json").write_text("{}")  # ... that completed meanwhile
+    assert claim_version(dd)[0] == 4
+
+
+def test_release_claim_leaves_the_bundle_clean(tmp_path):
+    from pdf2md.cache import claim_version, release_claim
+
+    _, vdir = claim_version(tmp_path / "doc")
+    assert (vdir / "claim.json").is_file()
+    release_claim(vdir)
+    assert sorted(p.name for p in vdir.iterdir()) == []
+
+
+def test_prune_spares_a_running_conversion(tmp_path, monkeypatch):
+    from pdf2md.cache import prune
+
+    monkeypatch.setenv("PDF2MD_OUT", str(tmp_path))
+    dd = tmp_path / f"paper-{'a' * 12}"
+    (dd / "source.pdf").parent.mkdir(parents=True)
+    (dd / "source.pdf").write_bytes(b"pdf")
+    _complete_version(dd, 1)
+    _claim(dd, 2, pid=os.getpid())
+    assert prune(keep=1) == []
+    assert (dd / "v1").is_dir()
 
 
 def test_deduplicate_assets_links_exact_matches_and_survives_prune(tmp_path, monkeypatch):

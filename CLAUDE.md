@@ -56,7 +56,9 @@ src/pdf2md/
                   exact lookup/hit/write accounting.
   schema.py     all dataclasses + enums (Document, Section, Block, BBox, TableData, RawTable/RawCell, FigureRef, Provenance, CoverageReport, ConvertResult). FORMAT_VERSION lives here.
   cache.py      source SHA-256, readable document directories, run fingerprints,
-                completed-version lookup, and version allocation.
+                completed-version lookup, and version allocation. `claim_version` allocates
+                by *creating* the directory, so the number is exclusive; the `claim.json` it
+                leaves is what tells a crashed run apart from one happening right now.
   config.py     frozen Config dataclass loaded from TOML (no Pydantic).
   logging.py    NullHandler in the library; CLI installs the only handler.
   run_metrics.py sequential stage timings and work counts stored with provenance.
@@ -80,6 +82,7 @@ src/pdf2md/
                 scanned otherwise. The batch path cannot share one engine under `auto`.
     docling.py  the ONLY module that imports docling. PURE translation → schema (no
                 pdfium, no verification); tables ship RawTable cells for enrich to rebuild.
+                Also `resolved_device`, the only place that can answer what `auto` meant.
     mineru.py   external-CLI adapter for scans and difficult tables/equations. Reads native
                 middle JSON only; pdf2md re-renders crops and ignores MinerU chart tables.
 
@@ -332,6 +335,8 @@ scripts/        72 dev harnesses (not shipped), 22.9k lines. `scripts/README.md`
 - A completed version is reused only when its run fingerprint matches and its optional
   model work is healthy. `force=True`, a changed run fingerprint, or a matching partial
   enrichment creates a new `v<n>`; `latest_version()` is what readers use.
+- The run fingerprint includes the **resolved** device, not the configured one, so a bundle
+  built on CUDA is never reused for an MPS run.
 - `provenance.json` is the on-disk source of truth; `.md`/`assets` are derived.
 - The **accounting invariant** is the project's foundation: every detected block
   lands in the output as text, table, LaTeX, crop, or a visible marker. `emit.py`
@@ -611,6 +616,42 @@ The largest surface here, and the one the field reports care about most.
   so most breaks are read off the page; `_TOKEN_GAP_SHARE` covers the documents that
   position their word spaces instead, and 1.5 sits in the valley of a distribution massed
   below 0.5 and again at 2.0 character widths.
+
+### Running a conversion
+
+Which hardware it lands on, and what two runs at once do to each other.
+
+- **A partial version directory and a running one are indistinguishable from outside, and
+  allocation used to delete the difference.** `next_version` returns `max(complete) + 1`,
+  so two converts of one document started together both chose the same `v<n>`, and the
+  second `shutil.rmtree`'d the first one's in-progress directory on the theory that a
+  version without `provenance.json` is a crash. `claim_version` allocates by `mkdir`
+  instead -- the directory's creation *is* the claim, so the loser of the race takes the
+  next number -- and writes `claim.json` with this host and pid, which is the evidence
+  the old code did not have: a claim naming a dead pid on this host is a crashed run and
+  its number is reused, anything else is stepped over. A claim from another host counts as
+  live, because its pid numbers mean nothing here, and a directory with no claim at all
+  predates the file and is treated as abandoned exactly as before. `prune` reads the same
+  signal rather than deleting a version a live run is holding. There is still no `--jobs`:
+  a batch is parallelised with several processes, which this makes safe.
+- **`auto` is not a record of which device ran, and the device changes the output.**
+  Docling's layout detector makes marginally different calls on CUDA than on CPU or MPS,
+  and `decide_device` resolves `auto` against what torch can see -- quietly landing on CPU
+  when it sees nothing -- so a bundle recording `device: "auto"` says nothing about what
+  produced it, and a CUDA bundle was reusable for an MPS run. `engines/docling.resolved_device`
+  (the engine seam: it is the only module that may ask docling) feeds
+  `run_inputs.engine.device`, so the resolution is in provenance *and* in the fingerprint;
+  it is logged once per run and reported by `doctor`, which is where "which box should I run
+  this on" gets answered before a corpus is copied to the wrong one. An unusable explicit
+  device returns `unavailable: ...` rather than raising -- the same configuration raises
+  later from the engine, where a failed conversion is the honest report.
+- **`OMP_NUM_THREADS` already caps CPU, and nothing in pdf2md does.** `DoclingEngine`
+  builds `AcceleratorOptions` without `num_threads`, which is precisely the condition under
+  which docling's own `check_alternative_envvars` reads `DOCLING_NUM_THREADS` or
+  `OMP_NUM_THREADS` (default 4). `DOCLING_DEVICE` is the opposite case and is ignored: the
+  device *is* passed explicitly, and an init argument beats the environment in
+  pydantic-settings. Don't add a `--threads` flag for the first one; don't claim the
+  environment variable works for the second.
 
 ### Equations
 

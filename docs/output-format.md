@@ -64,6 +64,15 @@ out/<source-name>-<doc_id[:8]>/
   its run fingerprint also matches the effective configuration, pdf2md implementation,
   engine identity, dependency versions, model identifiers, and prompt/cache schema.
   `--force` always creates a new version; runs never overwrite completed output.
+- Engine identity includes the **resolved** accelerator device, not the configured one:
+  `run_inputs.engine.device` reads `mps` or `cuda:0`, never `auto`. Docling's layout
+  detector makes marginally different calls per device, so a CUDA bundle and an MPS
+  bundle are different output and do not share a cache entry.
+- A `v<n>` directory is allocated by creating it, which is what makes the number
+  exclusive. While a run holds one it contains `claim.json` (host, pid, timestamp);
+  `provenance.json` replaces it as the completion marker, so a finished bundle carries
+  no claim. A directory with a claim whose process is gone is a crashed run, and the
+  next conversion of that document reuses the number after clearing it.
 - The readable source-name prefix is for navigation; the `doc_id` suffix prevents files
   with the same name or changed contents from sharing a version tree. It is normally eight
   characters and extends automatically if that name already belongs to different content.

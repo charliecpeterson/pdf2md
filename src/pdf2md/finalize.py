@@ -11,7 +11,7 @@ import json
 from datetime import UTC, datetime
 
 from pdf2md import __version__
-from pdf2md.cache import deduplicate_assets
+from pdf2md.cache import deduplicate_assets, release_claim
 from pdf2md.chunks import write_chunks
 from pdf2md.conservation import (
     annotate_conservation_warnings,
@@ -166,6 +166,7 @@ def _finalize_bundle(run: _Run) -> ConvertResult:
     tmp_prov = prov_path.with_suffix(".json.tmp")
     tmp_prov.write_text(json.dumps(run.doc.to_dict(), indent=2, default=str))
     tmp_prov.replace(prov_path)
+    release_claim(run.vdir)
 
     log.info(
         "converted %s -> v%d (%d md files, %s)",

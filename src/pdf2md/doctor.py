@@ -50,6 +50,38 @@ def _executable(name: str, command: str, *, required: bool, fix: str) -> Check:
     )
 
 
+def _accelerator(config: Config) -> Check:
+    """Which device Docling will run models on here — the question `doctor` exists to
+    answer before a 74 MB corpus is copied to the wrong machine. `auto` is not an
+    answer, and a configured device that this box cannot provide fails at model load,
+    not at startup.
+    """
+    if config.engine != "docling":
+        return Check("accelerator device", "skipped", f"engine is {config.engine}")
+    from pdf2md.engines.docling import resolved_device
+
+    device = resolved_device(config.device)
+    if device.startswith("unavailable:"):
+        return Check(
+            "accelerator device", "error",
+            # Keep docling's first sentence; the rest of its message names its own
+            # CLI's flags, which are not ours.
+            f"device = {config.device}: {device.split(': ', 1)[1].split('. ')[0]}",
+            "Set device to auto or cpu in the TOML config, or run on a host with that "
+            "accelerator.",
+        )
+    detail = f"{device} (device = {config.device})"
+    if config.device == "auto":
+        return Check("accelerator device", "ok", detail)
+    if device.split(":")[0] != config.device.split(":")[0]:
+        return Check(
+            "accelerator device", "warning",
+            f"{detail} — the configured device was not used",
+            "Install the matching accelerator build of torch, or set device to auto.",
+        )
+    return Check("accelerator device", "ok", detail)
+
+
 def _marker_backend(config: Config) -> Check:
     """Marker needs an inference server, and says so unhelpfully when it lacks one.
 
@@ -203,6 +235,7 @@ def inspect_environment(
         _package("pypdfium2", required=True, fix="Run `uv sync`."),
         _package("rapidocr", required=True, fix="Run `uv sync`."),
         _package("onnxruntime", required=True, fix="Run `uv sync`."),
+        _accelerator(config),
         _formula_headers(config),
         _executable(
             "Marker",

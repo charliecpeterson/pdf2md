@@ -13,7 +13,6 @@ cache numbers are measured against.
 from __future__ import annotations
 
 import json
-import shutil
 import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -22,7 +21,7 @@ from pathlib import Path
 import pypdfium2 as pdfium
 
 from pdf2md.bookmarks import read_bookmarks
-from pdf2md.cache import content_hash, doc_dir, matching_version, next_version, run_fingerprint
+from pdf2md.cache import claim_version, content_hash, doc_dir, matching_version, run_fingerprint
 from pdf2md.config import Config
 from pdf2md.coverage import build_report
 from pdf2md.crops import (
@@ -281,6 +280,9 @@ def _open_run(
         log.error("engine setup failed for %s: %s", pdf_path.name, exc)
         return ConvertResult(doc_id, 0, dd, [], failed=True, error=str(exc))
     engine_name = getattr(engine, "name", type(engine).__name__)
+    device = run_inputs["engine"].get("device")
+    if device and engine_name == "docling":
+        progress.stage("docling runs on %s (device = %s)", device, config.device)
     source_pages = _source_page_count(pdf_path)
     metrics.finish("setup", source_pages=source_pages)
     _warn_about_long_formula_run(source_pages, engine_name, config)
@@ -326,12 +328,9 @@ def _open_run(
         third_party_warning_repeats=engine_warnings.repeat_count,
     )
 
-    version = next_version(dd)
-    vdir = dd / f"v{version}"
-    # A crashed earlier run can leave this version's dir (it had no provenance.json, so
-    # next_version reuses the number); clear it so stale state and artifacts do not survive.
-    if vdir.exists():
-        shutil.rmtree(vdir)
+    # Creating the directory is the allocation, so a second convert of this document
+    # running right now takes the next number instead of writing into this one.
+    version, vdir = claim_version(dd)
     write_engine_state(vdir, doc_id, result)
     return _Run(
         pdf_path=pdf_path,

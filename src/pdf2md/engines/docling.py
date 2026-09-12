@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import math
 import sysconfig
+from functools import cache
 from importlib.metadata import version
 from pathlib import Path
 from statistics import fmean
@@ -112,6 +113,24 @@ def _quality_evidence(report) -> dict[str, object]:
             "Table quality is omitted because its score is not implemented."
         ),
     }
+
+
+@cache
+def resolved_device(device: str) -> str:
+    """The device Docling will actually run models on, which the configured one does
+    not say: `auto` resolves against what torch can see and quietly lands on CPU when
+    it sees nothing. The layout detector makes marginally different calls per device,
+    so this is part of what produced a bundle and belongs in provenance, not only in
+    diagnostics. A device that cannot be used returns a string starting `unavailable:`
+    rather than raising -- the same configuration raises later, from the engine, where
+    a failed conversion is the honest report.
+    """
+    try:
+        from docling.utils.accelerator_utils import decide_device
+
+        return decide_device(device)
+    except Exception as exc:  # noqa: BLE001 - a device probe must not fail a run
+        return f"unavailable: {exc}"
 
 
 def missing_cuda_python_headers(device: str) -> Path | None:

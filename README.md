@@ -176,6 +176,14 @@ uv run pdf2md review-tables out/paper-a1b2c3d4/v1 # local numeric-cell review sh
 `document.md`. pdf2md adds `<source-name>-<short-id>/v<n>/` beneath it. Use the same root
 when inspecting a custom conversion: `pdf2md coverage paper.pdf --out ~/lib`.
 
+`pdf2md doctor` names the accelerator the machine will actually use
+(`accelerator device: mps (device = auto)`), which is the thing to check before copying a
+corpus to one box rather than another; the resolved device is recorded in each bundle's
+provenance, because Docling's layout detector makes marginally different calls on each.
+There is no `--jobs` — run several processes to parallelise a batch, which is safe on one
+output root — and `OMP_NUM_THREADS` caps each process's CPU appetite (default 4). See
+[docs/options.md](docs/options.md#hardware-threads-and-running-more-than-one-convert).
+
 Defaults are tuned for a born-digital journal paper and need no flags:
 equation→LaTeX, inline sub/superscript recovery, and vector-chart digitization are
 all **on**. Re-running the same file with the same effective inputs reuses its completed

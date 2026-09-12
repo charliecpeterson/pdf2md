@@ -7,6 +7,34 @@ here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Two converts of the same document running at once no longer destroy each other's
+  output. `next_version` read the highest completed version and added one, so both
+  processes picked the same `v<n>`, and the second deleted the first one's in-progress
+  directory on the theory that a version without `provenance.json` is a crashed run.
+  Allocation is now `claim_version`, which creates the directory as the claim — the
+  loser of the race takes the next number — and writes a `claim.json` naming the host
+  and pid, which is what actually distinguishes a crash from a conversion in progress.
+  A crashed run's number is still reused, a live one is not, and `prune` no longer
+  deletes a version a running conversion is holding. There is still no `--jobs`; a
+  batch is parallelised by running several processes, which this makes safe.
+
+### Added
+
+- The **resolved** accelerator device is now reported and recorded, not the configured
+  one. `pdf2md doctor` prints `accelerator device: mps (device = auto)` — the answer to
+  "which machine should this corpus go to" — and flags a configured device the host
+  cannot provide as an error rather than letting it fail hours into a run. Each run logs
+  it once, and `provenance.json` carries it at `run_inputs.engine.device`. It joins the
+  run fingerprint: Docling's layout detector makes marginally different calls per device,
+  so a CUDA bundle is no longer reused for an MPS run.
+- `docs/options.md` documents the hardware knobs that already existed and were
+  undiscoverable: `device` in a config TOML (there is no `--device` flag, and
+  `DOCLING_DEVICE` is ignored because pdf2md passes the device explicitly), and
+  `OMP_NUM_THREADS` / `DOCLING_NUM_THREADS`, which Docling honours on pdf2md's behalf
+  and which default to 4 threads per process.
+
 ### Changed
 
 - `pipeline.convert_file` is now the list of its eight stages over one `_Run`

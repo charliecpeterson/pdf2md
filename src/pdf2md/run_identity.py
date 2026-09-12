@@ -105,18 +105,26 @@ def _engine_identity(engine: Engine | None, config: Config) -> dict[str, str]:
                 "implementation": "pdf2md.engines.mineru.MinerUEngine",
                 "cache_identity": candidate.cache_identity(),
             }
-        return {
+        identity = {
             "name": "docling",
             "implementation": "pdf2md.engines.docling.DoclingEngine",
         }
-    cls = type(engine)
-    identity = {
-        "name": getattr(engine, "name", cls.__name__),
-        "implementation": f"{cls.__module__}.{cls.__qualname__}",
-    }
-    custom = getattr(engine, "cache_identity", None)
-    if custom is not None:
-        identity["cache_identity"] = str(custom() if callable(custom) else custom)
+    else:
+        cls = type(engine)
+        identity = {
+            "name": getattr(engine, "name", cls.__name__),
+            "implementation": f"{cls.__module__}.{cls.__qualname__}",
+        }
+        custom = getattr(engine, "cache_identity", None)
+        if custom is not None:
+            identity["cache_identity"] = str(custom() if callable(custom) else custom)
+    if identity["name"] == "docling":
+        # The resolved device, not the configured one: `auto` is not an answer, and the
+        # layout detector makes marginally different calls on CUDA than on CPU or MPS,
+        # so a bundle produced on one is not interchangeable with a bundle from another.
+        from pdf2md.engines.docling import resolved_device
+
+        identity["device"] = resolved_device(config.device)
     return identity
 
 

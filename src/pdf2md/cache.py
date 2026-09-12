@@ -3,7 +3,8 @@
 `doc_id` is the SHA-256 of the source bytes. New output directories combine a
 readable source-name slug with a short hash (`out/paper-a1b2c3d4/v<n>/`), while
 legacy hash-only directories remain discoverable. New runs never overwrite old
-ones; `latest_version()` is what readers use.
+ones; `latest_version()` is what readers use. A version directory is allocated by
+creating it, so concurrent converts of one document cannot collide.
 """
 
 from __future__ import annotations
@@ -13,11 +14,15 @@ import json
 import os
 import re
 import shutil
+import socket
+from datetime import UTC, datetime
 from pathlib import Path
 
 from pdf2md.run_metrics import failed_optional_calls
 
 _DOCUMENT_HASH_LENGTHS = {8, 12, 16, 64}
+# Written into a version directory at allocation and removed when it completes.
+_CLAIM_FILE = "claim.json"
 
 
 def content_hash(path: Path, *, chunk_size: int = 1 << 20) -> str:
@@ -134,6 +139,76 @@ def next_version(doc_dir_path: Path) -> int:
     return (max(versions) + 1) if versions else 1
 
 
+def _pid_alive(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:  # another user's process, but a process
+        return True
+    return True
+
+
+def live_claim(version_dir: Path) -> dict | None:
+    """The claim of a run still working in this version directory, if there is one.
+
+    A version directory without `provenance.json` is either a crashed run's
+    leftovers or a conversion happening right now, and from outside the two look
+    identical -- which is why allocation used to delete a concurrent run's work.
+    The claim written at allocation names the host and pid that made it, which
+    separates them on the machine that wrote it; a claim from another host counts
+    as live, because its pids mean nothing here. A directory with no claim at all
+    predates this file and is treated as abandoned, as it always was.
+    """
+    if (version_dir / "provenance.json").exists():
+        return None
+    try:
+        claim = json.loads((version_dir / _CLAIM_FILE).read_text())
+    except (OSError, ValueError):
+        return None
+    if claim.get("host") != socket.gethostname():
+        return claim
+    return claim if _pid_alive(int(claim.get("pid", 0))) else None
+
+
+def claim_version(doc_dir_path: Path) -> tuple[int, Path]:
+    """Allocate this run's `v<n>` directory, atomically.
+
+    Creating the directory *is* the allocation: `mkdir` either succeeds or reports
+    that somebody else got there first, so two converts of the same document running
+    at once cannot both write into one version. A crashed run's number is reused (its
+    claim names a pid that is gone, so its leftovers are cleared first); a completed
+    or live one is stepped over.
+    """
+    version = next_version(doc_dir_path)
+    while True:
+        vdir = doc_dir_path / f"v{version}"
+        try:
+            vdir.mkdir(parents=True)
+        except FileExistsError:
+            if (vdir / "provenance.json").exists() or live_claim(vdir) is not None:
+                version += 1
+                continue
+            try:
+                shutil.rmtree(vdir)
+            except FileNotFoundError:  # someone else cleared it first
+                pass
+            continue
+        vdir.joinpath(_CLAIM_FILE).write_text(json.dumps({
+            "host": socket.gethostname(),
+            "pid": os.getpid(),
+            "claimed_at": datetime.now(UTC).isoformat(),
+        }))
+        return version, vdir
+
+
+def release_claim(version_dir: Path) -> None:
+    """Drop the claim once `provenance.json` has marked the version complete."""
+    (version_dir / _CLAIM_FILE).unlink(missing_ok=True)
+
+
 def latest_version(doc_dir_path: Path) -> int | None:
     versions = _complete_versions(doc_dir_path)
     return max(versions) if versions else None
@@ -236,6 +311,8 @@ def prune(*, keep: int = 1, dry_run: bool = False) -> list[Path]:
         doomed = versions if keep == 0 else versions[:-keep]
         for v in doomed:
             vdir = dd / f"v{v}"
+            if live_claim(vdir) is not None:
+                continue  # a conversion is writing here right now
             removed.append(vdir)
             if not dry_run:
                 shutil.rmtree(vdir)
