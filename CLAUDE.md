@@ -802,6 +802,23 @@ Token-level signals: what the page printed against what was emitted.
   `<sup>` in a prose block cost two phantom words. On a clean paper that was 25 of 25
   conservation flags. Anything emitted beside content (the `*[pdf2md] table source:*` line,
   a marker and its blockquote continuation) is stripped from both readings.
+- **One symbol loss reads as ordinary text afterwards, and it is the comparisons.** The
+  check already names the characters -- `symbols dropped: the page prints ≥ in this
+  block` -- so the defect was never generic; what was wrong was the severity. Losing a
+  `Σ` or a `∆` leaves visible nonsense and a lost `±` leaves `9.3 0.2`, two numbers and
+  no operator, both of which a reader catches. Losing the `≥` in `restricting the ratio
+  between two exponents to be ≥1.6` emits `to be 1.6`: a fluent sentence asserting an
+  exact value where the page printed a floor, which for a citation check is the opposite
+  claim. `_BOUND_OPERATORS` is therefore high severity and the rest stays medium -- 4 of
+  71 corpus findings carry one, so it promotes a handful rather than reclassifying the
+  check, and on the one paper affected the marker went from fourteenth in a queue of
+  equals to the top. `±` and `∝` are deliberately out: they are relations, but their
+  loss is visible, which is the same argument that keeps dashes out of `_SYMBOLS`
+  entirely. ASCII `<` and `>` belong in the class by that argument and are not in it:
+  they sit outside `_SYMBOLS`, and adding them means first stripping the emitted side's
+  `<sup>` markup, which would otherwise supply phantom angle brackets and mask the very
+  loss being looked for. The severity is read from a `comparisons` key on the payload,
+  not by parsing the human-readable `symbols` string.
 - **Word recall cannot see a dropped symbol, and its threshold is not the problem.**
   A 200-word paragraph that loses one `χ` scores 0.995 and passes the floor, which is
   correct -- one word in two hundred is not a lost paragraph -- so the signal has to be its

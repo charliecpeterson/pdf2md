@@ -148,6 +148,17 @@ _SYMBOLS = re.compile(r"[\u0370-\u03ff\u1f00-\u1fff]|[\u2200-\u22ff]|[°±×÷µ
 
 _SYMBOL_DASHES = frozenset("−‑–—-")
 
+# Comparisons that stand in front of a quantity. Losing one is the only symbol
+# loss that reads as ordinary text afterwards: `restricting the ratio to be ≥1.6`
+# emitted as `to be 1.6` turns a floor into an exact value, and a reader has
+# nothing to notice. Every other dropped symbol leaves a visible hole -- `9.3 ± 0.2`
+# emits as `9.3 0.2`, two numbers and no operator -- which is why `±` and `∝` are
+# out of this set even though they are relations. ASCII `<` and `>` belong here by
+# the same argument but are outside `_SYMBOLS` (the emitted side carries `<sup>`
+# markup, which would supply phantom angle brackets), so this set is a floor.
+# Measured over 71 symbol-loss findings in the corpus, 4 carry one.
+_BOUND_OPERATORS = frozenset("≥≤≈∼≃≅≪≫≠")
+
 def record_symbol_loss(block: Block, pc, emitted: str | None = None) -> None:
     """Symbols the page prints inside this block that the emitted text lacks.
 
@@ -175,6 +186,7 @@ def record_symbol_loss(block: Block, pc, emitted: str | None = None) -> None:
     )
     if not lost:
         return
+    comparisons = sorted(set(lost) & _BOUND_OPERATORS)
     block.extra["glyph_symbols_lost"] = {
         "count": sum(lost.values()),
         # `χ (4)` rather than `χχχχ`: the reader wants the character and how
@@ -185,6 +197,10 @@ def record_symbol_loss(block: Block, pc, emitted: str | None = None) -> None:
             for symbol, count in sorted(lost.items())
         ),
     }
+    if comparisons:
+        # Separated from `symbols` because it decides the severity, and a severity
+        # must not be recovered by parsing a string written to be read.
+        block.extra["glyph_symbols_lost"]["comparisons"] = " ".join(comparisons)
 
 def record_recall(blocks: list[Block], tables: list[TableData], glyphs) -> None:
     """Record per-block word recall, after every repair pass has run.
@@ -343,7 +359,14 @@ def _symbol_loss_flags(blocks: list[Block]) -> list[CoverageFlag]:
     low-recall as well. Nothing about the ratio is wrong -- one word in two
     hundred is not a loss of the paragraph -- so the signal has to be its own,
     and it can be, because a Greek letter present in the region and absent from
-    the output admits no innocent reading."""
+    the output admits no innocent reading.
+
+    A dropped comparison is the same finding at a different severity. Losing a `Σ`
+    degrades legibility and the reader sees it; losing the `≥` in `to be ≥1.6`
+    leaves a fluent sentence asserting an exact value the page never claimed, and
+    for anyone checking a citation those are opposite statements. 4 of 71 findings
+    in the corpus carry one, so this promotes a handful rather than reclassifying
+    the check."""
     flags = []
     for b in blocks:
         record = b.extra.get("glyph_symbols_lost")
@@ -353,11 +376,18 @@ def _symbol_loss_flags(blocks: list[Block]) -> list[CoverageFlag]:
             f"symbols dropped: the page prints {record['symbols']} in this block "
             "and the emitted text does not carry them"
         )
+        severity = "medium"
+        if record.get("comparisons"):
+            severity = "high"
+            reason += (
+                f"; the dropped {record['comparisons']} leaves a bound or an estimate "
+                "reading as an exact value"
+            )
         flags.append(CoverageFlag(
             b.id, b.page, reason,
-            f"> **[pdf2md: action required (medium): {reason}; verify against "
+            f"> **[pdf2md: action required ({severity}): {reason}; verify against "
             f"[source page {b.page}](../source.pdf#page={b.page})]**",
-            disposition="action_required", severity="medium", content_impact="medium",
+            disposition="action_required", severity=severity, content_impact=severity,
         ))
     return flags
 

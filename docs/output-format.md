@@ -77,6 +77,13 @@ out/<source-name>-<doc_id[:8]>/
   with the same name or changed contents from sharing a version tree. It is normally eight
   characters and extends automatically if that name already belongs to different content.
   Existing hash-only output directories remain valid and are reused when found.
+- **Never cite a bundle by its slug.** The prefix is the filename of the *first*
+  conversion and is never reconciled afterwards, by design: the hash decides identity, so
+  the same bytes handed over under a different name reuse the directory they already have,
+  and renaming it would break every path already cited. A mislabelled input therefore
+  produces a correct bundle under a misleading name. The authoritative answers are
+  `provenance.json`'s `source_path` (the file each version was actually given) and the
+  extracted title, which is what `pdf2md list` and `pdf2md find` print as the headline.
 - Directory conversion excludes its configured output tree, so a repeated
   `pdf2md convert .` does not ingest the stored `source.pdf` copies. `pdf2md list`
   finds verified document roots recursively and reports their latest completed content.

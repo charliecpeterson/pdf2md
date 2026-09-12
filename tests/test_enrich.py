@@ -767,6 +767,47 @@ def test_a_dash_normalized_on_the_way_out_is_not_a_dropped_symbol():
     assert "glyph_symbols_lost" not in block.extra
 
 
+def test_a_dropped_comparison_is_raised_above_a_dropped_greek_letter():
+    """Losing a `Σ` degrades legibility and the reader sees it. Losing the `≥` in
+    `restricting the ratio between two exponents to be ≥1.6` leaves a fluent
+    sentence asserting an exact value -- a floor and an equality are opposite
+    claims, and nothing on the page says which one was printed. Measured: 4 of 71
+    symbol-loss findings in the corpus carry a comparison."""
+    from pdf2md.recall import _symbol_loss_flags, record_symbol_loss
+    from pdf2md.schema import BBox
+
+    block = Block(id="#/a", type=BlockType.PARAGRAPH, page=4, bbox=BBox(0, 10, 10, 0),
+                  text="restricting the ratio between two exponents to be 1.6")
+
+    record_symbol_loss(block, _Region(
+        "restricting the ratio between two exponents to be ≥1.6"))
+
+    assert block.extra["glyph_symbols_lost"] == {
+        "count": 1, "symbols": "≥", "comparisons": "≥",
+    }
+    flag = _symbol_loss_flags([block])[0]
+    assert flag.severity == "high"
+    assert flag.content_impact == "high"
+    assert "reading as an exact value" in flag.reason
+    assert "action required (high)" in flag.marker_text
+
+
+def test_a_dropped_uncertainty_stays_medium():
+    """`9.3 ± 0.2` emitting as `9.3 0.2` is two numbers and no operator, which a
+    reader catches -- the same argument that keeps dashes out of the check
+    entirely. It is a real loss at the severity the rest of the class carries."""
+    from pdf2md.recall import _symbol_loss_flags, record_symbol_loss
+    from pdf2md.schema import BBox
+
+    block = Block(id="#/a", type=BlockType.PARAGRAPH, page=10, bbox=BBox(0, 10, 10, 0),
+                  text="yielding ionization potentials of 9.3 0.2 eV")
+
+    record_symbol_loss(block, _Region("yielding ionization potentials of 9.3 ± 0.2 eV"))
+
+    assert "comparisons" not in block.extra["glyph_symbols_lost"]
+    assert _symbol_loss_flags([block])[0].severity == "medium"
+
+
 def test_dropped_symbols_are_raised_apart_from_recall():
     from pdf2md.recall import recall_review_flags
 

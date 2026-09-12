@@ -22,6 +22,15 @@ here.
 
 ### Added
 
+- A dropped **comparison** (`≥ ≤ ≈ ∼ ≠ ≃ ≅ ≪ ≫`) is now raised at high severity rather
+  than beside every other dropped symbol at medium. The check and its message already
+  named the character; what was wrong was the rank. It is the only symbol loss that
+  reads as ordinary text afterwards: `restricting the ratio between two exponents to be
+  ≥1.6` emitted as `to be 1.6` asserts an exact value where the page printed a floor,
+  while a lost `±` leaves the visibly broken `9.3 0.2`. 4 of 71 findings in the corpus
+  carry one, so a handful are promoted and the class is not reclassified. `±` and `∝`
+  stay medium by the same argument that keeps dashes out of the check; ASCII `<` and `>`
+  are still undetected, and the limit is documented.
 - The **resolved** accelerator device is now reported and recorded, not the configured
   one. `pdf2md doctor` prints `accelerator device: mps (device = auto)` — the answer to
   "which machine should this corpus go to" — and flags a configured device the host

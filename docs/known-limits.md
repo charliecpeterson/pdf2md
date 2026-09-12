@@ -20,7 +20,13 @@ of these are deliberate boundaries and which are open work.
 - **Dropped symbols are reported, not repaired.** Where the engine loses a Greek letter
   or math operator from prose, the block carries a marker naming the characters. That
   one is missing is certain; where to reinsert it is not, so the text is left as the
-  engine produced it and the source page stays the reference.
+  engine produced it and the source page stays the reference. A dropped **comparison**
+  (`≥ ≤ ≈ ∼ ≠ ≃ ≅ ≪ ≫`) is the same finding at high severity, because it is the one
+  symbol loss that reads as ordinary text afterwards: `to be ≥1.6` emitted as `to be
+  1.6` turns a floor into an exact value with nothing for a reader to notice, where a
+  lost `±` leaves the visible `9.3 0.2`. ASCII `<` and `>` are not detected — the
+  emitted side carries `<sup>` markup, which would supply phantom angle brackets — so
+  the check is a floor on comparison loss, not a count of it.
 - **A block of one or two characters that will not decode is a marginal mark, not lost
   prose.** A journal's decorative footer glyph is flagged as an `undecodable fragment` at
   informational severity rather than as an illegible paragraph, so `illegible_blocks`
