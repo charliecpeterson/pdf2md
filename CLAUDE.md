@@ -64,6 +64,7 @@ src/pdf2md/
   run_metrics.py sequential stage timings and work counts stored with provenance.
   logging.py    ... `Progress.heartbeat` takes a callable, so a long blocking stage that can
                 count its own progress reports the count instead of only that it is alive.
+                Where the count saturates, `stages._cpu_seconds` is what still moves.
   cli.py        the two commands that write: convert and enrich, plus the Typer app.
   cli_inspect.py the ones that read: coverage / compare-runs / list / find / review-tables /
                 prune / version / doctor / models / line-reader. Registered by import —
@@ -634,6 +635,24 @@ Which hardware it lands on, and what two runs at once do to each other.
   predates the file and is treated as abandoned exactly as before. `prune` reads the same
   signal rather than deleting a version a live run is holding. There is still no `--jobs`:
   a batch is parallelised with several processes, which this makes safe.
+- **docling's page counter measures work accepted, not work done, and the queue is 100
+  pages deep.** `pages_seen` reads the pipeline's page-size map, which its producer thread
+  fills as it hands pages to the first stage; the producer only blocks once the queue is
+  full, so a document shorter than `queue_max_size` (default 100) is fed in entirely
+  within seconds. Measured on a 12-page paper: the count reached 12 of 12 at t=2s and the
+  parse ran another 16s. The heartbeat then repeated one fixed sentence -- `all N pages
+  read; finishing the last of them` -- for the rest of the parse, which on a 78-page
+  review was 2h 22m and read as a stage that had gone silent, and worse, as one that was
+  nearly done. The signal that keeps moving is CPU: `_cpu_seconds` (stdlib `os.times`,
+  self plus children) is differenced between beats and reported as the measurement it is
+  -- `20s CPU in the last 5s` is four cores busy, `0s` is wedged -- which is the question
+  anyone watching a multi-hour stage is actually asking, and was previously answerable
+  only from `top`. The counter is still used where it means something: past the queue's
+  depth the beat carries pages and an ETA. Nothing here introspects further into docling:
+  a reachable count of *finished* pages does not exist (`ProcessingResult` is a local in
+  `_build_document`, the `RunContext` is not stored on the pipeline, and the queues keep
+  no cumulative counters), so the alternative was monkeypatching a model object from a
+  heartbeat thread.
 - **`auto` is not a record of which device ran, and the device changes the output.**
   Docling's layout detector makes marginally different calls on CUDA than on CPU or MPS,
   and `decide_device` resolves `auto` against what torch can see -- quietly landing on CPU

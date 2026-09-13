@@ -2063,7 +2063,38 @@ def test_the_source_read_heartbeat_counts_pages_when_the_engine_can():
     class Blind:
         pass
 
-    assert "no page counter" in _read_heartbeat(Blind(), "mineru", 99)
+    assert "no page counter" in _read_heartbeat(Blind(), "mineru", 99)()
+
+
+def test_the_heartbeat_stops_claiming_a_saturated_counter_is_nearly_done(monkeypatch):
+    """docling's counter measures pages handed to its pipeline, and the queue holds
+    100, so a 78-page review saturated it within seconds and every later beat
+    repeated `all 78 pages read; finishing the last of them` for 2h 22m. A beat that
+    says the same thing for hours is what a silent stage looks like.
+
+    CPU burned since the previous beat is the part that keeps moving, and it answers
+    the only question a beat from a multi-hour stage is asked.
+    """
+    from pdf2md import stages
+
+    class Saturated:
+        def pages_seen(self):
+            return 78
+
+    cpu = iter([100.0, 160.0, 160.0])
+    monkeypatch.setattr(stages, "_cpu_seconds", lambda: next(cpu))
+    message = stages._read_heartbeat(Saturated(), "docling", 78)
+
+    working = message()
+    assert "60s CPU in the last" in working
+    assert "finishing the last" not in working
+    assert "pages handed to the engine rather than pages finished" in working
+
+    wedged = message()
+    assert "0s CPU in the last" in wedged
+    # The caveat is explanation, not news: it rides the first beat only, or 142 of
+    # them on the parse that prompted this.
+    assert "pages handed to the engine" not in wedged
 
 
 def test_the_heartbeat_reports_before_the_first_page_lands():
@@ -2079,9 +2110,10 @@ def test_the_heartbeat_reports_before_the_first_page_lands():
 
 
 def test_the_heartbeat_does_not_claim_zero_minutes_left_while_still_working():
-    """The counter follows pages into the pipeline, so it reaches the total while
-    the last stages drain -- measured at about a minute on a 545-page book. Saying
-    "0 min left" there is the original problem in miniature."""
+    """The counter follows pages into the pipeline, so it reaches the total while the
+    work is still draining -- about a minute on a 545-page book, and the entire parse
+    on anything shorter than the engine's 100-page queue. Saying "0 min left" there
+    is the original problem in miniature."""
     from pdf2md.stages import _read_heartbeat
 
     class Finished:
@@ -2089,7 +2121,7 @@ def test_the_heartbeat_does_not_claim_zero_minutes_left_while_still_working():
             return 545
 
     message = _read_heartbeat(Finished(), "docling", 545)()
-    assert "all 545 pages read" in message
+    assert "working through all 545 pages" in message
     assert "min left" not in message
 
 

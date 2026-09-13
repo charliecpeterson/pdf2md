@@ -20,6 +20,18 @@ here.
   deletes a version a running conversion is holding. There is still no `--jobs`; a
   batch is parallelised by running several processes, which this makes safe.
 
+### Fixed
+
+- The source-read heartbeat no longer repeats a fixed sentence for hours. docling's page
+  counter measures pages handed to its pipeline and the queue holds 100, so a document
+  shorter than that saturates it within seconds (measured: 12 of 12 pages at t=2s on a
+  parse that ran 18s) — after which every beat printed `all N pages read; finishing the
+  last of them`, which on a 78-page review meant 2h 22m of a stage that read as silent
+  and as nearly finished. Beats now report CPU consumed since the previous one
+  (`docling is working through all 78 pages; 59s CPU in the last 60s`), so a working
+  parse and a wedged one differ in the log rather than only in `top`. Past a hundred
+  pages the counter tracks the work and the beat still carries pages and an ETA.
+
 ### Added
 
 - A dropped **comparison** (`≥ ≤ ≈ ∼ ≠ ≃ ≅ ≪ ≫`) is now raised at high severity rather

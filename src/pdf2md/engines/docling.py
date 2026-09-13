@@ -246,11 +246,15 @@ class DoclingEngine:
     def pages_seen(self) -> int | None:
         """Pages docling has read off the PDF and fed into its pipeline, or None.
 
-        Read from the pipeline's own page-size map. The producer fills it as it
-        reads pages, and blocks on a bounded queue when the stages are saturated,
-        so it tracks processing to within the queue's depth rather than racing to
-        the end of the document. Best effort by construction: if docling's
-        internals move, the heartbeat loses its count and nothing else.
+        Read from the pipeline's own page-size map, which its producer thread fills
+        one page at a time as it hands them to the first stage. It is a measure of
+        work *accepted*, not work done, and the difference is the queue between
+        them: `queue_max_size` defaults to 100, so a document of fewer pages than
+        that is fed in within seconds and this returns its page count for the rest
+        of the parse. Only past the queue's depth does the producer block and the
+        number start tracking the work. `_read_heartbeat` says so rather than
+        implying a document is nearly finished. Best effort by construction: if
+        docling's internals move, the heartbeat loses its count and nothing else.
         """
         try:
             for pipeline in self._converter.initialized_pipelines.values():

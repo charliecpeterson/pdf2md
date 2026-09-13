@@ -147,10 +147,14 @@ transcriptions, chart reads, figure labels, and crop descriptions use the same r
 rule. Each successful model result is written atomically when it finishes. Run
 it in the background. Progress is written to stderr by default: pipeline stages include
 elapsed time, while MinerU and table verification include completed, total, remaining,
-and an ETA once enough work has finished to estimate one. Docling exposes no per-page
-counter during its main parse, so pdf2md prints the source page count and elapsed-time
-heartbeats until that call returns. `--verbose` also includes the underlying engine
-diagnostics.
+and an ETA once enough work has finished to estimate one. The source read is the one
+stage that can run for hours with nothing to count: docling's own page counter measures
+pages handed to its pipeline, and its queue holds 100, so on any shorter document the
+count saturates within seconds. Its heartbeat therefore reports **CPU consumed since the
+previous beat** — `docling is working through all 78 pages; 59s CPU in the last 60s` — so
+a working parse and a wedged one differ in the log rather than only in `top`. Past a
+hundred pages the counter starts tracking the work and the beat adds pages and an ETA.
+`--verbose` also includes the underlying engine diagnostics.
 
 ### Hardware, threads, and running more than one convert
 

@@ -13,6 +13,7 @@ cache numbers are measured against.
 from __future__ import annotations
 
 import json
+import os
 import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -74,38 +75,67 @@ log = get_logger("pipeline")
 _OCR_LOGGERS = ("RapidOCR", "docling.models.stages.ocr.rapid_ocr_model")
 
 
-def _read_heartbeat(engine: Engine, engine_name: str, source_pages: int) -> object:
-    """The message the source-read stage beats with, counting pages where it can.
+def _cpu_seconds() -> float:
+    """CPU time this process and its children have burned, for the heartbeat.
 
-    An engine that can say how far it has read gets a live count and a rate; one
-    that cannot says so. This exists because an 1,085-page parse reported
-    "per-page progress unavailable" for 10 hours 48 minutes while working
-    correctly, and was nearly killed twice on the suspicion it had hung.
+    The one question a beat from a multi-hour stage has to answer is whether the
+    process is working or wedged, and a page counter that has saturated cannot
+    answer it. This can, it is stdlib, and it is what anyone debugging the stage
+    reaches for `top` to find out.
+    """
+    times = os.times()
+    return times.user + times.system + times.children_user + times.children_system
+
+
+def _read_heartbeat(engine: Engine, engine_name: str, source_pages: int) -> object:
+    """The message the source-read stage beats with: the page count where it means
+    something, and CPU consumed always.
+
+    This exists because an 1,085-page parse reported "per-page progress
+    unavailable" for 10 hours 48 minutes while working correctly, and was nearly
+    killed twice on the suspicion it had hung. The count alone did not finish the
+    job: docling's counter measures pages handed to its pipeline, whose queue holds
+    100 by default, so any shorter document saturates it within seconds and every
+    later beat repeated a fixed sentence for the rest of the parse -- which on a
+    78-page review was 2h 22m, and read as a stage that had gone quiet. CPU
+    consumed since the previous beat is the signal that keeps moving, and it is
+    reported as the measurement it is: a process burning 59s of CPU per minute is
+    working, one burning none is not.
     """
     seen = getattr(engine, "pages_seen", None)
     if not callable(seen):
-        return (f"still reading {source_pages}-page source with {engine_name}; "
-                "this engine reports no page counter")
-    started = time.monotonic()
+        seen = None
+    started = last_beat = time.monotonic()
+    last_cpu = _cpu_seconds()
+    explained_counter = False
 
     def message() -> str:
-        done = seen()
-        elapsed = time.monotonic() - started
+        nonlocal last_beat, last_cpu, explained_counter
+        now, cpu = time.monotonic(), _cpu_seconds()
+        busy = f"{cpu - last_cpu:.0f}s CPU in the last {now - last_beat:.0f}s"
+        last_beat, last_cpu = now, cpu
+        done = seen() if seen is not None else None
+        if seen is None:
+            return (f"still reading {source_pages}-page source with {engine_name}; "
+                    f"this engine reports no page counter; {busy}")
         if not done:
             return (f"still reading {source_pages}-page source with {engine_name}; "
-                    "no pages read yet (model load or first page)")
+                    f"no pages read yet (model load or first page); {busy}")
         if done >= source_pages:
-            # The counter follows pages fed into the pipeline, so it reaches the
-            # end while the last stages are still draining. Saying "0 min left"
-            # there would be the old problem in miniature.
-            return (f"all {source_pages} pages read with {engine_name}; "
-                    f"finishing the last of them")
-        rate = elapsed / done
+            caveat = ""
+            if not explained_counter:
+                explained_counter = True
+                caveat = ("; the counter measures pages handed to the engine rather "
+                          "than pages finished, and a document shorter than the "
+                          "engine's queue reaches this within seconds")
+            return (f"{engine_name} is working through all {source_pages} pages; "
+                    f"{busy}{caveat}")
+        rate = (now - started) / done
         left = max(0.0, (source_pages - done) * rate)
         return (
             f"read {done}/{source_pages} pages with {engine_name} "
-            f"({rate:.1f}s/page, ~{left / 60:.0f} min left; the count follows pages "
-            f"into the pipeline, so the estimate runs ahead)"
+            f"({rate:.1f}s/page, ~{left / 60:.0f} min left; the count runs ahead of "
+            f"the work by up to a queue's depth); {busy}"
         )
 
     return message
