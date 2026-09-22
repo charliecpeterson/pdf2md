@@ -1,0 +1,154 @@
+{
+  "date": "2026-09-22",
+  "purpose": "Known-case matched-parse regression, not fresh evaluation",
+  "verification": {
+    "default_pytest_passed": 871,
+    "skipped": 35,
+    "deselected": 2,
+    "snapshot_passed": 1,
+    "pre_fix_regression_tests": {"failed": 12, "passed": 7}
+  },
+  "scratch_root": "/Users/charlie/scratch/pdf2md-list-identifiers-20260922",
+  "configuration": {
+    "docling": "2.108.0",
+    "device": "mps",
+    "do_formula_enrichment": false,
+    "digitize_figures": false,
+    "ocr_figures": false
+  },
+  "method": "Capture each complete raw Docling document and pre-fix engine state once. Replay the same engine state through the current pipeline with either captured pre-fix blocks or blocks translated from the raw document by the corrected adapter. Both arms use the current recall logic. Match blocks by ID and check exact marker prefixes, complete Markdown emissions, primary-source passage prefixes, and chunk text. Compare bodies after removing only the restored prefix and sub/sup tags.",
+  "implementation_sha256": {
+    "src/pdf2md/engines/docling.py": "8a85b237011c7fe8e4245c16707876a2db5472c35c0c176ac82a80f710dbe756",
+    "src/pdf2md/render_block.py": "b8b6a5f9d1a680824a62422201be7323750b5c7aea2b22d61450952a01872879",
+    "src/pdf2md/recall.py": "a90de38e3ecccd62381d08e09d430f5144e5b3bd0ada71707c057b5ce9b69d7b"
+  },
+  "documents": [
+    {
+      "document": "word2vec",
+      "source_sha256": "a44d7e22d2005752271c9cc1929c6462d4c8270916b063977992a883e3a54362",
+      "raw_docling_sha256": "96fc53aa31cbd085d3aa63898946a37935f50f8c677b00c2bf72dd1a58d4266c",
+      "captured_engine_state_sha256": "a0b51b69e193aa829c8bf9aaaed8fc301e80a2e0313a0919fdf9a8130e410b32",
+      "bundle_hashes": {
+        "before": {
+          "provenance.json": "100bd91c05ebb50b600d30f6ad10e2b22905aeb40b6d4affe3bece67d9ea3068",
+          "base-state.json": "a0b51b69e193aa829c8bf9aaaed8fc301e80a2e0313a0919fdf9a8130e410b32",
+          "passages.jsonl": "5692975411f11b419ec2b653f30377ed0c58eec1a233603332a4f8d0409698c3",
+          "chunks.jsonl": "981be765438ef8915d3a8c002e7b2cae810a15153b1b3a7274652adc9f756273"
+        },
+        "after": {
+          "provenance.json": "b50c925a21dcaa3619c35f94fcc34dc29a94caa7bc8f84ecde92e3f8bd05062e",
+          "base-state.json": "a7af3a84e57a5cbf01525c713b0df9c451ddb24439d659a3b51f8743f0d9738d",
+          "passages.jsonl": "3bfa680204eb02aaffcb9ceff5d8e3b9f6a14b4cd47e38999eb408820e360a6d",
+          "chunks.jsonl": "a30581d28ca3c6a22f15e83200215aeb57d8226d923da23e89699a823d118a4f"
+        }
+      },
+      "blocks": 141,
+      "supplied_identifiers": 32,
+      "preserved_identifiers": {
+        "before": {
+          "markdown": 0,
+          "passages": 0,
+          "chunks": 0
+        },
+        "after": {
+          "markdown": 32,
+          "passages": 32,
+          "chunks": 32
+        }
+      },
+      "non_identifier_blocks_with_changed_text": 0,
+      "identifier_bodies_with_changed_text_ignoring_script_tags": 0,
+      "script_markup_changes": [],
+      "known_regression": {
+        "physical_page": 11,
+        "expected_identifiers": [
+          "[1]",
+          "[2]",
+          "[3]",
+          "[4]",
+          "[5]",
+          "[6]",
+          "[7]",
+          "[8]",
+          "[9]",
+          "[10]",
+          "[11]",
+          "[12]",
+          "[13]",
+          "[14]",
+          "[15]",
+          "[16]",
+          "[17]"
+        ],
+        "all_preserved": true
+      }
+    },
+    {
+      "document": "sp811",
+      "source_sha256": "788dd8f0bcb0ec06e40c300690266742532a7e760a93be57764b77ed0ef3482f",
+      "raw_docling_sha256": "59b66170769a23eab1e8be691cfe5586f5f1efb351fd6f0b8a7c608f895fb4cd",
+      "captured_engine_state_sha256": "2b7bbc0bf216e38ca59d2c412cdf0df3710d524d5e5927c60bb249469a6ef798",
+      "bundle_hashes": {
+        "before": {
+          "provenance.json": "a147b9f9e78c5b1cb688d942589444c3138b238e2eb8a6c11f8da277e7c8331e",
+          "base-state.json": "2b7bbc0bf216e38ca59d2c412cdf0df3710d524d5e5927c60bb249469a6ef798",
+          "passages.jsonl": "254332c037aebf3fc1489d67470e332bb7d3db370b933209bebf8e8f7925840b",
+          "chunks.jsonl": "6791aad441ae4540f413ab80659a618947a24f472edc2d482d4126f82e3b3666"
+        },
+        "after": {
+          "provenance.json": "df012b43d7a697a570c22c5fd43db8b89d6b806e5123081997f1c837c1e163b7",
+          "base-state.json": "424d4cc2dc64a61bb5d37696cd706d3a153f48df0e40f05129660cbe756de826",
+          "passages.jsonl": "378fb74b3d7ee25c8ddc7a9f3b74c9c857a4f4d9c81374d8378990d3cea768d3",
+          "chunks.jsonl": "be867bf85a8f52970c92aefc20d51bf1cdce29d938db29e21de50e15f040b554"
+        }
+      },
+      "blocks": 1028,
+      "supplied_identifiers": 89,
+      "preserved_identifiers": {
+        "before": {
+          "markdown": 0,
+          "passages": 0,
+          "chunks": 0
+        },
+        "after": {
+          "markdown": 89,
+          "passages": 89,
+          "chunks": 89
+        }
+      },
+      "non_identifier_blocks_with_changed_text": 0,
+      "identifier_bodies_with_changed_text_ignoring_script_tags": 0,
+      "script_markup_changes": [
+        "#/texts/59",
+        "#/texts/60",
+        "#/texts/68",
+        "#/texts/85",
+        "#/texts/90"
+      ],
+      "known_regression": {
+        "physical_page": 8,
+        "expected_identifiers": [
+          "(9)",
+          "(10)",
+          "(11)",
+          "(12)",
+          "(13)",
+          "(14)",
+          "(15)",
+          "(16)",
+          "(17)",
+          "(18)"
+        ],
+        "all_preserved": true
+      }
+    }
+  ],
+  "limits": [
+    "The two previously reviewed documents are development regressions, not an untouched test set.",
+    "Labels supplied by the parser are preserved, not independently certified as correct.",
+    "Old base state omitted markers; it cannot recover them without reconversion.",
+    "No fix to OCR-dropped clauses, footnotes, or source-image coverage.",
+    "No change to general word-recall threshold; small losses in long blocks can remain unflagged.",
+    "Bibliography metadata still depends on section detection; word2vec has no recognized reference section in these bundles."
+  ]
+}

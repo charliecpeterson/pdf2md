@@ -5,6 +5,9 @@ provenance is preserved in new Docling conversions. Repeated-header filtering
 reduced development noise, but fresh source review found omissions on five of
 nine sampled pages, none flagged by the probe. Do not promote it as a confidence
 gate. See the [fresh evaluation](#fresh-evaluation-and-decision).
+The subsequent [list-identifier fix](#list-and-citation-identifier-follow-up)
+addresses the two observed numbering losses; the historical evaluation remains
+unchanged.
 
 Date: 2026-09-22. Part of the
 [accuracy/confidence roadmap](accuracy-confidence-roadmap.md#first-work-package).
@@ -233,8 +236,11 @@ the wide bounds and three-document design do not support calibrated confidence.
 
 **Decision:** close this work package without promoting the probe. Preserve the
 multi-span provenance fix and the read-only experiment. The next scoped work
-should first preserve list/citation identifiers, then separately test source-
-image line coverage for OCR omissions. This pilot does not justify adding DPT-2
+was to preserve list/citation identifiers, then separately test source-image
+line coverage for OCR omissions. The identifier follow-up is below; the
+[scan experiment](scan-omission-pilot.md) now surfaces the three known OCR
+omissions among five candidates on the development scan, without promotion.
+This pilot does not justify adding DPT-2
 or another full parser. Fresh labels are now development evidence for those
 future changes; any promotion would need another untouched evaluation set.
 
@@ -245,6 +251,65 @@ Full manifests, reports, source PDFs, and page renders remain under
 `~/scratch/pdf2md-omission-final-20260922/`. All source and bundle hashes were
 reverified after review. Final default tests: **849 passed, 35 skipped, 2
 deselected**; real conversions were run separately.
+
+## List and citation identifier follow-up
+
+The adapter discarded Docling's separate `ListItem.marker` while retaining
+`ListItem.text`, which excludes that marker in the two regression documents.
+The emitter then wrote an unnumbered bullet. A recall exemption incorrectly
+described missing leading numbers as harmless list normalization.
+
+The adapter now puts supplied alphanumeric markers into block text and records
+them in `extra.list_marker`. Already-present markers are not duplicated; the
+original engine text disambiguates a repeated value such as item 1 beginning
+with “1 sample.” Ordinary bullet glyphs remain list structure. There is no
+sequence inference, renumbering, or glyph-based identifier repair.
+
+Markdown escapes leading ordered-list and task-checkbox syntax where needed,
+so a label cannot become a nested list or an interactive checkbox. Passages and
+chunks retain the unescaped identifier. Saved state carries the corrected text.
+Old state without markers still loads, but recovering those identifiers requires
+reconversion. The blanket recall exemption is removed, including when reading
+its old stored flag. The general recall threshold is unchanged.
+
+Both complete source documents were parsed once with Docling 2.108.0 on MPS.
+The matched comparison reused those raw parses and engine states: one arm used
+the old translated blocks, the other retranslated the same raw documents with
+the corrected adapter. Both then ran through the current pipeline with formula
+enrichment, chart digitization, and figure OCR disabled.
+
+| Supplied identifiers retained in Markdown, passages, and chunks | Before | After |
+|---|---:|---:|
+| word2vec, 12 pages | 0/32 | 32/32 |
+| SP 811, 90 pages | 0/89 | 89/89 |
+
+Exact checks include bibliography labels [1]–[17] on word2vec page 11 and
+checklist labels (9)–(18) on SP 811 page 8. No other blocks changed text. Five
+SP 811 items gained subscript/superscript markup through the existing alignment
+pass; after removing those tags and the restored prefix, their text is unchanged.
+That side effect is recorded rather than counted as a separately verified gain.
+
+The [regression record](results/list-identifiers-20260922.json) pins the inputs,
+implementation, bundle hashes, and counts. Raw Docling documents, captured
+pre-fix engine states, and `before`/`after` bundles remain under
+`~/scratch/pdf2md-list-identifiers-20260922/`. To repeat the matched comparison,
+load each captured engine state with `load_engine_state`; for the corrected arm,
+replace only its blocks with `DoclingEngine._blocks` applied to the saved raw
+`DoclingDocument`. Run `convert_file` through a replay engine for each arm, using
+separate output roots. Compare marker-bearing blocks by ID against raw
+`ListItem.marker`, including complete Markdown, passages, and chunks.
+
+Tests cover adapter translation, ordinary bullets, missing markers, duplicate
+avoidance, empty items, state reload, literal Markdown, retrieval text, reference
+gaps across pages, and legacy recall flags. These are known-case regressions,
+not fresh accuracy estimates. Parser-supplied identifiers can themselves be
+wrong. Bibliography metadata still depends on section detection; word2vec's
+reference section is not recognized in these bundles. OCR-dropped clauses and
+footnotes remain outside this fix.
+
+Verification: **871 tests passed, 35 skipped, 2 deselected**, including the
+existing snapshot. The initial new regression tests reproduced 12 failures
+before the fix; all now pass. Changed Python files pass Ruff.
 
 ## How to use it
 

@@ -70,6 +70,22 @@ def _source_spans(item) -> list[SourceSpan]:
             for p in getattr(item, "prov", None) or []]
 
 
+def _list_text(item, text: str, marker: str) -> str:
+    """Retain explicit item identity in the text every downstream consumer reads."""
+    if not text.strip() or not any(char.isalnum() for char in marker):
+        return text
+    text = text.strip()
+    labelled = f"{marker} {text}"
+    already_present = text == marker or (
+        text.startswith(marker) and text[len(marker):len(marker) + 1].isspace())
+    # Some backends retain the marker in text. Conversely, an item numbered 1
+    # can genuinely start with "1 sample": orig distinguishes that repetition.
+    original = " ".join((getattr(item, "orig", None) or "").split())
+    if already_present and original != " ".join(labelled.split()):
+        return text
+    return labelled
+
+
 # Text Docling extracted from inside a figure and attached to the Picture (see
 # `_recover_figure_text`): the caption, axis titles, and tick labels. Exact characters when
 # the figure is born-digital (PDF text layer), an OCR read when it's a scan — the adapter
@@ -312,6 +328,11 @@ class DoclingEngine:
             if raw.strip() and not text.strip():
                 continue
             extra: dict = {}
+            if btype is BlockType.LIST:
+                marker = normalize_text(getattr(item, "marker", None) or "").strip()
+                if marker:
+                    extra["list_marker"] = marker
+                    text = _list_text(item, text, marker)
             level = getattr(item, "level", None)
             if level is not None:
                 extra["level"] = level

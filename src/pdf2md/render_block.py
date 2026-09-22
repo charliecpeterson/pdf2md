@@ -426,6 +426,10 @@ def _render_block(
         ctx.headings.append((level, text, b.page))
         return f"{'#' * level} {text}", CoverageStatus.EMITTED, None
     if b.type == BlockType.LIST:
+        # Keep printed identifiers literal: Markdown would otherwise interpret
+        # "7. text" as a nested ordered list or "[x] text" as a task checkbox.
+        txt = re.sub(r"^(\d+)([.)])(?=\s|$)", r"\1\\\2", txt)
+        txt = re.sub(r"^\[([xX ])\](?=\s|$)", r"\\[\1]", txt)
         return f"- {txt}", CoverageStatus.EMITTED, None
     if b.type == BlockType.CAPTION:
         return f"*{txt}*", CoverageStatus.EMITTED, None

@@ -1,0 +1,247 @@
+{
+  "date": "2026-09-22",
+  "purpose": "Known-case read-only scan omission experiment; not a fresh accuracy evaluation",
+  "exposure": "development; all three meaningful omissions were known before the second-reader run",
+  "protocol_sha256_before_results": "5af09447fb347b8dd74ee7f4d356d4b0deac909c923c3d046a186b4c4a99aef8",
+  "scratch_root": "/Users/charlie/scratch/pdf2md-scan-omissions-20260922",
+  "source_url": "https://nvlpubs.nist.gov/nistpubs/jres/049/4/V49.N04.A01.pdf",
+  "source_sha256": "a0051fb55aa22cbc18f70fa41bb9f0170e83cb23072c05e628e59711e4fdd90d",
+  "reader": {
+    "executable": "/opt/homebrew/bin/tesseract",
+    "sha256": "b0f2903f4095f770fe490e1880a1728e72376c9a10c52be5a1fc13c06371d8b8",
+    "version": "tesseract 5.5.0",
+    "trained_data": "/opt/homebrew/Cellar/tesseract/5.5.0_1/share/tessdata/eng.traineddata",
+    "trained_data_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+  },
+  "policy": {
+    "dpi": 300,
+    "psm": 3,
+    "language": "eng",
+    "timeout_seconds": 120,
+    "minimum_characters": 20,
+    "minimum_mean_reader_confidence": 70,
+    "maximum_normalized_distance": 0.2
+  },
+  "policy_sha256": "5a3a4917d88d5779557e1b4fb3324426e52a5a9a1f504bf8bd4ef88cee6976ec",
+  "runtime": {
+    "python": "3.11.15 (main, Mar 25 2026, 02:58:47) [Clang 22.1.1 ]",
+    "pypdfium2": "4.30.0",
+    "pillow": "10.4.0"
+  },
+  "implementation_sha256": {
+    "probe_scan_omissions.py": "c9481b0d8652b7fbe114a5cd9f7eb0650f8a81d74a11f5e3b1e0dc7dd995fa63",
+    "_scan_omissions.py": "60402a3974272e5dcdb567d9817f698415051d4013c92c5eddd8430f0be98de5",
+    "probe_missing_content.py": "14719c3b9fedb108acd0326d1537ab877dde182dd9732f825b09b1d2cfe892fd",
+    "_missing_content.py": "6789619c9f0202ffa1e45646f48285caf4a5e467e69ddd8bc025af42b35f4547",
+    "_missing_content_review.py": "5c14757c2c2d12ed0e9c773b0189b06aba958044a7fdc1dfd397199937669707",
+    "src/pdf2md/render.py": "58ed0b7f0ba32ef204da5f24a5542b6d5e1496db1d343937a71e7f9a0ac71975"
+  },
+  "artifacts_sha256": {
+    "reader-v1/manifest.json": "e45edc0a56cc5f56069ac4b929020b34e00089a4e4ba1381516b41b6a8ab64d0",
+    "reader-v1/report.json": "86df6fae0f3748e9866a69ae8d1a2f8bae9b644ca54597f8d0ae91c8799088cf",
+    "reader-v2/manifest.json": "dfc8b6abb87bca9823e842c025fa07cb2316ab5f88c518f7a86f68d80f291182",
+    "reader-v2/report.json": "afc607999e6d137265af4af7defba801acf781b02a821c8b2240c5b267fd1791",
+    "reader-v2/review.html": "dec73e403211ab1ff15b3789c1242909fe7b611d6a178d30d74e906061748d52",
+    "docling-raw.json": "523af7b1edb46f9facb97e50ff72c1822e8953399aad995a4a33cccba399b4cc",
+    "docling-cells.json": "886afdbe2636308cdc11db714cef741d670126836bb64b2fb64d1b1c825700f6"
+  },
+  "source_trace": {
+    "docling": "2.108.0",
+    "force_ocr": true,
+    "device": "mps",
+    "formula_enrichment": false,
+    "generate_parsed_pages": true,
+    "cell_counts": [
+      119,
+      340,
+      284,
+      137,
+      49
+    ],
+    "retained_cells": 929,
+    "missing_text_signatures": [
+      "brackets",
+      "plantmaterial (whitespace removed)",
+      "11.20"
+    ],
+    "conclusion": "Known losses occur at or before retained OCR cells, before adapter/enrichment/Markdown. This does not isolate detection from recognition."
+  },
+  "summary": {
+    "pages": 5,
+    "page_status": {
+      "compared": 5
+    },
+    "line_status": {
+      "reader_disagreement": 5,
+      "reader_agreement": 391,
+      "short_line": 30,
+      "low_reader_confidence": 6,
+      "content_crop": 86
+    }
+  },
+  "page_line_counts": {
+    "1": {
+      "reader_disagreement": 3,
+      "reader_agreement": 91,
+      "short_line": 11,
+      "low_reader_confidence": 2
+    },
+    "2": {
+      "reader_agreement": 51,
+      "content_crop": 49,
+      "low_reader_confidence": 1,
+      "short_line": 1
+    },
+    "3": {
+      "reader_agreement": 88,
+      "low_reader_confidence": 3,
+      "short_line": 5,
+      "content_crop": 37,
+      "reader_disagreement": 1
+    },
+    "4": {
+      "reader_agreement": 122,
+      "short_line": 3,
+      "reader_disagreement": 1
+    },
+    "5": {
+      "reader_agreement": 39,
+      "short_line": 10
+    }
+  },
+  "review": {
+    "candidates_reviewed": 5,
+    "meaningful_omissions": 3,
+    "furniture_false_alarms": 2,
+    "known_omissions_surfaced": 3,
+    "known_omissions_total": 3,
+    "independent_human_labels": false,
+    "labels": [
+      {
+        "physical_page": 1,
+        "line_id": "1:1:1",
+        "text": "Journal of Research of the National Bureau of Standards",
+        "bbox": [
+          22.555255553018558,
+          686.4058171745153,
+          234.67063756225687,
+          693.6045706371191
+        ],
+        "mean_reader_confidence": 96.39539422222224,
+        "block_ids": [],
+        "distance": 1,
+        "review_crop": "candidate-001-1-1-1.png",
+        "review_crop_sha256": "084c9cb803924973341355b2b2eb80f218b0ccf7a524f37302e63042d2f98fb7",
+        "label": "page_furniture",
+        "reviewer": "assistant-source-review",
+        "evidence": "Journal banner, not a meaningful body omission under the frozen rubric."
+      },
+      {
+        "physical_page": 1,
+        "line_id": "2:1:1",
+        "text": "Vol. 49, No. 4, October 1952 Research Paper 2358",
+        "bbox": [
+          281.7007448855722,
+          684.9660664819944,
+          517.0912310293083,
+          693.1246537396122
+        ],
+        "mean_reader_confidence": 96.29195577777779,
+        "block_ids": [],
+        "distance": 1,
+        "review_crop": "candidate-001-2-1-1.png",
+        "review_crop_sha256": "c3b74d1d8ea72263ccb4fcb34232b1be07522ef04d0fc33ea6cba4e956779d3f",
+        "label": "page_furniture",
+        "reviewer": "assistant-source-review",
+        "evidence": "Issue/date/research-paper banner, excluded by the frozen body-content rubric."
+      },
+      {
+        "physical_page": 1,
+        "line_id": "16:1:2",
+        "text": "1 Figures in brackets refer to references at the end of the paper.",
+        "bbox": [
+          26.394447987574903,
+          59.15443213296396,
+          215.7146249166349,
+          65.393351800554
+        ],
+        "mean_reader_confidence": 93.18176923076923,
+        "block_ids": [
+          "#/texts/16"
+        ],
+        "distance": 0.716981,
+        "review_crop": "candidate-001-16-1-2.png",
+        "review_crop_sha256": "3e9080237bb6e270aaa450f526454edf07d16741575ee385422c8abb6f9d50ad",
+        "label": "meaningful_omission",
+        "reviewer": "assistant-source-review",
+        "evidence": "Source footnote 2 explains bracketed references. Output has footnotes 1 and 3, but not 2. Tesseract incorrectly reads its marker as 1."
+      },
+      {
+        "physical_page": 3,
+        "line_id": "20:2:18",
+        "text": "Sn!”Ht are 11.20 and 11.21, respectively. At",
+        "bbox": [
+          270.66306663622265,
+          348.5443213296399,
+          509.41284616019567,
+          359.1024930747922
+        ],
+        "mean_reader_confidence": 84.3751072857143,
+        "block_ids": [
+          "#/texts/46"
+        ],
+        "distance": 0.34375,
+        "review_crop": "candidate-003-20-2-18.png",
+        "review_crop_sha256": "d6ba219eca145d0dee65914404b24ca4c990e68ef9859ab4f949bb22dfa6885a",
+        "label": "meaningful_omission",
+        "reviewer": "assistant-source-review",
+        "evidence": "Source gives computed/observed Sn120H+ values at m/e 121 as 11.20 and 11.21. Output block jumps to m/e 123. Tesseract damages the chemical notation. 11.21 elsewhere in a table does not preserve this comparison."
+      },
+      {
+        "physical_page": 4,
+        "line_id": "1:2:5",
+        "text": "C” is concentrated in plant material. Although",
+        "bbox": [
+          20.155760281420836,
+          613.4584487534626,
+          261.7849341313111,
+          623.0567867036011
+        ],
+        "mean_reader_confidence": 94.832466,
+        "block_ids": [
+          "#/texts/51"
+        ],
+        "distance": 0.342105,
+        "review_crop": "candidate-004-1-2-5.png",
+        "review_crop_sha256": "98b2d0649fd0f3dc96f229bb030143ff589afa312e70df872769695324e52f6a",
+        "label": "meaningful_omission",
+        "reviewer": "assistant-source-review",
+        "evidence": "Source states carbon-12 is concentrated in plant material; output jumps from whereas to Although. Tesseract damages the isotope marker."
+      }
+    ]
+  },
+  "integrity": {
+    "source_and_bundle_unchanged": true,
+    "all_three_original_evaluation_bundles_unchanged": true,
+    "prior_identifier_fix_implementation_unchanged": true,
+    "presentation_rerun_policy_and_all_five_tsvs_and_line_decisions_unchanged": true
+  },
+  "verification": {
+    "default_pytest_passed": 897,
+    "skipped": 35,
+    "deselected": 2,
+    "snapshot_passed": 1,
+    "scan_probe_tests_passed": 26,
+    "changed_python_ruff": "passed"
+  },
+  "decision": "Keep as a development probe. No automatic repair, production warning, confidence calibration, or new parser.",
+  "limitations": [
+    "One known document selected for existing failures; not a recall or general precision estimate.",
+    "391 reader agreements are not source-reviewed completeness.",
+    "30 short lines and 6 low-confidence lines are unassessed; 86 lines are represented by content crops, not validated OCR.",
+    "Both readers can miss the same text. Small omissions can remain below the line-distance threshold.",
+    "Matching uses local emitted provenance text, not a fresh parsing of final Markdown. Repeated text within a block can hide a loss.",
+    "English-only reader, no rotated pages. Chemical notation and footnote identifiers remain unreliable."
+  ],
+  "next_step": "Freeze untouched multi-document scan sources, review budget and acceptance criteria; obtain independent source labels, including unflagged pages."
+}

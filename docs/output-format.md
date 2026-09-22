@@ -111,6 +111,13 @@ out/<source-name>-<doc_id[:8]>/
   text and does not certify that all source content was emitted. Text repair,
   crop rendering, and existing single-region quality checks still use the
   primary location; a span list does not create multi-page fallback crops.
+- Docling list items retain supplied numeric, alphabetic, and citation markers
+  in `Block.text`, with the normalized marker also recorded in
+  `extra.list_marker`. Markdown keeps them as literal text inside bullet items,
+  such as `- [17] Reference` and `- 7\. Step`, rather than renumbering a sequence.
+  Passages and chunks carry the same identifier without Markdown escaping.
+  Plain bullet glyphs remain list structure; missing identifiers are not guessed.
+  Reconversion is required for older base state that discarded the marker.
 - `metadata.json` carries the selected bibliographic fields, inferred document kind,
   semantic roles for paper and book sections, and one record per extracted reference.
   Numbered reference sections report sequence gaps; continuation blocks retain every source

@@ -60,6 +60,11 @@ whose derivation has been deleted is worse than no number.
   `_missing_content.py` and `_missing_content_review.py` keep geometry and review
   rendering separate. Recorded in `docs/missing-content-pilot.md`; not a
   production omission detector or calibrated confidence gate.
+- `probe_scan_omissions.py` — probe. Compares source-page Tesseract lines with
+  local emitted text and authoritative content crops, preserving failures and
+  unassessed lines. Produces a source-crop review sheet without editing the
+  bundle. `_scan_omissions.py` holds the comparison policy. Recorded in
+  `docs/scan-omission-pilot.md`; not an automatic repair or confidence gate.
 - `probe_value_damage.py` — probe. Value and structural findings per table, split by the
   document-level text-layer verdict, over the 28 reviewed papers. Recorded in
   `docs/accuracy-improvement-notes.md`.

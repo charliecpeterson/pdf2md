@@ -799,10 +799,13 @@ Token-level signals: what the page printed against what was emitted.
   the other way round. Same claim about the same words, not a weaker one -- the
   pieces must still be adjacent and still concatenate exactly -- and measured before
   it went in: 8 of 40 Arabic blocks improve, 2 of 1002 Latin blocks improve, nothing
-  gets worse. A list item's printed
-  number is then expected normalization, not loss -- `emit` renders it as the bullet --
-  and rides as informational: 81 of 90 numeral-only flags were list items. Recall's
-  measured precision against an independent reader (poppler, `eval_recall_precision.py`)
+  gets worse. The former list-number exemption was removed after source review
+  showed lost checklist and citation identities. Docling's separate marker now
+  survives in block text and retrieval output; Markdown renders it literally
+  inside a bullet. Missing numbers follow the ordinary recall threshold, not a
+  blanket informational exemption. See the
+  [identifier regression](docs/missing-content-pilot.md#list-and-citation-identifier-follow-up).
+  Recall's earlier measured precision against an independent reader (poppler, `eval_recall_precision.py`)
   is 0.72-0.74 over the 36-document corpus (0.79 was the same measurement on the smaller
   earlier one; four seeds span 0.01, so the move is composition, not sampling), and the
   corpus now raises 124 recall actions where it once raised over 1,200. That harness now

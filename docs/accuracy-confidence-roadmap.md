@@ -278,9 +278,15 @@ now retains all Docling block regions in saved state and retrieval records. On
 one development paper, using those spans reduced probe-flagged pages from four
 to one without changing the output text. Experimental running-header filtering
 reduced development flags from 205 to 133, but the fresh probe missed all five
-observed omission-bearing pages. The next scoped experiments are list/citation
-identifier preservation and source-image coverage for scanned prose, not a new
-full parser. These findings do not establish calibrated confidence.
+observed omission-bearing pages. The subsequent
+[identifier fix](missing-content-pilot.md#list-and-citation-identifier-follow-up)
+preserves all 121 supplied identifiers in the two known regression documents,
+including Markdown and retrieval output. The
+[scanned-text follow-up](scan-omission-pilot.md) now surfaces all three known
+OCR omissions in one development scan, with two journal-banner false alarms.
+It remains read-only; untouched multi-document scans and independent labels
+are the next evaluation step. These findings do not establish calibrated
+confidence or justify a new full parser.
 
 The completed pilot delivers:
 

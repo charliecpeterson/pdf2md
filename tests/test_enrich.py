@@ -589,39 +589,36 @@ def test_word_recall_only_splits_into_words_the_output_really_has():
     assert _measurement(q) == {"matched": 1, "total": 2, "strict": 1}
 
 
-def test_a_list_item_number_is_not_reported_as_lost_text():
-    # `emit` renders a list item as `- text`, so the printed number becomes list
-    # structure rather than disappearing. Reported, but not as an action: it was
-    # 81 of 90 numeral-only recall flags across the corpus.
+def test_a_missing_list_item_number_is_lost_text():
     b = Block(id="#/l", type=BlockType.LIST, text="The properties of gases",
               page=1, bbox=_BB)
     record_recall([b], [], _FakeGlyphs({1: _FakePC(text="1 The properties of gases")}))
-    assert b.extra["glyph_word_recall"]["list_marker_only"] is True
+    assert b.extra["glyph_word_recall"] == {
+        "matched": 4, "total": 5, "strict": 4, "missing_in_neighbour": 0,
+    }
     marked, informational = recall_review_flags([b])
-    assert marked == []
-    assert len(informational) == 1 and "list marker" in informational[0].reason
+    assert len(marked) == 1 and "1 of 5" in marked[0].reason
+    assert informational == []
 
 
 def test_a_well_recalled_list_item_says_nothing_at_all():
-    # The bullet explanation is only worth making where a finding would
-    # otherwise be raised. Emitting it for every numbered list item put 1128
-    # informational rows across the corpus against the 75 blocks that were
-    # actually low-recall.
+    # Removing the list exemption does not change the general recall threshold.
     words = "the properties of gases at low temperature and high pressure here"
     b = Block(id="#/l", type=BlockType.LIST, text=words, page=1, bbox=_BB)
     record_recall([b], [], _FakeGlyphs({1: _FakePC(text=f"1 {words}")}))
     rec = b.extra["glyph_word_recall"]
     assert rec["matched"] / rec["total"] >= 0.9  # one number out of twelve
-    assert b.extra["glyph_word_recall"]["list_marker_only"] is True
+    assert rec == {"matched": 11, "total": 12, "strict": 11}
     marked, informational = recall_review_flags([b])
     assert marked == [] and informational == []
 
 
 def test_a_list_item_losing_a_word_is_still_an_action():
-    # The exemption is only for the leading number. A missing word still counts.
     b = Block(id="#/l", type=BlockType.LIST, text="The properties", page=1, bbox=_BB)
     record_recall([b], [], _FakeGlyphs({1: _FakePC(text="1 The properties of gases")}))
-    assert "list_marker_only" not in b.extra["glyph_word_recall"]
+    assert b.extra["glyph_word_recall"] == {
+        "matched": 2, "total": 5, "strict": 2, "missing_in_neighbour": 0,
+    }
     marked, _ = recall_review_flags([b])
     assert len(marked) == 1
 
@@ -669,7 +666,19 @@ def test_a_short_list_entry_is_not_mistaken_for_a_fragment():
     # fifteen characters of output, not a shattered glyph.
     b = Block(id="#/l", type=BlockType.LIST, text="Simple mixtures", page=1, bbox=_BB)
     record_recall([b], [], _FakeGlyphs({1: _FakePC(text="5 Simple mixtures")}))
-    assert b.extra["glyph_word_recall"]["list_marker_only"] is True
+    assert b.extra["glyph_word_recall"] == {
+        "matched": 2, "total": 3, "strict": 2, "missing_in_neighbour": 0,
+    }
+
+
+def test_legacy_list_marker_exemption_does_not_hide_low_recall():
+    b = Block(id="#/l", type=BlockType.LIST, text="Simple mixtures", page=1, bbox=_BB)
+    b.extra["glyph_word_recall"] = {
+        "matched": 2, "total": 3, "strict": 2, "list_marker_only": True,
+    }
+    marked, informational = recall_review_flags([b])
+    assert len(marked) == 1 and "1 of 3" in marked[0].reason
+    assert informational == []
 
 
 def _overlapping_pair(neighbour_text: str):
