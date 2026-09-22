@@ -8,6 +8,7 @@ import pytest
 
 from pdf2md.chunks import write_chunks
 from pdf2md.schema import (
+    BBox,
     Block,
     BlockType,
     CoverageFlag,
@@ -18,9 +19,28 @@ from pdf2md.schema import (
     FigureRef,
     Section,
     SectionKind,
+    SourceSpan,
     TableData,
 )
 from pdf2md.structure import build_structure
+
+
+def test_chunk_sources_keep_continuations_without_cross_page_bbox_union(tmp_path):
+    block = Block("p", BlockType.PARAGRAPH, "Complete paragraph.", 1, BBox(10, 90, 100, 70),
+                  source_spans=[SourceSpan(1, BBox(10, 90, 100, 70)),
+                                SourceSpan(2, BBox(20, 700, 200, 680))])
+    doc = Document("a" * 64, "source.pdf", "a" * 64, 1, 2,
+                   build_structure([block], None, title="Doc", page_count=2).root, blocks=[block])
+    path = write_chunks(tmp_path, doc, [tmp_path / "document.md"], {})
+    chunk = json.loads(path.read_text())
+    assert chunk["pages"] == [1]
+    assert chunk["bbox"] == {"x0": 10, "y0": 90, "x1": 100, "y1": 70}
+    assert chunk["sources"] == [
+        {"block_id": "p", "page": 1, "bbox": {"x0": 10, "y0": 90, "x1": 100, "y1": 70},
+         "source_page": "../source.pdf#page=1"},
+        {"block_id": "p", "page": 2, "bbox": {"x0": 20, "y0": 700, "x1": 200, "y1": 680},
+         "source_page": "../source.pdf#page=2"},
+    ]
 
 
 def test_chunks_are_bounded_and_carry_retrieval_context(tmp_path):

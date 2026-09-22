@@ -28,6 +28,7 @@ from pdf2md.schema import (
     FigureRef,
     RawCell,
     RawTable,
+    SourceSpan,
     TableData,
 )
 
@@ -62,6 +63,11 @@ def _prov(item) -> tuple[int | None, BBox | None]:
     p = prov[0]
     b = p.bbox
     return p.page_no, BBox(x0=b.l, y0=b.t, x1=b.r, y1=b.b)
+
+
+def _source_spans(item) -> list[SourceSpan]:
+    return [SourceSpan(p.page_no, BBox(p.bbox.l, p.bbox.t, p.bbox.r, p.bbox.b))
+            for p in getattr(item, "prov", None) or []]
 
 
 # Text Docling extracted from inside a figure and attached to the Picture (see
@@ -311,7 +317,7 @@ class DoclingEngine:
                 extra["level"] = level
             blocks.append(
                 Block(id=item.self_ref, type=btype, text=text, page=page, bbox=bbox,
-                      engine=self.name, extra=extra)
+                      engine=self.name, extra=extra, source_spans=_source_spans(item))
             )
         return blocks
 

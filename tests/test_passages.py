@@ -20,6 +20,7 @@ from pdf2md.schema import (
     FigureRef,
     Section,
     SectionKind,
+    SourceSpan,
     TableData,
 )
 from pdf2md.search import _load_passages
@@ -106,6 +107,29 @@ def test_passages_are_stable_across_one_block_edit():
     assert old[0]["next_id"] == old[1]["id"]
     assert old[1]["previous_id"] == old[0]["id"]
     assert old[0]["previous_id"] is None and old[1]["next_id"] is None
+
+
+def test_passages_keep_all_primary_and_context_spans_without_changing_identity():
+    paragraph = Block("p", BlockType.PARAGRAPH, "The explanation continues on the next page.",
+                      1, BBox(10, 90, 200, 70))
+    equation = Block("eq", BlockType.EQUATION, "x = y", 2, BBox(10, 100, 200, 80))
+    doc = _document([paragraph, equation])
+    before = _passages(doc)
+    paragraph.source_spans = [SourceSpan(1, paragraph.bbox), SourceSpan(2, BBox(10, 700, 200, 680))]
+    after = _passages(doc)
+    assert [(p["id"], p["content_hash"], p["display_text"]) for p in after] == [
+        (p["id"], p["content_hash"], p["display_text"]) for p in before]
+    assert after[0]["sources"] == [
+        {"block_id": "p", "page": 1, "bbox": {"x0": 10, "y0": 90, "x1": 200, "y1": 70},
+         "source_page": "../source.pdf#page=1", "role": "primary"},
+        {"block_id": "p", "page": 2, "bbox": {"x0": 10, "y0": 700, "x1": 200, "y1": 680},
+         "source_page": "../source.pdf#page=2", "role": "primary"},
+    ]
+    assert [(s["block_id"], s["page"], s["role"]) for s in after[1]["sources"]] == [
+        ("eq", 2, "primary"), ("p", 1, "context"), ("p", 2, "context")]
+    validator = Draft202012Validator(load_passage_schema())
+    for passage in after:
+        validator.validate(passage)
 
 
 def test_passage_carries_context_source_review_and_authority():

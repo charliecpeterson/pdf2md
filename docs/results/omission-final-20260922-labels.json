@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "experiment_id": "03eb0eae16a36412a6bf56327f59701e10362b3d8465260ab39bf5a8c36e65a0",
+  "review_method": "Assistant visual source review against full Markdown, continued text, and content fallback crops; not independent human ground truth.",
+  "labels": [
+    {
+      "id": "788dd8f0bcb0ec06e40c300690266742532a7e760a93be57764b77ed0ef3482f:p8",
+      "omission": "yes",
+      "reviewer": "Codex assistant source review",
+      "note": "SP 811 physical page 8: checklist entries (9) through (18) retain their prose but lose the printed identifiers in 04_check-list-for-reviewing-manuscripts.md, replaced by unnumbered checkbox bullets. No content crop preserves the identifiers. Counted as meaningful list-identity loss, not merely layout."
+    },
+    {
+      "id": "788dd8f0bcb0ec06e40c300690266742532a7e760a93be57764b77ed0ef3482f:p10",
+      "omission": "no",
+      "reviewer": "Codex assistant source review",
+      "note": "SP 811 physical page 10: compared all table-of-contents headings and page references with 05_table-of-contents.md, table #/tables/1. Content is retained; merged or split rows are structural errors outside this omission label. The repeated top title is page furniture."
+    },
+    {
+      "id": "788dd8f0bcb0ec06e40c300690266742532a7e760a93be57764b77ed0ef3482f:p67",
+      "omission": "no",
+      "reviewer": "Codex assistant source review",
+      "note": "SP 811 physical page 67 (printed 55): compared conversion rows from square foot per second through watt per square centimeter and footnotes 24/25 with 17_appendix-b-conversion-factors6.md, table #/tables/35. No meaningful omission found. Merged rows and numeric accuracy are not certified."
+    },
+    {
+      "id": "788dd8f0bcb0ec06e40c300690266742532a7e760a93be57764b77ed0ef3482f:p70",
+      "omission": "no",
+      "reviewer": "Codex assistant source review",
+      "note": "SP 811 physical page 70 (printed 58): compared electrical-unit rows and ENERGY section through foot poundal with 17_appendix-b-conversion-factors6.md, table #/tables/38. Content retained despite row fragmentation. Numeric accuracy is not certified."
+    },
+    {
+      "id": "a0051fb55aa22cbc18f70fa41bb9f0170e83cb23072c05e628e59711e4fdd90d:p1",
+      "omission": "yes",
+      "reviewer": "Codex assistant source review",
+      "note": "Dibeler physical page 1 (printed 235): bottom-left footnote 2 explaining bracketed references is absent from document.md, including its final Footnotes section. Footnotes 1 and 3 are relocated there. No content fallback crop preserves footnote 2; the general page scan link is evidence, not a content fallback under the frozen rubric."
+    },
+    {
+      "id": "a0051fb55aa22cbc18f70fa41bb9f0170e83cb23072c05e628e59711e4fdd90d:p3",
+      "omission": "yes",
+      "reviewer": "Codex assistant source review",
+      "note": "Dibeler physical page 3 (printed 237): the right-column tin paragraph loses the Sn-120 hydride comparison at m/e 121, with computed/observed values 11.20 and 11.21. document.md jumps from 'computed and observed values of' to m/e 123. Table 1 elsewhere retains the observed 11.21 but not this computed-versus-observed statement. The inspected table-3 fallback crop preserves the left table, not this prose."
+    },
+    {
+      "id": "a0051fb55aa22cbc18f70fa41bb9f0170e83cb23072c05e628e59711e4fdd90d:p4",
+      "omission": "yes",
+      "reviewer": "Codex assistant source review",
+      "note": "Dibeler physical page 4 (printed 238): the upper-left paragraph loses the clause stating that carbon-12 is concentrated in plant material. document.md jumps from 'limestone, whereas' to 'Although'. No content fallback crop preserves the clause. Other OCR and ordering errors were not used as omission labels."
+    },
+    {
+      "id": "a44d7e22d2005752271c9cc1929c6462d4c8270916b063977992a883e3a54362:p4",
+      "omission": "no",
+      "reviewer": "Codex assistant source review",
+      "note": "word2vec physical page 4: headings, prose, and the paragraph continued on page 5 are retained in document.md. Inspected assets/texts_52_p4.png and assets/texts_57_p4.png preserve equations (4) and (5), including equation numbers. No meaningful omission found."
+    },
+    {
+      "id": "a44d7e22d2005752271c9cc1929c6462d4c8270916b063977992a883e3a54362:p11",
+      "omission": "yes",
+      "reviewer": "Codex assistant source review",
+      "note": "word2vec physical page 11: reference text and footnote 4 are retained, but printed citation identifiers [1] through [17] become unnumbered bullets in document.md. In-text numeric citations remain, so the explicit citation-to-entry mapping is lost. No content fallback crop preserves those identifiers. Counted as meaningful list-identity loss."
+    }
+  ]
+}

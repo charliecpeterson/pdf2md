@@ -24,6 +24,7 @@ from pdf2md.schema import (
     FigureRef,
     RawCell,
     RawTable,
+    SourceSpan,
     TableData,
 )
 
@@ -47,6 +48,10 @@ def _block(value: dict[str, Any]) -> Block:
         values.get("coverage_status", CoverageStatus.PENDING)
     )
     values["bbox"] = _bbox(values.get("bbox"))
+    values["source_spans"] = [
+        SourceSpan(**{**_known(SourceSpan, span), "bbox": _bbox(span.get("bbox"))})
+        for span in values.get("source_spans", [])
+    ]
     return Block(**values)
 
 

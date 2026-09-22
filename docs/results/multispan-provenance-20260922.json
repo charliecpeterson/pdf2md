@@ -1,0 +1,171 @@
+{
+  "source_sha256": "355e0d1e03281838f1bfef408962b0c707c24db86037c014c6a3aafd96fddc9c",
+  "comparison": "same completed conversion, full spans versus primary-only geometry; no output text changes",
+  "raw_docling_sha256": "f850e548b8369de82e511dd20ab4ea3db0708bc067b40a07a52b7cb8d0af953d",
+  "provenance_sha256": "67331b8c5c6325db005f05be5fe2f29113c13c0724800232297ef583b67820c7",
+  "manifest_sha256": "e04ab629a9fce3877a85130005da0ca9626eec07044c59f73f80693d74438f72",
+  "experiment_id": "48f89fcc60753af370d128c8e4a1527418f287e692cd0aa6f4cc9ac95a2f6e2c",
+  "blocks_checked_against_raw_docling": 128,
+  "multi_span_blocks": [
+    "#/texts/8",
+    "#/texts/19",
+    "#/texts/185"
+  ],
+  "primary_only_flagged_pages": 4,
+  "all_spans_flagged_pages": 1,
+  "pages": [
+    {
+      "page": 1,
+      "primary_only_flagged": false,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 43,
+      "all_spans_uncovered_glyphs": 43
+    },
+    {
+      "page": 2,
+      "primary_only_flagged": true,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 127,
+      "all_spans_uncovered_glyphs": 1
+    },
+    {
+      "page": 3,
+      "primary_only_flagged": true,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 362,
+      "all_spans_uncovered_glyphs": 1
+    },
+    {
+      "page": 4,
+      "primary_only_flagged": false,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 1,
+      "all_spans_uncovered_glyphs": 1
+    },
+    {
+      "page": 5,
+      "primary_only_flagged": false,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 1,
+      "all_spans_uncovered_glyphs": 1
+    },
+    {
+      "page": 6,
+      "primary_only_flagged": false,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 1,
+      "all_spans_uncovered_glyphs": 1
+    },
+    {
+      "page": 7,
+      "primary_only_flagged": false,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 1,
+      "all_spans_uncovered_glyphs": 1
+    },
+    {
+      "page": 8,
+      "primary_only_flagged": false,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 1,
+      "all_spans_uncovered_glyphs": 1
+    },
+    {
+      "page": 9,
+      "primary_only_flagged": false,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 1,
+      "all_spans_uncovered_glyphs": 1
+    },
+    {
+      "page": 10,
+      "primary_only_flagged": true,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 226,
+      "all_spans_uncovered_glyphs": 2
+    },
+    {
+      "page": 11,
+      "primary_only_flagged": false,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 2,
+      "all_spans_uncovered_glyphs": 2
+    },
+    {
+      "page": 12,
+      "primary_only_flagged": true,
+      "all_spans_flagged": true,
+      "primary_only_uncovered_glyphs": 69,
+      "all_spans_uncovered_glyphs": 69
+    },
+    {
+      "page": 13,
+      "primary_only_flagged": false,
+      "all_spans_flagged": false,
+      "primary_only_uncovered_glyphs": 2,
+      "all_spans_uncovered_glyphs": 2
+    }
+  ],
+  "target": {
+    "block_id": "#/texts/185",
+    "source_spans": [
+      {
+        "page": 9,
+        "bbox": {
+          "x0": 107.532,
+          "y0": 89.39465259999997,
+          "x1": 504.00203558399943,
+          "y1": 69.93377439292033
+        }
+      },
+      {
+        "page": 10,
+        "bbox": {
+          "x0": 108,
+          "y0": 391.0436526,
+          "x1": 504.0030685967996,
+          "y1": 360.67377439292034
+        }
+      }
+    ],
+    "complete_text_present": true,
+    "passages_checked": 1
+  },
+  "engine_versions": {
+    "docling": "2.108.0",
+    "pdf2md": "0.2.0"
+  },
+  "config": {
+    "device": "mps",
+    "do_formula_enrichment": false,
+    "digitize_figures": false,
+    "ocr_figures": false
+  },
+  "accuracy_claim": null,
+  "date": "2026-09-22",
+  "base_state_sha256": "d1c6319cf7e77d1c953218ede45b616222d59aa90f1d717df7b6171407573010",
+  "implementation_sha256": {
+    "scripts/probe_missing_content.py": "bed83a67e3411bb1d3f3211e6bd32aeba0a15bc4d14dbdacda8e3d2e279cb9bc",
+    "scripts/_missing_content.py": "6d961368c5fa97c368214589cc2c977a3beb8ad2b5f1182af465c2f77a819096",
+    "scripts/_missing_content_review.py": "5c14757c2c2d12ed0e9c773b0189b06aba958044a7fdc1dfd397199937669707",
+    "src/pdf2md/enrich.py": "5a02acfe5ebbee5aad5a22df8d99203a8694534f0f0d700931ffbaf06f2bab4a",
+    "src/pdf2md/scripts.py": "c337cf5500e0570030c441cbb5aeb810894b5a2d010383b5992f5da5d447b48c",
+    "src/pdf2md/schema.py": "2a65ac005bffba02afa94c0bb5db6f9d238a736bfbe95ecce792f73a5f22f986"
+  },
+  "runtime_versions": {
+    "python": "3.11.15 (main, Mar 25 2026, 02:58:47) [Clang 22.1.1 ]",
+    "pypdfium2": "4.30.0",
+    "pillow": "10.4.0"
+  },
+  "complete_text_and_chunk_sources_verified": [
+    "#/texts/8",
+    "#/texts/19",
+    "#/texts/185"
+  ],
+  "original_development_bundles_unchanged": 10,
+  "tests": {
+    "passed": 840,
+    "skipped": 35,
+    "deselected": 2
+  }
+}

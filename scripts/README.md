@@ -52,6 +52,14 @@ whose derivation has been deleted is worse than no number.
   grid can be diffed to find wrong *values*. They cannot: both read the same glyph
   layer, so character corruption appears identically in each. Recorded in
   `docs/accuracy-improvement-notes.md`.
+- `probe_missing_content.py` — probe. Pins completed bundles, compares full-page
+  glyph geometry with represented regions, samples flagged and unflagged pages,
+  conservatively downgrades repeated isolated edge furniture, and generates a
+  local source-review sheet and descriptive label scores with finite-corpus
+  worst-case bounds (not confidence intervals). Helpers
+  `_missing_content.py` and `_missing_content_review.py` keep geometry and review
+  rendering separate. Recorded in `docs/missing-content-pilot.md`; not a
+  production omission detector or calibrated confidence gate.
 - `probe_value_damage.py` — probe. Value and structural findings per table, split by the
   document-level text-layer verdict, over the 28 reviewed papers. Recorded in
   `docs/accuracy-improvement-notes.md`.

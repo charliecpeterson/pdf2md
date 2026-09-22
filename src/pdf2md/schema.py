@@ -77,6 +77,14 @@ class BBox:
 
 
 @dataclass
+class SourceSpan:
+    """One engine-reported source region, not a character range in normalized text."""
+
+    page: int
+    bbox: BBox | None
+
+
+@dataclass
 class Block:
     id: str
     type: BlockType
@@ -87,6 +95,12 @@ class Block:
     engine: str = "docling"
     coverage_status: CoverageStatus = CoverageStatus.PENDING
     extra: dict[str, Any] = field(default_factory=dict)
+    # page/bbox remain the primary location for legacy consumers. An empty list
+    # means the engine or an older saved bundle supplied only that location.
+    source_spans: list[SourceSpan] = field(default_factory=list)
+
+    def source_regions(self) -> list[SourceSpan]:
+        return self.source_spans or [SourceSpan(self.page, self.bbox)]
 
 
 @dataclass

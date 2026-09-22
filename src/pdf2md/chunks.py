@@ -8,6 +8,7 @@ region. They are an index artifact, not another copy of full provenance.
 from __future__ import annotations
 
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 from pdf2md.confidence import plot_data_accepted
@@ -238,6 +239,15 @@ def _attach_bboxes(chunks: list[dict], doc: Document) -> None:
     can cite the exact region of the source page instead of just the page."""
     blocks_by_id = {b.id: b for b in doc.blocks}
     for chunk in chunks:
+        # Keep the legacy page-grouping/bbox fields stable, but do not let them
+        # erase continuation regions from the source-addressable index.
+        chunk["sources"] = [
+            {"block_id": bid, "page": span.page,
+             "bbox": asdict(span.bbox) if span.bbox is not None else None,
+             "source_page": f"../source.pdf#page={span.page}"}
+            for bid in chunk["block_ids"] if bid in blocks_by_id
+            for span in blocks_by_id[bid].source_regions()
+        ]
         boxes = [
             blocks_by_id[bid].bbox
             for bid in chunk["block_ids"]

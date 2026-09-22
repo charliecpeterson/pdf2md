@@ -190,11 +190,11 @@ def _source_records(
 ) -> list[dict]:
     records = [{
         "block_id": block.id,
-        "page": block.page,
-        "bbox": _bbox(block.bbox),
-        "source_page": f"../source.pdf#page={block.page}",
+        "page": span.page,
+        "bbox": _bbox(span.bbox),
+        "source_page": f"../source.pdf#page={span.page}",
         "role": "primary",
-    }]
+    } for span in block.source_regions()]
     if figure and figure.caption and figure.caption_bbox:
         records.append({
             "block_id": block.id,
@@ -206,12 +206,13 @@ def _source_records(
     records.extend(
         {
             "block_id": related.id,
-            "page": related.page,
-            "bbox": _bbox(related.bbox),
-            "source_page": f"../source.pdf#page={related.page}",
+            "page": span.page,
+            "bbox": _bbox(span.bbox),
+            "source_page": f"../source.pdf#page={span.page}",
             "role": "caption" if related.type is BlockType.CAPTION else "context",
         }
         for related in related_blocks
+        for span in related.source_regions()
     )
     return records
 

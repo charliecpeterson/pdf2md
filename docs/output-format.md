@@ -99,6 +99,18 @@ out/<source-name>-<doc_id[:8]>/
 - `manifest.json` is the machine entry point. It points to the Markdown, source,
   assets, review targets, profile, base state, and full provenance without duplicating their
   contents.
+- Blocks in `provenance.json` and `base-state.json` have an optional
+  `source_spans` list of `{page, bbox}` records. Docling conversions retain every
+  provenance region, including multiple regions on one page. Coordinates use
+  the same absolute PDF user space as the primary `bbox`, with each region
+  shifted by its own page's origin. `page` and `bbox` remain the primary location.
+  An absent or empty span list falls back to those fields, preserving old bundles
+  and other engines. Replaying old state cannot recover spans that were never
+  saved; reconvert the PDF to obtain them. The list is additive to format 0.13
+  and engine-state schema 1. It does not contain character offsets into normalized
+  text and does not certify that all source content was emitted. Text repair,
+  crop rendering, and existing single-region quality checks still use the
+  primary location; a span list does not create multi-page fallback crops.
 - `metadata.json` carries the selected bibliographic fields, inferred document kind,
   semantic roles for paper and book sections, and one record per extracted reference.
   Numbered reference sections report sequence gaps; continuation blocks retain every source
@@ -114,6 +126,11 @@ out/<source-name>-<doc_id[:8]>/
   records of at most 6,000 characters. Each record names its Markdown file,
   exact source page, block IDs, assets, and review dispositions. `needs_review`
   means an action is required; valid image dependence is recorded separately.
+  Grouping and the legacy `pages`, `source_pages`, and union `bbox` fields use
+  each block's primary location. The additive `sources` list carries all known
+  regions, including continuation pages, with a block ID, page, bbox, and source
+  link per entry. Use that list for complete source attribution; never union
+  coordinates from different pages into one box.
 - `passages.jsonl` is the stable retrieval and embedding interface. Its IDs derive
   from source block IDs rather than sequence position, so editing one block does not
   rename every later passage. Records carry separate display and contextualized text,
@@ -127,6 +144,11 @@ out/<source-name>-<doc_id[:8]>/
   `methods`, `results`, `conclusions`, or `references`. `passages.schema.json` is the
   bundled copy of the
   [published schema](../src/pdf2md/passages-v2.schema.json).
+
+  A block spanning multiple regions contributes one `sources` entry per region,
+  in engine order. Several entries may have the same block ID and `primary` role.
+  Related context blocks also retain every region. These are block-level source
+  references, not exact character ranges for each token-bounded passage split.
 
   The default `lexical` tokenizer is deterministic and requires no model files. To size
   passages for a real embedding index, select that model's tokenizer, for example:

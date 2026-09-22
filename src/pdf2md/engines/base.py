@@ -76,6 +76,8 @@ def normalize_page_origin(result: EngineResult, pdf_path: Path) -> None:
 
     for b in result.blocks:
         b.bbox = shift(b.bbox, b.page)
+        b.source_spans = [replace(span, bbox=shift(span.bbox, span.page))
+                          for span in b.source_spans]
     for t in result.tables:
         t.bbox = shift(t.bbox, t.page)
         raw = result.raw_tables.get(t.block_id)
