@@ -1,0 +1,250 @@
+{
+  "date": "2026-09-22",
+  "status": "awaiting independent human source review; no accuracy claim",
+  "protocol": "docs/scan-evaluation-protocol.md",
+  "protocol_sha256": "a6da691af6c48e2808c1679ab5ca2eabe97e2c3811241612a3ac2414d2336bbb",
+  "sources_record_sha256": "7bc938228d6c86d27d97596da8129055b51c9385b717e1f69638df1948002841",
+  "scratch_root": "/Users/charlie/scratch/pdf2md-scan-evaluation-20260922",
+  "experiment_id": "56abd275ebd3fce0e39f72d6877e62e42e6cece582ed16191611a2c77a8a298e",
+  "seed": 20260923,
+  "sample_per_stratum": 2,
+  "review_budget": 4,
+  "summary": {
+    "documents": 3,
+    "pages": 23,
+    "sampled_pages": 7,
+    "baseline_flagged_pages": 15,
+    "probe_flagged_pages": 17,
+    "reader_status": {
+      "compared": 23
+    },
+    "labels_completed": 0,
+    "accuracy": null
+  },
+  "line_status": {
+    "reader_disagreement": 29,
+    "short_line": 152,
+    "reader_agreement": 974,
+    "low_reader_confidence": 30,
+    "content_crop": 379
+  },
+  "strata": [
+    {
+      "document_id": "53dbd77f9a2a2b9e00b42d1942a3c485d6f88dedb8f92a60b679ff9ab598eefb",
+      "stratum": "flagged",
+      "population": 5,
+      "sampled": 2
+    },
+    {
+      "document_id": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463",
+      "stratum": "flagged",
+      "population": 5,
+      "sampled": 2
+    },
+    {
+      "document_id": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463",
+      "stratum": "unflagged",
+      "population": 1,
+      "sampled": 1
+    },
+    {
+      "document_id": "ca24eb9145f1ab9ce9a41960870f5e4e57a58a7673aa299729747109b675c5ba",
+      "stratum": "flagged",
+      "population": 12,
+      "sampled": 2
+    }
+  ],
+  "sample": [
+    {
+      "id": "53dbd77f9a2a2b9e00b42d1942a3c485d6f88dedb8f92a60b679ff9ab598eefb:p1",
+      "document_id": "53dbd77f9a2a2b9e00b42d1942a3c485d6f88dedb8f92a60b679ff9ab598eefb",
+      "page": 1,
+      "stratum": "flagged",
+      "inclusion_probability": 0.4,
+      "reader_status": "compared"
+    },
+    {
+      "id": "53dbd77f9a2a2b9e00b42d1942a3c485d6f88dedb8f92a60b679ff9ab598eefb:p4",
+      "document_id": "53dbd77f9a2a2b9e00b42d1942a3c485d6f88dedb8f92a60b679ff9ab598eefb",
+      "page": 4,
+      "stratum": "flagged",
+      "inclusion_probability": 0.4,
+      "reader_status": "compared"
+    },
+    {
+      "id": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463:p2",
+      "document_id": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463",
+      "page": 2,
+      "stratum": "flagged",
+      "inclusion_probability": 0.4,
+      "reader_status": "compared"
+    },
+    {
+      "id": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463:p4",
+      "document_id": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463",
+      "page": 4,
+      "stratum": "flagged",
+      "inclusion_probability": 0.4,
+      "reader_status": "compared"
+    },
+    {
+      "id": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463:p6",
+      "document_id": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463",
+      "page": 6,
+      "stratum": "unflagged",
+      "inclusion_probability": 1,
+      "reader_status": "compared"
+    },
+    {
+      "id": "ca24eb9145f1ab9ce9a41960870f5e4e57a58a7673aa299729747109b675c5ba:p3",
+      "document_id": "ca24eb9145f1ab9ce9a41960870f5e4e57a58a7673aa299729747109b675c5ba",
+      "page": 3,
+      "stratum": "flagged",
+      "inclusion_probability": 0.16666666666666666,
+      "reader_status": "compared"
+    },
+    {
+      "id": "ca24eb9145f1ab9ce9a41960870f5e4e57a58a7673aa299729747109b675c5ba:p9",
+      "document_id": "ca24eb9145f1ab9ce9a41960870f5e4e57a58a7673aa299729747109b675c5ba",
+      "page": 9,
+      "stratum": "flagged",
+      "inclusion_probability": 0.16666666666666666,
+      "reader_status": "compared"
+    }
+  ],
+  "documents": [
+    {
+      "name": "fumigants",
+      "source_sha256": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463",
+      "reader_directory": "/Users/charlie/scratch/pdf2md-scan-evaluation-20260922/readers/fumigants",
+      "manifest_sha256": "65f748eb4f72c2b51e41f9d2d986eb34a38c057001153f0d33e95f5edb9ebe9c",
+      "report_sha256": "76c7fd8ebbf603682bb2dc30be80a0964048be466abcffd85afb8749f38dc87a",
+      "reader": {
+        "executable": "/opt/homebrew/bin/tesseract",
+        "sha256": "b0f2903f4095f770fe490e1880a1728e72376c9a10c52be5a1fc13c06371d8b8",
+        "version": "tesseract 5.5.0",
+        "trained_data": "/opt/homebrew/Cellar/tesseract/5.5.0_1/share/tessdata/eng.traineddata",
+        "trained_data_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+      },
+      "implementation_sha256": {
+        "probe_scan_omissions.py": "c9481b0d8652b7fbe114a5cd9f7eb0650f8a81d74a11f5e3b1e0dc7dd995fa63",
+        "_scan_omissions.py": "60402a3974272e5dcdb567d9817f698415051d4013c92c5eddd8430f0be98de5",
+        "probe_missing_content.py": "14719c3b9fedb108acd0326d1537ab877dde182dd9732f825b09b1d2cfe892fd",
+        "_missing_content.py": "6789619c9f0202ffa1e45646f48285caf4a5e467e69ddd8bc025af42b35f4547",
+        "_missing_content_review.py": "fb4173c9cadd61d3e37815c9ce6bf7ea2076b8d370df145bd50d942b654f1815",
+        "src/pdf2md/render.py": "58ed0b7f0ba32ef204da5f24a5542b6d5e1496db1d343937a71e7f9a0ac71975"
+      },
+      "summary": {
+        "pages": 6,
+        "page_status": {
+          "compared": 6
+        },
+        "line_status": {
+          "reader_disagreement": 9,
+          "short_line": 16,
+          "reader_agreement": 129,
+          "low_reader_confidence": 10,
+          "content_crop": 69
+        }
+      }
+    },
+    {
+      "name": "gallium",
+      "source_sha256": "53dbd77f9a2a2b9e00b42d1942a3c485d6f88dedb8f92a60b679ff9ab598eefb",
+      "reader_directory": "/Users/charlie/scratch/pdf2md-scan-evaluation-20260922/readers/gallium",
+      "manifest_sha256": "3621215ac992d3ffce7432fcc61e4c81d87e7a98dd1fd53ba1f29f8db221342a",
+      "report_sha256": "ad9f1f737f4f2c40109959b6aa1298bb91b167feb0382bff1cebc241aa9a3755",
+      "reader": {
+        "executable": "/opt/homebrew/bin/tesseract",
+        "sha256": "b0f2903f4095f770fe490e1880a1728e72376c9a10c52be5a1fc13c06371d8b8",
+        "version": "tesseract 5.5.0",
+        "trained_data": "/opt/homebrew/Cellar/tesseract/5.5.0_1/share/tessdata/eng.traineddata",
+        "trained_data_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+      },
+      "implementation_sha256": {
+        "probe_scan_omissions.py": "c9481b0d8652b7fbe114a5cd9f7eb0650f8a81d74a11f5e3b1e0dc7dd995fa63",
+        "_scan_omissions.py": "60402a3974272e5dcdb567d9817f698415051d4013c92c5eddd8430f0be98de5",
+        "probe_missing_content.py": "14719c3b9fedb108acd0326d1537ab877dde182dd9732f825b09b1d2cfe892fd",
+        "_missing_content.py": "6789619c9f0202ffa1e45646f48285caf4a5e467e69ddd8bc025af42b35f4547",
+        "_missing_content_review.py": "fb4173c9cadd61d3e37815c9ce6bf7ea2076b8d370df145bd50d942b654f1815",
+        "src/pdf2md/render.py": "58ed0b7f0ba32ef204da5f24a5542b6d5e1496db1d343937a71e7f9a0ac71975"
+      },
+      "summary": {
+        "pages": 5,
+        "page_status": {
+          "compared": 5
+        },
+        "line_status": {
+          "reader_disagreement": 10,
+          "short_line": 10,
+          "reader_agreement": 200,
+          "low_reader_confidence": 3
+        }
+      }
+    },
+    {
+      "name": "noble-gases",
+      "source_sha256": "ca24eb9145f1ab9ce9a41960870f5e4e57a58a7673aa299729747109b675c5ba",
+      "reader_directory": "/Users/charlie/scratch/pdf2md-scan-evaluation-20260922/readers/noble-gases",
+      "manifest_sha256": "92822975d823404f51201439f08c92ed47aec4db7cccde4d56f7ba0ac4391453",
+      "report_sha256": "4f9dc795a148cfba8efa1499adc871dd060b68c6836c6c9d590ad46413c0bd91",
+      "reader": {
+        "executable": "/opt/homebrew/bin/tesseract",
+        "sha256": "b0f2903f4095f770fe490e1880a1728e72376c9a10c52be5a1fc13c06371d8b8",
+        "version": "tesseract 5.5.0",
+        "trained_data": "/opt/homebrew/Cellar/tesseract/5.5.0_1/share/tessdata/eng.traineddata",
+        "trained_data_sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+      },
+      "implementation_sha256": {
+        "probe_scan_omissions.py": "c9481b0d8652b7fbe114a5cd9f7eb0650f8a81d74a11f5e3b1e0dc7dd995fa63",
+        "_scan_omissions.py": "60402a3974272e5dcdb567d9817f698415051d4013c92c5eddd8430f0be98de5",
+        "probe_missing_content.py": "14719c3b9fedb108acd0326d1537ab877dde182dd9732f825b09b1d2cfe892fd",
+        "_missing_content.py": "6789619c9f0202ffa1e45646f48285caf4a5e467e69ddd8bc025af42b35f4547",
+        "_missing_content_review.py": "fb4173c9cadd61d3e37815c9ce6bf7ea2076b8d370df145bd50d942b654f1815",
+        "src/pdf2md/render.py": "58ed0b7f0ba32ef204da5f24a5542b6d5e1496db1d343937a71e7f9a0ac71975"
+      },
+      "summary": {
+        "pages": 12,
+        "page_status": {
+          "compared": 12
+        },
+        "line_status": {
+          "reader_disagreement": 10,
+          "reader_agreement": 645,
+          "short_line": 126,
+          "low_reader_confidence": 17,
+          "content_crop": 310
+        }
+      }
+    }
+  ],
+  "artifacts_sha256": {
+    "conversion-inputs.json": "7079f2e3d73999191c31bc11b8450146deaa9acc70dc18bd48c7be0828ce2ea2",
+    "conversion-results.json": "39f8923d91ed17b5f502096b531c125278073ea575ec843a7662294406f3a4f4",
+    "frozen-bundles.json": "8db5ab43c1faab9101940e8f0c19a34c23c84738632857d7b6d91da354c17aaa",
+    "human-review/report.json": "7b6e30e42e791ebf98d08611789a5549cf9d34f5fbf1b603eeeffcbc3b47f52f",
+    "human-review/review.html": "19e090d7c2b0d184dd1f82e5fd7bd8909c48e3594ace3616deab74c108cbe993",
+    "human-review/labels.json": "d99964c014f5ccca835c073e1ec1fcc45c12e4292ea9318c0056fb55ec4d649b",
+    "human-review/scores-pending.json": "2b924151ae0b6ba3d9365d4713f022e3af61d4c128454255478a8408627dd198"
+  },
+  "review_implementation_sha256": {
+    "prepare_scan_review.py": "8832a981b98a649a9bb7ebe9bdd8264550db446c7e28c2a14eb45776e01ea921",
+    "_missing_content_review.py": "fb4173c9cadd61d3e37815c9ce6bf7ea2076b8d370df145bd50d942b654f1815",
+    "probe_missing_content.py": "14719c3b9fedb108acd0326d1537ab877dde182dd9732f825b09b1d2cfe892fd"
+  },
+  "verification": {
+    "default_pytest_passed": 909,
+    "skipped": 35,
+    "deselected": 2,
+    "snapshot_passed": 1,
+    "new_review_tests_passed": 12,
+    "ruff": "passed",
+    "source_and_bundles_unchanged": true,
+    "conversion_implementation_unchanged": true,
+    "html_sections": 7,
+    "html_link_references_verified": 28,
+    "browser_visual_check": "not performed: browser policy blocks local file URLs; no workaround attempted",
+    "source_suitability": "first source page of each PDF rendered and visually inspected before conversion"
+  },
+  "decision": "No promotion or repair. Human labels remain blank. Run the existing descriptive scorer after independent review; production criteria remain those frozen in the protocol."
+}

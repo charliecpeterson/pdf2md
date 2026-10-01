@@ -124,6 +124,10 @@ source/bundle immutability, and review-crop generation.
 
 ## Next step
 
+The [fresh-scan evaluation](scan-evaluation.md) has now screened three new
+documents (23 pages) and prepared a seven-page detector-masked review sheet.
+Independent human labels are still pending; no accuracy claim has been added.
+
 Keep this out of production confidence scoring and automatic repair. Before
 promotion, freeze an untouched multi-document scan set, a review budget, and
 acceptance criteria. Independently label both flagged and unflagged pages.

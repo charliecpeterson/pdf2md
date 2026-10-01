@@ -65,6 +65,11 @@ whose derivation has been deleted is worse than no number.
   unassessed lines. Produces a source-crop review sheet without editing the
   bundle. `_scan_omissions.py` holds the comparison policy. Recorded in
   `docs/scan-omission-pilot.md`; not an automatic repair or confidence gate.
+- `prepare_scan_review.py` — review preparation. Validates frozen source and
+  reader reports, reuses the page sampler and descriptive scorer, and generates
+  a detector-masked human review sheet with blank labels. Refusals remain in
+  the frame. Recorded in `docs/scan-evaluation-protocol.md`; it does not supply
+  human adjudication or promote the detector.
 - `probe_value_damage.py` — probe. Value and structural findings per table, split by the
   document-level text-layer verdict, over the 28 reviewed papers. Recorded in
   `docs/accuracy-improvement-notes.md`.

@@ -284,8 +284,9 @@ preserves all 121 supplied identifiers in the two known regression documents,
 including Markdown and retrieval output. The
 [scanned-text follow-up](scan-omission-pilot.md) now surfaces all three known
 OCR omissions in one development scan, with two journal-banner false alarms.
-It remains read-only; untouched multi-document scans and independent labels
-are the next evaluation step. These findings do not establish calibrated
+It remains read-only. The [fresh-scan evaluation](scan-evaluation.md) has now
+screened 23 pages from three new documents and prepared seven pages for human
+review; independent labels are the remaining evaluation step. These findings do not establish calibrated
 confidence or justify a new full parser.
 
 The completed pilot delivers:

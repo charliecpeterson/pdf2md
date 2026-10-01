@@ -13,6 +13,8 @@
 | [accuracy-confidence-roadmap.md](accuracy-confidence-roadmap.md) | proposed next experiments, informed by the September 2026 research review |
 | [missing-content-pilot.md](missing-content-pilot.md) | completed omission pilot, provenance fix, fresh source labels, and non-promotion decision |
 | [scan-omission-pilot.md](scan-omission-pilot.md) | read-only second-reader experiment on known scan omissions, source review, and limits |
+| [scan-evaluation-protocol.md](scan-evaluation-protocol.md) | frozen fresh-scan sources, detector policy, human review budget, and decision rules |
+| [scan-evaluation.md](scan-evaluation.md) | seven-page human review ready from 23 fresh scan pages; labels and accuracy decision pending |
 | [omission-evaluation-protocol.md](omission-evaluation-protocol.md) | frozen source selection, sampling, and acceptance rules for the fresh omission evaluation |
 | [figure-to-text.md](figure-to-text.md) | how a chart becomes data, tier by tier |
 | [dense-numeric-tables.md](dense-numeric-tables.md) | the hardest table case, and what is known about it |

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-22",
+  "exposure": "source-only metadata/text inspected; conversion outputs not yet produced",
+  "protocol": "docs/scan-evaluation-protocol.md",
+  "protocol_sha256": "a6da691af6c48e2808c1679ab5ca2eabe97e2c3811241612a3ac2414d2336bbb",
+  "base_commit": "5813dcd8b0fae3a5dc51703d74756c03483c76cc",
+  "inventory": {
+    "metadata_files": 907,
+    "invalid_metadata_files": [],
+    "qa_source_pdfs": 40,
+    "distinct_prior_source_hashes": 177,
+    "prior_hash_inventory_sha256": "343ae6c58fd1fcd60166dea0ea57c09b7ed8f4df586cbc71ce224580eba323d3",
+    "scope": "Repository provenance and tests/docs JSON; pdf2md-prefixed scratch provenance/manifests except this run; local QA corpus PDF bytes. No claim about other machines or unrelated directories."
+  },
+  "config": {
+    "engine": "docling",
+    "device": "mps",
+    "force_ocr": true,
+    "do_formula_enrichment": false,
+    "digitize_figures": false,
+    "ocr_figures": false
+  },
+  "sources": [
+    {
+      "name": "fumigants",
+      "url": "https://nvlpubs.nist.gov/nistpubs/jres/15/jresv15n3p271_A1b.pdf",
+      "source": "/Users/charlie/scratch/pdf2md-scan-evaluation-20260922/sources/fumigants.pdf",
+      "source_sha256": "bc21ac0e0ec729b650f3c4ad99ef68c39bcf7332f04c35c3c6f0f3eedce5c463",
+      "pages": 6,
+      "matched_prior_inventory": false
+    },
+    {
+      "name": "gallium",
+      "url": "https://nvlpubs.nist.gov/nistpubs/jres/15/jresv15n3p205_A1b.pdf",
+      "source": "/Users/charlie/scratch/pdf2md-scan-evaluation-20260922/sources/gallium.pdf",
+      "source_sha256": "53dbd77f9a2a2b9e00b42d1942a3c485d6f88dedb8f92a60b679ff9ab598eefb",
+      "pages": 5,
+      "matched_prior_inventory": false
+    },
+    {
+      "name": "noble-gases",
+      "url": "https://nvlpubs.nist.gov/nistpubs/jres/049/jresv49n2p73_A1b.pdf",
+      "source": "/Users/charlie/scratch/pdf2md-scan-evaluation-20260922/sources/noble-gases.pdf",
+      "source_sha256": "ca24eb9145f1ab9ce9a41960870f5e4e57a58a7673aa299729747109b675c5ba",
+      "pages": 12,
+      "matched_prior_inventory": false
+    }
+  ]
+}

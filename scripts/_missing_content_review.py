@@ -16,7 +16,7 @@ def link(path: Path, output: Path) -> str:
     return html.escape(quote(os.path.relpath(path, output)))
 
 
-def write_review(report: dict, output: Path) -> None:
+def write_review(report: dict, output: Path, *, show_detector_hints: bool = True) -> None:
     sections = []
     for index, record in enumerate(report["sample"]):
         source, bundle = Path(record["source"]), Path(record["bundle"])
@@ -50,8 +50,13 @@ def write_review(report: dict, output: Path) -> None:
             for path in sorted(markdown_paths) if path.is_file()
         ) or "No Markdown entry point found; inspect the bundle directly."
         text = "\n\n".join(passages) or "No page passages available. Inspect the full output and its assets."
-        hints = {key: record[key] for key in
-                 ("glyph_check", "baseline_reasons", "candidates")}
+        hints_html = ""
+        if show_detector_hints:
+            hints = {key: record[key] for key in
+                     ("glyph_check", "baseline_reasons", "candidates")}
+            hints_html = ("<details><summary>Detector hints (open after independent reading)</summary>"
+                          f"<pre>{html.escape(json.dumps(hints, indent=2, ensure_ascii=False))}"
+                          "</pre></details>")
         sections.append(f"""
 <section data-index="{index}">
 <h2>{html.escape(bundle.parent.name)} / page {record['page']}</h2>
@@ -66,8 +71,7 @@ and linked crops before declaring content missing.</p>
 <option>uncertain</option></select></label>
 <label>Reviewer <input data-field="reviewer" autocomplete="off"></label>
 <label>Source evidence and output location checked <textarea data-field="note" rows="3"></textarea></label>
-<details><summary>Detector hints (open after independent reading)</summary>
-<pre>{html.escape(json.dumps(hints, indent=2, ensure_ascii=False))}</pre></details>
+{hints_html}
 </section>""")
     payload = json.dumps({
         "schema_version": 1, "experiment_id": report["experiment_id"],
