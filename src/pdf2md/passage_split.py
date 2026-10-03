@@ -189,13 +189,22 @@ def _split_table(
             current = [row]
             continue
 
-        row_parts = _split_oversized(
-            row,
-            lambda part: contextualize(with_header(part)),
-            tokenizer,
-            max_tokens,
-        )
-        parts.extend(with_header(part) for part in row_parts)
+        try:
+            row_parts = [
+                with_header(part)
+                for part in _split_oversized(
+                    row, lambda part: contextualize(with_header(part)), tokenizer, max_tokens
+                )
+            ]
+        except ValueError:
+            # The header fits on its own but leaves no room for even a fragment of this row, which is the
+            # near-miss of the unrepeatable-header case above: drop the header for this row, not the document.
+            log.warning(
+                "table header leaves no room for a row within passage_max_tokens (%d); "
+                "emitting that row without the header", max_tokens,
+            )
+            row_parts = _split_oversized(row, contextualize, tokenizer, max_tokens)
+        parts.extend(row_parts)
     if current:
         parts.append(with_header("\n".join(current)))
     if preamble and parts and _fits(

@@ -485,6 +485,22 @@ def test_an_unrepeatable_table_header_degrades_instead_of_aborting():
         assert len(part.split()) <= 20 or "\n" not in part
 
 
+def test_a_header_that_fits_alone_but_leaves_no_room_for_a_row_drops_the_header_for_that_row():
+    # A 4,511-page actinide handbook aborted after 95 minutes on one mis-detected table whose header fit the
+    # budget exactly and whose row was long: no fragment of the row fit beside the header.
+    from pdf2md.passage_split import _split_table
+
+    header = "| " + " | ".join(f"c{n}" for n in range(9)) + " |"  # 19 words
+    text = "\n".join([header, "|" + "|".join(["---"] * 9) + "|", "| " + " ".join(f"w{n}" for n in range(60)) + " |"])
+    assert len(f"{header}\n|---|".split()) == 20  # the header sits exactly on the 20-word budget
+
+    parts = _split_table(text, lambda t: t, _WordTokenizer(), 20)
+
+    assert parts  # rather than ValueError
+    assert all(len(part.split()) <= 20 for part in parts)
+    assert {f"w{n}" for n in range(60)} <= {word for part in parts for word in part.split()}
+
+
 def test_a_passage_holding_a_c1_line_separator_stays_one_jsonl_record(tmp_path):
     """U+0085 ends a line for str.splitlines but not for JSON Lines.
 
