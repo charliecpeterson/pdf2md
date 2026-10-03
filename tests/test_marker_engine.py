@@ -387,3 +387,17 @@ def test_a_missing_inference_server_is_explained_not_buried():
 
     other = _failure(2, "some other failure")
     assert other == "Marker failed with exit code 2: some other failure"
+
+
+def test_a_malformed_span_attribute_reads_as_its_leading_digits_or_one_cell():
+    from pdf2md.tables import html_to_gfm
+
+    odd = (
+        '<table><tr><td colspan="3<br style=">a</td><td rowspan="x">b</td><td colspan="0">c</td></tr>'
+        "<tr><td>d</td><td>e</td><td>f</td><td>g</td></tr></table>"
+    )
+
+    gfm, spanning = html_to_gfm(odd)
+
+    assert spanning is True  # the 3-wide cell still spans
+    assert "| a |" in gfm and "| b |" in gfm and "| c |" in gfm

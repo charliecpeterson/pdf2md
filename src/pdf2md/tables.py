@@ -414,6 +414,13 @@ def _shifted_panel_rows(
 _CELL_MATH = {"eq", "math"}
 
 
+def _span(value: str | None) -> int:
+    """A span attribute as a positive integer. Marker has emitted markup inside the value (`3<br style=...`), and one
+    bad cell must not fail the whole conversion, so take the leading digits and fall back to a single cell."""
+    match = re.match(r"\s*(\d+)", value or "")
+    return max(1, int(match.group(1))) if match else 1
+
+
 class _SpanningTableParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
@@ -430,8 +437,8 @@ class _SpanningTableParser(HTMLParser):
         elif tag in {"td", "th"} and self._row is not None:
             values = dict(attrs)
             self._text = []
-            self._row_span = int(values.get("rowspan") or 1)
-            self._col_span = int(values.get("colspan") or 1)
+            self._row_span = _span(values.get("rowspan"))
+            self._col_span = _span(values.get("colspan"))
             self._header = tag == "th"
         elif tag in _CELL_MATH and self._text is not None:
             self._text.append("$")
