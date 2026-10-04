@@ -69,13 +69,22 @@ _LATEX_SYMBOLS = {
     "geq": "≥", "ge": "≥", "leq": "≤", "le": "≤", "approx": "≈", "sim": "∼", "simeq": "≃", "cong": "≅",
     "ll": "≪", "gg": "≫", "neq": "≠", "ne": "≠", "pm": "±", "mp": "∓", "times": "×", "div": "÷", "sqrt": "√",
     "infty": "∞", "partial": "∂", "nabla": "∇", "int": "∫", "sum": "∑", "prod": "∏", "cdot": "⋅", "propto": "∝",
-    "in": "∈", "forall": "∀", "exists": "∃", "circ": "°", "AA": "Å", "hbar": "ħ", "ell": "l",
+    "in": "∈", "equiv": "≡", "star": "⋆", "forall": "∀", "exists": "∃", "circ": "°", "AA": "Å", "hbar": "ħ", "ell": "l",
 }
 _LATEX_COMMAND = re.compile(r"\\([A-Za-z]+)")
 
 
 def _latex_to_symbols(text: str) -> str:
     return _LATEX_COMMAND.sub(lambda m: _LATEX_SYMBOLS.get(m.group(1), m.group(0)), text)
+
+
+def _symbol_view(text: str) -> str:
+    """Both sides of the symbol comparison, with LaTeX commands put back and look-alike code points folded together.
+
+    The page prints the micro sign `µ` (U+00B5) where an engine's `\\mu` becomes the Greek letter `μ` (U+03BC); NFKC
+    folds those, and `ϕ`/`ϑ` to `φ`/`θ`. It leaves the increment sign `∆` (U+2206) alone, so that one is folded by hand
+    to the Greek capital delta. On one text-layer book this was 149 of Marker's 314 'symbols dropped'."""
+    return unicodedata.normalize("NFKC", _latex_to_symbols(text)).replace("\u2206", "\u0394")
 
 _WORDS = re.compile(r"\w+")
 
@@ -187,9 +196,9 @@ def record_symbol_loss(block: Block, pc, emitted: str | None = None) -> None:
     the symbols are already gone from `base-state.json` -- so this reports and
     never repairs: that a `χ` is missing is certain, where to put it back is not.
     """
-    content = _latex_to_symbols(block.text if emitted is None else emitted)
+    content = _symbol_view(block.text if emitted is None else emitted)
     source = Counter(
-        c for c in _SYMBOLS.findall(pc.text_region(block.bbox)) if c not in _SYMBOL_DASHES
+        c for c in _SYMBOLS.findall(_symbol_view(pc.text_region(block.bbox))) if c not in _SYMBOL_DASHES
     )
     if not source:
         return

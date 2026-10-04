@@ -40,6 +40,11 @@ here.
   The emitted side is now read with about eighty common LaTeX commands put back as the symbols they stand for;
   a command with no entry is left as written. A letter that is really gone is still reported.
 
+- The symbol-loss check folds look-alike code points before comparing. The page prints the micro sign `µ` (U+00B5)
+  where an engine's `\\mu` becomes the Greek `μ` (U+03BC), and `ϕ`, `ϑ` and the increment sign `∆` (U+2206) likewise
+  differ from `φ`, `θ` and `Δ` only by code point. 149 of Marker's 314 "symbols dropped" on one 700-page text-layer
+  book were `µ`. Both sides now go through NFKC, `∆` is folded by hand, and `\\equiv` and `\\star` join the LaTeX table.
+
 ### Changed
 
 - Marker's output is streamed rather than captured whole, through a loop shared with the MinerU adapter

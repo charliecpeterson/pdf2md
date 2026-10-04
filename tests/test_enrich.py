@@ -779,6 +779,18 @@ def test_a_symbol_the_engine_spells_in_latex_is_not_a_dropped_symbol():
     assert dropped.extra["glyph_symbols_lost"]["symbols"] == "λ ≥"
 
 
+def test_look_alike_code_points_are_not_dropped_symbols():
+    """The page prints the micro sign U+00B5 and the engine writes the Greek mu U+03BC; `\\phi` is U+03C6 where the page
+    has U+03D5, and the increment sign U+2206 stands for the capital delta. 149 of 314 'dropped' symbols on one book."""
+    from pdf2md.recall import record_symbol_loss
+    from pdf2md.schema import BBox
+
+    block = Block(id="#/a", type=BlockType.PARAGRAPH, page=1, bbox=BBox(0, 10, 10, 0),
+                  text=r"a $\mu$m gap, $\varphi$ and $\vartheta$ and $\Delta E \equiv 3$ with $\star$")
+    record_symbol_loss(block, _Region("a \u00b5m gap, \u03d5 and \u03d1 and \u2206E \u2261 3 with \u22c6"))
+    assert "glyph_symbols_lost" not in block.extra
+
+
 def test_word_recall_reads_latex_symbols_the_same_as_unicode_ones():
     from collections import Counter
 
