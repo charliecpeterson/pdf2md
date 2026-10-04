@@ -9,6 +9,28 @@ here.
 
 ### Fixed
 
+- A malformed table-cell attribute no longer aborts a whole conversion. Marker emitted
+  `colspan="3<br style="` in one cell of a 338-page monograph and `int()` raised; span
+  attributes are now read as their leading digits, or a single cell when there are none.
+- A table whose header fits the passage budget but leaves no room for a long row no
+  longer aborts the document. A 4,511-page handbook failed after 95 minutes of work on
+  one mis-detected table: the header-too-large case already emitted rows without the
+  repeated header, and this is its near-miss; that row is now emitted without the header,
+  with a warning.
+- The Marker adapter tells a server that is not answering apart from a missing docker
+  `nvidia` runtime. Both arrive as a `SpawnError`, and every one was reported as the
+  runtime problem, which sent a host with a working docker setup to fix something it did
+  not have. With `SURYA_INFERENCE_URL` set, `/health` is now checked before the run, so a
+  dead server fails in seconds instead of after a model load.
+
+### Changed
+
+- Marker's output is streamed rather than captured whole, so a run reports its stage
+  counters (`Marker Recognizing Layout: 170/423`) and a heartbeat when silent, as MinerU's
+  already did. The streaming loop moved to `engines/streaming.py` and both adapters use it.
+
+### Fixed
+
 - Two converts of the same document running at once no longer destroy each other's
   output. `next_version` read the highest completed version and added one, so both
   processes picked the same `v<n>`, and the second deleted the first one's in-progress
