@@ -498,3 +498,30 @@ def test_marker_dying_on_a_server_that_went_away_names_the_server_not_docker(tmp
         MarkerEngine(str(script)).convert(tmp_path / "book.pdf")
 
     assert "is not responding" in str(failure.value) and "nvidia" not in str(failure.value)
+
+
+def test_server_activity_is_read_from_vllm_metrics():
+    from pdf2md.engines.marker import _heartbeat, _parse_activity
+
+    metrics = (
+        'vllm:num_requests_running{engine="0",model_name="m"} 30.0\n'
+        'vllm:request_success_total{engine="0",finished_reason="stop",model_name="m"} 428.0\n'
+        'vllm:request_success_total{engine="0",finished_reason="length",model_name="m"} 29.0\n'
+        'vllm:request_success_total{engine="0",finished_reason="error",model_name="m"} 0.0\n'
+    )
+    assert _parse_activity(metrics) == (457, 30)
+    assert _parse_activity("nothing relevant") is None
+
+    beat = _heartbeat(None)  # no server in use: the plain message
+    assert beat() == "Marker still working (no new engine output)"
+
+
+def test_the_heartbeat_reports_how_many_requests_the_server_finished_since_the_last_beat(monkeypatch):
+    from pdf2md.engines import marker
+
+    readings = iter([(100, 12), (160, 20)])
+    monkeypatch.setattr(marker, "_server_activity", lambda url: next(readings))
+    beat = marker._heartbeat("http://127.0.0.1:8000/v1")
+
+    assert beat() == "Marker still working (server has completed 100 requests; 12 running)"
+    assert beat() == "Marker still working (server has completed 160 requests, +60 since the last beat; 20 running)"

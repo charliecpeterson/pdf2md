@@ -42,9 +42,11 @@ here.
 
 ### Changed
 
-- Marker's output is streamed rather than captured whole, so a run reports its stage
-  counters (`Marker Recognizing Layout: 170/423`) and a heartbeat when silent, as MinerU's
-  already did. The streaming loop moved to `engines/streaming.py` and both adapters use it.
+- Marker's output is streamed rather than captured whole, through a loop shared with the MinerU adapter
+  (`engines/streaming.py`), so a silent run beats instead of looking hung. Counters are reported for any progress bar
+  Marker prints, but the Marker this was tested against prints none (an 11-page run wrote three log lines), so the
+  beat instead reports how many requests the vLLM server has completed since the last one and how many are running,
+  read from its `/metrics`, which shows whether the run is moving and not merely alive.
 
 ### Fixed
 

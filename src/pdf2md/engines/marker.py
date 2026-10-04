@@ -283,6 +283,42 @@ def _progress_counter(message: str) -> tuple[str, int, int, str] | None:
     )
 
 
+def _parse_activity(metrics: str) -> tuple[int, int] | None:
+    """Requests the vLLM server has completed and has running, from its Prometheus text."""
+    completed = [float(m) for m in re.findall(r"^vllm:request_success_total\{[^}]*\}\s+([0-9.e+-]+)", metrics, re.M)]
+    running = re.search(r"^vllm:num_requests_running\{[^}]*\}\s+([0-9.e+-]+)", metrics, re.M)
+    if not completed or running is None:
+        return None
+    return int(sum(completed)), int(float(running.group(1)))
+
+
+def _server_activity(url: str) -> tuple[int, int] | None:
+    root = url.rstrip("/").removesuffix("/v1")
+    try:
+        with urllib.request.urlopen(f"{root}/metrics", timeout=5) as response:
+            return _parse_activity(response.read().decode("utf-8", errors="replace"))
+    except (OSError, ValueError):
+        return None
+
+
+def _heartbeat(url: str | None):
+    """What a silent Marker run says at each beat. This Marker prints no progress bars at all (an 11-page run emitted
+    three log lines), so a long run had no sign of life; when a vLLM server is in use, report how many requests it has
+    completed since the last beat, which shows whether the run is moving and not merely alive."""
+    last: list[int | None] = [None]
+
+    def message() -> str:
+        activity = _server_activity(url) if url else None
+        if activity is None:
+            return "Marker still working (no new engine output)"
+        completed, running = activity
+        gained = "" if last[0] is None else f", +{completed - last[0]} since the last beat"
+        last[0] = completed
+        return f"Marker still working (server has completed {completed} requests{gained}; {running} running)"
+
+    return message
+
+
 def _require_server() -> None:
     """Fail in seconds, not after a model load, when SURYA_INFERENCE_URL points at a server that is not answering."""
     url = os.environ.get("SURYA_INFERENCE_URL")
@@ -334,7 +370,7 @@ class MarkerEngine:
                 process,
                 progress,
                 _progress_counter,
-                still_working="Marker still working (no new engine output)",
+                still_working=_heartbeat(os.environ.get("SURYA_INFERENCE_URL")),
                 heartbeat_seconds=_HEARTBEAT_SECONDS,
                 debug=lambda message: log.debug("marker: %s", message),
             )

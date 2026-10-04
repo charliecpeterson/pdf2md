@@ -20,13 +20,13 @@ def capture_output(
     progress: Progress,
     parse: Callable[[str], Counter | None],
     *,
-    still_working: str,
+    still_working: str | Callable[[], str],
     heartbeat_seconds: float,
     debug: Callable[[str], None] = lambda _message: None,
 ) -> deque[str]:
     """Read the process's merged output line by line, report the counters `parse` finds, and heartbeat when silent.
 
-    Returns the last 50 lines for an error message. Carriage-return updates (a progress bar redrawing itself) are
+    `still_working` may be a function, called at each beat, so a heartbeat can report something measured. Returns the last 50 lines for an error message. Carriage-return updates (a progress bar redrawing itself) are
     split into separate messages.
     """
     tail: deque[str] = deque(maxlen=50)
@@ -47,7 +47,7 @@ def capture_output(
         try:
             line = pending.get(timeout=heartbeat_seconds)
         except queue.Empty:
-            progress.stage(still_working)
+            progress.stage(still_working() if callable(still_working) else still_working)
             continue
         if line is None:
             return tail
