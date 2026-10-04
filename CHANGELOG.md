@@ -23,6 +23,16 @@ here.
   not have. With `SURYA_INFERENCE_URL` set, `/health` is now checked before the run, so a
   dead server fails in seconds instead of after a model load.
 
+### Fixed (continued)
+
+- Docling's padded table markdown no longer inflates a table's token count. Its exporter pads every cell to the
+  column's widest entry, so one long cell made the separator row hundreds of dashes, and the lexical tokenizer
+  counts every punctuation character: a 23-word table read as a 1,200-token header. 63 tables in a week of book
+  conversions logged "table header exceeds passage_max_tokens (512)" and lost their repeated column header on
+  every continuation passage, and one book aborted on the same effect. `compact_gfm` writes the table the way
+  `build_gfm` does (`| a | b |`, `|---|---|`, alignment colons kept) when the Docling adapter takes it. Bundles
+  already converted keep their padded tables until they are converted again.
+
 ### Changed
 
 - Marker's output is streamed rather than captured whole, so a run reports its stage

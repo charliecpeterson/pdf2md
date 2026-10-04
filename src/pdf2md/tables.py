@@ -247,6 +247,40 @@ def build_gfm(cells: list[GridCell], nrows: int, ncols: int) -> str:
     return "\n".join([head, sep, *body])
 
 
+_SEPARATOR_CELL = re.compile(r"^:?-+:?$")
+_UNESCAPED_PIPE = re.compile(r"(?<!\\)\|")
+
+
+def compact_gfm(gfm: str) -> str:
+    """Strip the column padding a serializer adds to line a GFM table up, and write it as `build_gfm` does.
+
+    Docling's markdown export pads every cell to its column's widest entry, so one long cell makes the separator row
+    hundreds of dashes. Spaces cost nothing, but the lexical passage tokenizer counts every punctuation character, so a
+    padded separator read as a 1,200-token header: 63 tables in one week were reported as having a header over the
+    512-token budget, each then lost its repeated column header, and one 4,511-page book aborted. Non-table lines
+    (a caption above the table) pass through untouched; alignment colons survive.
+    """
+    out: list[str] = []
+    for line in gfm.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            out.append(line)
+            continue
+        body = stripped[1:]
+        if body.endswith("|") and not body.endswith("\\|"):
+            body = body[:-1]
+        cells = [cell.strip() for cell in _UNESCAPED_PIPE.split(body)]
+        if cells and all(_SEPARATOR_CELL.match(cell) for cell in cells):
+            marks = [("::" if c.startswith(":") and c.endswith(":") and len(c) > 1 else c[:1] + c[-1:]) for c in cells]
+            out.append("|" + "|".join(
+                (":---:" if m == "::" else ":---" if m.startswith(":") else "---:" if m.endswith(":") else "---")
+                for m in marks
+            ) + "|")
+        else:
+            out.append("| " + " | ".join(cells) + " |")
+    return "\n".join(out)
+
+
 def _strip_caption(gfm: str) -> str:
     lines = gfm.splitlines()
     start = next((i for i, ln in enumerate(lines) if ln.lstrip().startswith("|")), 0)

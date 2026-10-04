@@ -31,6 +31,7 @@ from pdf2md.schema import (
     SourceSpan,
     TableData,
 )
+from pdf2md.tables import compact_gfm
 
 log = get_logger("engines.docling")
 
@@ -357,7 +358,7 @@ class DoclingEngine:
             )
         return TableData(
             block_id=t.self_ref, page=page or 0, bbox=bbox,
-            gfm=normalize_text(t.export_to_markdown(doc)),
+            gfm=compact_gfm(normalize_text(t.export_to_markdown(doc))),
             html=normalize_text(t.export_to_html(doc)) if spanning else None,
             has_spanning_cells=spanning,
         )

@@ -320,3 +320,47 @@ def test_a_row_the_panel_split_cannot_place_is_published_not_dropped():
     unplaced = out.split("]**")[-1]
     assert "272" in unplaced and "Ba" in unplaced
     assert "272" not in out.split("could not place")[0]
+
+
+def test_compact_gfm_strips_serializer_padding_and_keeps_alignment_and_captions():
+    from pdf2md.tables import compact_gfm
+
+    padded = (
+        "Table 4.2 Neutron data\n"
+        "| neutron diffraction data   | cubic        |\n"
+        "|:---------------------------|-------------:|\n"
+        "| a long cell that sets the column width | 5.507(3) |\n"
+        "| escaped \\| pipe          | x            |"
+    )
+
+    assert compact_gfm(padded) == (
+        "Table 4.2 Neutron data\n"
+        "| neutron diffraction data | cubic |\n"
+        "|:---|---:|\n"
+        "| a long cell that sets the column width | 5.507(3) |\n"
+        "| escaped \\| pipe | x |"
+    )
+    assert compact_gfm("no table here") == "no table here"
+
+
+def test_a_padded_table_no_longer_looks_like_an_oversized_header():
+    # Docling pads every cell to the widest entry, so a long cell made the separator row 1,200 dashes, which the
+    # lexical tokenizer counts one by one: a 23-word table read as a header over the 512-token budget.
+    from pdf2md.passage_split import _split_table
+    from pdf2md.passage_tokenizer import LexicalTokenizer
+    from pdf2md.tables import compact_gfm
+
+    wide = "x " * 80
+    padded = "\n".join([
+        f"| {'head':<{len(wide)}} | {'b':<4} |",
+        "|" + "-" * (len(wide) + 2) + "|" + "-" * 6 + "|",
+        f"| {wide} | {'1':<4} |",
+        f"| {'short':<{len(wide)}} | {'2':<4} |",
+    ])
+    tokenizer = LexicalTokenizer()
+
+    assert tokenizer.count(padded.splitlines()[1]) > 150  # the separator alone
+    assert tokenizer.count(compact_gfm(padded).splitlines()[1]) == 9
+
+    parts = _split_table(compact_gfm(padded), lambda t: t, tokenizer, 512)
+    assert len(parts) == 1 and parts[0].startswith("| head | b |")
