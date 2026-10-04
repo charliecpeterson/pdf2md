@@ -8,12 +8,10 @@ from __future__ import annotations
 
 import json
 import os
-import queue
 import re
 import shutil
 import subprocess
 import tempfile
-import threading
 from collections import deque
 from collections.abc import Iterator
 from contextlib import nullcontext
@@ -22,6 +20,7 @@ from typing import Any
 
 from pdf2md import __version__
 from pdf2md.engines.base import EngineResult
+from pdf2md.engines.streaming import ANSI_ESCAPE, capture_output
 from pdf2md.logging import Progress, get_logger
 from pdf2md.scan_deskew import PreparedScan, deskew_scanned_pdf, restore_source_geometry
 from pdf2md.schema import BBox, Block, BlockType, FigureLabels, FigureRef, TableData
@@ -30,7 +29,6 @@ from pdf2md.tables import html_to_gfm
 log = get_logger("engines.mineru")
 _TASK_TIMEOUT_SECONDS = 6 * 60 * 60
 _HEARTBEAT_SECONDS = 60.0
-_ANSI_ESCAPE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 _WINDOW_PROGRESS = re.compile(
     r"(?P<label>hybrid processing window)\s+(?P<completed>\d+)/(?P<total>\d+)",
     re.IGNORECASE,
@@ -44,7 +42,7 @@ _COUNTER_PROGRESS = re.compile(
 
 def _progress_counter(message: str) -> tuple[str, int, int, str] | None:
     """Read counters MinerU already prints without assigning them false page semantics."""
-    clean = _ANSI_ESCAPE.sub("", message)
+    clean = ANSI_ESCAPE.sub("", message)
     match = _WINDOW_PROGRESS.search(clean)
     if match:
         return (
@@ -72,38 +70,14 @@ def _capture_output(
     heartbeat_seconds: float = _HEARTBEAT_SECONDS,
 ) -> deque[str]:
     """Keep the CLI responsive while MinerU runs stages that print no counters."""
-    tail: deque[str] = deque(maxlen=50)
-    if process.stdout is None:
-        return tail
-
-    pending: queue.Queue[str | None] = queue.Queue()
-
-    def read_stdout() -> None:
-        try:
-            for line in process.stdout:
-                pending.put(line)
-        finally:
-            pending.put(None)
-
-    threading.Thread(target=read_stdout, daemon=True).start()
-    while True:
-        try:
-            line = pending.get(timeout=heartbeat_seconds)
-        except queue.Empty:
-            progress.stage("MinerU still working (no new engine output)")
-            continue
-        if line is None:
-            return tail
-        for message in filter(None, re.split(r"[\r\n]+", line)):
-            message = message.strip()
-            if not message:
-                continue
-            tail.append(message)
-            log.debug("mineru: %s", message)
-            counter = _progress_counter(message)
-            if counter is not None:
-                label, completed, total, unit = counter
-                progress.count(label, completed, total, unit=unit)
+    return capture_output(
+        process,
+        progress,
+        _progress_counter,
+        still_working="MinerU still working (no new engine output)",
+        heartbeat_seconds=heartbeat_seconds,
+        debug=lambda message: log.debug("mineru: %s", message),
+    )
 
 
 def _spans(value: Any) -> Iterator[dict[str, Any]]:

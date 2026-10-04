@@ -20,16 +20,20 @@ server started by hand (`scripts/start_surya_vllm.sh`).
 from __future__ import annotations
 
 import json
+import os
+import re
 import shutil
 import subprocess
 import tempfile
+import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
 from pdf2md import __version__
 from pdf2md.engines.base import EngineResult
-from pdf2md.logging import get_logger
+from pdf2md.engines.streaming import ANSI_ESCAPE, capture_output
+from pdf2md.logging import Progress, get_logger
 from pdf2md.schema import BBox, Block, BlockType, FigureLabels, FigureRef, TableData
 from pdf2md.tables import html_to_gfm
 
@@ -222,13 +226,32 @@ def _flatten(children: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
+_HEARTBEAT_SECONDS = 60.0
+_UNREACHABLE = re.compile(r"(SURYA_INFERENCE_URL=\S+) is not reachable")
+
+
+def _server_message(url: str, reason: str) -> str:
+    return (
+        f"Marker's inference server at {url} is not responding ({reason}). Start it "
+        "(scripts/start_surya_vllm.sh) and check it answers on /health, or unset "
+        "SURYA_INFERENCE_URL to let Marker try to start its own. "
+        "`pdf2md doctor --engine marker` reports which of these is missing."
+    )
+
+
 def _failure(returncode: int, detail: str) -> str:
     """Say what actually went wrong when Marker cannot reach an inference server.
 
-    Marker's Surya spawns a Docker container with the `nvidia` runtime, which many
-    hosts do not register even with the container toolkit installed. Unexplained,
-    that arrives as a SpawnError at the bottom of a traceback about docker.
+    There are two different causes and they need opposite advice. With SURYA_INFERENCE_URL set the server
+    is simply not answering (it died or was never started); without it Marker's Surya spawns a Docker
+    container with the `nvidia` runtime, which many hosts do not register even with the container toolkit
+    installed. Both arrive as a SpawnError at the bottom of a traceback, and lumping them together sent a
+    user with a healthy docker setup to register a runtime they did not need.
     """
+    unreachable = _UNREACHABLE.search(detail)
+    if unreachable:
+        url = unreachable.group(1).split("=", 1)[1]
+        return f"{_server_message(url, 'not reachable at /health')}\nMarker exit code {returncode}: {detail[-600:]}"
     if "unknown or invalid runtime name: nvidia" in detail or "SpawnError" in detail:
         return (
             "Marker could not start its inference server: docker has no `nvidia` "
@@ -240,6 +263,36 @@ def _failure(returncode: int, detail: str) -> str:
             f"Marker exit code {returncode}: {detail[-600:]}"
         )
     return f"Marker failed with exit code {returncode}: {detail}"
+
+
+# tqdm draws one bar per stage ("Recognizing Layout: 40%|████ | 170/423 [...]"); report each as its own counter.
+_BAR = re.compile(
+    r"(?P<label>[A-Za-z][A-Za-z0-9 _/()-]{2,60}?)\s*:\s*\d+%\|[^|]*\|\s*(?P<completed>\d+)/(?P<total>\d+)"
+)
+
+
+def _progress_counter(message: str) -> tuple[str, int, int, str] | None:
+    match = _BAR.search(ANSI_ESCAPE.sub("", message))
+    if not match:
+        return None
+    return (
+        f"Marker {' '.join(match.group('label').split())}",
+        int(match.group("completed")),
+        int(match.group("total")),
+        "items",
+    )
+
+
+def _require_server() -> None:
+    """Fail in seconds, not after a model load, when SURYA_INFERENCE_URL points at a server that is not answering."""
+    url = os.environ.get("SURYA_INFERENCE_URL")
+    if not url:
+        return
+    root = url.rstrip("/").removesuffix("/v1")
+    try:
+        urllib.request.urlopen(f"{root}/health", timeout=10).close()
+    except (OSError, ValueError) as error:
+        raise RuntimeError(_server_message(url, str(error))) from error
 
 
 class MarkerEngine:
@@ -265,16 +318,29 @@ class MarkerEngine:
 
     def convert(self, pdf_path: Path) -> EngineResult:
         log.info("marker converting %s", pdf_path)
+        _require_server()
+        progress = Progress(log)
         with tempfile.TemporaryDirectory(prefix="pdf2md-marker-") as temp:
             output = Path(temp)
-            result = subprocess.run(
-                [self.executable, str(pdf_path), "--output_format", "json",
-                 "--output_dir", str(output)],
-                capture_output=True, text=True, errors="replace",
+            process = subprocess.Popen(
+                [self.executable, str(pdf_path), "--output_format", "json", "--output_dir", str(output)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                errors="replace",
+                bufsize=1,
             )
-            if result.returncode != 0:
-                detail = (result.stderr or result.stdout or "")[-2000:]
-                raise RuntimeError(_failure(result.returncode, detail))
+            tail = capture_output(
+                process,
+                progress,
+                _progress_counter,
+                still_working="Marker still working (no new engine output)",
+                heartbeat_seconds=_HEARTBEAT_SECONDS,
+                debug=lambda message: log.debug("marker: %s", message),
+            )
+            returncode = process.wait()
+            if returncode != 0:
+                raise RuntimeError(_failure(returncode, "\n".join(tail)[-2000:]))
             produced = [p for p in output.rglob("*.json") if not p.name.endswith("_meta.json")]
             if len(produced) != 1:
                 raise RuntimeError(

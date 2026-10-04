@@ -401,3 +401,100 @@ def test_a_malformed_span_attribute_reads_as_its_leading_digits_or_one_cell():
 
     assert spanning is True  # the 3-wide cell still spans
     assert "| a |" in gfm and "| b |" in gfm and "| c |" in gfm
+
+
+def test_a_down_server_and_a_missing_docker_runtime_get_different_advice():
+    from pdf2md.engines.marker import _failure
+
+    down = _failure(
+        1, "surya.inference.backends.spawn.SpawnError: SURYA_INFERENCE_URL=http://127.0.0.1:8000/v1 is not reachable at /health."
+    )
+    assert "is not responding" in down and "http://127.0.0.1:8000/v1" in down and "nvidia" not in down
+
+    runtime = _failure(1, "docker: Error response from daemon: unknown or invalid runtime name: nvidia")
+    assert "no `nvidia` runtime registered" in runtime
+
+    assert _failure(2, "boom") == "Marker failed with exit code 2: boom"
+
+
+@pytest.mark.parametrize(
+    ("line", "expected"),
+    [
+        ("Recognizing Layout: 40%|████      | 170/423 [00:12<00:18, 14.1it/s]", ("Marker Recognizing Layout", 170, 423, "items")),
+        ("\x1b[32mRecognizing Text: 100%|██████████| 12/12 [00:01<00:00]\x1b[0m", ("Marker Recognizing Text", 12, 12, "items")),
+        ("Running OCR Error Detection: 0%|          | 0/9 [00:00<?, ?it/s]", ("Marker Running OCR Error Detection", 0, 9, "items")),
+        ("Loaded layout model", None),
+        ("INFO 10-03 vllm started: 40% done", None),
+    ],
+)
+def test_marker_progress_bars_become_counters(line, expected):
+    from pdf2md.engines.marker import _progress_counter
+
+    assert _progress_counter(line) == expected
+
+
+def _fake_marker(tmp_path: Path, body: str) -> Path:
+    script = tmp_path / "marker_single"
+    script.write_text(
+        "#!/usr/bin/env python3\n"
+        "import json, sys, pathlib\n"
+        "if sys.argv[1] == '--version':\n"
+        "    print('9.9.9'); raise SystemExit(0)\n"
+        "pathlib.Path(sys.argv[0]).with_name('ran').write_text('yes')\n"
+        f"{body}\n",
+        encoding="utf-8",
+    )
+    script.chmod(0o755)
+    return script
+
+
+def test_convert_streams_marker_progress_and_translates_its_json(tmp_path, monkeypatch, caplog):
+    from pdf2md.engines.marker import MarkerEngine
+
+    document = _page([_block("Text", "<p>Hello</p>", [10.0, 10.0, 200.0, 30.0])])
+    fixture = tmp_path / "doc.json"
+    fixture.write_text(json.dumps(document), encoding="utf-8")
+    script = _fake_marker(
+        tmp_path,
+        "out = pathlib.Path(sys.argv[sys.argv.index('--output_dir') + 1]) / 'doc'\n"
+        "out.mkdir(parents=True)\n"
+        f"(out / 'doc.json').write_text(open({str(fixture)!r}).read())\n"
+        "for n in (1, 2, 3):\n"
+        "    sys.stderr.write(f'Recognizing Layout: {n*33}%|##| {n}/3 [00:01<00:00]\\r')\n"
+        "sys.stderr.flush()",
+    )
+    monkeypatch.delenv("SURYA_INFERENCE_URL", raising=False)
+
+    with caplog.at_level("INFO", logger="pdf2md"):
+        result = MarkerEngine(str(script)).convert(tmp_path / "book.pdf")
+
+    assert [block.text for block in result.blocks if block.type is BlockType.PARAGRAPH] == ["Hello"]
+    assert "Marker Recognizing Layout" in caplog.text
+
+
+def test_an_unreachable_server_fails_before_marker_starts(tmp_path, monkeypatch):
+    from pdf2md.engines.marker import MarkerEngine
+
+    script = _fake_marker(tmp_path, "raise SystemExit(0)")
+    monkeypatch.setenv("SURYA_INFERENCE_URL", "http://127.0.0.1:9/v1")
+
+    with pytest.raises(RuntimeError, match="is not responding"):
+        MarkerEngine(str(script)).convert(tmp_path / "book.pdf")
+
+    assert not (tmp_path / "ran").exists()  # no model was loaded for a server that was never there
+
+
+def test_marker_dying_on_a_server_that_went_away_names_the_server_not_docker(tmp_path, monkeypatch):
+    from pdf2md.engines.marker import MarkerEngine
+
+    script = _fake_marker(
+        tmp_path,
+        "sys.stderr.write('SpawnError: SURYA_INFERENCE_URL=http://127.0.0.1:8000/v1 is not reachable at /health.\\n')\n"
+        "raise SystemExit(1)",
+    )
+    monkeypatch.delenv("SURYA_INFERENCE_URL", raising=False)
+
+    with pytest.raises(RuntimeError) as failure:
+        MarkerEngine(str(script)).convert(tmp_path / "book.pdf")
+
+    assert "is not responding" in str(failure.value) and "nvidia" not in str(failure.value)
