@@ -331,6 +331,29 @@ def _require_server() -> None:
         raise RuntimeError(_server_message(url, str(error))) from error
 
 
+def _installed_version(executable: str) -> str:
+    """The marker-pdf release behind `executable`, or "unknown".
+
+    `marker_single` has no `--version` flag: it prints its usage error, which an earlier
+    version of this adapter recorded as the engine version in every bundle. The release is
+    read from the interpreter beside the executable, which is how a separate Marker
+    environment is laid out. `--version` is kept for a build that does support it, and only
+    a clean exit counts."""
+    interpreter = Path(executable).with_name("python")
+    probes = [
+        ([str(interpreter), "-c", "from importlib.metadata import version; print(version('marker-pdf'))"], "marker-pdf "),
+        ([executable, "--version"], ""),
+    ]
+    for command, prefix in probes:
+        if command[0] == str(interpreter) and not interpreter.exists():
+            continue
+        probe = subprocess.run(command, capture_output=True, text=True, check=False)
+        lines = probe.stdout.strip().splitlines()
+        if probe.returncode == 0 and lines:
+            return prefix + lines[0]
+    return "unknown"
+
+
 class MarkerEngine:
     name = "marker"
 
@@ -343,11 +366,7 @@ class MarkerEngine:
                 "separate environment and set marker_executable in the config."
             )
         self.executable = resolved
-        probe = subprocess.run(
-            [self.executable, "--version"], capture_output=True, text=True, check=False
-        )
-        self.version = (probe.stdout or probe.stderr).strip().splitlines()[:1]
-        self.version = self.version[0] if self.version else "unknown"
+        self.version = _installed_version(self.executable)
 
     def cache_identity(self) -> str:
         return f"{self.executable}:{self.version}"

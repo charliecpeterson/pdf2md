@@ -525,3 +525,19 @@ def test_the_heartbeat_reports_how_many_requests_the_server_finished_since_the_l
 
     assert beat() == "Marker still working (server has completed 100 requests; 12 running)"
     assert beat() == "Marker still working (server has completed 160 requests, +60 since the last beat; 20 running)"
+
+
+def test_version_comes_from_the_environment_not_from_a_usage_error(tmp_path):
+    from pdf2md.engines.marker import _installed_version
+
+    script = tmp_path / "marker_single"
+    script.write_text(
+        "#!/bin/sh\necho \"Usage: marker_single [OPTIONS] FPATH\" >&2\nexit 2\n", encoding="utf-8"
+    )
+    script.chmod(0o755)
+    assert _installed_version(str(script)) == "unknown"
+
+    interpreter = tmp_path / "python"
+    interpreter.write_text("#!/bin/sh\necho 2.0.0\n", encoding="utf-8")
+    interpreter.chmod(0o755)
+    assert _installed_version(str(script)) == "marker-pdf 2.0.0"

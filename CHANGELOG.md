@@ -19,6 +19,11 @@ here.
   a pointer to `--engine marker`, because Docling finds the regions to OCR through the
   bitmap content that would be skipped. Skipping bitmaps, and nothing else, was what avoided
   the crash; sanitisation, pixel bytes and native-memory release settings made no difference.
+- The Marker adapter records the marker-pdf release as the engine version. `marker_single` has no
+  `--version` flag, so every bundle carried its usage error (`Usage: marker_single [OPTIONS] FPATH`)
+  as the version. The release is now read from the interpreter beside the executable; a flag that
+  exits non-zero is never taken as a version. This changes the Marker cache identity, so an
+  existing document converts again as a new version instead of reusing the old one.
 - A malformed table-cell attribute no longer aborts a whole conversion. Marker emitted
   `colspan="3<br style="` in one cell of a 338-page monograph and `int()` raised; span
   attributes are now read as their leading digits, or a single cell when there are none.
