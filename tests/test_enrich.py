@@ -762,6 +762,37 @@ def test_a_symbol_the_page_prints_and_the_output_drops_is_recorded():
     assert block.extra["glyph_symbols_lost"] == {"count": 3, "symbols": "χ (3)"}
 
 
+def test_a_symbol_the_engine_spells_in_latex_is_not_a_dropped_symbol():
+    """Marker and MinerU write `\\alpha` where the page prints `α`. Scored as absent, every Greek letter an engine
+    wrote as mathematics counted as lost, and a book with 3,000 inline formulas drew hundreds of false flags."""
+    from pdf2md.recall import record_symbol_loss
+    from pdf2md.schema import BBox
+
+    spelled = Block(id="#/a", type=BlockType.PARAGRAPH, page=1, bbox=BBox(0, 10, 10, 0),
+                    text=r"where $\alpha$ and $\lambda$ give $x \geq 1$ at $\Delta T \approx 5 \pm 1$")
+    record_symbol_loss(spelled, _Region("where α and λ give x ≥ 1 at ΔT ≈ 5 ± 1"))
+    assert "glyph_symbols_lost" not in spelled.extra
+
+    dropped = Block(id="#/b", type=BlockType.PARAGRAPH, page=1, bbox=BBox(0, 10, 10, 0),
+                    text=r"where $\alpha$ gives x 1")  # the λ and the ≥ really are gone
+    record_symbol_loss(dropped, _Region("where α and λ give x ≥ 1"))
+    assert dropped.extra["glyph_symbols_lost"]["symbols"] == "λ ≥"
+
+
+def test_word_recall_reads_latex_symbols_the_same_as_unicode_ones():
+    from collections import Counter
+
+    from pdf2md.recall import _latex_to_symbols, _recall_words
+
+    page = _recall_words("where α and λ are the ion radii of 1 Å for the ≥ case with ħ and φ and Δ")
+    latex = _recall_words(
+        r"where $\alpha$ and $\lambda$ are the ion radii of $1\ \AA$ for the $\geq$ case with $\hbar$ and $\varphi$ and $\Delta$"
+    )
+
+    assert not (Counter(page) - Counter(latex))
+    assert _latex_to_symbols(r"\unknowncmd \alpha \mathrm{x}") == r"\unknowncmd α \mathrm{x}"
+
+
 def test_a_dash_normalized_on_the_way_out_is_not_a_dropped_symbol():
     """`−` emitting as `-` is formatting. A class where loss and normalization
     both live would need a threshold, which is what this check exists to avoid."""

@@ -55,6 +55,28 @@ _AMBIGUOUS_REGION_SHARE = 0.15
 
 _SCRIPT_TAGS = re.compile(r"</?(?:sub|sup)>")
 
+# An engine that writes mathematics as LaTeX spells a Greek letter `\\alpha` where the page prints `α`, so both the word
+# comparison and the symbol-loss check scored every such letter as lost: on one book Marker drew 429 recall flags to
+# Docling's 267 for the same words. The emitted side is read with the common commands put back as the symbols they
+# stand for; a command with no entry here is left as written.
+_LATEX_SYMBOLS = {
+    **{name: letter for name, letter in zip(
+        "alpha beta gamma delta epsilon varepsilon zeta eta theta vartheta iota kappa varkappa lambda mu nu xi pi "
+        "varpi rho varrho sigma tau upsilon phi varphi chi psi omega".split(),
+        "αβγδεεζηθθικκλμνξππρρστυφφχψω", strict=True)},
+    **{name: letter for name, letter in zip(
+        "Gamma Delta Theta Lambda Xi Pi Sigma Upsilon Phi Psi Omega".split(), "ΓΔΘΛΞΠΣΥΦΨΩ", strict=True)},
+    "geq": "≥", "ge": "≥", "leq": "≤", "le": "≤", "approx": "≈", "sim": "∼", "simeq": "≃", "cong": "≅",
+    "ll": "≪", "gg": "≫", "neq": "≠", "ne": "≠", "pm": "±", "mp": "∓", "times": "×", "div": "÷", "sqrt": "√",
+    "infty": "∞", "partial": "∂", "nabla": "∇", "int": "∫", "sum": "∑", "prod": "∏", "cdot": "⋅", "propto": "∝",
+    "in": "∈", "forall": "∀", "exists": "∃", "circ": "°", "AA": "Å", "hbar": "ħ", "ell": "l",
+}
+_LATEX_COMMAND = re.compile(r"\\([A-Za-z]+)")
+
+
+def _latex_to_symbols(text: str) -> str:
+    return _LATEX_COMMAND.sub(lambda m: _LATEX_SYMBOLS.get(m.group(1), m.group(0)), text)
+
 _WORDS = re.compile(r"\w+")
 
 # A word the page breaks across a line is one word; the emitter rejoins it. The
@@ -77,7 +99,7 @@ def _recall_words(text: str) -> list[str]:
     raw control byte alone scores `configuration` against the layer's `con` +
     `guration` as two losses and a phantom word. Every f-ligature in the
     document, on every side of the comparison."""
-    text = expand_ligature_glyphs(text)
+    text = expand_ligature_glyphs(_latex_to_symbols(text))
     # A space, not nothing: the source side is read script-split, so `X<sub>UFF</sub>`
     # has to tokenize as `X UFF` the way the glyph reading of the same ink does.
     # Dropping the tags instead makes every scripted run a phantom miss in one
@@ -165,7 +187,7 @@ def record_symbol_loss(block: Block, pc, emitted: str | None = None) -> None:
     the symbols are already gone from `base-state.json` -- so this reports and
     never repairs: that a `χ` is missing is certain, where to put it back is not.
     """
-    content = block.text if emitted is None else emitted
+    content = _latex_to_symbols(block.text if emitted is None else emitted)
     source = Counter(
         c for c in _SYMBOLS.findall(pc.text_region(block.bbox)) if c not in _SYMBOL_DASHES
     )

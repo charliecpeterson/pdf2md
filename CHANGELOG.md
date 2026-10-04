@@ -33,6 +33,13 @@ here.
   `build_gfm` does (`| a | b |`, `|---|---|`, alignment colons kept) when the Docling adapter takes it. Bundles
   already converted keep their padded tables until they are converted again.
 
+- The recall and symbol-loss checks no longer score LaTeX-spelled symbols as lost. An engine that writes
+  mathematics as LaTeX spells a Greek letter `\\alpha` where the page prints `α`, so both checks counted every such
+  letter, `\\AA`, `\\geq` and `\\hbar` as missing: on one 280-page book Marker drew 429 text-layer-recall flags (224
+  of them `high`) against Docling's 267 for the same words, and "symbols dropped" counted letters the output had.
+  The emitted side is now read with about eighty common LaTeX commands put back as the symbols they stand for;
+  a command with no entry is left as written. A letter that is really gone is still reported.
+
 ### Changed
 
 - Marker's output is streamed rather than captured whole, so a run reports its stage
