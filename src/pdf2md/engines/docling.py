@@ -12,12 +12,14 @@ from __future__ import annotations
 
 import math
 import sysconfig
+from contextlib import contextmanager
 from functools import cache
 from importlib.metadata import version
 from pathlib import Path
 from statistics import fmean
 
 from pdf2md.engines.base import EngineResult
+from pdf2md.engines.docling_probe import crashing_page
 from pdf2md.logging import get_logger
 from pdf2md.normalize import normalize_text
 from pdf2md.schema import (
@@ -99,7 +101,7 @@ _FIGURE_TEXT_NOTE = (
 )
 
 
-def _quality_evidence(report) -> dict[str, object]:
+def _quality_evidence(report, bitmap_crash_page: int | None = None) -> dict[str, object]:
     """Retain Docling's document grades without treating its scores as probabilities."""
     grades: dict[str, str] = {}
     scores: dict[str, float] = {}
@@ -123,7 +125,7 @@ def _quality_evidence(report) -> dict[str, object]:
         single_score = type(report)(**{f"{name}_score": score})
         grades[name] = single_score.mean_grade.value
         scores[name] = round(score, 6)
-    return {
+    evidence = {
         "source": "Docling ConversionResult.confidence",
         "calibrated": False,
         "grades": grades,
@@ -136,6 +138,12 @@ def _quality_evidence(report) -> dict[str, object]:
             "Table quality is omitted because its score is not implemented."
         ),
     }
+    if bitmap_crash_page is not None:
+        evidence["bitmap_content_skipped"] = (
+            f"docling-parse crashes decoding page {bitmap_crash_page}, so bitmap content "
+            "was skipped for the whole document and embedded raster images were not OCR'd"
+        )
+    return evidence
 
 
 @cache
@@ -218,6 +226,32 @@ def _raw_cell(c, page_height: float | None) -> RawCell:
         column_header=bool(getattr(c, "column_header", False)),
     )
 
+@contextmanager
+def _bitmap_content_skipped():
+    """Make Docling's parser backend skip bitmap content for the conversions inside.
+
+    docling-parse can trap while decoding some embedded images (see
+    `docling_probe`). Docling builds its content settings in one module-level
+    function, called whenever a page is parsed, so wrapping that function is
+    enough and nothing else in Docling is touched. What is lost is Docling's
+    knowledge of where raster images sit: it OCRs an embedded image only when
+    it knows about it. Born-digital text is unaffected."""
+    from docling.backend import docling_parse_backend as backend
+    from docling_parse.pdf_parser import ContentLevel
+
+    original = backend._make_docling_parse_page_content_config
+
+    def without_bitmaps(**kwargs):
+        config = original(**kwargs)
+        config.bitmaps_content_level = ContentLevel.SKIP
+        return config
+
+    backend._make_docling_parse_page_content_config = without_bitmaps
+    try:
+        yield
+    finally:
+        backend._make_docling_parse_page_content_config = original
+
 
 class DoclingEngine:
     name = "docling"
@@ -290,7 +324,25 @@ class DoclingEngine:
 
     def convert(self, pdf_path: Path) -> EngineResult:
         log.info("docling converting %s", pdf_path)
-        conversion = self._converter.convert(str(pdf_path))
+        bad_page = crashing_page(pdf_path)
+        if bad_page is None:
+            conversion = self._converter.convert(str(pdf_path))
+        else:
+            from pdf2md.engines.select import _SCAN_SHARE, scanned_share
+
+            if scanned_share(pdf_path) >= _SCAN_SHARE:
+                raise RuntimeError(
+                    f"docling-parse crashes on page {bad_page} and this document is a scan, "
+                    "where Docling needs the bitmap content it would have to skip to find "
+                    "text to OCR; use --engine marker"
+                )
+            log.warning(
+                "docling-parse crashes decoding page %d; converting with bitmap content "
+                "skipped, so embedded raster images are not OCR'd",
+                bad_page,
+            )
+            with _bitmap_content_skipped():
+                conversion = self._converter.convert(str(pdf_path))
         doc = conversion.document
 
         blocks = self._blocks(doc)
@@ -306,7 +358,7 @@ class DoclingEngine:
             figures=figures,
             page_sizes=page_sizes,
             engine_versions={"docling": version("docling"), "pdf2md": version("pdf2md")},
-            quality_evidence=_quality_evidence(conversion.confidence),
+            quality_evidence=_quality_evidence(conversion.confidence, bad_page),
             raw_tables=raw_tables,
         )
 

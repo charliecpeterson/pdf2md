@@ -9,6 +9,16 @@ here.
 
 ### Fixed
 
+- A page that crashes docling-parse no longer takes the conversion down with it. The parser
+  is a C++ extension that traps (SIGTRAP, exit 133) on some embedded images instead of
+  raising, so no handler runs: an 850-page nuclear chemistry textbook died every time, on a
+  5134x2518 JBIG2 figure at page 633, after the work up to it. The Docling engine now parses
+  the document once in a throwaway process with Docling's content settings, about 0.08 s a
+  page, and if that process is killed it converts with bitmap content skipped, records
+  `bitmap_content_skipped` in the engine quality evidence, and warns. A scan is refused with
+  a pointer to `--engine marker`, because Docling finds the regions to OCR through the
+  bitmap content that would be skipped. Skipping bitmaps, and nothing else, was what avoided
+  the crash; sanitisation, pixel bytes and native-memory release settings made no difference.
 - A malformed table-cell attribute no longer aborts a whole conversion. Marker emitted
   `colspan="3<br style="` in one cell of a 338-page monograph and `int()` raised; span
   attributes are now read as their leading digits, or a single cell when there are none.
