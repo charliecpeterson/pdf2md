@@ -15,6 +15,17 @@ here.
   that output, so what the adapter dropped was gone from it too; the table footnotes fixed
   below cost seven books another 4.5 hours of OCR to recover. A fixed adapter can now read
   the retained JSON instead.
+- Table cells printed with a footnote marker, an uncertainty, or tentative parentheses
+  (`8.1a`, `(2.50)b`, `9.87a ± 0.09`, `$10.76^{\text{Z}}$`) are typed `annotated_numeric`
+  instead of text, with `marker`, `uncertainty` and `parenthesized` beside the number. Their
+  number is compared with the second reader's and their marker separately
+  (`reader_marker`, `marker_outcome`); nothing is interpreted, and the marker's meaning stays
+  in the table's footnotes. On the MinerU reading of Critical Stability Constants Vol. 6 this
+  moves 5,565 cells into the second reader's reach beside the 10,535 plain numbers that were
+  there already. Two values run together still type as text, and a decimal point or an
+  uncertainty is required so a compound label such as `1a` is not read as a number. Cell
+  evidence is `schema_version` 3 and normalized datasets 6, with the three fields appended to
+  their columns.
 
 ### Fixed
 

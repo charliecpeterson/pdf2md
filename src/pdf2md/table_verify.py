@@ -34,7 +34,7 @@ from pdf2md.table_reference import (
 from pdf2md.table_reference import (
     normalized_semantics as _normalized_semantics,
 )
-from pdf2md.table_resolution import resolve_cell_records
+from pdf2md.table_resolution import NUMERIC_STATUSES, resolve_cell_records
 from pdf2md.tables import RepeatedPanelLayout, split_repeated_panels
 
 # A numeric grid whose mapped tokens are mostly nonnumeric is structurally misaligned.
@@ -69,6 +69,44 @@ def typed_value(raw_value: str) -> tuple[str, str, str]:
     except ValueError:
         return stripped, "", "text"
     return stripped, numeric_value, "numeric"
+
+
+# A value printed with a footnote marker, an uncertainty, or tentative parentheses, as
+# a compilation of critical constants prints most of its values: `8.1a`, `(2.50)b`,
+# `9.87a ± 0.09`, `$10.76^{\text{Z}}$`. Typed as text, every one of them skipped the
+# second reader. Two values run together (`8.11a±0.058.11b`) still do not match, since
+# no single reading splits them, and a decimal point or an uncertainty is required so
+# that a compound label such as `1a` is not read as the number 1.
+_ANNOTATED = re.compile(
+    r"(?P<open>\()?(?P<number>[-+]?(?:\d+\.\d+|\.\d+|\d+))(?(open)\))"
+    r"\s*(?P<marker>[A-Za-z](?:\s*,\s*[A-Za-z])*)?"
+    r"(?:\s*±\s*(?P<uncertainty>\d+\.\d+|\.\d+|\d+))?"
+)
+_LATEX_WRAPPED = re.compile(r"\\(?:text|mathrm|textrm|mathit)\{([^{}]*)\}")
+
+
+def annotated_number(raw_value: str) -> dict[str, object] | None:
+    """Split an annotated value into its number, marker, and uncertainty, or None.
+
+    Nothing is interpreted: the marker is kept as printed, and what it stands for
+    stays in the table's footnotes."""
+    text = raw_value.strip().replace("$", "")
+    text = _LATEX_WRAPPED.sub(r"\1", text)
+    text = re.sub(r"</?sup>", "", text)
+    text = re.sub(r"\^\{([^{}]*)\}|\^(\w)", lambda m: m.group(1) or m.group(2), text)
+    text = text.replace("\\pm", "±").replace("+/-", "±")
+    text = text.replace("−", "-").replace("–", "-").replace("—", "-")
+    match = _ANNOTATED.fullmatch(text.strip())
+    if match is None or not (match["marker"] or match["uncertainty"] or match["open"]):
+        return None
+    if "." not in match["number"] and not match["uncertainty"]:
+        return None
+    return {
+        "number": match["number"],
+        "marker": re.sub(r"\s+", "", match["marker"]) if match["marker"] else None,
+        "uncertainty": match["uncertainty"],
+        "parenthesized": bool(match["open"]),
+    }
 
 
 def _compact_numeric_spacing(value: str) -> str:
@@ -141,11 +179,29 @@ def write_cell_evidence(
         for row_index, row in enumerate(rows):
             for column_index, raw_value in enumerate(row):
                 value, numeric_value, value_status = typed_value(raw_value)
+                annotation = annotated_number(raw_value) if value_status == "text" else None
+                if annotation:
+                    numeric_value, value_status = str(annotation["number"]), "annotated_numeric"
                 semantic = semantics.get((table.block_id, row_index, column_index), {})
                 reader_value = mapped.get((row_index, column_index)) if mapped else None
-                reader_outcome = _reader_outcome(
-                    raw_value, value_status, reader_value, bool(tesseract_executable), refusal
+                reader_annotation = (
+                    annotated_number(reader_value) if annotation and reader_value else None
                 )
+                reader_outcome = _reader_outcome(
+                    numeric_value if annotation else raw_value,
+                    value_status,
+                    str(reader_annotation["number"]) if reader_annotation else reader_value,
+                    bool(tesseract_executable),
+                    refusal,
+                )
+                reader_marker = reader_annotation["marker"] if reader_annotation else None
+                marker_outcome = None
+                if annotation and reader_outcome in {"agree", "disagree"}:
+                    marker_outcome = (
+                        "agree" if reader_marker == annotation["marker"]
+                        else "reader_unmarked" if reader_marker is None
+                        else "disagree"
+                    )
                 external_value, external_outcome = _external_outcome(
                     semantic, raw_value, references, bool(reference_path)
                 )
@@ -153,7 +209,7 @@ def write_cell_evidence(
                     reader_outcome, external_outcome, value_status
                 )
                 records.append({
-                    "schema_version": 2,
+                    "schema_version": 3,
                     "page": table.page,
                     "source_block_id": table.block_id,
                     "source_row": row_index,
@@ -162,11 +218,16 @@ def write_cell_evidence(
                     "value": value,
                     "numeric_value": numeric_value or None,
                     "value_status": value_status,
+                    "marker": annotation["marker"] if annotation else None,
+                    "uncertainty": annotation["uncertainty"] if annotation else None,
+                    "parenthesized": annotation["parenthesized"] if annotation else None,
                     "reader": "tesseract" if tesseract_executable else None,
                     "reader_rotation": reader_rotation,
                     "reader_deskew_degrees": reader_deskew_degrees,
                     "reader_value": reader_value,
                     "reader_outcome": reader_outcome,
+                    "reader_marker": reader_marker,
+                    "marker_outcome": marker_outcome,
                     "reader_refusal_reason": (
                         (refusal or "cell_alignment_missing")
                         if reader_outcome == "reader_refused"
@@ -242,7 +303,7 @@ def _reader_outcome(
     requested: bool,
     refusal: str | None,
 ) -> str:
-    if value_status != "numeric":
+    if value_status not in NUMERIC_STATUSES:
         return "not_applicable"
     if not requested:
         return "single_reader"
@@ -258,7 +319,7 @@ def _verification_status(
         return "externally_verified"
     if external_outcome == "disagree":
         return "external_disagreement"
-    if value_status != "numeric":
+    if value_status not in NUMERIC_STATUSES:
         return "not_applicable"
     if reader_outcome == "agree":
         return "reader_agreement"

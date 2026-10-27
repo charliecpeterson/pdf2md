@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import json
 import re
+import sys
 
 from pdf2md import table_verify
 from pdf2md.emit import emit_document
@@ -17,6 +18,7 @@ from pdf2md.table_verify import (
     _reader_parse_rate,
     _table_layout,
     _verification_status,
+    annotated_number,
     map_tesseract_tsv,
     typed_value,
 )
@@ -81,6 +83,76 @@ def test_typed_value_preserves_raw_placeholders():
     )
     assert typed_value("0.6356SD-03") == ("0.6356SD-03", "", "text")
     assert typed_value("1 2") == ("1 2", "", "text")
+
+
+def test_annotated_number_splits_the_shapes_two_engines_print():
+    """Each raw value here is how Marker or MinerU wrote a Critical Stability Constants cell."""
+    def split(raw):
+        found = annotated_number(raw)
+        return found and (found["number"], found["marker"], found["uncertainty"],
+                          found["parenthesized"])
+
+    assert split("8.1a") == ("8.1", "a", None, False)
+    assert split("(2.50)b") == ("2.50", "b", None, True)
+    assert split("(14.5)") == ("14.5", None, None, True)
+    assert split("9.87a ± 0.09") == ("9.87", "a", "0.09", False)
+    assert split("4.44 ±0.00") == ("4.44", None, "0.00", False)
+    assert split("-3.1c") == ("-3.1", "c", None, False)
+    assert split("8.89b,u") == ("8.89", "b,u", None, False)
+    assert split("4.45<sup>a</sup>") == ("4.45", "a", None, False)
+    assert split("$4.45^{a}$") == ("4.45", "a", None, False)
+    assert split("$10.76^{\\text{Z}}$") == ("10.76", "Z", None, False)
+    assert split("$2.66^{\\text{h}}\\pm 0.02$") == ("2.66", "h", "0.02", False)
+    # Two values run together, a misread, labels and conditions stay text.
+    for raw in ("8.11a±0.058.11b", "9.74 ±0.069.87a±0.09", "8:19", "1a", "(16)", "10c",
+                "Mg2+", "25°,0.1", "13.8 +0.3", "8.11", "$H_{2}L/HL.H$"):
+        assert annotated_number(raw) is None, raw
+
+
+def test_annotated_values_are_compared_by_number_with_markers_kept_apart(tmp_path, monkeypatch):
+    rows = [
+        ["Metal ion", "Log K"],
+        ["H+", "8.1a"],
+        ["Cu2+", "9.87a ± 0.09"],
+        ["Ni2+", "6.38"],
+        ["Zn2+", "(2.50)b"],
+        ["Cd2+", "4.80c"],
+    ]
+    reader = {(1, 1): "8.1e", (2, 1): "9.87 ± 0.09", (3, 1): "6.38", (4, 1): "(2.50)b",
+              (5, 1): "4.30c"}
+    (tmp_path / "assets").mkdir()
+    (tmp_path / "assets" / "table.png").write_bytes(b"crop")
+    (tmp_path / "data" / "tables").mkdir(parents=True)
+    block = Block("#/table", BlockType.TABLE, "", 1, extra={"crop_path": "assets/table.png"})
+    table = TableData(block.id, 1, None, "", json_path="data/tables/table.json")
+    monkeypatch.setattr(
+        table_verify, "_read_tesseract", lambda *_: (reader, None, 0, 0.0)
+    )
+
+    table_verify.write_cell_evidence(
+        [table], {block.id: rows}, {block.id: block}, tmp_path,
+        tesseract_executable=sys.executable,
+    )
+
+    lines = (tmp_path / table.cell_evidence_path).read_text().splitlines()
+    records = {(r["source_row"], r["source_column"]): r for r in map(json.loads, lines)}
+    picked = {
+        row: tuple(records[row, 1][key] for key in (
+            "value_status", "numeric_value", "marker", "uncertainty", "reader_outcome",
+            "reader_marker", "marker_outcome", "best_value", "confidence",
+        ))
+        for row in range(1, 6)
+    }
+    assert picked == {
+        1: ("annotated_numeric", "8.1", "a", None, "agree", "e", "disagree", "8.1", "high"),
+        2: ("annotated_numeric", "9.87", "a", "0.09", "agree", None, "reader_unmarked",
+            "9.87", "high"),
+        3: ("numeric", "6.38", None, None, "agree", None, None, "6.38", "high"),
+        4: ("annotated_numeric", "2.50", "b", None, "agree", "b", "agree", "2.50", "high"),
+        5: ("annotated_numeric", "4.80", "c", None, "disagree", "c", "agree", "4.80", "low"),
+    }
+    assert records[4, 1]["parenthesized"] is True
+    assert records[1, 1]["schema_version"] == 3
 
 
 def test_numeric_reader_ignores_typographic_digit_grouping():

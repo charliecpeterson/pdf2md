@@ -27,7 +27,8 @@ source coordinates and raw rows. The matching long-form CSV uses these columns:
 panel,title,atomic_number,symbol,term,configuration,row_key,column,value,
 raw_value,numeric_value,value_status,source_block_id,source_row,source_column,
 primary_value,reader_value,best_value,confidence,resolution_basis,
-validator_preference,validator_basis,verification_status,reader_refusal_reason
+validator_preference,validator_basis,verification_status,reader_refusal_reason,
+marker,uncertainty,parenthesized
 ```
 
 `raw_value` always preserves the engine output. `numeric_value` is set only when the

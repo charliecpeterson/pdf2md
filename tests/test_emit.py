@@ -502,9 +502,12 @@ def test_repeated_table_fragments_emit_stitched_long_form_data(tmp_path):
         "validator_basis": "",
         "verification_status": "candidate",
         "reader_refusal_reason": "",
+        "marker": "",
+        "uncertainty": "",
+        "parenthesized": "",
     }
     normalized = json.loads((tmp_path / tables[0].normalized_json_path).read_text())
-    assert normalized["schema_version"] == 5
+    assert normalized["schema_version"] == 6
     assert normalized["records"][4]["best_value"] == "1.5"
     assert normalized["authority"] == "ocr_candidate"
     assert normalized["source_blocks"] == ["#/table/1", "#/table/2"]

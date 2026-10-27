@@ -26,7 +26,13 @@ RESOLUTION_FIELDS = [
     "validator_basis",
     "verification_status",
     "reader_refusal_reason",
+    "marker",
+    "uncertainty",
+    "parenthesized",
 ]
+# An annotated value's number is compared and resolved like any other; its marker and
+# uncertainty travel beside best_value so the number never leaves without its condition.
+NUMERIC_STATUSES = frozenset({"numeric", "annotated_numeric"})
 
 
 def resolve_cell_records(
@@ -40,11 +46,11 @@ def resolve_cell_records(
         status = str(record["value_status"])
         primary = (
             str(record.get("numeric_value") or record["value"])
-            if status == "numeric"
+            if status in NUMERIC_STATUSES
             else str(record["value"])
         )
         record["primary_value"] = primary
-        if status != "numeric":
+        if status not in NUMERIC_STATUSES:
             record["best_value"] = primary
             record["confidence"] = "not_applicable"
             record["resolution_basis"] = status
@@ -131,7 +137,7 @@ def enrich_normalized_datasets(tables: list[TableData], version_dir: Path) -> No
 
         json_path = version_dir / json_relative
         dataset = json.loads(json_path.read_text())
-        dataset["schema_version"] = 5
+        dataset["schema_version"] = 6
         dataset["records"] = records
         json_path.write_text(json.dumps(dataset, indent=2, ensure_ascii=False) + "\n")
 

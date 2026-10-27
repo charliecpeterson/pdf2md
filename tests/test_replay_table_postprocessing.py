@@ -70,7 +70,7 @@ def test_replay_rebuilds_normalization_and_pins_source_version(tmp_path):
     normalized = json.loads(
         (target / "data" / "tables" / "page_001_panels.json").read_text()
     )
-    assert normalized["schema_version"] == 5
+    assert normalized["schema_version"] == 6
     assert normalized["checks"] == {"passed": True, "issues": [], "review_signals": []}
     provenance = json.loads((target / "provenance.json").read_text())
     assert provenance["version"] == 2
