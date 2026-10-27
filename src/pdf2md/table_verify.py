@@ -109,6 +109,28 @@ def annotated_number(raw_value: str) -> dict[str, object] | None:
     }
 
 
+# How Tesseract renders an annotated cell: the number, then perhaps a space and the
+# marker, then perhaps the uncertainty with its ± read as `+`, `t` or `%`. The first
+# number standing on its own is taken, with an adjacent marker; one inside a word
+# (`H3L`, `Mn2+`) is a label, and a stray trailing dot (`6.13.`) is not part of it.
+_READER_LEADING = re.compile(
+    r"(?<![A-Za-z0-9.])\(?\s*(?P<number>[-+]?(?:\d+\.\d+|\.\d+|\d+))\s*\)?"
+    r"(?:\s?(?P<marker>[A-Za-z](?:,[A-Za-z])*))?\.?(?![A-Za-z0-9])"
+)
+
+
+def _reader_reading(text: str) -> tuple[str, str | None] | None:
+    """The first free-standing number in a reader's text for an annotated cell, and
+    its marker; None when the text holds no such number."""
+    normalized = _LATEX_WRAPPED.sub(r"\1", text.strip().replace("$", ""))
+    match = _READER_LEADING.search(normalized)
+    return (match["number"], match["marker"]) if match else None
+
+
+def _is_annotated(cell: str) -> bool:
+    return typed_value(cell)[2] == "text" and annotated_number(cell) is not None
+
+
 def _compact_numeric_spacing(value: str) -> str:
     candidate = re.sub(r"\s*\.\s*", ".", value)
     footnote = re.fullmatch(r"(.+\d)\s+[A-Za-z]", candidate)
@@ -184,17 +206,16 @@ def write_cell_evidence(
                     numeric_value, value_status = str(annotation["number"]), "annotated_numeric"
                 semantic = semantics.get((table.block_id, row_index, column_index), {})
                 reader_value = mapped.get((row_index, column_index)) if mapped else None
-                reader_annotation = (
-                    annotated_number(reader_value) if annotation and reader_value else None
-                )
+                reading = _reader_reading(reader_value) if annotation and reader_value else None
                 reader_outcome = _reader_outcome(
                     numeric_value if annotation else raw_value,
                     value_status,
-                    str(reader_annotation["number"]) if reader_annotation else reader_value,
+                    # Words with no number in them are not a reading of the value.
+                    (reading[0] if reading else None) if annotation else reader_value,
                     bool(tesseract_executable),
                     refusal,
                 )
-                reader_marker = reader_annotation["marker"] if reader_annotation else None
+                reader_marker = reading[1] if reading else None
                 marker_outcome = None
                 if annotation and annotation["marker"] and reader_outcome in {"agree", "disagree"}:
                     marker_outcome = (
@@ -427,6 +448,13 @@ def _reader_agreement_score(
         if row < len(rows)
         and column < len(rows[row])
         and typed_value(rows[row][column])[2] == "numeric"
+    ] + [
+        numeric_values_equal(str(annotated_number(rows[row][column])["number"]), reading[0])
+        for (row, column), value in mapped.items()
+        if row < len(rows)
+        and column < len(rows[row])
+        and _is_annotated(rows[row][column])
+        and (reading := _reader_reading(value)) is not None
     ]
     if not comparisons:
         return 0.0, 0
@@ -443,16 +471,21 @@ def _reader_parse_rate(
         and column < len(rows[row])
         and typed_value(rows[row][column])[2] == "numeric"
     ]
-    if not readings:
+    annotated = [
+        value
+        for (row, column), value in mapped.items()
+        if row < len(rows) and column < len(rows[row]) and _is_annotated(rows[row][column])
+    ]
+    if not readings and not annotated:
         return 0.0
-    parsed = 0
+    parsed = sum(_reader_reading(value) is not None for value in annotated)
     for value in readings:
         try:
             float(_numeric_read(value))
         except ValueError:
             continue
         parsed += 1
-    return parsed / len(readings)
+    return parsed / (len(readings) + len(annotated))
 
 
 def _reader_coverage_rate(
@@ -462,7 +495,7 @@ def _reader_coverage_rate(
         (row_index, column_index)
         for row_index in _numeric_source_rows(rows)
         for column_index, value in enumerate(rows[row_index])
-        if typed_value(value)[2] == "numeric"
+        if typed_value(value)[2] == "numeric" or _is_annotated(value)
     ]
     if not numeric_cells:
         return 0.0
@@ -523,13 +556,32 @@ def map_tesseract_tsv(
                     mapped[row_index, column] = _numeric_read(str(word["text"]))
             continue
         center_values = [center for _, center in centers]
+        nearest = [
+            min(range(len(center_values)), key=lambda index: abs(word["x"] - center_values[index]))
+            for word in line
+        ]
         for center_index, (column, center) in enumerate(centers):
-            word = min(line, key=lambda item: abs(item["x"] - center))
             gaps = []
             if center_index:
                 gaps.append(center - center_values[center_index - 1])
             if center_index + 1 < len(centers):
                 gaps.append(center_values[center_index + 1] - center)
+            if column < len(rows[row_index]) and _is_annotated(rows[row_index][column]):
+                # The value, its marker and its uncertainty can be separate words;
+                # the single nearest one gave `4.65 ±0.02` the reading `+0.02`. The
+                # distance limit keeps a label column with no center of its own out.
+                words = sorted(
+                    (
+                        word for word, index in zip(line, nearest)
+                        if index == center_index
+                        and (not gaps or abs(word["x"] - center) <= min(gaps) * 0.45)
+                    ),
+                    key=lambda word: float(word["x"]),
+                )
+                if words:
+                    mapped[row_index, column] = " ".join(str(word["text"]) for word in words)
+                continue
+            word = min(line, key=lambda item: abs(item["x"] - center))
             if not gaps or abs(word["x"] - center) <= min(gaps) * 0.45:
                 mapped[row_index, column] = _numeric_read(word["text"])
     return mapped
@@ -556,6 +608,7 @@ def _numeric_source_rows(rows: list[list[str]]) -> list[int]:
     for row_index, row in enumerate(rows):
         numeric = sum(
             typed_value(cell)[2] in {"numeric", "dot_placeholder", "dash_placeholder"}
+            or _is_annotated(cell)
             for cell in row
         )
         property_row = _is_property_row(row)
@@ -568,6 +621,16 @@ def _numeric_source_rows(rows: list[list[str]]) -> list[int]:
             seen_properties.add(signature)
         selected.append(row_index)
     return selected
+
+
+def _expected_words(cell: str) -> int:
+    """Number-like words Tesseract should see for a cell: `9.87a ± 0.09` prints two."""
+    if typed_value(cell)[2] in {"numeric", "dot_placeholder", "dash_placeholder"}:
+        return 1
+    annotation = annotated_number(cell) if typed_value(cell)[2] == "text" else None
+    if annotation is None:
+        return 0
+    return 2 if annotation["uncertainty"] else 1
 
 
 def _is_property_row(row: list[str]) -> bool:
@@ -586,13 +649,7 @@ def _align_numeric_lines(
     """Monotonically align table rows while allowing OCR-only and missed lines."""
     if not numeric_rows or not lines:
         return []
-    expected = [
-        sum(
-            typed_value(cell)[2] in {"numeric", "dot_placeholder", "dash_placeholder"}
-            for cell in rows[row_index]
-        )
-        for row_index in numeric_rows
-    ]
+    expected = [sum(_expected_words(cell) for cell in rows[row_index]) for row_index in numeric_rows]
     observed = [sum(_numericish_word(str(word["text"])) for word in line) for line in lines]
     source_count = len(numeric_rows)
     line_count = len(lines)

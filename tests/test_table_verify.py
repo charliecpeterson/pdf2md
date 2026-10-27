@@ -16,6 +16,7 @@ from pdf2md.table_resolution import resolve_cell_records
 from pdf2md.table_verify import (
     _aligned_tesseract_lines,
     _reader_parse_rate,
+    _reader_reading,
     _table_layout,
     _verification_status,
     annotated_number,
@@ -227,6 +228,52 @@ def test_tesseract_mapping_skips_an_extra_numeric_ocr_line():
     assert mapped[2, 1] == "1.2"
     assert mapped[3, 3] == "2.4"
     assert "99.0" not in mapped.values()
+
+
+def test_tesseract_mapping_gives_an_annotated_cell_all_of_its_words():
+    """Before, `9.74 ± 0.06` got the single nearest word and rows of annotated values
+    were not aligned at all, since only plain numbers counted."""
+    rows = [
+        ["Metal ion", "Equilibrium", "Log K", "Log K"],
+        ["H+", "HL/H.L", "9.74 ± 0.06", "9.92"],
+        ["Cu2+", "ML/M.L", "8.1a", "8.37"],
+        ["Ni2+", "ML/M.L", "13.8 ± 0.3", "14.0"],
+        ["Zn2+", "ML/M.L", "(2.50)b", "2.6"],
+    ]
+    layout = _table_layout(rows, None)
+    header = "level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\tleft\ttop\twidth\theight\tconf\ttext"
+    lines = [
+        [(0, "H+"), (40, "HL/H.L"), (100, "9.74"), (135, "+0.06"), (200, "9.92")],
+        [(0, "Cu2+"), (40, "ML/M.L"), (100, "8.1a"), (200, "8.37")],
+        [(0, "Ni2+"), (40, "ML/M.L"), (100, "13.8"), (135, "+0.3"), (200, "14.0")],
+        [(0, "Zn2+"), (40, "ML/M.L"), (100, "(2.50)b"), (200, "2.6")],
+    ]
+    words = [
+        f"5\t1\t1\t1\t{number}\t{index + 1}\t{left}\t{number * 20}\t30\t10\t90\t{text}"
+        for number, line in enumerate(lines, start=1)
+        for index, (left, text) in enumerate(line)
+    ]
+
+    mapped = map_tesseract_tsv(rows, "\n".join([header, *words]), layout)
+
+    assert [mapped.get((row, 2)) for row in range(1, 5)] == [
+        "9.74 +0.06", "8.1a", "13.8 +0.3", "(2.50)b",
+    ]
+    assert [mapped.get((row, 3)) for row in range(1, 5)] == ["9.92", "8.37", "14.0", "2.6"]
+
+
+def test_reader_reading_takes_the_first_free_standing_number_and_its_marker():
+    assert _reader_reading("8.1a") == ("8.1", "a")
+    assert _reader_reading("8.1 a") == ("8.1", "a")
+    assert _reader_reading("3.49h") == ("3.49", "h")
+    assert _reader_reading("(2.50)b") == ("2.50", "b")
+    assert _reader_reading("9.74 +0.06") == ("9.74", None)
+    assert _reader_reading("6.13. +0.03") == ("6.13", None)
+    # A label column's words reached the cell; the value after them is still read.
+    assert _reader_reading("MHL/ML.H 3.1 +0.1") == ("3.1", None)
+    assert _reader_reading("H3L/HoL.H (1.9) £0.2") == ("1.9", None)
+    # No free-standing number at all is no reading of the value.
+    assert _reader_reading("Mn2+ = ML/M.L") is None
 
 
 def test_tesseract_mapping_keeps_digit_suffix_row_labels_out_of_numeric_columns():

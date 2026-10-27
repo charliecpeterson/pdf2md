@@ -25,11 +25,19 @@ here.
   there already. Two values run together still type as text, and a decimal point or an
   uncertainty is required so a compound label such as `1a` is not read as a number. Cell
   evidence is `schema_version` 3 and normalized datasets 6, with the three fields appended to
-  their columns. **The second reader mostly cannot reach them yet**: Tesseract's words are
-  aligned only to cells that type as plain numbers, so on a five-page Critical Stability
-  Constants pilot 41 of 43 annotated cells were `reader_refused` (36 `cell_alignment_missing`).
-  Teaching that alignment about annotated cells is the next step; `marker_outcome` is set only
-  where the value prints a marker.
+  their columns. `marker_outcome` is set only where the value prints a marker.
+- Tesseract's reading now reaches annotated cells. Row selection and line matching counted
+  only plain numbers, so a row of annotated values was never aligned, and a cell that was
+  got the single nearest word: `4.65 ±0.02` read as `+0.02`. Annotated cells now count
+  (one with an uncertainty as two number-like words), take every word of their column within
+  the existing distance limit, and are read for the first free-standing number and adjacent
+  marker; text holding no number is a refusal, not a disagreement. Over 60 Critical
+  Stability Constants Vol. 6 tables, annotated cells went from 1 agreement, 12
+  disagreements and 462 refusals to 47, 59 and 369, and the plain numbers in the same
+  tables from 90 agreements to 141, as their rows now align. 20 tables with no annotated
+  value read identically cell for cell. Most remaining disagreements are the reader taking a
+  neighbouring column or row. Superscript markers rarely survive Tesseract (1 agreement, 36
+  `reader_unmarked`), so the marker comparison has little power.
 
 ### Fixed
 
