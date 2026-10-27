@@ -13,6 +13,7 @@ from importlib.resources import files
 from pathlib import Path
 
 from pdf2md.chunks import block_content, section_map
+from pdf2md.logging import get_logger
 from pdf2md.passage_split import prose_units, split_passage_text
 from pdf2md.passage_tokenizer import (
     DEFAULT_TOKENIZER,
@@ -29,6 +30,8 @@ from pdf2md.schema import (
     Section,
     TableData,
 )
+
+log = get_logger("passages")
 
 PASSAGES_SCHEMA_VERSION = 2
 DEFAULT_MAX_TOKENS = 512
@@ -352,6 +355,7 @@ def build_passages(
         dispositions.setdefault(flag.block_id, set()).add(flag.disposition)
 
     passages = []
+    contextless_sections: set[tuple[str, ...]] = set()
     for block_index, block in enumerate(doc.blocks):
         if block.type in _FURNITURE:
             continue
@@ -376,12 +380,30 @@ def build_passages(
             for section in reversed(breadcrumb)
             if section["id"] in section_roles
         ), None)
+        context_breadcrumb = breadcrumb
+        context_alone = _retrieval_text(
+            metadata, breadcrumb, block.type.value, "", semantic_role=semantic_role
+        )
+        if tokenizer.count(context_alone) >= max_tokens:
+            # A section path filling the whole budget is a misread heading, not a title:
+            # Docling promoted 1,700 characters of a scanned Critical Stability Constants
+            # volume's ligand index to one, and the splitter's refusal lost a 33-minute
+            # conversion. The passage keeps its breadcrumb; only the retrieval context
+            # drops the Section line.
+            context_breadcrumb = []
+            path = tuple(section["id"] for section in breadcrumb)
+            if path not in contextless_sections:
+                contextless_sections.add(path)
+                log.warning(
+                    "section path exceeds passage_max_tokens (%d); its passages omit the "
+                    "Section line from their retrieval context", max_tokens,
+                )
         # Closes over this iteration's block, and is called only from the two
         # statements below it, before the loop advances. B023 warns about a
         # closure that outlives the iteration; this one does not.
         def contextualize(
             part: str,
-            breadcrumb: list = breadcrumb,
+            breadcrumb: list = context_breadcrumb,
             block_type: str = block.type.value,
             semantic_role: str | None = semantic_role,
         ) -> str:

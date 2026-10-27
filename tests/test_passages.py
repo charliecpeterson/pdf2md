@@ -209,6 +209,30 @@ def test_passage_retrieval_context_names_semantic_role():
     assert "Semantic role: methods" in passage["retrieval_text"]
 
 
+def test_a_section_title_over_the_budget_drops_from_context_not_the_document(caplog):
+    blocks = [
+        Block("#/p1", BlockType.PARAGRAPH, "Log K values follow.", 1),
+        Block("#/p2", BlockType.PARAGRAPH, "More values follow.", 1),
+    ]
+    doc = _document(blocks)
+    misread = "Ligand Bibliography " + "Cyclo-tris-7-azo naphthalene " * 30
+    doc.sections.children[0].title = misread
+
+    with caplog.at_level("WARNING", logger="pdf2md"):
+        records = build_passages(
+            doc, {"title": "Book", "authors": []}, [], {},
+            tokenizer=_WordTokenizer(), max_tokens=20,
+        )
+
+    assert [record["display_text"] for record in records] == [
+        "Log K values follow.", "More values follow.",
+    ]
+    assert all("Section:" not in record["retrieval_text"] for record in records)
+    assert all(record["tokenizer"]["count"] <= 20 for record in records)
+    assert records[0]["section_breadcrumb"][-1]["title"] == misread
+    assert caplog.text.count("section path exceeds passage_max_tokens (20)") == 1
+
+
 def test_passage_schema_validates_docling_and_mineru_records(tmp_path):
     schema = load_passage_schema()
     Draft202012Validator.check_schema(schema)

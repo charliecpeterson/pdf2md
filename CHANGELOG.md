@@ -17,6 +17,12 @@ here.
   skip layout detection) and MinerU with `-m ocr`. Both cache identities name the setting.
   Marker 2.0.0's strip path calls pypdfium2's removed `get_pos()` under its own pinned
   dependencies; a failure with that signature now says so and names the workaround.
+- A misread heading longer than the passage budget no longer aborts the conversion. Docling
+  promoted 1,700 characters of a scanned Critical Stability Constants volume's ligand index to
+  a section title; every passage repeats its section path as retrieval context, so the splitter
+  had no room for any text and raised, losing a 33-minute run at the last stage. Such a block's
+  passages now omit the Section line from their retrieval context, keep the breadcrumb on the
+  record, and the run warns once per section path.
 - A page that crashes docling-parse no longer takes the conversion down with it. The parser
   is a C++ extension that traps (SIGTRAP, exit 133) on some embedded images instead of
   raising, so no handler runs: an 850-page nuclear chemistry textbook died every time, on a
