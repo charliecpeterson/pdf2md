@@ -25,7 +25,11 @@ here.
   there already. Two values run together still type as text, and a decimal point or an
   uncertainty is required so a compound label such as `1a` is not read as a number. Cell
   evidence is `schema_version` 3 and normalized datasets 6, with the three fields appended to
-  their columns.
+  their columns. **The second reader mostly cannot reach them yet**: Tesseract's words are
+  aligned only to cells that type as plain numbers, so on a five-page Critical Stability
+  Constants pilot 41 of 43 annotated cells were `reader_refused` (36 `cell_alignment_missing`).
+  Teaching that alignment about annotated cells is the next step; `marker_outcome` is set only
+  where the value prints a marker.
 
 ### Fixed
 

@@ -117,9 +117,10 @@ def test_annotated_values_are_compared_by_number_with_markers_kept_apart(tmp_pat
         ["Ni2+", "6.38"],
         ["Zn2+", "(2.50)b"],
         ["Cd2+", "4.80c"],
+        ["Pb2+", "4.65 ±0.02"],
     ]
     reader = {(1, 1): "8.1e", (2, 1): "9.87 ± 0.09", (3, 1): "6.38", (4, 1): "(2.50)b",
-              (5, 1): "4.30c"}
+              (5, 1): "4.30c", (6, 1): "4.65 ±0.02"}
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "table.png").write_bytes(b"crop")
     (tmp_path / "data" / "tables").mkdir(parents=True)
@@ -141,7 +142,7 @@ def test_annotated_values_are_compared_by_number_with_markers_kept_apart(tmp_pat
             "value_status", "numeric_value", "marker", "uncertainty", "reader_outcome",
             "reader_marker", "marker_outcome", "best_value", "confidence",
         ))
-        for row in range(1, 6)
+        for row in range(1, 7)
     }
     assert picked == {
         1: ("annotated_numeric", "8.1", "a", None, "agree", "e", "disagree", "8.1", "high"),
@@ -150,6 +151,8 @@ def test_annotated_values_are_compared_by_number_with_markers_kept_apart(tmp_pat
         3: ("numeric", "6.38", None, None, "agree", None, None, "6.38", "high"),
         4: ("annotated_numeric", "2.50", "b", None, "agree", "b", "agree", "2.50", "high"),
         5: ("annotated_numeric", "4.80", "c", None, "disagree", "c", "agree", "4.80", "low"),
+        # No marker printed, so there is no marker to agree about.
+        6: ("annotated_numeric", "4.65", None, "0.02", "agree", None, None, "4.65", "high"),
     }
     assert records[4, 1]["parenthesized"] is True
     assert records[1, 1]["schema_version"] == 3

@@ -196,7 +196,7 @@ def write_cell_evidence(
                 )
                 reader_marker = reader_annotation["marker"] if reader_annotation else None
                 marker_outcome = None
-                if annotation and reader_outcome in {"agree", "disagree"}:
+                if annotation and annotation["marker"] and reader_outcome in {"agree", "disagree"}:
                     marker_outcome = (
                         "agree" if reader_marker == annotation["marker"]
                         else "reader_unmarked" if reader_marker is None
