@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from pdf2md import __version__
+from pdf2md.cache import content_hash
 from pdf2md.engines.base import EngineResult
 from pdf2md.engines.streaming import ANSI_ESCAPE, capture_output
 from pdf2md.logging import Progress, get_logger
@@ -298,18 +299,14 @@ class MinerUEngine:
                 )
                 log.info("deskewed scanned pages before MinerU: %s", details)
             output = Path(temp)
-            command = [
-                self.executable,
-                "-p", str(prepared.path),
-                "-o", str(output),
-                "-b", "hybrid-engine",
-                "--effort", "high",
-                "--image-analysis", "true",
-            ]
+            arguments = ["-b", "hybrid-engine", "--effort", "high", "--image-analysis", "true"]
             if self.force_ocr:
                 # MinerU's default method, `auto`, decides for itself whether to trust an
                 # embedded text layer; --force-ocr is the caller saying it must not.
-                command.extend(["-m", "ocr"])
+                arguments.extend(["-m", "ocr"])
+            command = [
+                self.executable, "-p", str(prepared.path), "-o", str(output), *arguments,
+            ]
             environment = os.environ.copy()
             # MinerU's one-hour default expires on large high-effort documents.
             environment.setdefault(
@@ -332,6 +329,18 @@ class MinerUEngine:
             middle = list(output.rglob("*_middle.json"))
             if len(middle) != 1:
                 raise RuntimeError(f"MinerU produced {len(middle)} middle JSON files, expected 1")
-            result = _translate_middle(json.loads(middle[0].read_text()), self.version)
+            native = middle[0].read_bytes()
+            result = _translate_middle(json.loads(native), self.version)
             restore_source_geometry(result, prepared.angles)
+            # MinerU's coordinates are in the PDF it read, which deskewing may have
+            # replaced, so a replay needs that PDF's hash and the angles beside the JSON.
+            result.native_output = {
+                "mineru-middle.json": native,
+                "mineru-run.json": json.dumps({
+                    "mineru_version": self.version,
+                    "arguments": arguments,
+                    "input_sha256": content_hash(prepared.path),
+                    "deskew_angles": {str(page): angle for page, angle in prepared.angles.items()},
+                }, indent=2).encode(),
+            }
             return result

@@ -7,6 +7,7 @@ running the layout engine again.
 
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 from dataclasses import asdict, fields
@@ -30,6 +31,7 @@ from pdf2md.schema import (
 
 ENGINE_STATE_SCHEMA_VERSION = 1
 ENGINE_STATE_NAME = "base-state.json"
+NATIVE_OUTPUT_DIR = "engine-native"
 
 
 def _known(cls, value: dict[str, Any]) -> dict[str, Any]:
@@ -112,6 +114,26 @@ def write_engine_state(
     pending.write_text(json.dumps(payload, indent=2, default=str))
     pending.replace(path)
     return path
+
+
+def write_native_output(version_dir: Path, engine_result: EngineResult) -> list[Path]:
+    """The engine's own files, gzipped under `engine-native/`.
+
+    `base-state.json` is written after the adapter translated the engine's output,
+    so whatever the adapter dropped is gone from it too; these are what a fixed
+    adapter would read again. mtime=0 keeps the compressed bytes reproducible."""
+    paths = []
+    if not engine_result.native_output:
+        return paths
+    directory = version_dir / NATIVE_OUTPUT_DIR
+    directory.mkdir(parents=True, exist_ok=True)
+    for name, data in sorted(engine_result.native_output.items()):
+        path = directory / f"{name}.gz"
+        pending = path.with_name(f"{path.name}.tmp")
+        pending.write_bytes(gzip.compress(data, mtime=0))
+        pending.replace(path)
+        paths.append(path)
+    return paths
 
 
 def load_engine_state(version_dir: Path) -> EngineResult:

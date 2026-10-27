@@ -30,6 +30,10 @@ class EngineResult:
     # Structured cells per table (block_id -> RawTable), so `enrich` can rebuild a
     # table with recovered scripts. Transient: lives here, never serialized.
     raw_tables: dict[str, RawTable] = field(default_factory=dict)
+    # The engine's own output files (file name -> bytes), kept in the bundle so a
+    # translation fix can be replayed without running the engine again: a MinerU
+    # adapter fix otherwise costs a 660-page book another hour of OCR.
+    native_output: dict[str, bytes] = field(default_factory=dict)
 
 
 @runtime_checkable

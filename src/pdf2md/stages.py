@@ -36,7 +36,7 @@ from pdf2md.describe import Describer, get_describer
 from pdf2md.document_metadata import build_document_metadata, write_document_metadata
 from pdf2md.doi_metadata import DOI_METADATA_NAME, fetch_doi_metadata, merge_doi_metadata
 from pdf2md.emit import emit_document
-from pdf2md.engine_state import write_engine_state
+from pdf2md.engine_state import write_engine_state, write_native_output
 from pdf2md.engines.base import Engine, normalize_page_origin
 from pdf2md.engines.select import select_engine
 from pdf2md.enrich import (
@@ -362,6 +362,7 @@ def _open_run(
     # running right now takes the next number instead of writing into this one.
     version, vdir = claim_version(dd)
     write_engine_state(vdir, doc_id, result)
+    write_native_output(vdir, result)
     return _Run(
         pdf_path=pdf_path,
         config=config,

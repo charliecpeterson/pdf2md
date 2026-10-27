@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import gzip
+import hashlib
+import json
 import logging
 import time
 from pathlib import Path
@@ -152,6 +155,57 @@ def test_translate_middle_keeps_an_unmapped_kind_as_text_and_says_so(caplog):
 def test_translate_middle_refuses_output_without_a_pdf_info_page_list():
     with pytest.raises(RuntimeError, match=r"no `pdf_info` page list \(keys: \['pages'\]\)"):
         _translate_middle({"pages": []})
+
+
+def test_convert_keeps_the_native_middle_json_and_what_produced_it(tmp_path):
+    middle = {"pdf_info": [{"page_idx": 0, "page_size": [600, 800], "preproc_blocks": [
+        {"type": "text", "bbox": [10, 10, 200, 30], "lines": _lines("Hello")},
+    ]}]}
+    script = tmp_path / "mineru"
+    script.write_text(
+        "#!/usr/bin/env python3\n"
+        "import json, pathlib, sys\n"
+        "if sys.argv[1] == '--version':\n"
+        "    print('mineru, version 9.9.9'); raise SystemExit(0)\n"
+        "out = pathlib.Path(sys.argv[sys.argv.index('-o') + 1]) / 'book' / 'hybrid_ocr'\n"
+        "out.mkdir(parents=True)\n"
+        f"(out / 'book_middle.json').write_text({json.dumps(middle)!r})\n",
+        encoding="utf-8",
+    )
+    script.chmod(0o755)
+    pdf = tmp_path / "book.pdf"
+    pdf.write_bytes(b"%PDF-1.4 stand-in")
+
+    engine = MinerUEngine(str(script), deskew_scans=False, force_ocr=True)
+    result = engine.convert(pdf)
+
+    assert [block.text for block in result.blocks] == ["Hello"]
+    assert json.loads(result.native_output["mineru-middle.json"]) == middle
+    assert json.loads(result.native_output["mineru-run.json"]) == {
+        "mineru_version": "mineru, version 9.9.9",
+        "arguments": ["-b", "hybrid-engine", "--effort", "high", "--image-analysis", "true",
+                      "-m", "ocr"],
+        "input_sha256": hashlib.sha256(b"%PDF-1.4 stand-in").hexdigest(),
+        "deskew_angles": {},
+    }
+
+
+def test_native_output_is_written_gzipped_and_reproducibly(tmp_path):
+    from pdf2md.engine_state import write_native_output
+    from pdf2md.engines.base import EngineResult
+
+    result = EngineResult([], [], [], {}, native_output={"mineru-middle.json": b'{"pdf_info": []}'})
+
+    first = write_native_output(tmp_path / "a", result)
+    second = write_native_output(tmp_path / "b", result)
+
+    assert [path.relative_to(tmp_path / "a").as_posix() for path in first] == [
+        "engine-native/mineru-middle.json.gz",
+    ]
+    assert gzip.decompress(first[0].read_bytes()) == b'{"pdf_info": []}'
+    assert first[0].read_bytes() == second[0].read_bytes()
+    assert write_native_output(tmp_path / "c", EngineResult([], [], [], {})) == []
+    assert not (tmp_path / "c").exists()
 
 
 def test_convert_reports_only_bounded_command_output_tail(monkeypatch):

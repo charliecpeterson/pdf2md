@@ -7,6 +7,15 @@ here.
 
 ## [Unreleased]
 
+### Added
+
+- A MinerU bundle keeps MinerU's own middle JSON, gzipped under `engine-native/`, with a
+  `mineru-run.json` recording the MinerU version, its arguments, the hash of the PDF it
+  read and any deskew angles. `base-state.json` is written after the adapter translated
+  that output, so what the adapter dropped was gone from it too; the table footnotes fixed
+  below cost seven books another 4.5 hours of OCR to recover. A fixed adapter can now read
+  the retained JSON instead.
+
 ### Fixed
 
 - The MinerU adapter no longer drops table footnotes, second captions, or block kinds it
