@@ -129,7 +129,8 @@ def convert(
     force_ocr: bool = typer.Option(
         False, "--force-ocr",
         help="Re-OCR page images instead of trusting the embedded text layer — for a PDF whose "
-             "own text is bad OCR. Pair with --ocr-page-vlm for a full-page vision read.",
+             "own text is bad OCR. Every engine honours it (Marker strips the layer, MinerU "
+             "runs -m ocr). Pair with --ocr-page-vlm for a full-page vision read.",
         rich_help_panel="Scans and OCR",
     ),
     transcribe: bool = typer.Option(

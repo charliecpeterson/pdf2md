@@ -878,7 +878,16 @@ Token-level signals: what the page printed against what was emitted.
   `GlyphIndex(force_ocr=True)` reports every page as having no text — so the doc is treated
   as a scan and the glyph-based refill/religature/script overlay are skipped (they'd re-derive
   from the bad layer). The engine's fresh OCR text stands; pair with `--ocr-page-vlm` for a
-  full-page vision transcription.
+  full-page vision transcription. **It reaches the external engines too, and Marker needed
+  it**: without it Marker reuses an embedded OCR layer block by block, and on a scanned
+  Critical Stability Constants page kept Acrobat's layer for one table of two, splitting
+  every log K at its decimal point (`2 | .26a`). Marker gets `--strip_existing_ocr`, not its
+  own `--force_ocr`, which skips layout detection and rebuilds pages from full-page OCR.
+  MinerU gets `-m ocr` in place of its `auto` method. **Marker 2.0.0's strip path is broken
+  under its own pins**: it calls `PdfObject.get_pos()`, which pypdfium2 5 renamed
+  `get_bounds()`, and marker-pdf 2.0.0 requires pdftext 0.7, which pins pypdfium2 5.10.1. It
+  crashed 20 s into a 510-page scan, on the first page with a named embedded font and an
+  image. A launcher aliasing the name before importing marker fixes it; `_failure` says so.
 - **A layer that spells symbols with letters passes every per-character test and is
   still nonsense.** `is_clean` looked for unmapped glyphs (C0/C1 controls, U+FFFD),
   which a font substituting *ordinary letters* for symbols sails through: Wiley

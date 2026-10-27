@@ -240,9 +240,9 @@ def _server_message(url: str, reason: str) -> str:
 
 
 def _failure(returncode: int, detail: str) -> str:
-    """Say what actually went wrong when Marker cannot reach an inference server.
+    """Say what actually went wrong when Marker's traceback buries a known cause.
 
-    There are two different causes and they need opposite advice. With SURYA_INFERENCE_URL set the server
+    For an unreachable inference server there are two different causes and they need opposite advice. With SURYA_INFERENCE_URL set the server
     is simply not answering (it died or was never started); without it Marker's Surya spawns a Docker
     container with the `nvidia` runtime, which many hosts do not register even with the container toolkit
     installed. Both arrive as a SpawnError at the bottom of a traceback, and lumping them together sent a
@@ -260,6 +260,18 @@ def _failure(returncode: int, detail: str) -> str:
             "SURYA_INFERENCE_URL=http://127.0.0.1:8000/v1), or register the runtime "
             "with `sudo nvidia-ctk runtime configure --runtime=docker`. "
             "`pdf2md doctor --engine marker` reports which of these is missing.\n"
+            f"Marker exit code {returncode}: {detail[-600:]}"
+        )
+    if "has no attribute 'get_pos'" in detail:
+        # Marker 2.0.0 requires pdftext 0.7, which pins pypdfium2 5.10.1, where get_pos was
+        # renamed get_bounds; the call sits on the --strip_existing_ocr path only, so a stock
+        # install crashes on the first page there with a named embedded font and an image.
+        return (
+            "Marker's --strip_existing_ocr path (what --force-ocr asks of it) calls "
+            "pypdfium2's PdfObject.get_pos(), which pypdfium2 5 renamed get_bounds(); "
+            "Marker's own pins install that version. Run Marker through a launcher that sets "
+            "`pypdfium2.PdfObject.get_pos = pypdfium2.PdfObject.get_bounds` before importing "
+            "marker, or convert without --force-ocr.\n"
             f"Marker exit code {returncode}: {detail[-600:]}"
         )
     return f"Marker failed with exit code {returncode}: {detail}"
@@ -357,7 +369,7 @@ def _installed_version(executable: str) -> str:
 class MarkerEngine:
     name = "marker"
 
-    def __init__(self, executable: str = "marker_single") -> None:
+    def __init__(self, executable: str = "marker_single", *, force_ocr: bool = False) -> None:
         path = Path(executable).expanduser()
         resolved = str(path.resolve()) if path.parent != Path(".") else shutil.which(executable)
         if not resolved or not Path(resolved).is_file():
@@ -367,18 +379,27 @@ class MarkerEngine:
             )
         self.executable = resolved
         self.version = _installed_version(self.executable)
+        self.force_ocr = force_ocr
 
     def cache_identity(self) -> str:
-        return f"{self.executable}:{self.version}"
+        return f"{self.executable}:{self.version}:strip_existing_ocr={self.force_ocr}"
 
     def convert(self, pdf_path: Path) -> EngineResult:
         log.info("marker converting %s", pdf_path)
         _require_server()
         progress = Progress(log)
+        command = [self.executable, str(pdf_path), "--output_format", "json"]
+        if self.force_ocr:
+            # Marker otherwise reuses an embedded OCR layer block by block: on a scanned
+            # Critical Stability Constants page it kept Acrobat's layer for one table of
+            # two, splitting every log K at its decimal point (`2 | .26a`). Marker's own
+            # --force_ocr is not the equivalent: it skips layout detection and rebuilds
+            # each page from full-page OCR, where this keeps layout and drops the layer.
+            command.append("--strip_existing_ocr")
         with tempfile.TemporaryDirectory(prefix="pdf2md-marker-") as temp:
             output = Path(temp)
             process = subprocess.Popen(
-                [self.executable, str(pdf_path), "--output_format", "json", "--output_dir", str(output)],
+                [*command, "--output_dir", str(output)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,

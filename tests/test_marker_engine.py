@@ -417,6 +417,15 @@ def test_a_down_server_and_a_missing_docker_runtime_get_different_advice():
     assert _failure(2, "boom") == "Marker failed with exit code 2: boom"
 
 
+def test_the_pypdfium2_rename_on_the_strip_path_names_its_workaround():
+    from pdf2md.engines.marker import _failure
+
+    message = _failure(1, "AttributeError: 'PdfImage' object has no attribute 'get_pos'")
+
+    assert message.startswith("Marker's --strip_existing_ocr path (what --force-ocr asks of it)")
+    assert "pypdfium2.PdfObject.get_pos = pypdfium2.PdfObject.get_bounds" in message
+
+
 @pytest.mark.parametrize(
     ("line", "expected"),
     [
@@ -470,6 +479,42 @@ def test_convert_streams_marker_progress_and_translates_its_json(tmp_path, monke
 
     assert [block.text for block in result.blocks if block.type is BlockType.PARAGRAPH] == ["Hello"]
     assert "Marker Recognizing Layout" in caplog.text
+
+
+@pytest.mark.parametrize("force_ocr", [False, True])
+def test_force_ocr_has_marker_strip_the_embedded_layer(tmp_path, monkeypatch, force_ocr):
+    from pdf2md.engines.marker import MarkerEngine
+
+    fixture = tmp_path / "doc.json"
+    fixture.write_text(json.dumps(_page([])), encoding="utf-8")
+    script = _fake_marker(
+        tmp_path,
+        "pathlib.Path(sys.argv[0]).with_name('argv.json').write_text(json.dumps(sys.argv[1:]))\n"
+        "out = pathlib.Path(sys.argv[sys.argv.index('--output_dir') + 1]) / 'doc'\n"
+        "out.mkdir(parents=True)\n"
+        f"(out / 'doc.json').write_text(open({str(fixture)!r}).read())",
+    )
+    monkeypatch.delenv("SURYA_INFERENCE_URL", raising=False)
+
+    MarkerEngine(str(script), force_ocr=force_ocr).convert(tmp_path / "book.pdf")
+
+    argv = json.loads((tmp_path / "argv.json").read_text())
+    strip = ["--strip_existing_ocr"] if force_ocr else []
+    assert argv[:-1] == [str(tmp_path / "book.pdf"), "--output_format", "json", *strip, "--output_dir"]
+
+
+def test_select_engine_hands_force_ocr_to_marker(tmp_path):
+    from pdf2md.config import Config
+    from pdf2md.engines.select import select_engine
+
+    script = _fake_marker(tmp_path, "raise SystemExit(0)")
+    plain = select_engine(None, Config(engine="marker", marker_executable=str(script)))
+    forced = select_engine(
+        None, Config(engine="marker", marker_executable=str(script), force_ocr=True)
+    )
+
+    assert (plain.force_ocr, forced.force_ocr) == (False, True)
+    assert plain.cache_identity() != forced.cache_identity()
 
 
 def test_an_unreachable_server_fails_before_marker_starts(tmp_path, monkeypatch):

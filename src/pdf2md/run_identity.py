@@ -98,7 +98,8 @@ def _engine_identity(engine: Engine | None, config: Config) -> dict[str, str]:
             from pdf2md.engines.mineru import MinerUEngine
 
             candidate = MinerUEngine(
-                config.mineru_executable, deskew_scans=config.deskew_scans
+                config.mineru_executable, deskew_scans=config.deskew_scans,
+                force_ocr=config.force_ocr,
             )
             return {
                 "name": candidate.name,

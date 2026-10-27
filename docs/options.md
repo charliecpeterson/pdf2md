@@ -40,7 +40,8 @@ Grouped by what they touch. All are flags to `convert`.
 - `--metadata-online` — resolve a locally extracted DOI to CSL-JSON, retain the raw registry
   record, and merge structured citation fields with local evidence
 - `--ocr-page-vlm` — transcribe each scanned page as one Markdown block (one call/page)
-- `--force-ocr` — ignore a bad embedded text layer and re-OCR page images
+- `--force-ocr` — ignore a bad embedded text layer and re-OCR page images; every engine
+  honours it (Docling full-page OCR, Marker `--strip_existing_ocr`, MinerU `-m ocr`)
 - `--no-deskew` — skip conservative fine-deskewing of textless pages before MinerU
 - `--transcribe` — re-transcribe image-backed equations with local math-OCR (Surya; `transcribe` extra)
 - `--render-check` — render each image-backed equation's LaTeX and compare ink layout against its

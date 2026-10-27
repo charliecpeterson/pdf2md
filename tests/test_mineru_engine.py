@@ -99,6 +99,7 @@ def test_convert_reports_only_bounded_command_output_tail(monkeypatch):
     engine = MinerUEngine.__new__(MinerUEngine)
     engine.executable = "mineru"
     engine.deskew_scans = False
+    engine.force_ocr = False
 
     with pytest.raises(RuntimeError) as error:
         engine.convert(Path("source.pdf"))
@@ -129,6 +130,7 @@ def test_convert_preserves_explicit_mineru_task_timeout(monkeypatch):
     engine = MinerUEngine.__new__(MinerUEngine)
     engine.executable = "mineru"
     engine.deskew_scans = False
+    engine.force_ocr = False
 
     with pytest.raises(RuntimeError):
         engine.convert(Path("source.pdf"))
@@ -141,11 +143,61 @@ def test_cache_identity_includes_deskew_policy():
     engine.executable = "/opt/mineru"
     engine.version = "mineru 3.4.4"
     engine.deskew_scans = True
+    engine.force_ocr = False
     enabled = engine.cache_identity()
 
     engine.deskew_scans = False
 
     assert enabled != engine.cache_identity()
+
+
+@pytest.mark.parametrize("force_ocr", [False, True])
+def test_force_ocr_has_mineru_read_page_pixels(monkeypatch, force_ocr):
+    class FailedProcess:
+        stdout = []
+
+        @staticmethod
+        def wait():
+            return 1
+
+    invocation = {}
+
+    def failed_process(command, **kwargs):
+        invocation["command"] = command
+        return FailedProcess()
+
+    monkeypatch.setattr("pdf2md.engines.mineru.subprocess.Popen", failed_process)
+    engine = MinerUEngine.__new__(MinerUEngine)
+    engine.executable = "mineru"
+    engine.deskew_scans = False
+    engine.force_ocr = force_ocr
+
+    with pytest.raises(RuntimeError):
+        engine.convert(Path("source.pdf"))
+
+    method = ["-m", "ocr"] if force_ocr else []
+    assert invocation["command"][:3] == ["mineru", "-p", "source.pdf"]
+    assert invocation["command"][5:] == [
+        "-b", "hybrid-engine", "--effort", "high", "--image-analysis", "true", *method,
+    ]
+
+
+def test_select_engine_hands_force_ocr_to_mineru(tmp_path):
+    from pdf2md.config import Config
+    from pdf2md.engines.select import select_engine
+
+    script = tmp_path / "mineru"
+    script.write_text("#!/bin/sh\necho 'mineru, version 9.9.9'\n", encoding="utf-8")
+    script.chmod(0o755)
+
+    engine = select_engine(
+        None, Config(engine="mineru", mineru_executable=str(script), force_ocr=True)
+    )
+
+    assert engine.force_ocr is True
+    assert engine.cache_identity() == (
+        f"{script.resolve()}:mineru, version 9.9.9:deskew=True:force_ocr=True"
+    )
 
 
 @pytest.mark.parametrize(

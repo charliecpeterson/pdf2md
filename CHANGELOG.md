@@ -9,6 +9,14 @@ here.
 
 ### Fixed
 
+- `--force-ocr` now reaches Marker and MinerU; it only ever reached Docling, so the other two
+  read a bad embedded OCR layer whatever the flag said. Marker reused Acrobat Paper Capture's
+  layer for one table of two on a scanned Critical Stability Constants page, splitting every
+  log K at its decimal point (`2 | .26a` for 2.26); with the layer stripped the same table
+  reads `2.26a`. Marker is now run with `--strip_existing_ocr` (its `--force_ocr` would also
+  skip layout detection) and MinerU with `-m ocr`. Both cache identities name the setting.
+  Marker 2.0.0's strip path calls pypdfium2's removed `get_pos()` under its own pinned
+  dependencies; a failure with that signature now says so and names the workaround.
 - A page that crashes docling-parse no longer takes the conversion down with it. The parser
   is a C++ extension that traps (SIGTRAP, exit 133) on some embedded images instead of
   raising, so no handler runs: an 850-page nuclear chemistry textbook died every time, on a

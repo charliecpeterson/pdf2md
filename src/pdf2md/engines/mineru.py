@@ -212,7 +212,9 @@ def _translate_middle(document: dict[str, Any], mineru_version: str = "unknown")
 class MinerUEngine:
     name = "mineru"
 
-    def __init__(self, executable: str = "mineru", *, deskew_scans: bool = True) -> None:
+    def __init__(
+        self, executable: str = "mineru", *, deskew_scans: bool = True, force_ocr: bool = False
+    ) -> None:
         path = Path(executable).expanduser()
         resolved = str(path.resolve()) if path.parent != Path(".") else shutil.which(executable)
         if not resolved or not Path(resolved).is_file():
@@ -222,13 +224,17 @@ class MinerUEngine:
             )
         self.executable = resolved
         self.deskew_scans = deskew_scans
+        self.force_ocr = force_ocr
         probe = subprocess.run(
             [self.executable, "--version"], capture_output=True, text=True, check=False
         )
         self.version = (probe.stdout or probe.stderr).strip() or "unknown"
 
     def cache_identity(self) -> str:
-        return f"{self.executable}:{self.version}:deskew={self.deskew_scans}"
+        return (
+            f"{self.executable}:{self.version}:deskew={self.deskew_scans}"
+            f":force_ocr={self.force_ocr}"
+        )
 
     def convert(self, pdf_path: Path) -> EngineResult:
         log.info("mineru converting %s", pdf_path)
@@ -255,6 +261,10 @@ class MinerUEngine:
                 "--effort", "high",
                 "--image-analysis", "true",
             ]
+            if self.force_ocr:
+                # MinerU's default method, `auto`, decides for itself whether to trust an
+                # embedded text layer; --force-ocr is the caller saying it must not.
+                command.extend(["-m", "ocr"])
             environment = os.environ.copy()
             # MinerU's one-hour default expires on large high-effort documents.
             environment.setdefault(

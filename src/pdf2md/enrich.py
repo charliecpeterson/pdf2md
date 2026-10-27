@@ -556,6 +556,6 @@ def warn_about_scan_overlays(pdf_path: Path, ocr_pages: set[int], config: Config
             "as whoever digitised the paper. For a fresh transcription re-run with "
             "--engine mineru, which on a measured 1972 scan cut malformed value "
             "tokens from 22.9%% to 0.6%%; --force-ocr is the fallback where MinerU "
-            "is unavailable.",
+            "is unavailable, and with --engine marker it stops Marker reusing the layer.",
             overlaid,
         )

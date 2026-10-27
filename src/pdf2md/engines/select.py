@@ -97,12 +97,13 @@ def select_engine(engine: Engine | None, config: Config,
         from pdf2md.engines.mineru import MinerUEngine
 
         return MinerUEngine(
-            config.mineru_executable, deskew_scans=config.deskew_scans
+            config.mineru_executable, deskew_scans=config.deskew_scans,
+            force_ocr=config.force_ocr,
         )
     if config.engine == "marker":
         from pdf2md.engines.marker import MarkerEngine
 
-        return MarkerEngine(config.marker_executable)
+        return MarkerEngine(config.marker_executable, force_ocr=config.force_ocr)
     from pdf2md.engines.docling import DoclingEngine
 
     return DoclingEngine(
