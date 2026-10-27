@@ -80,6 +80,80 @@ def test_translate_middle_preserves_order_equations_tables_and_figures():
     assert result.engine_versions["mineru"] == "mineru 3.4.4"
 
 
+def _lines(text):
+    return [{"spans": [{"type": "text", "content": text}]}]
+
+
+def test_translate_middle_keeps_every_table_caption_and_footnote():
+    """The shape MinerU 3.4.5 gives a Critical Stability Constants table: two captions,
+    the body, then footnotes holding the conditions behind its value markers."""
+    document = {"pdf_info": [{
+        "page_idx": 0,
+        "page_size": [600, 800],
+        "preproc_blocks": [
+            {"type": "table", "bbox": [10, 10, 500, 300], "blocks": [
+                {"type": "table_caption", "bbox": [10, 10, 300, 20], "lines": _lines("Ligand A")},
+                {"type": "table_caption", "bbox": [10, 22, 320, 32],
+                 "lines": _lines("(Other values in Vol. 9)")},
+                {"type": "table_body", "bbox": [10, 40, 500, 240], "lines": [{"spans": [{
+                    "type": "table", "html": "<table><tr><td>2.66<sup>h</sup></td></tr></table>",
+                }]}]},
+                {"type": "table_footnote", "bbox": [10, 250, 300, 260],
+                 "lines": _lines("b 25°, 0.5; h 20°, 0.1")},
+                {"type": "table_footnote", "bbox": [10, 262, 300, 272],
+                 "lines": _lines("u NaClO4 used as background electrolyte")},
+                {"type": "table_footnote", "bbox": [10, 274, 300, 284],
+                 "lines": _lines("Bibliography: 99XY")},
+            ]},
+            {"type": "image", "bbox": [10, 320, 300, 500], "blocks": [
+                {"type": "image_body", "bbox": [10, 320, 300, 480], "lines": []},
+                {"type": "image_footnote", "bbox": [10, 482, 300, 492],
+                 "lines": _lines("Drawn from the crystal structure")},
+            ]},
+        ],
+    }]}
+
+    result = _translate_middle(document)
+
+    assert [(block.type, block.text) for block in result.blocks] == [
+        (BlockType.CAPTION, "Ligand A\n(Other values in Vol. 9)"),
+        (BlockType.TABLE, ""),
+        (BlockType.FOOTNOTE, "b 25°, 0.5; h 20°, 0.1"),
+        (BlockType.FOOTNOTE, "u NaClO4 used as background electrolyte"),
+        (BlockType.FOOTNOTE, "Bibliography: 99XY"),
+        (BlockType.FIGURE, ""),
+        (BlockType.FOOTNOTE, "Drawn from the crystal structure"),
+    ]
+    caption = result.blocks[0].bbox
+    assert (caption.x0, caption.y0, caption.x1, caption.y1) == (10, 790, 320, 768)
+    footnote = result.blocks[2].bbox
+    assert (footnote.x0, footnote.y0, footnote.x1, footnote.y1) == (10, 550, 300, 540)
+
+
+def test_translate_middle_keeps_an_unmapped_kind_as_text_and_says_so(caplog):
+    document = {"pdf_info": [{
+        "page_idx": 0,
+        "page_size": [600, 800],
+        "preproc_blocks": [
+            {"type": "aside_text", "bbox": [500, 10, 590, 100], "lines": _lines("Margin note")},
+        ],
+    }]}
+
+    with caplog.at_level("WARNING", logger="pdf2md"):
+        result = _translate_middle(document)
+
+    assert [(block.type, block.text) for block in result.blocks] == [
+        (BlockType.OTHER, "Margin note"),
+    ]
+    assert result.blocks[0].extra == {"mineru_type": "aside_text"}
+    assert "kept as plain text: aside_text (1)" in caplog.text
+
+
+def test_translate_middle_refuses_output_without_a_pdf_info_page_list():
+    with pytest.raises(RuntimeError, match=r"no `pdf_info` page list \(keys: \['pages'\]\)"):
+        _translate_middle({"pages": []})
+
+
 def test_convert_reports_only_bounded_command_output_tail(monkeypatch):
     class FailedProcess:
         stdout = [f"line {index}\n" for index in range(60)]

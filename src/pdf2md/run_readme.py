@@ -84,7 +84,7 @@ def _run_summary_lines(run_metrics: dict | None) -> list[str]:
     lines += ["Exact stage timings and work counts are in `provenance.json`.", ""]
     return lines
 
-def _scorecard_lines(profile: DocumentProfile) -> list[str]:
+def _scorecard_lines(profile: DocumentProfile, engine: str) -> list[str]:
     dimensions = profile.quality_scorecard.get("dimensions", {})
 
     def _result(name: str) -> str:
@@ -129,7 +129,7 @@ def _scorecard_lines(profile: DocumentProfile) -> list[str]:
         f"Legacy aggregate label: {profile.confidence} (deprecated and uncalibrated).",
         "Evidence sources, calibration status, counts, and notes are in `profile.json`.",
         "",
-        *_scanned_table_remedy(dimensions),
+        *_scanned_table_remedy(dimensions, engine),
         *_equation_coverage_note(profile, dimensions),
     ]
 
@@ -166,7 +166,7 @@ def _equation_coverage_note(profile: DocumentProfile, dimensions: dict) -> list[
         "",
     ]
 
-def _scanned_table_remedy(dimensions: dict) -> list[str]:
+def _scanned_table_remedy(dimensions: dict, engine: str = "docling") -> list[str]:
     """Name the remedy beside the row it explains.
 
     A reader who sees `Table verification coverage: none (0/82)` on a scan is
@@ -175,7 +175,11 @@ def _scanned_table_remedy(dimensions: dict) -> list[str]:
     grid against Docling's 21%, with 0.6% of value tokens malformed against
     22.9%. The claim is about scans, so the line is withheld unless the document
     is one -- on a born-digital paper the same low coverage means something else
-    entirely, and pointing at a different engine would be guesswork."""
+    entirely, and pointing at a different engine would be guesswork. The
+    measurement compares MinerU with Docling, so only a Docling run gets it: a
+    MinerU bundle was told to re-run with MinerU."""
+    if engine != "docling":
+        return []
     ocr = dimensions.get("ocr_dependence") or {}
     tables = dimensions.get("table_verification_coverage") or {}
     if (ocr.get("ratio") or 0) < _SCANNED_SHARE:
@@ -276,7 +280,7 @@ def write_readme(version_dir: Path, doc: Document, meta: dict, profile: Document
         f"`{Path(doc.source_path).name}` · {p.pages} pages · `doc_id {doc.doc_id[:16]}` · "
         f"converted by pdf2md.",
         "",
-        *_scorecard_lines(p),
+        *_scorecard_lines(p, next((b.engine for b in doc.blocks), "docling")),
         *_metadata_evidence_lines(meta),
         "## Coverage",
         "",

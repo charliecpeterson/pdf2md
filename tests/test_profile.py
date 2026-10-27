@@ -591,7 +591,7 @@ def test_the_severity_row_shows_its_mass_not_only_its_worst_item():
     ]}
     profile = build_profile(doc, review_queue=review_queue)
 
-    line = next(row for row in _scorecard_lines(profile)
+    line = next(row for row in _scorecard_lines(profile, "docling")
                 if "Unresolved error severity" in row)
     assert "high (1 high, 3 medium, 8 low; 12 action items)" in line
 
@@ -608,6 +608,19 @@ def test_a_scan_whose_tables_all_failed_is_told_which_engine_reads_them():
 
     assert "--engine mineru" in lines[0] and "--force-ocr" in lines[0]
     assert "217 tables against Docling's 138" in lines[0]
+
+
+def test_a_scan_already_read_by_another_engine_is_not_told_to_switch():
+    """The remedy's evidence is MinerU against Docling; a MinerU bundle was told to
+    re-run with MinerU, and nothing was measured for Marker."""
+    dimensions = {
+        "ocr_dependence": {"ratio": 1.0, "numerator": 99, "denominator": 99},
+        "table_verification_coverage": {"ratio": 0.0, "numerator": 0, "denominator": 82},
+    }
+
+    assert _scanned_table_remedy(dimensions, "mineru") == []
+    assert _scanned_table_remedy(dimensions, "marker") == []
+    assert _scanned_table_remedy(dimensions, "docling") != []
 
 
 def test_a_born_digital_document_is_not_pointed_at_another_engine():

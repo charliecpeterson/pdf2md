@@ -9,6 +9,17 @@ here.
 
 ### Fixed
 
+- The MinerU adapter no longer drops table footnotes, second captions, or block kinds it
+  has no mapping for. It read a table's first caption and its HTML and nothing else, so a
+  Critical Stability Constants table lost the footnotes that define its value markers
+  (`h` = 20°, 0.1 overriding a 25° column), its bibliography, and its "Other values in
+  Vol.1" caption, while coverage read complete: MinerU 3.4.5 had emitted all of them as
+  `table_caption` and `table_footnote` children. Every caption is now kept, each table,
+  image, and chart footnote becomes a footnote block after its table or figure, an
+  unmapped kind is kept as plain text with a warning, and output without a `pdf_info` page
+  list is refused rather than read as an empty document.
+- The README's scanned-table remedy names MinerU only on a Docling run. Its evidence is
+  MinerU against Docling; a MinerU bundle was told to re-run with MinerU.
 - `--force-ocr` now reaches Marker and MinerU; it only ever reached Docling, so the other two
   read a bad embedded OCR layer whatever the flag said. Marker reused Acrobat Paper Capture's
   layer for one table of two on a scanned Critical Stability Constants page, splitting every

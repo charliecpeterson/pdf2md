@@ -12,7 +12,7 @@ import re
 import shutil
 import subprocess
 import tempfile
-from collections import deque
+from collections import Counter, deque
 from collections.abc import Iterator
 from contextlib import nullcontext
 from pathlib import Path
@@ -110,11 +110,29 @@ def _bbox(value: Any, page_height: float) -> BBox | None:
     return BBox(left, page_height - top, right, page_height - bottom)
 
 
+def _union_bbox(items: list[dict[str, Any]], page_height: float) -> BBox | None:
+    boxes = [item["bbox"] for item in items
+             if isinstance(item.get("bbox"), list) and len(item["bbox"]) == 4]
+    if not boxes:
+        return None
+    return _bbox([min(b[0] for b in boxes), min(b[1] for b in boxes),
+                  max(b[2] for b in boxes), max(b[3] for b in boxes)], page_height)
+
+
 def _translate_middle(document: dict[str, Any], mineru_version: str = "unknown") -> EngineResult:
+    pages = document.get("pdf_info")
+    if not isinstance(pages, list):
+        # MinerU 4 documents a different output contract; reading it as 3.x would
+        # translate to an empty document that the coverage audit calls complete.
+        raise RuntimeError(
+            "MinerU output has no `pdf_info` page list (keys: "
+            f"{sorted(document)}); this adapter reads the MinerU 3.x middle JSON"
+        )
     blocks: list[Block] = []
     tables: list[TableData] = []
     figures: list[FigureRef] = []
     page_sizes: dict[int, tuple[float, float]] = {}
+    unmapped: Counter[str] = Counter()
     serial = 0
 
     def block_id(page: int, kind: str) -> str:
@@ -122,7 +140,16 @@ def _translate_middle(document: dict[str, Any], mineru_version: str = "unknown")
         serial += 1
         return f"#/mineru/{page}/{kind}/{serial}"
 
-    for page_info in document.get("pdf_info") or []:
+    def footnotes(item: dict[str, Any], kinds: tuple[str, ...], page: int,
+                  height: float) -> None:
+        for note in (n for kind in kinds for n in _nested_blocks(item, kind)):
+            if text := _text(note):
+                blocks.append(Block(
+                    block_id(page, "footnote"), BlockType.FOOTNOTE, text, page,
+                    _bbox(note.get("bbox"), height), engine="mineru",
+                ))
+
+    for page_info in pages:
         page = int(page_info.get("page_idx", 0)) + 1
         width, height = map(float, page_info.get("page_size") or (0, 0))
         page_sizes[page] = (width, height)
@@ -150,12 +177,16 @@ def _translate_middle(document: dict[str, Any], mineru_version: str = "unknown")
                 ))
                 continue
             if kind == "table":
+                # A Critical Stability Constants table carries two captions (the ligand,
+                # then "Other values in Vol.1, p.269") and up to three footnotes holding
+                # the conditions its value markers stand for and the bibliography; taking
+                # the first caption and no footnote dropped them all without a marker.
                 captions = _nested_blocks(item, "table_caption")
-                caption = _text(captions[0]) if captions else ""
+                caption = "\n".join(filter(None, (_text(c) for c in captions)))
                 if caption:
                     blocks.append(Block(
                         block_id(page, "caption"), BlockType.CAPTION, caption, page,
-                        _bbox(captions[0].get("bbox"), height), engine="mineru",
+                        _union_bbox(captions, height), engine="mineru",
                     ))
                 table_span = next(
                     (span for span in _spans(item) if span.get("type") == "table"), None
@@ -168,12 +199,13 @@ def _translate_middle(document: dict[str, Any], mineru_version: str = "unknown")
                     table_id, page, bbox, gfm=gfm,
                     html=html if spanning else None, has_spanning_cells=spanning,
                 ))
+                footnotes(item, ("table_footnote",), page, height)
                 continue
             if kind in {"image", "chart"}:
                 caption_blocks = _nested_blocks(item, "image_caption") + _nested_blocks(
                     item, "chart_caption"
                 )
-                caption = _text(caption_blocks[0]) if caption_blocks else None
+                caption = "\n".join(filter(None, (_text(c) for c in caption_blocks))) or None
                 body_blocks = _nested_blocks(item, "image_body") + _nested_blocks(
                     item, "chart_body"
                 )
@@ -187,9 +219,7 @@ def _translate_middle(document: dict[str, Any], mineru_version: str = "unknown")
                     page,
                     bbox,
                     caption=caption,
-                    caption_bbox=(
-                        _bbox(caption_blocks[0].get("bbox"), height) if caption_blocks else None
-                    ),
+                    caption_bbox=_union_bbox(caption_blocks, height),
                     labels=(
                         FigureLabels(
                             labels_text,
@@ -199,7 +229,22 @@ def _translate_middle(document: dict[str, Any], mineru_version: str = "unknown")
                         if labels_text else None
                     ),
                 ))
+                footnotes(item, ("image_footnote", "chart_footnote"), page, height)
+                continue
+            # A kind this adapter has no mapping for still printed something; dropping it
+            # would leave a region no block accounts for while coverage reads complete.
+            if text := _text(item):
+                unmapped[str(kind)] += 1
+                blocks.append(Block(
+                    block_id(page, "other"), BlockType.OTHER, text, page, bbox,
+                    engine="mineru", extra={"mineru_type": kind},
+                ))
 
+    if unmapped:
+        log.warning(
+            "MinerU block kinds with no pdf2md mapping were kept as plain text: %s",
+            ", ".join(f"{kind} ({count})" for kind, count in sorted(unmapped.items())),
+        )
     return EngineResult(
         blocks,
         tables,
